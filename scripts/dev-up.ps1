@@ -6,7 +6,9 @@ param(
     [switch]$Full,
     [switch]$NoSeed
 )
-$ErrorActionPreference = "Stop"
+# "Continue" (not "Stop"): Windows PowerShell 5.1 turns docker's progress output on stderr into
+# terminating errors. Failures are detected through $LASTEXITCODE instead.
+$ErrorActionPreference = "Continue"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $root
 
@@ -37,6 +39,7 @@ do {
 if ($state -ne "healthy") { throw "Backend did not become healthy in time. See: docker compose logs backend" }
 
 docker compose exec -T backend python manage.py migrate --noinput
+if ($LASTEXITCODE -ne 0) { throw "migrate failed" }
 if (-not $NoSeed) {
     docker compose exec -T backend python manage.py help seed_demo *> $null
     if ($LASTEXITCODE -eq 0) { docker compose exec -T backend python manage.py seed_demo }
