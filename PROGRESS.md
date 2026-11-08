@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T07
+- **Current task:** P01-T08
 - **Last updated:** 2026-11-08
-- **Overall:** 6 / 193 tasks · 0 / 16 phases
+- **Overall:** 7 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -56,7 +56,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T04 — `apps.core`: `BaseModel` (UUID pk, timestamps), `TenantModel` + `TenantQuerySet.for_org()` + strict unscoped guard …
 - [x] P01-T05 — `apps.core.outbox`: `OutboxEvent`, `ProcessedEvent` models, `emit(event_type, aggregate, payload, dedupe_key)` (must …
 - [x] P01-T06 — `apps.core.idempotency`: `IdempotencyKey` model + DRF mixin/decorator `@idempotent(endpoint="…")` storing response
-- [ ] P01-T07 — Health endpoints `/healthz` and `/readyz` (DB, Redis, S3 checks with timeouts)
+- [x] P01-T07 — Health endpoints `/healthz` and `/readyz` (DB, Redis, S3 checks with timeouts)
 - [ ] P01-T08 — Storage service `apps.core.storage` (django-storages/boto3): buckets per purpose, `presign_put`, …
 - [ ] P01-T09 — Field encryption utility (`EncryptedTextField` using Fernet MultiFernet with key ids from `FIELD_ENCRYPTION_KEYS`)
 - [ ] P01-T10 — Docker: `backend/Dockerfile` (python:3.12-slim, non-root user, uv install), `backend/Dockerfile.worker` (adds …
@@ -307,3 +307,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T04 | apps.core: BaseModel, TenantModel + TenantQuerySet.for_org() + strict unscoped guard (request context), RequestIDMiddleware + JSON log context, error envelope handler (all codes docs/04 §1), page + cursor pagination, TenantScopedViewSet; tests incl. cross-tenant 404 | - |
 | 2026-11-08 | Impl | P01-T05 | Transactional outbox: OutboxEvent/ProcessedEvent, emit() (atomic-only, dedupe), relay (FOR UPDATE SKIP LOCKED, batch 100, backoff), on_commit kick, @idempotent_consumer; tests: rollback, dedupe, concurrent relays, broker down (EC-OPS-01) | - |
 | 2026-11-08 | Impl | P01-T06 | IdempotencyKey + @idempotent(endpoint): replay same key/body, 422 idempotency_key_reuse, 400 missing key, per-user, 24h TTL + purge task | - |
+| 2026-11-08 | Impl | P01-T07 | C:/Program Files/Git/healthz + /readyz (DB/Redis/S3, parallel with timeouts), FeatureFlag + is_enabled() cached, DeadLetter + BaseTask (acks_late, backoff retries, dead letter), task/request id log context, ping task, send_test_email + celery_ping commands | - |
