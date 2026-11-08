@@ -1,0 +1,7 @@
+# MUDHOTECH HR RECRUITING SYSTEM
+User-agent: *
+Disallow: /api/
+Disallow: /candidate/
+Disallow: /hr/
+Disallow: /admin/
+Disallow: /apply/
