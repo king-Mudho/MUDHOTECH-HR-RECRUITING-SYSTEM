@@ -1,0 +1,77 @@
+# MUDHOTECH HR RECRUITING SYSTEM - production compose (skeleton; completed in Phase 11).
+# Single EC2 host for the pilot (docs/10 §3): nginx, frontend, backend, workers, beat, clamav, redis.
+# PostgreSQL = Amazon RDS, object storage = S3, email = SES. Secrets rendered into .env by deploy.sh
+# from SSM Parameter Store.
+#   docker compose -f docker-compose.prod.yml --env-file .env up -d
+name: mhrs
+
+x-backend: &backend
+  image: ${MHRS_BACKEND_IMAGE:-ghcr.io/mudhotech/mhrs-backend}:${MHRS_TAG:-latest}
+  env_file: [.env]
+  environment:
+    DJANGO_SETTINGS_MODULE: config.settings.prod
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+x-worker: &worker
+  <<: *backend
+  image: ${MHRS_WORKER_IMAGE:-ghcr.io/mudhotech/mhrs-worker}:${MHRS_TAG:-latest}
+  stop_grace_period: 120s
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./infrastructure/nginx:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on: [frontend, backend]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes: [redis-data:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+
+  clamav:
+    image: clamav/clamav:stable
+    volumes: [clamav-data:/var/lib/clamav]
+    restart: unless-stopped
+
+  backend:
+    <<: *backend
+    depends_on:
+      redis: { condition: service_healthy }
+
+  worker-default:
+    <<: *worker
+    command: ["celery", "-A", "config", "worker", "-Q", "default,notifications,reports", "-c", "2", "-n", "default@%h", "--max-tasks-per-child", "200"]
+
+  worker-documents:
+    <<: *worker
+    command: ["celery", "-A", "config", "worker", "-Q", "documents", "-c", "2", "-n", "documents@%h", "--max-tasks-per-child", "100"]
+
+  worker-ai:
+    <<: *worker
+    command: ["celery", "-A", "config", "worker", "-Q", "ai", "-c", "2", "-n", "ai@%h", "--max-tasks-per-child", "100"]
+
+  beat:
+    <<: *backend
+    command: ["celery", "-A", "config", "beat", "-l", "info", "--schedule", "/tmp/celerybeat-schedule"]
+
+  frontend:
+    image: ${MHRS_FRONTEND_IMAGE:-ghcr.io/mudhotech/mhrs-frontend}:${MHRS_TAG:-latest}
+    env_file: [.env]
+    environment:
+      API_INTERNAL_URL: http://backend:8000
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  clamav-data:

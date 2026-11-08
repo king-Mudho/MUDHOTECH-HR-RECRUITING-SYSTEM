@@ -43,7 +43,7 @@ cd "D:\mudhotech_2026\MUDHOTECH HR RECRUITING SYSTEM"
 | API | http://localhost:8000/api/v1/ |
 | API docs (Swagger) | http://localhost:8000/api/docs/ |
 | Mailpit | http://localhost:8025 |
-| MinIO console | http://localhost:9001 |
+| S3 (SeaweedFS, dev) | http://localhost:9000 (filer UI :8888) |
 | Flower | http://localhost:5555 |
 
 The repository path contains spaces: always quote paths. `docker-compose.yml` sets `name: mhrs`.

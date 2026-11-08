@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1.7
+# MHRS frontend (Next.js). Stages: deps -> dev (docker compose) | build -> runtime (prod).
+FROM node:24-alpine AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+
+FROM deps AS dev
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY . .
+EXPOSE 3000
+CMD ["sh", "-c", "npm ci --prefer-offline --no-audit --no-fund >/dev/null && npm run dev -- --hostname 0.0.0.0 --port 3000"]
+
+FROM deps AS build
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY . .
+RUN npm run build
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build --chown=app:app /app/.next/standalone ./
+COPY --from=build --chown=app:app /app/.next/static ./.next/static
+COPY --from=build --chown=app:app /app/public ./public
+USER app
+EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=5s --retries=5 CMD wget -qO- http://127.0.0.1:3000/ >/dev/null || exit 1
+CMD ["node", "server.js"]

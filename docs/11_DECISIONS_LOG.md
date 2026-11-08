@@ -24,6 +24,8 @@ Status: **Accepted** = implement as written · **OWNER-DECISION** = default appl
 | ADR-018 | Hash-chained append-only audit table | Accepted | Tamper evidence |
 | ADR-019 | Interview panelists don't see AI scores by default | Accepted | Anchoring bias |
 | ADR-020 | Package manager: `uv` for Python (pyproject), npm for frontend | Accepted | Speed, lockfiles |
+| ADR-021 | Dev-only S3 emulator: **SeaweedFS** (`chrislusf/seaweedfs`, S3 gateway on :9000) + `amazon/aws-cli` bucket init, replacing MinIO in dev | Accepted (2026-11-08) | `minio/minio` and `minio/mc` images are no longer publicly pullable (Docker Hub/quay deny). Production remains AWS S3; app code uses plain boto3/S3 API so the emulator is swappable (RustFS is the fallback). |
+| ADR-022 | Dev host ports are configurable via `*_HOST_PORT` env vars; defaults Postgres **55432**, Redis **6380** (others standard) | Accepted (2026-11-08) | Avoid clashes with other local Postgres/Redis instances on developer machines; container-internal ports unchanged |
 
 ## Owner decisions (defaults in brackets — development proceeds with defaults)
 | ID | Question | Default |

@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "mhrs-dev",
+      "credentials": [{ "accessKey": "mhrs-s3-dev", "secretKey": "mhrs-s3-dev-secret" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

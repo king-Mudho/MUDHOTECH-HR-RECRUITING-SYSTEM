@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T10
+- **Current task:** P01-T11
 - **Last updated:** 2026-11-08
-- **Overall:** 9 / 193 tasks · 0 / 16 phases
+- **Overall:** 10 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -59,7 +59,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T07 — Health endpoints `/healthz` and `/readyz` (DB, Redis, S3 checks with timeouts)
 - [x] P01-T08 — Storage service `apps.core.storage` (django-storages/boto3): buckets per purpose, `presign_put`, …
 - [x] P01-T09 — Field encryption utility (`EncryptedTextField` using Fernet MultiFernet with key ids from `FIELD_ENCRYPTION_KEYS`)
-- [ ] P01-T10 — Docker: `backend/Dockerfile` (python:3.12-slim, non-root user, uv install), `backend/Dockerfile.worker` (adds …
+- [x] P01-T10 — Docker: `backend/Dockerfile` (python:3.12-slim, non-root user, uv install), `backend/Dockerfile.worker` (adds …
 - [ ] P01-T11 — Frontend scaffold: create Next.js app (TypeScript, App Router, Tailwind, ESLint, `src/` dir) in a temp folder and …
 - [ ] P01-T12 — API client: `src/lib/api-client.ts` (fetch wrapper with credentials, CSRF header from cookie, error envelope parsing …
 - [ ] P01-T13 — Base UI shell: public header/footer with "MUDHOTECH HR RECRUITING SYSTEM" branding, HR shell (sidebar nav, top bar …
@@ -296,6 +296,10 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
+| 2026-11-08 | P01-T03 | Minimal `accounts.User` (email login) and `organisations.Organisation` created in Phase 01 | Custom user model must exist before the first auth migration; `TenantModel` needs its FK target. Phase 02 completes both. | — |
+| 2026-11-08 | P01-T08/T10 | Dev S3 = SeaweedFS instead of MinIO | MinIO images no longer pullable | ADR-021 |
+| 2026-11-08 | P01-T10 | Dev host ports Postgres 55432 / Redis 6380 (configurable) | Port clashes on dev machines | ADR-022 |
+| 2026-11-08 | P01-T03 | Django admin served at `/django-admin/` | `/admin` belongs to the Next.js platform-admin UI | — |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -310,3 +314,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T07 | C:/Program Files/Git/healthz + /readyz (DB/Redis/S3, parallel with timeouts), FeatureFlag + is_enabled() cached, DeadLetter + BaseTask (acks_late, backoff retries, dead letter), task/request id log context, ping task, send_test_email + celery_ping commands | - |
 | 2026-11-08 | Impl | P01-T08 | Storage service: buckets per purpose, presign_put/presign_get(ttl 60)/move/delete/head (moto tests); dev S3 = SeaweedFS + aws-cli init (MinIO images no longer pullable, ADR-021) | - |
 | 2026-11-08 | Impl | P01-T09 | EncryptedTextField (Fernet/MultiFernet, key-id prefixed), rotate/needs_rotation, tests read old key + rotate + tamper | Re-encrypt job in Phase 09 (rotate-keys runbook) |
+| 2026-11-08 | Impl | P01-T10 | Dockerfile (py3.12-slim, uv, non-root), Dockerfile.worker (tesseract, poppler, libmagic), frontend/Dockerfile (node 24, multi-stage), docker-compose.yml name mhrs w/ healthchecks (postgres pgvector, redis, SeaweedFS S3 + init, mailpit, clamav profile, backend, 3 workers, beat, flower, frontend), docker-compose.prod.yml skeleton, .env.example; verified readyz 200, ping/pong, Mailpit email, 125 tests in container | ClamAV under compose profile 'full' (large image/DB download) |

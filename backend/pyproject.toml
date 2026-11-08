@@ -85,7 +85,7 @@ django_settings_module = "config.settings.test"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
 python_files = ["test_*.py", "tests.py"]
-addopts = "-ra --strict-markers --reuse-db"
+addopts = "-ra --strict-markers --reuse-db --ds=config.settings.test"
 markers = [
   "slow: long running tests",
   "integration: needs external services (redis/minio/clamav)",

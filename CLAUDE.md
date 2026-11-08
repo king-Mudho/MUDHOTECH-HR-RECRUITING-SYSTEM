@@ -51,7 +51,7 @@ The name is **MUDHOTECH HR RECRUITING SYSTEM**. Never use "Programac" or "Talent
 | Async | Celery + Redis (queues: `default`, `documents`, `ai`, `notifications`, `reports`), Celery Beat |
 | AI/NLP | spaCy, rule engine + skills taxonomy, sentence-transformers embeddings (local), optional LLM via provider adapter (disabled by default) |
 | Docs | PyMuPDF (primary), pdfplumber (fallback), python-docx, Tesseract OCR (fallback), ClamAV |
-| Storage | Private S3-compatible (MinIO in dev, AWS S3 in prod), presigned URLs |
+| Storage | Private S3-compatible (SeaweedFS S3 gateway in dev (ADR-021), AWS S3 in prod), presigned URLs |
 | Email | Mailpit (dev), AWS SES / SMTP (prod) via outbox |
 | Infra | Docker Compose, Nginx, AWS EC2 Ubuntu 24.04, GitHub Actions, Sentry, structured JSON logs |
 | Tests | pytest + pytest-django + factory_boy, Vitest + Testing Library, Playwright + axe-core, Locust |
@@ -163,7 +163,7 @@ docker compose logs -f worker                    # celery worker logs
 ```
 
 Dev URLs: frontend http://localhost:3000 · API http://localhost:8000/api/v1/ · API docs /api/docs/ ·
-Mailpit http://localhost:8025 · MinIO console http://localhost:9001 · Flower http://localhost:5555
+Mailpit http://localhost:8025 · S3 (SeaweedFS) http://localhost:9000, filer UI http://localhost:8888 · Flower http://localhost:5555
 
 ## 9. Key documents (read the relevant one before each task)
 
