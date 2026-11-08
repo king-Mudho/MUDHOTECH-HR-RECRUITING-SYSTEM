@@ -32,10 +32,10 @@ EC-OPS-01 (outbox survives Redis down — test with broker unavailable), EC-OPS-
 
 ## Exit criteria
 - [x] Fresh clone → `scripts/dev-up.ps1` → full stack healthy in < 10 min. *(2026-11-08: 79 s, 11/11 services healthy; images cached, fresh volumes)*
-- [ ] CI green on main. *(BLOCKED: no GitHub remote configured. Every CI step was run locally and passes: ruff, format, mypy, makemigrations --check, pytest 130 passed, bandit, pip-audit, spectacular --fail-on-warn, prettier, eslint, typecheck, vitest 22 passed, next build, npm audit 0 vulns.)*
+- [x] CI green on main. *(2026-11-08: https://github.com/king-Mudho/MUDHOTECH-HR-RECRUITING-SYSTEM/actions/runs/42523821127 — backend, frontend, contract, images + Trivy all green at 17b92e5)*
 - [x] Error envelope, request id, outbox, idempotency, storage, encryption utilities tested (≥ 90% coverage of `apps/core`). *(97%, 130 tests)*
 - [x] OpenAPI available at `/api/docs/`; `npm run gen:api` produces types; `tsc --noEmit` passes. *(/api/docs/ 200, /api/schema/ 200)*
-- [ ] PROGRESS.md updated; phase closed.
+- [x] PROGRESS.md updated; phase closed.
 
 ## Verification
 ```bash

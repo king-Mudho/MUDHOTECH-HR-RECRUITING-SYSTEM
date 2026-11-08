@@ -5,15 +5,15 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-EXIT
+- **Current phase:** 02 — Identity, Tenancy & Access Control
+- **Current task:** P02-T01
 - **Last updated:** 2026-11-08
-- **Overall:** 17 / 193 tasks · 0 / 16 phases
+- **Overall:** 17 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
 |---|---|---|---|---|---|
-| 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | 🟦 In progress | |
+| 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | ✅ Done | 2026-11-08 |
 | 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ⬜ Not started | |
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ⬜ Not started | |
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ⬜ Not started | |
@@ -42,7 +42,6 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 ## Blockers & owner decisions pending
 | ID | Item | Needed by | Status |
 |---|---|---|---|
-| P01-EXIT | **CI green on main** cannot be verified: repository has no GitHub remote. Owner to create the GitHub repo / provide remote URL (or accept local CI-equivalent evidence). | Phase 01 close | **Open — waiting on owner** |
 | D-08 | Legal review: CDPA / SI 155 of 2024 obligations, POTRAZ registration/licensing, DPO, DPA template | Phase 11 go-live | Open (default: counsel review before go-live) |
 | D-07/D-09/D-10 | AWS region, production domain, SES | Phase 11 | Open (defaults in docs/11) |
 | D-13 | Plan pricing | Phase 14 | Open (placeholder prices) |
@@ -68,7 +67,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T15 — CI `.github/workflows/ci.yml` per `docs/09 §6` (backend lint/type/test with Postgres+Redis services
 - [x] P01-T16 — Write nested memories: confirm `backend/CLAUDE.md` and `frontend/CLAUDE.md` are accurate for the scaffold produced …
 - [x] P01-T17 — Smoke test: `docker compose up -d --build` from clean clone works on Windows
-- [ ] P01-EXIT — All exit criteria verified with evidence
+- [x] P01-EXIT — All exit criteria verified with evidence
 
 ### Phase 02 — Identity, Tenancy & Access Control  (`phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md`)
 - [ ] P02-T01 — Custom `User` model (email login, citext, normalisation) before first migrate of auth
@@ -294,6 +293,21 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 ## Phase summaries
 _(Written by `/close-phase`: what was built, deviations from spec, known limitations, follow-ups.)_
 
+### Phase 01 — Foundation & Development Environment (closed 2026-11-08)
+- **Built:** monorepo + hygiene files; Django 5.2 LTS / DRF / drf-spectacular / Celery backend with split settings; `apps.core`
+  (BaseModel, TenantModel + strict unscoped-query guard, request-id middleware + JSON logs, error envelope, page/cursor
+  pagination, TenantScopedViewSet, transactional outbox + relay + idempotent consumers, idempotency keys, feature flags,
+  BaseTask + dead letters, health checks, S3 storage service, field encryption); minimal `accounts.User` +
+  `organisations.Organisation`; Docker images + dev compose (11 services) + prod compose skeleton; Next.js 16 frontend
+  (shadcn, next-intl, TanStack Query, typed API client, gen:api, area shells, state primitives, 404/500); tooling
+  (ruff, mypy, pre-commit, detect-secrets, dev-up scripts, EC coverage); CI + nightly workflows.
+- **Evidence:** 130 backend tests (apps/core 97% coverage), 22 Vitest + 4 Playwright/axe tests; clean clone healthy in 79 s;
+  CI green on main (run 42523821127).
+- **Deviations:** SeaweedFS replaces MinIO in dev (ADR-021); dev host ports 55432/6380 (ADR-022); User/Organisation pulled
+  forward from Phase 02; Django admin at `/django-admin/`.
+- **Known limitations / follow-ups:** host RAM pressure on the dev machine caused a Docker engine hang and a transient ENOMEM;
+  ClamAV only under compose profile `full`; `gh` CLI not installed (CI checked via the public API).
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -324,3 +338,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T16 | backend/CLAUDE.md + frontend/CLAUDE.md rewritten for the actual scaffold (core module map, host vs container commands, Next 16 Cache Components caveats), docs/runbooks/README.md index + dev quick reference; .env auto-load made opt-in (DJANGO_READ_DOT_ENV) so host test runs work; frontend healthcheck uses 127.0.0.1 | - |
 | 2026-11-08 | Impl | P01-T17 | Clean clone (path with spaces) -> scripts/dev-up.ps1: all 11 services healthy in 79 s (cached images, fresh volumes); /readyz 200 (db/redis/s3), frontend home via proxy 200, /api/v1/ through Next rewrite 200, celery ping -> pong (worker-default), send_test_email received in Mailpit; Playwright+axe smoke 4/4 (desktop+mobile). Fixed dev-up.ps1 stderr handling | Host RAM pressure (~1 GB free) caused one transient ENOMEM + an earlier Docker engine hang |
 | 2026-11-08 | Impl | P01-EXIT (verify) | Exit criteria: clean-clone stack 79 s ✅, apps/core coverage 97% ✅, /api/docs + gen:api + tsc ✅, CI on main ❌ not verifiable (no remote; all CI steps green locally) | Phase 01 NOT closed; need GitHub remote from owner |
+| 2026-11-08 | Impl | P01-EXIT | CI fixed on GitHub (scripts ruff config, trivy-action pinned by SHA, empty public/ in frontend image, Debian security updates in backend images); CI green on main run 42523821127; Phase 01 closed | Start P02-T01 |
