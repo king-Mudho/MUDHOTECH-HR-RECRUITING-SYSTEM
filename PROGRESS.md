@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T15
+- **Current task:** P01-T16
 - **Last updated:** 2026-11-08
-- **Overall:** 14 / 193 tasks · 0 / 16 phases
+- **Overall:** 15 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -64,7 +64,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T12 — API client: `src/lib/api-client.ts` (fetch wrapper with credentials, CSRF header from cookie, error envelope parsing …
 - [x] P01-T13 — Base UI shell: public header/footer with "MUDHOTECH HR RECRUITING SYSTEM" branding, HR shell (sidebar nav, top bar …
 - [x] P01-T14 — Tooling: backend `ruff` + `mypy` (django-stubs, drf-stubs) + `pytest` config + `factory_boy`
-- [ ] P01-T15 — CI `.github/workflows/ci.yml` per `docs/09 §6` (backend lint/type/test with Postgres+Redis services
+- [x] P01-T15 — CI `.github/workflows/ci.yml` per `docs/09 §6` (backend lint/type/test with Postgres+Redis services
 - [ ] P01-T16 — Write nested memories: confirm `backend/CLAUDE.md` and `frontend/CLAUDE.md` are accurate for the scaffold produced …
 - [ ] P01-T17 — Smoke test: `docker compose up -d --build` from clean clone works on Windows
 - [ ] P01-EXIT — All exit criteria verified with evidence
@@ -319,3 +319,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T12 | api-client.ts (same-origin fetch, CSRF from cookie, X-Org-Id, Idempotency-Key, envelope -> typed ApiError with requestId + fieldErrors, network errors), gen:api (openapi-typescript from backend/schema.yml or live schema) -> src/types/api.d.ts; 12 Vitest tests | - |
 | 2026-11-08 | Impl | P01-T13 | UI shells: public header (mobile sheet) + footer with branding, AppShell (sidebar desktop / sheet mobile, top bar) for candidate/HR/admin, OrgSwitcher + NotificationBell placeholders, EmptyState/ErrorState(request id + retry)/ForbiddenState, PageSkeleton, StatusBadge (text + shape, never 'rejected'), 404/500/global-error pages, loading skeletons; API rewrite keeps trailing slash; 22 Vitest tests, build OK | - |
 | 2026-11-08 | Impl | P01-T14 | Tooling: ruff/mypy(django-stubs, drf-stubs)/pytest config (--ds test), factory_boy factories (User, Organisation), pre-commit (ruff, prettier, eslint, EOF/whitespace, detect-secrets + .secrets.baseline), scripts/dev-up.ps1 + dev-up.sh, scripts/ec_coverage.py (Phase 01: 2/2 EC covered) | test_user_model.py DB run pending Docker recovery |
+| 2026-11-08 | Impl | P01-T15 | CI .github/workflows/ci.yml: backend (pgvector+redis services, ruff, format, mypy, makemigrations --check, pytest cov>=80, EC coverage, bandit, pip-audit), frontend (format, lint, typecheck, vitest, build, npm audit), contract (schema drift + gen:api drift + typecheck), images on main (+Trivy); nightly.yml skeleton (compose E2E+axe, Semgrep/Trivy/bandit, AI benchmark placeholder). Local run of bandit/pip-audit/npm audit/spectacular --fail-on-warn all clean | CI green on GitHub needs a remote (none configured yet) |
