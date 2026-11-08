@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T09
+- **Current task:** P01-T10
 - **Last updated:** 2026-11-08
-- **Overall:** 8 / 193 tasks · 0 / 16 phases
+- **Overall:** 9 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -58,7 +58,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T06 — `apps.core.idempotency`: `IdempotencyKey` model + DRF mixin/decorator `@idempotent(endpoint="…")` storing response
 - [x] P01-T07 — Health endpoints `/healthz` and `/readyz` (DB, Redis, S3 checks with timeouts)
 - [x] P01-T08 — Storage service `apps.core.storage` (django-storages/boto3): buckets per purpose, `presign_put`, …
-- [ ] P01-T09 — Field encryption utility (`EncryptedTextField` using Fernet MultiFernet with key ids from `FIELD_ENCRYPTION_KEYS`)
+- [x] P01-T09 — Field encryption utility (`EncryptedTextField` using Fernet MultiFernet with key ids from `FIELD_ENCRYPTION_KEYS`)
 - [ ] P01-T10 — Docker: `backend/Dockerfile` (python:3.12-slim, non-root user, uv install), `backend/Dockerfile.worker` (adds …
 - [ ] P01-T11 — Frontend scaffold: create Next.js app (TypeScript, App Router, Tailwind, ESLint, `src/` dir) in a temp folder and …
 - [ ] P01-T12 — API client: `src/lib/api-client.ts` (fetch wrapper with credentials, CSRF header from cookie, error envelope parsing …
@@ -309,3 +309,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T06 | IdempotencyKey + @idempotent(endpoint): replay same key/body, 422 idempotency_key_reuse, 400 missing key, per-user, 24h TTL + purge task | - |
 | 2026-11-08 | Impl | P01-T07 | C:/Program Files/Git/healthz + /readyz (DB/Redis/S3, parallel with timeouts), FeatureFlag + is_enabled() cached, DeadLetter + BaseTask (acks_late, backoff retries, dead letter), task/request id log context, ping task, send_test_email + celery_ping commands | - |
 | 2026-11-08 | Impl | P01-T08 | Storage service: buckets per purpose, presign_put/presign_get(ttl 60)/move/delete/head (moto tests); dev S3 = SeaweedFS + aws-cli init (MinIO images no longer pullable, ADR-021) | - |
+| 2026-11-08 | Impl | P01-T09 | EncryptedTextField (Fernet/MultiFernet, key-id prefixed), rotate/needs_rotation, tests read old key + rotate + tamper | Re-encrypt job in Phase 09 (rotate-keys runbook) |
