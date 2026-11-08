@@ -191,6 +191,7 @@ def test_log_filter_injects_context() -> None:
 
 
 def test_time_helpers() -> None:
+    """EC-OPS-06: server time is authoritative, aware and convertible to display zones."""
     from datetime import datetime
 
     current = now()

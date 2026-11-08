@@ -1,0 +1,49 @@
+# pre-commit hooks for MUDHOTECH HR RECRUITING SYSTEM.  Install:  pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-json
+        exclude: ^frontend/tsconfig\.json$
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: \.(ps1|bat|cmd)$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: (package-lock\.json|uv\.lock|\.env\.example)$
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier (frontend)
+        entry: bash -c 'cd frontend && npx prettier --check "${@#frontend/}"' --
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|mjs|json|css|md)$
+        exclude: ^frontend/src/types/api\.d\.ts$
+      - id: eslint
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npx eslint --max-warnings=0 "${@#frontend/}"' --
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|mjs)$
+        exclude: ^frontend/src/types/api\.d\.ts$
