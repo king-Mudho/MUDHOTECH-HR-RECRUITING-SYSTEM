@@ -30,7 +30,9 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     // Same-origin API: session + CSRF cookies work without CORS (ADR-004).
+    // The first rule preserves Django's trailing slash (otherwise Django answers 301 -> loop).
     return [
+      { source: "/api/:path*/", destination: `${API_INTERNAL_URL}/api/:path*/` },
       { source: "/api/:path*", destination: `${API_INTERNAL_URL}/api/:path*` },
       { source: "/healthz", destination: `${API_INTERNAL_URL}/healthz` },
     ];

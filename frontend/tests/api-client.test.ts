@@ -43,15 +43,13 @@ describe("getCookie", () => {
 
 describe("apiRequest", () => {
   it("returns typed JSON on success using generated types", async () => {
-    const fetchImpl = vi
-      .fn()
-      .mockResolvedValue(
-        jsonResponse({
-          name: "MUDHOTECH HR RECRUITING SYSTEM",
-          version: "1.0.0",
-          server_time: "x",
-        }),
-      );
+    const fetchImpl = vi.fn().mockResolvedValue(
+      jsonResponse({
+        name: "MUDHOTECH HR RECRUITING SYSTEM",
+        version: "1.0.0",
+        server_time: "x",
+      }),
+    );
     const data = await api.get<ApiRoot>("/", { fetchImpl });
     expect(data.name).toBe("MUDHOTECH HR RECRUITING SYSTEM");
     const [url, init] = fetchImpl.mock.calls[0];

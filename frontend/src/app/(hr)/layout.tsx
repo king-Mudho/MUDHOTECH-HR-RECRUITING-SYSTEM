@@ -1,6 +1,26 @@
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
-/** Placeholder layout for the (hr) route group; the full shell is built in P01-T13. */
-export default function Layout({ children }: { children: ReactNode }) {
-  return <div className="flex min-h-full flex-1 flex-col">{children}</div>;
+import { AppShell } from "@/components/layout/app-shell";
+import { HR_NAV } from "@/components/layout/navigation";
+import { NotificationBell, OrgSwitcher } from "@/components/layout/top-bar-actions";
+
+export default async function HrLayout({ children }: { children: ReactNode }) {
+  const t = await getTranslations("areas");
+  return (
+    <AppShell
+      nav={HR_NAV}
+      navLabelKey="hrNavigation"
+      areaLabel={t("hrTitle")}
+      homeHref="/hr/dashboard"
+      topBarActions={
+        <>
+          <OrgSwitcher />
+          <NotificationBell />
+        </>
+      }
+    >
+      {children}
+    </AppShell>
+  );
 }

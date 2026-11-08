@@ -42,7 +42,8 @@
     "mainNavigation": "Main navigation",
     "hrNavigation": "HR navigation",
     "candidateNavigation": "Candidate navigation",
-    "adminNavigation": "Platform administration navigation"
+    "adminNavigation": "Platform administration navigation",
+    "footerNavigation": "Footer"
   },
   "footer": {
     "privacy": "Privacy",
