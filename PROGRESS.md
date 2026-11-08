@@ -42,6 +42,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 ## Blockers & owner decisions pending
 | ID | Item | Needed by | Status |
 |---|---|---|---|
+| P01-EXIT | **CI green on main** cannot be verified: repository has no GitHub remote. Owner to create the GitHub repo / provide remote URL (or accept local CI-equivalent evidence). | Phase 01 close | **Open — waiting on owner** |
 | D-08 | Legal review: CDPA / SI 155 of 2024 obligations, POTRAZ registration/licensing, DPO, DPA template | Phase 11 go-live | Open (default: counsel review before go-live) |
 | D-07/D-09/D-10 | AWS region, production domain, SES | Phase 11 | Open (defaults in docs/11) |
 | D-13 | Plan pricing | Phase 14 | Open (placeholder prices) |
@@ -322,3 +323,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T15 | CI .github/workflows/ci.yml: backend (pgvector+redis services, ruff, format, mypy, makemigrations --check, pytest cov>=80, EC coverage, bandit, pip-audit), frontend (format, lint, typecheck, vitest, build, npm audit), contract (schema drift + gen:api drift + typecheck), images on main (+Trivy); nightly.yml skeleton (compose E2E+axe, Semgrep/Trivy/bandit, AI benchmark placeholder). Local run of bandit/pip-audit/npm audit/spectacular --fail-on-warn all clean | CI green on GitHub needs a remote (none configured yet) |
 | 2026-11-08 | Impl | P01-T16 | backend/CLAUDE.md + frontend/CLAUDE.md rewritten for the actual scaffold (core module map, host vs container commands, Next 16 Cache Components caveats), docs/runbooks/README.md index + dev quick reference; .env auto-load made opt-in (DJANGO_READ_DOT_ENV) so host test runs work; frontend healthcheck uses 127.0.0.1 | - |
 | 2026-11-08 | Impl | P01-T17 | Clean clone (path with spaces) -> scripts/dev-up.ps1: all 11 services healthy in 79 s (cached images, fresh volumes); /readyz 200 (db/redis/s3), frontend home via proxy 200, /api/v1/ through Next rewrite 200, celery ping -> pong (worker-default), send_test_email received in Mailpit; Playwright+axe smoke 4/4 (desktop+mobile). Fixed dev-up.ps1 stderr handling | Host RAM pressure (~1 GB free) caused one transient ENOMEM + an earlier Docker engine hang |
+| 2026-11-08 | Impl | P01-EXIT (verify) | Exit criteria: clean-clone stack 79 s ✅, apps/core coverage 97% ✅, /api/docs + gen:api + tsc ✅, CI on main ❌ not verifiable (no remote; all CI steps green locally) | Phase 01 NOT closed; need GitHub remote from owner |
