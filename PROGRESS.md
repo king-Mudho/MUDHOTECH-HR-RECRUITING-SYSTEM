@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T05
+- **Current task:** P01-T06
 - **Last updated:** 2026-11-08
-- **Overall:** 4 / 193 tasks · 0 / 16 phases
+- **Overall:** 5 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -54,7 +54,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T02 — Verify current stable versions (Django LTS, DRF, Celery, Next.js, Node LTS, PostgreSQL, pgvector image) via official …
 - [x] P01-T03 — Backend scaffold: `backend/pyproject.toml` (uv), `config/` with split settings (`base/dev/test/staging/prod`), …
 - [x] P01-T04 — `apps.core`: `BaseModel` (UUID pk, timestamps), `TenantModel` + `TenantQuerySet.for_org()` + strict unscoped guard …
-- [ ] P01-T05 — `apps.core.outbox`: `OutboxEvent`, `ProcessedEvent` models, `emit(event_type, aggregate, payload, dedupe_key)` (must …
+- [x] P01-T05 — `apps.core.outbox`: `OutboxEvent`, `ProcessedEvent` models, `emit(event_type, aggregate, payload, dedupe_key)` (must …
 - [ ] P01-T06 — `apps.core.idempotency`: `IdempotencyKey` model + DRF mixin/decorator `@idempotent(endpoint="…")` storing response
 - [ ] P01-T07 — Health endpoints `/healthz` and `/readyz` (DB, Redis, S3 checks with timeouts)
 - [ ] P01-T08 — Storage service `apps.core.storage` (django-storages/boto3): buckets per purpose, `presign_put`, …
@@ -305,3 +305,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T02 | Verified current versions (PyPI/npm/nodejs.org); Django 5.2 LTS kept (6.2 LTS not yet released), Next 16, Node 24 LTS; recorded in docs/11 | Re-evaluate Django 6.2 LTS / Node 26 in Phase 16 |
 | 2026-11-08 | Impl | P01-T03 | Backend scaffold: pyproject (uv, py3.12), split settings base/dev/test/staging/prod, Celery app + queues/beat, /api/v1 + /api/schema + /api/docs, ai_engine placeholder (contracts, versioning); minimal accounts.User + organisations.Organisation pulled forward | Phase 02 completes User/Organisation |
 | 2026-11-08 | Impl | P01-T04 | apps.core: BaseModel, TenantModel + TenantQuerySet.for_org() + strict unscoped guard (request context), RequestIDMiddleware + JSON log context, error envelope handler (all codes docs/04 §1), page + cursor pagination, TenantScopedViewSet; tests incl. cross-tenant 404 | - |
+| 2026-11-08 | Impl | P01-T05 | Transactional outbox: OutboxEvent/ProcessedEvent, emit() (atomic-only, dedupe), relay (FOR UPDATE SKIP LOCKED, batch 100, backoff), on_commit kick, @idempotent_consumer; tests: rollback, dedupe, concurrent relays, broker down (EC-OPS-01) | - |
