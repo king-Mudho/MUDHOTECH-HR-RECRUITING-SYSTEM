@@ -6,6 +6,7 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
 > (e.g. `../_tmp_next`), then move its contents into `frontend/` keeping this file.
 
 ## Layout
+
 - `src/app/(public)`, `(candidate)/candidate`, `(hr)/hr`, `(admin)/admin`, `apply/[jobId]`
 - `src/features/<domain>/{components,hooks,api.ts,schemas.ts}` — domain logic lives here, not in route files
 - `src/components/ui` (shadcn), `src/components/{layout,forms,data-table,evidence-viewer}`
@@ -13,6 +14,7 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
 - `messages/en.json` (next-intl), `tests/` (Vitest), `e2e/` (Playwright)
 
 ## Rules
+
 1. TypeScript strict; no `any`; API types only from generated `api.d.ts`.
 2. Server Components by default; `"use client"` only for interactivity. Public pages SSR/ISR for SEO & low bandwidth.
 3. Data: TanStack Query in client components; query keys `[domain, id, params]`; invalidate after mutations.
@@ -25,6 +27,7 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
 10. All user-visible strings via next-intl.
 
 ## Commands
+
 ```
 npm run dev | build | lint | typecheck | test | gen:api
 npx playwright test  |  npx playwright test e2e/apply.spec.ts --project=mobile

@@ -1,0 +1,8 @@
+.next
+node_modules
+coverage
+playwright-report
+test-results
+src/types/api.d.ts
+package-lock.json
+AGENTS.md

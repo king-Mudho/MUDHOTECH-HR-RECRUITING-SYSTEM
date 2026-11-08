@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "MUDHOTECH HR RECRUITING SYSTEM",
+    "shortName": "MHRS",
+    "tagline": "Fair, explainable recruitment — people stay in control.",
+    "vendor": "MudhoTech Solutions (Pvt) Ltd"
+  },
+  "common": {
+    "skipToContent": "Skip to main content",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "back": "Back",
+    "goHome": "Go to home page",
+    "requestId": "Reference: {id}",
+    "aiLabel": "AI-assisted suggestion — requires human review",
+    "required": "(required)",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "nav": {
+    "jobs": "Jobs",
+    "employers": "For employers",
+    "howWeUseAi": "How we use AI",
+    "login": "Sign in",
+    "register": "Create account",
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "profile": "Profile",
+    "documents": "Documents",
+    "settings": "Settings",
+    "privacy": "Privacy",
+    "reports": "Reports",
+    "organisations": "Organisations",
+    "users": "Users",
+    "featureFlags": "Feature flags",
+    "systemHealth": "System health",
+    "deadLetters": "Dead letters",
+    "auditLogs": "Audit logs",
+    "notifications": "Notifications",
+    "organisation": "Organisation",
+    "switchOrganisation": "Switch organisation",
+    "mainNavigation": "Main navigation",
+    "hrNavigation": "HR navigation",
+    "candidateNavigation": "Candidate navigation",
+    "adminNavigation": "Platform administration navigation"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "accessibility": "Accessibility",
+    "copyright": "© {year} MudhoTech Solutions (Pvt) Ltd, Harare, Zimbabwe."
+  },
+  "home": {
+    "title": "Find your next role",
+    "subtitle": "Search vacancies from verified Zimbabwean employers. Every application is reviewed by people — AI only helps them find the evidence.",
+    "searchLabel": "Search jobs",
+    "searchPlaceholder": "Job title, skill or company",
+    "searchButton": "Search",
+    "employersCta": "Hiring? Post vacancies and screen fairly"
+  },
+  "areas": {
+    "candidateTitle": "Candidate dashboard",
+    "hrTitle": "HR dashboard",
+    "adminTitle": "Platform administration",
+    "comingSoon": "This area is being built. Check back soon."
+  },
+  "states": {
+    "emptyTitle": "Nothing here yet",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't load this. Please try again.",
+    "forbiddenTitle": "You don't have access to this",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you're looking for doesn't exist or has moved.",
+    "serverErrorTitle": "Something went wrong on our side",
+    "serverErrorBody": "Please try again. If the problem continues, contact support and quote the reference below."
+  },
+  "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "processing_error": "Processing problem",
+    "clarification_requested": "Clarification requested",
+    "shortlisted": "Shortlisted",
+    "not_selected": "Not selected",
+    "on_hold": "On hold",
+    "withdrawn": "Withdrawn",
+    "interview": "Interview",
+    "offer": "Offer",
+    "hired": "Hired",
+    "published": "Published",
+    "closed": "Closed",
+    "paused": "Paused",
+    "archived": "Archived",
+    "unknown": "Unknown"
+  }
+}
