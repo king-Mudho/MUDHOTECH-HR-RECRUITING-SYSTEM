@@ -13,7 +13,6 @@ Usage:
 Exit code 1 when any EC id of a selected phase is not covered.
 """
 
-
 from __future__ import annotations
 
 import argparse
