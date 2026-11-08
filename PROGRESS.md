@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T17
+- **Current task:** P01-EXIT
 - **Last updated:** 2026-11-08
-- **Overall:** 16 / 193 tasks · 0 / 16 phases
+- **Overall:** 17 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -66,7 +66,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T14 — Tooling: backend `ruff` + `mypy` (django-stubs, drf-stubs) + `pytest` config + `factory_boy`
 - [x] P01-T15 — CI `.github/workflows/ci.yml` per `docs/09 §6` (backend lint/type/test with Postgres+Redis services
 - [x] P01-T16 — Write nested memories: confirm `backend/CLAUDE.md` and `frontend/CLAUDE.md` are accurate for the scaffold produced …
-- [ ] P01-T17 — Smoke test: `docker compose up -d --build` from clean clone works on Windows
+- [x] P01-T17 — Smoke test: `docker compose up -d --build` from clean clone works on Windows
 - [ ] P01-EXIT — All exit criteria verified with evidence
 
 ### Phase 02 — Identity, Tenancy & Access Control  (`phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md`)
@@ -321,3 +321,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T14 | Tooling: ruff/mypy(django-stubs, drf-stubs)/pytest config (--ds test), factory_boy factories (User, Organisation), pre-commit (ruff, prettier, eslint, EOF/whitespace, detect-secrets + .secrets.baseline), scripts/dev-up.ps1 + dev-up.sh, scripts/ec_coverage.py (Phase 01: 2/2 EC covered) | test_user_model.py DB run pending Docker recovery |
 | 2026-11-08 | Impl | P01-T15 | CI .github/workflows/ci.yml: backend (pgvector+redis services, ruff, format, mypy, makemigrations --check, pytest cov>=80, EC coverage, bandit, pip-audit), frontend (format, lint, typecheck, vitest, build, npm audit), contract (schema drift + gen:api drift + typecheck), images on main (+Trivy); nightly.yml skeleton (compose E2E+axe, Semgrep/Trivy/bandit, AI benchmark placeholder). Local run of bandit/pip-audit/npm audit/spectacular --fail-on-warn all clean | CI green on GitHub needs a remote (none configured yet) |
 | 2026-11-08 | Impl | P01-T16 | backend/CLAUDE.md + frontend/CLAUDE.md rewritten for the actual scaffold (core module map, host vs container commands, Next 16 Cache Components caveats), docs/runbooks/README.md index + dev quick reference; .env auto-load made opt-in (DJANGO_READ_DOT_ENV) so host test runs work; frontend healthcheck uses 127.0.0.1 | - |
+| 2026-11-08 | Impl | P01-T17 | Clean clone (path with spaces) -> scripts/dev-up.ps1: all 11 services healthy in 79 s (cached images, fresh volumes); /readyz 200 (db/redis/s3), frontend home via proxy 200, /api/v1/ through Next rewrite 200, celery ping -> pong (worker-default), send_test_email received in Mailpit; Playwright+axe smoke 4/4 (desktop+mobile). Fixed dev-up.ps1 stderr handling | Host RAM pressure (~1 GB free) caused one transient ENOMEM + an earlier Docker engine hang |

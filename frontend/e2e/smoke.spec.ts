@@ -4,7 +4,9 @@ import { expect, test } from "@playwright/test";
 test("home page renders with branding and no serious a11y violations", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByText("MUDHOTECH HR RECRUITING SYSTEM").first()).toBeVisible();
+  await expect(
+    page.getByText("MUDHOTECH HR RECRUITING SYSTEM").filter({ visible: true }).first(),
+  ).toBeVisible();
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   const serious = results.violations.filter((v) =>
     ["serious", "critical"].includes(v.impact ?? ""),
