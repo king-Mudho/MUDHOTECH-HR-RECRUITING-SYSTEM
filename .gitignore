@@ -1,0 +1,58 @@
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+*.docx~
+~$*.docx
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+backend/staticfiles/
+backend/media/
+
+# --- Node / Next.js ---
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# --- Media / uploads / data (never commit real CVs or personal data) ---
+media/
+uploads/
+*.sqlite3
+dumps/
+*.dump
+
+# --- Local scratch ---
+_to_delete/
+_tmp_*/

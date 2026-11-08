@@ -1,0 +1,47 @@
+# 11 — Decisions Log (ADRs & defaults)
+
+Status: **Accepted** = implement as written · **OWNER-DECISION** = default applies for development; owner confirms before production (agent must NOT block development on these, only on go-live gates).
+
+| ID | Decision | Status | Rationale |
+|---|---|---|---|
+| ADR-001 | Modular monolith (Django) + Celery worker pools; ai_engine as framework-free package | Accepted | Simpler to build/secure; extractable later |
+| ADR-002 | Django 5.2 LTS, Python 3.12; verify newer LTS at Phase 1 | Accepted | Support to Apr 2028 |
+| ADR-003 | Next.js App Router + TS strict + Tailwind + shadcn/ui; latest stable major verified at Phase 1 | Accepted | Owner choice |
+| ADR-004 | Auth: django-allauth headless, session cookies + CSRF, same-origin via Next.js rewrites; no JWT in browser storage | Accepted | Safer against XSS token theft; MFA built in |
+| ADR-005 | Multi-tenant from day one; shared DB, `organisation_id` scoping + tests; RLS optional hardening (ADR-012) | Accepted | Blueprint recommendation |
+| ADR-006 | Transactional outbox for all async side effects | Accepted | No lost events when Redis down |
+| ADR-007 | Presigned direct-to-S3 uploads into quarantine bucket + ClamAV promote | Accepted | Scalability + security |
+| ADR-008 | Deterministic hybrid matching (rules + taxonomy + local embeddings); LLM optional/off by default | Accepted | Explainability, cost, privacy |
+| ADR-009 | Missing evidence = not assessable; coverage reported; no auto-reject bands | Accepted | Fairness principle |
+| ADR-010 | Local embedding model `all-MiniLM-L6-v2` (fallback `bge-small-en-v1.5`), pgvector | Accepted | CPU-friendly, no data leaves server |
+| ADR-011 | App-level field encryption (Fernet, key-id prefixed) for CV text and messages | Accepted | Defence in depth |
+| ADR-012 | PostgreSQL RLS as Phase 9 hardening (evaluate; implement if overhead acceptable) | Accepted (evaluate) | Second line of tenant defence |
+| ADR-013 | Blind review mode default ON for first-pass screening | Accepted | Bias reduction |
+| ADR-014 | Notification delay/undo window default 15 min after shortlist approval | Accepted | Mistake recovery |
+| ADR-015 | Billing via Paynow (EcoCash, OneMoney, cards) first; Stripe optional later | Accepted | Zimbabwe market |
+| ADR-016 | Hosting AWS, EC2 Ubuntu + Docker Compose for pilot; RDS PostgreSQL | Accepted | Owner's existing practice |
+| ADR-017 | English-only parsing in MVP; i18n-ready UI | Accepted | Scope |
+| ADR-018 | Hash-chained append-only audit table | Accepted | Tamper evidence |
+| ADR-019 | Interview panelists don't see AI scores by default | Accepted | Anchoring bias |
+| ADR-020 | Package manager: `uv` for Python (pyproject), npm for frontend | Accepted | Speed, lockfiles |
+
+## Owner decisions (defaults in brackets — development proceeds with defaults)
+| ID | Question | Default |
+|---|---|---|
+| D-01 | Org verification required before publishing? | [Yes — platform admin approves; auto-verify disabled] |
+| D-02 | Shortlist dual approval? | [Off by default, configurable per org] |
+| D-03 | Retention for unsuccessful applicants | [12 months after vacancy close, then anonymise] |
+| D-04 | Duplicate application policy default | [one_active] |
+| D-05 | Deadline grace | [0 seconds; server time] |
+| D-06 | LLM provider | [None in MVP; adapters for Anthropic/OpenAI behind flag] |
+| D-07 | Hosting region | [AWS af-south-1] |
+| D-08 | Legal: POTRAZ registration/licensing, DPO, DPA templates | [Counsel review before go-live — go-live gate] |
+| D-09 | Production domain | [hr.mudhotech.co.zw (placeholder)] |
+| D-10 | Email provider | [AWS SES] |
+| D-11 | Pilot employers & roles | [MudhoTech internal + 1 partner; Software Developer role] |
+| D-12 | AI acceptance thresholds | [as in docs/09 §5] |
+| D-13 | Pricing for plans (USD/ZWG) | [placeholder: Starter $49/mo, Growth $149/mo, Enterprise custom — editable in admin] |
+| D-14 | SMS aggregator / WhatsApp BSP | [decide at Phase 15] |
+
+## How to add an ADR
+Append a row with next id, status, rationale; if it changes the stack or a principle, add a section below with context/options/consequences and update CLAUDE.md §3.
