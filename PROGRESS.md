@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T02
+- **Current task:** P01-T03
 - **Last updated:** 2026-11-08
-- **Overall:** 1 / 193 tasks · 0 / 16 phases
+- **Overall:** 2 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -51,7 +51,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 01 — Foundation & Development Environment  (`phases/PHASE_01_FOUNDATION.md`)
 - [x] P01-T01 — Initialise git repo (if not already), `.gitignore` (Python, Node, env, media, .DS_Store, `*.docx~`), …
-- [ ] P01-T02 — Verify current stable versions (Django LTS, DRF, Celery, Next.js, Node LTS, PostgreSQL, pgvector image) via official …
+- [x] P01-T02 — Verify current stable versions (Django LTS, DRF, Celery, Next.js, Node LTS, PostgreSQL, pgvector image) via official …
 - [ ] P01-T03 — Backend scaffold: `backend/pyproject.toml` (uv), `config/` with split settings (`base/dev/test/staging/prod`), …
 - [ ] P01-T04 — `apps.core`: `BaseModel` (UUID pk, timestamps), `TenantModel` + `TenantQuerySet.for_org()` + strict unscoped guard …
 - [ ] P01-T05 — `apps.core.outbox`: `OutboxEvent`, `ProcessedEvent` models, `emit(event_type, aggregate, payload, dedupe_key)` (must …
@@ -302,3 +302,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 |---|---|---|---|---|
 | 2026-11-08 | Planning | — | Blueprint finalised into docs/ (12 specs), 16 phases, CLAUDE.md memories, commands | Start P01-T01 |
 | 2026-11-08 | Impl | P01-T01 | git init (main), .gitignore/.gitattributes/.editorconfig, LICENSE (proprietary), CHANGELOG, README quick start; blueprint kept at root | _to_delete/ (planning tarball) git-ignored, owner may delete |
+| 2026-11-08 | Impl | P01-T02 | Verified current versions (PyPI/npm/nodejs.org); Django 5.2 LTS kept (6.2 LTS not yet released), Next 16, Node 24 LTS; recorded in docs/11 | Re-evaluate Django 6.2 LTS / Node 26 in Phase 16 |

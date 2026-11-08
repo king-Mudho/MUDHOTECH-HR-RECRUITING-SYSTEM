@@ -45,3 +45,38 @@ Status: **Accepted** = implement as written · **OWNER-DECISION** = default appl
 
 ## How to add an ADR
 Append a row with next id, status, rationale; if it changes the stack or a principle, add a section below with context/options/consequences and update CLAUDE.md §3.
+
+## Phase 01 version verification (P01-T02, 2026-11-08)
+Verified against PyPI (`pip index versions`), npm (`npm view`) and nodejs.org/dist/index.json on 2026-11-08.
+
+**ADR-002 note — Django:** latest release is 6.1.x, but the latest **LTS** is still **5.2** (5.2.19; next LTS 6.2 due April 2027).
+Decision: stay on Django 5.2 LTS (`django>=5.2.19,<5.3`), Python 3.12 (container image `python:3.12-slim`). Re-evaluate 6.2 LTS in Phase 16.
+
+| Component | Pinned | Notes |
+|---|---|---|
+| Python | 3.12 | Docker image; local host may have 3.13 (tooling only) |
+| Django | 5.2.19 (LTS, `~=5.2.19`) | security support to Apr 2028 |
+| djangorestframework | 3.18.x | |
+| drf-spectacular | 0.30.x | |
+| django-allauth | 65.21.x | headless + mfa extras |
+| celery | 5.7.x | redis broker; flower 2.2 |
+| psycopg | 3.3.x (binary) | |
+| django-environ / django-storages / boto3 | 0.14 / 1.14.6 / 1.43 | |
+| cryptography | 50.x | Fernet/MultiFernet |
+| nh3 | 0.3.x | HTML sanitiser |
+| pytest / pytest-django / factory-boy | 9.2 / 4.14 / 3.3 | |
+| ruff / mypy | 0.17 / 2.4 | django-stubs 5.2.x (matches Django 5.2), djangorestframework-stubs 3.16+ |
+| uv | 0.13.x | ADR-020 |
+| PostgreSQL | 16 (`pgvector/pgvector:pg16`) | matches RDS PostgreSQL 16 target |
+| Redis | 7 (`redis:7-alpine`) | |
+| Node.js | **24 LTS** (24.22.x, `node:24-alpine`) | Node 26 entered LTS Oct 2026; 24 chosen for ecosystem maturity — re-evaluate Phase 16 |
+| Next.js | 16.4.x (App Router) | **ADR-003 note:** latest stable major = 16 |
+| React | 19.x | |
+| TypeScript | version bundled by create-next-app (5.x/7.x) — `strict: true` | |
+| Tailwind CSS | 4.x | shadcn/ui (Tailwind v4 mode) |
+| TanStack Query / RHF / Zod | 5.x / 7.x / 4.x | |
+| openapi-typescript | 7.x | `npm run gen:api` |
+| next-intl | 4.x | |
+| Vitest / Playwright / axe-core | 5.x / 1.65 / 4.14 | |
+
+Exact resolved versions are locked in `backend/uv.lock` and `frontend/package-lock.json`.
