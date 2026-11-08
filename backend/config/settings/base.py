@@ -9,7 +9,9 @@ from kombu import Queue
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR.parent / ".env", overwrite=False)
+# docker compose injects .env; host-side runs use the localhost defaults below unless opted in.
+if env.bool("DJANGO_READ_DOT_ENV", default=False):
+    environ.Env.read_env(BASE_DIR.parent / ".env", overwrite=False)
 
 SECRET_KEY = env("SECRET_KEY", default="insecure-dev-only-change-me")
 DEBUG = env.bool("DEBUG", default=False)
