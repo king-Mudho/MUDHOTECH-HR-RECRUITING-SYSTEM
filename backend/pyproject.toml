@@ -1,0 +1,103 @@
+[project]
+name = "mhrs-backend"
+version = "0.1.0"
+description = "MUDHOTECH HR RECRUITING SYSTEM - Django backend"
+readme = "CLAUDE.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Proprietary - MudhoTech Solutions (Pvt) Ltd" }
+dependencies = [
+  "django~=5.2.19",
+  "djangorestframework~=3.18",
+  "drf-spectacular~=0.30",
+  "django-environ~=0.14",
+  "django-filter>=26.2",
+  "django-storages[s3]~=1.14.6",
+  "boto3~=1.43",
+  "psycopg[binary]~=3.3",
+  "celery[redis]~=5.7",
+  "redis>=5",
+  "django-redis>=6",
+  "cryptography>=46",
+  "nh3~=0.3",
+  "python-json-logger>=3",
+  "gunicorn>=23",
+  "uvicorn[standard]>=0.34",
+  "sentry-sdk>=2.20",
+  "phonenumbers>=9",
+  "pydantic~=2.11",
+  "flower~=2.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-django>=4.11",
+  "pytest-cov>=6",
+  "factory-boy~=3.3",
+  "ruff>=0.15",
+  "mypy>=1.18",
+  "django-stubs[compatible-mypy]>=5.2,<5.3",
+  "djangorestframework-stubs>=3.16",
+  "celery-types>=0.23",
+  "boto3-stubs[s3]>=1.38",
+  "moto[s3]>=5",
+  "bandit>=1.8",
+  "pip-audit>=2.9",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["**/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S", "C4", "SIM", "RUF", "N", "T20"]
+ignore = ["RUF012", "S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S105", "S106", "S311", "N802"]
+"conftest.py" = ["S105", "S106"]
+"config/settings/*.py" = ["F403", "F405", "S105"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+strict = false
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+ignore_missing_imports = true
+exclude = ["migrations/", "tests/"]
+
+[[tool.mypy.overrides]]
+module = ["*.tests.*", "*.migrations.*", "conftest"]
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["test_*.py", "tests.py"]
+addopts = "-ra --strict-markers --reuse-db"
+markers = [
+  "slow: long running tests",
+  "integration: needs external services (redis/minio/clamav)",
+]
+testpaths = ["apps", "ai_engine", "tests"]
+filterwarnings = ["ignore::DeprecationWarning:botocore.*"]
+
+[tool.coverage.run]
+source = ["apps", "ai_engine"]
+omit = ["*/migrations/*", "*/tests/*"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
