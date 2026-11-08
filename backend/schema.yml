@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: MUDHOTECH HR RECRUITING SYSTEM API
+  version: 1.0.0
+  description: Multi-tenant ATS with explainable, human-controlled AI screening.
+paths:
+  /api/v1/:
+    get:
+      operationId: api_root
+      description: Public API metadata including the authoritative server time (EC-OPS-06).
+      summary: API metadata
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiRoot'
+          description: ''
+components:
+  schemas:
+    ApiRoot:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        server_time:
+          type: string
+          format: date-time
+      required:
+      - name
+      - server_time
+      - version
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

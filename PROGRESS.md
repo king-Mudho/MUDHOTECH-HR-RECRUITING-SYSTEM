@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 01 — Foundation & Development Environment
-- **Current task:** P01-T12
+- **Current task:** P01-T13
 - **Last updated:** 2026-11-08
-- **Overall:** 11 / 193 tasks · 0 / 16 phases
+- **Overall:** 12 / 193 tasks · 0 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -61,7 +61,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-T09 — Field encryption utility (`EncryptedTextField` using Fernet MultiFernet with key ids from `FIELD_ENCRYPTION_KEYS`)
 - [x] P01-T10 — Docker: `backend/Dockerfile` (python:3.12-slim, non-root user, uv install), `backend/Dockerfile.worker` (adds …
 - [x] P01-T11 — Frontend scaffold: create Next.js app (TypeScript, App Router, Tailwind, ESLint, `src/` dir) in a temp folder and …
-- [ ] P01-T12 — API client: `src/lib/api-client.ts` (fetch wrapper with credentials, CSRF header from cookie, error envelope parsing …
+- [x] P01-T12 — API client: `src/lib/api-client.ts` (fetch wrapper with credentials, CSRF header from cookie, error envelope parsing …
 - [ ] P01-T13 — Base UI shell: public header/footer with "MUDHOTECH HR RECRUITING SYSTEM" branding, HR shell (sidebar nav, top bar …
 - [ ] P01-T14 — Tooling: backend `ruff` + `mypy` (django-stubs, drf-stubs) + `pytest` config + `factory_boy`
 - [ ] P01-T15 — CI `.github/workflows/ci.yml` per `docs/09 §6` (backend lint/type/test with Postgres+Redis services
@@ -316,3 +316,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T09 | EncryptedTextField (Fernet/MultiFernet, key-id prefixed), rotate/needs_rotation, tests read old key + rotate + tamper | Re-encrypt job in Phase 09 (rotate-keys runbook) |
 | 2026-11-08 | Impl | P01-T10 | Dockerfile (py3.12-slim, uv, non-root), Dockerfile.worker (tesseract, poppler, libmagic), frontend/Dockerfile (node 24, multi-stage), docker-compose.yml name mhrs w/ healthchecks (postgres pgvector, redis, SeaweedFS S3 + init, mailpit, clamav profile, backend, 3 workers, beat, flower, frontend), docker-compose.prod.yml skeleton, .env.example; verified readyz 200, ping/pong, Mailpit email, 125 tests in container | ClamAV under compose profile 'full' (large image/DB download) |
 | 2026-11-08 | Impl | P01-T11 | Next.js 16.4 (App Router, TS strict, Tailwind 4, Turbopack, Cache Components) scaffolded in temp dir and moved in; shadcn/ui (radix-nova), Prettier, ESLint+prettier, Vitest+RTL, Playwright+axe smoke, TanStack Query provider, next-intl (en, Africa/Harare), Inter font, brand tokens (docs/08 §1), route groups (public)/(candidate)/(hr)/(admin), /api rewrites + skipTrailingSlashRedirect, standalone output | - |
+| 2026-11-08 | Impl | P01-T12 | api-client.ts (same-origin fetch, CSRF from cookie, X-Org-Id, Idempotency-Key, envelope -> typed ApiError with requestId + fieldErrors, network errors), gen:api (openapi-typescript from backend/schema.yml or live schema) -> src/types/api.d.ts; 12 Vitest tests | - |
