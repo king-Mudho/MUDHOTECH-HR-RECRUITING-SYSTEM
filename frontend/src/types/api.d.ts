@@ -95,6 +95,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["jobs_public_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["jobs_public_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{slug}/questions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Approved questionnaire of the published version (no scoring or knock-out config). */
+        get: operations["jobs_public_questions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/feed.{fmt}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Latest 100 public vacancies as RSS 2.0 (``feed.rss``) or JSON Feed 1.1 (``feed.json``). */
+        get: operations["jobs_feed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/": {
         parameters: {
             query?: never;
@@ -541,6 +607,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/sitemap.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["jobs_sitemap"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/taxonomy/qualification-levels/": {
         parameters: {
             query?: never;
@@ -640,6 +722,17 @@ export interface components {
          */
         DuplicatePolicyEnum: "one_active" | "allow_resubmit_replace" | "allow_multiple";
         /**
+         * @description * `full_time` - Full-time
+         *     * `part_time` - Part-time
+         *     * `contract` - Contract
+         *     * `internship` - Internship
+         *     * `attachment` - Attachment / industrial attachment
+         *     * `temporary` - Temporary
+         *     * `graduate_trainee` - Graduate trainee
+         * @enum {string}
+         */
+        EmploymentTypeEnum: "full_time" | "part_time" | "contract" | "internship" | "attachment" | "temporary" | "graduate_trainee";
+        /**
          * @description * `ZW` - Zimbabwe
          *     * `INTL` - International
          * @enum {string}
@@ -688,7 +781,7 @@ export interface components {
             name: string;
             city?: string;
             country?: string;
-            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+            workplace_type_default?: components["schemas"]["WorkplaceTypeEnum"];
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -696,7 +789,7 @@ export interface components {
             name: string;
             city?: string;
             country?: string;
-            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+            workplace_type_default?: components["schemas"]["WorkplaceTypeEnum"];
         };
         LogoUploadRequest: {
             /** Format: binary */
@@ -894,6 +987,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["PlatformOrganisation"][];
         };
+        PaginatedPublicJobListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["PublicJobList"][];
+        };
         PaginatedSkillList: {
             /** @example 123 */
             count: number;
@@ -916,7 +1024,7 @@ export interface components {
             name?: string;
             city?: string;
             country?: string;
-            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+            workplace_type_default?: components["schemas"]["WorkplaceTypeEnum"];
         };
         PatchedMeRequest: {
             first_name?: string;
@@ -1018,9 +1126,98 @@ export interface components {
             website?: string;
             readonly logo_url: string | null;
             size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
-            readonly open_jobs: {
+            readonly open_jobs: components["schemas"]["PublicJobList"][];
+        };
+        PublicCriterion: {
+            type: string;
+            title: string;
+            description: string;
+            min_months: number | null;
+            equivalents: string[];
+        };
+        PublicJobDetail: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly slug: string;
+            readonly title: string;
+            readonly organisation: components["schemas"]["PublicOrg"];
+            readonly locations: components["schemas"]["PublicLocation"][];
+            readonly workplace_type: components["schemas"]["WorkplaceTypeEnum"];
+            readonly employment_type: components["schemas"]["EmploymentTypeEnum"];
+            readonly seniority: components["schemas"]["SeniorityEnum"];
+            readonly openings: number;
+            readonly salary: components["schemas"]["Salary"] | null;
+            readonly summary: string;
+            /** Format: date-time */
+            readonly closes_at: string | null;
+            readonly timezone: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            readonly status: string;
+            readonly visibility: string;
+            readonly is_closed: boolean;
+            readonly accepts_applications: boolean;
+            /** Format: date-time */
+            readonly closed_at: string;
+            /** Format: date */
+            readonly start_date: string;
+            readonly version: number;
+            readonly responsibilities_html: string;
+            readonly requirements_html: string;
+            readonly benefits_html: string;
+            readonly required_documents: string[];
+            readonly essential_criteria: components["schemas"]["PublicCriterion"][];
+            readonly preferred_criteria: components["schemas"]["PublicCriterion"][];
+        };
+        PublicJobList: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly slug: string;
+            readonly title: string;
+            readonly organisation: components["schemas"]["PublicOrg"];
+            readonly locations: components["schemas"]["PublicLocation"][];
+            readonly workplace_type: components["schemas"]["WorkplaceTypeEnum"];
+            readonly employment_type: components["schemas"]["EmploymentTypeEnum"];
+            readonly seniority: components["schemas"]["SeniorityEnum"];
+            readonly openings: number;
+            readonly salary: components["schemas"]["Salary"] | null;
+            readonly summary: string;
+            /** Format: date-time */
+            readonly closes_at: string | null;
+            readonly timezone: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+        };
+        PublicLocation: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            city: string;
+        };
+        PublicOption: {
+            label: string;
+            value: string;
+        };
+        PublicOrg: {
+            slug: string;
+            name: string;
+            logo_url: string | null;
+            verified: boolean;
+        };
+        PublicQuestion: {
+            key: string;
+            section: string;
+            type: string;
+            prompt: string;
+            help_text: string;
+            required: boolean;
+            config: {
                 [key: string]: unknown;
-            }[];
+            };
+            branching: {
+                [key: string]: unknown;
+            };
+            options: components["schemas"]["PublicOption"][];
         };
         QualificationLevel: {
             /** Format: uuid */
@@ -1048,6 +1245,25 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "org_admin" | "hr_manager" | "recruiter" | "hiring_manager" | "panelist" | "auditor";
+        Salary: {
+            /** Format: decimal */
+            min: string | null;
+            /** Format: decimal */
+            max: string | null;
+            currency: string;
+            period: string;
+        };
+        /**
+         * @description * `entry` - Entry level
+         *     * `junior` - Junior
+         *     * `mid` - Mid level
+         *     * `senior` - Senior
+         *     * `lead` - Lead / principal
+         *     * `manager` - Manager
+         *     * `executive` - Executive
+         * @enum {string}
+         */
+        SeniorityEnum: "entry" | "junior" | "mid" | "senior" | "lead" | "manager" | "executive";
         /**
          * @description * `1-9` - 1-9
          *     * `10-49` - 10-49
@@ -1082,7 +1298,7 @@ export interface components {
          *     * `remote` - Remote
          * @enum {string}
          */
-        WorkplaceTypeDefaultEnum: "on_site" | "hybrid" | "remote";
+        WorkplaceTypeEnum: "on_site" | "hybrid" | "remote";
     };
     responses: never;
     parameters: never;
@@ -1189,6 +1405,112 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    jobs_public_list: {
+        parameters: {
+            query?: {
+                /** @description Days */
+                closing_within?: number;
+                /** @description Comma-separated */
+                employment_type?: string;
+                /** @description Location id, city or name */
+                location?: string;
+                ordering?: "closing" | "newest" | "relevance" | "title";
+                /** @description Organisation slug */
+                org?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description Days */
+                posted_within?: number;
+                /** @description Full-text search */
+                q?: string;
+                /** @description A search term. */
+                search?: string;
+                /** @description Comma-separated */
+                seniority?: string;
+                /** @description Comma-separated */
+                workplace_type?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPublicJobListList"];
+                };
+            };
+        };
+    };
+    jobs_public_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicJobDetail"];
+                };
+            };
+        };
+    };
+    jobs_public_questions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicQuestion"][];
+                };
+            };
+        };
+    };
+    jobs_feed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fmt: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/rss+xml": string;
                 };
             };
         };
@@ -2213,6 +2535,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    jobs_sitemap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string;
                 };
             };
         };

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.models import User
 from apps.core.serializers import StrictModelSerializer, StrictSerializer
+from apps.jobs.api.public import PublicJobListSerializer
 from apps.organisations.models import (
     Department,
     Invitation,
@@ -77,8 +79,11 @@ class PublicCompanySerializer(serializers.ModelSerializer):
             "open_jobs",
         ]
 
+    @extend_schema_field(PublicJobListSerializer(many=True))
     def get_open_jobs(self, obj: Organisation) -> list[dict[str, Any]]:
-        return []  # populated by the jobs app in Phase 03
+        from apps.jobs.selectors import company_open_jobs
+
+        return list(PublicJobListSerializer(company_open_jobs(obj)[:100], many=True).data)
 
 
 class PolicySerializer(StrictModelSerializer):

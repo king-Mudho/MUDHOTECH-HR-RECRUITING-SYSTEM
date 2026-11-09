@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
-- **Current task:** P03-T10
+- **Current task:** P03-T11
 - **Last updated:** 2026-11-09
-- **Overall:** 40 / 193 tasks · 2 / 16 phases
+- **Overall:** 41 / 193 tasks · 2 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -96,7 +96,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-T07 — Job assignments + `IsAssignedToJob` permission (hr_manager sees all org jobs
 - [x] P03-T08 — AI assist stub (feature-flagged, default off): `POST /hr/jobs/{id}/ai-suggestions` returns criteria/question …
 - [x] P03-T09 — Sanitisation: `nh3` allow-list for rich text (p, br, strong, em, ul, ol, li, h2–h4, a[href] with rel) applied …
-- [ ] P03-T10 — Public APIs: list with FTS + filters + sort + pagination
+- [x] P03-T10 — Public APIs: list with FTS + filters + sort + pagination
 - [ ] P03-T11 — HR APIs per `docs/04` Jobs section with OpenAPI
 - [ ] P03-T12 — Frontend HR: `/hr/jobs` table (status filters, search), 5-step job wizard (Details → Requirements (criteria builder …
 - [ ] P03-T13 — Frontend public: `/` home with search, `/jobs` (SSR, URL filters, pagination), `/jobs/[slug]` (deadline in job TZ + …
@@ -382,3 +382,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P03-T07 | jobs.assignments: is_assigned registered as IsAssignedToJob checker, jobs_visible_to (admin/hr all; recruiter/hiring_manager assigned only; others none), set_assignments (admin/hr only, eligible org roles per role_on_job, active same-org members, open job needs a recruiter, audited), needs_reassignment provider (EC-ORG-09: sole recruiter on open jobs) |  |
 | 2026-11-09 | Impl | P03-T08 | jobs.suggestions: flag jobs.ai_suggestions (default off) + policy.ai_enabled; taxonomy n-gram skill extraction (names + aliases, longest match); suggested criteria always preferred, skip existing skills, nothing persisted; question suggestions pass questionnaire validation | POST /hr/jobs/{id}/ai-suggestions endpoint wired with the HR API in P03-T11; accept UI in P03-T12 |
 | 2026-11-09 | Impl | P03-T09 | core.sanitize nh3 allow-list (p, br, strong, em, ul, ol, li, h2-h4, a[href http/https/mailto] rel=noopener nofollow ugc) applied in jobs.services on every rich-text save; 20-payload XSS suite x 3 fields (EC-JOB-12) + allowed-markup and stripped-tag tests |  |
+| 2026-11-09 | Impl | P03-T10 | public APIs: GET /jobs (websearch FTS rank + location/workplace/employment/seniority/org/posted_within/closing_within filters, relevance|newest|closing|title ordering, page pagination, public_search throttle), /jobs/{slug|id} (published/paused/unlisted; closed 200+is_closed for 90 days then 410 gone; old-slug 301), /jobs/{slug}/questions (approved published-version questions, scoring/knockout stripped), /companies/{slug} open_jobs, /sitemap.xml, /jobs/feed.rss|json; suspended orgs hidden; salary only when disclosed (decimal strings); schema + api.d.ts regenerated | frontend proxies /sitemap.xml + feeds in P03-T13 |

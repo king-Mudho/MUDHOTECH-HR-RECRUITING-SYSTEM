@@ -187,6 +187,7 @@ SPECTACULAR_SETTINGS = {
         "MembershipStatusEnum": "apps.organisations.models.Membership.Status",
         "RoleEnum": "apps.organisations.models.Role",
         "PlatformRoleEnum": "apps.accounts.models.PlatformRole",
+        "WorkplaceTypeEnum": "apps.jobs.models.WorkplaceType",
     },
 }
 

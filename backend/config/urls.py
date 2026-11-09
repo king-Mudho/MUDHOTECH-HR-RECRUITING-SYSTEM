@@ -21,6 +21,7 @@ api_v1_patterns = [
     path("", include("apps.organisations.api.urls")),
     path("", include("apps.platform.api.urls")),
     path("", include("apps.taxonomy.api.urls")),
+    path("", include("apps.jobs.api.urls")),
 ]
 
 urlpatterns = [

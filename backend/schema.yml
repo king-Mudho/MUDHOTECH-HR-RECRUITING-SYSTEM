@@ -104,6 +104,159 @@ paths:
               schema:
                 $ref: '#/components/schemas/Membership'
           description: ''
+  /api/v1/jobs/:
+    get:
+      operationId: jobs_public_list
+      parameters:
+      - in: query
+        name: closing_within
+        schema:
+          type: integer
+        description: Days
+      - in: query
+        name: employment_type
+        schema:
+          type: string
+        description: Comma-separated
+      - in: query
+        name: location
+        schema:
+          type: string
+        description: Location id, city or name
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - closing
+          - newest
+          - relevance
+          - title
+      - in: query
+        name: org
+        schema:
+          type: string
+        description: Organisation slug
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: posted_within
+        schema:
+          type: integer
+        description: Days
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Full-text search
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: seniority
+        schema:
+          type: string
+        description: Comma-separated
+      - in: query
+        name: workplace_type
+        schema:
+          type: string
+        description: Comma-separated
+      tags:
+      - jobs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicJobListList'
+          description: ''
+  /api/v1/jobs/{slug}/:
+    get:
+      operationId: jobs_public_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - jobs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicJobDetail'
+          description: ''
+  /api/v1/jobs/{slug}/questions/:
+    get:
+      operationId: jobs_public_questions
+      description: Approved questionnaire of the published version (no scoring or
+        knock-out config).
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - jobs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicQuestion'
+          description: ''
+  /api/v1/jobs/feed.{fmt}/:
+    get:
+      operationId: jobs_feed
+      description: Latest 100 public vacancies as RSS 2.0 (``feed.rss``) or JSON Feed
+        1.1 (``feed.json``).
+      parameters:
+      - in: path
+        name: fmt
+        schema:
+          type: string
+          pattern: ^rss|json$
+        required: true
+      tags:
+      - jobs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+          description: ''
   /api/v1/me/:
     get:
       operationId: me_retrieve
@@ -1388,6 +1541,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
           description: ''
+  /api/v1/sitemap.xml:
+    get:
+      operationId: jobs_sitemap
+      tags:
+      - sitemap.xml
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/xml:
+              schema:
+                type: string
+          description: ''
   /api/v1/taxonomy/qualification-levels/:
     get:
       operationId: taxonomy_qualification_levels
@@ -1569,6 +1737,24 @@ components:
         * `one_active` - One active application per vacancy
         * `allow_resubmit_replace` - Resubmit replaces previous
         * `allow_multiple` - Allow multiple
+    EmploymentTypeEnum:
+      enum:
+      - full_time
+      - part_time
+      - contract
+      - internship
+      - attachment
+      - temporary
+      - graduate_trainee
+      type: string
+      description: |-
+        * `full_time` - Full-time
+        * `part_time` - Part-time
+        * `contract` - Contract
+        * `internship` - Internship
+        * `attachment` - Attachment / industrial attachment
+        * `temporary` - Temporary
+        * `graduate_trainee` - Graduate trainee
     FrameworkEnum:
       enum:
       - ZW
@@ -1685,7 +1871,7 @@ components:
           type: string
           maxLength: 2
         workplace_type_default:
-          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+          $ref: '#/components/schemas/WorkplaceTypeEnum'
         created_at:
           type: string
           format: date-time
@@ -1709,7 +1895,7 @@ components:
           minLength: 1
           maxLength: 2
         workplace_type_default:
-          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+          $ref: '#/components/schemas/WorkplaceTypeEnum'
       required:
       - name
     LogoUploadRequest:
@@ -2170,6 +2356,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformOrganisation'
+    PaginatedPublicJobListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicJobList'
     PaginatedSkillList:
       type: object
       required:
@@ -2215,7 +2424,7 @@ components:
           minLength: 1
           maxLength: 2
         workplace_type_default:
-          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+          $ref: '#/components/schemas/WorkplaceTypeEnum'
     PatchedMeRequest:
       type: object
       properties:
@@ -2495,14 +2704,319 @@ components:
         open_jobs:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            $ref: '#/components/schemas/PublicJobList'
           readOnly: true
       required:
       - logo_url
       - name
       - open_jobs
       - slug
+    PublicCriterion:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        min_months:
+          type: integer
+          nullable: true
+        equivalents:
+          type: array
+          items:
+            type: string
+      required:
+      - description
+      - equivalents
+      - min_months
+      - title
+      - type
+    PublicJobDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        organisation:
+          allOf:
+          - $ref: '#/components/schemas/PublicOrg'
+          readOnly: true
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicLocation'
+          readOnly: true
+        workplace_type:
+          allOf:
+          - $ref: '#/components/schemas/WorkplaceTypeEnum'
+          readOnly: true
+        employment_type:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentTypeEnum'
+          readOnly: true
+        seniority:
+          allOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          readOnly: true
+        openings:
+          type: integer
+          readOnly: true
+        salary:
+          allOf:
+          - $ref: '#/components/schemas/Salary'
+          nullable: true
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        closes_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        timezone:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          type: string
+          readOnly: true
+        visibility:
+          type: string
+          readOnly: true
+        is_closed:
+          type: boolean
+          readOnly: true
+        accepts_applications:
+          type: boolean
+          readOnly: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+        responsibilities_html:
+          type: string
+          readOnly: true
+        requirements_html:
+          type: string
+          readOnly: true
+        benefits_html:
+          type: string
+          readOnly: true
+        required_documents:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        essential_criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCriterion'
+          readOnly: true
+        preferred_criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCriterion'
+          readOnly: true
+      required:
+      - accepts_applications
+      - benefits_html
+      - closed_at
+      - closes_at
+      - employment_type
+      - essential_criteria
+      - id
+      - is_closed
+      - locations
+      - openings
+      - organisation
+      - preferred_criteria
+      - published_at
+      - required_documents
+      - requirements_html
+      - responsibilities_html
+      - salary
+      - seniority
+      - slug
+      - start_date
+      - status
+      - summary
+      - timezone
+      - title
+      - version
+      - visibility
+      - workplace_type
+    PublicJobList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        organisation:
+          allOf:
+          - $ref: '#/components/schemas/PublicOrg'
+          readOnly: true
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicLocation'
+          readOnly: true
+        workplace_type:
+          allOf:
+          - $ref: '#/components/schemas/WorkplaceTypeEnum'
+          readOnly: true
+        employment_type:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentTypeEnum'
+          readOnly: true
+        seniority:
+          allOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          readOnly: true
+        openings:
+          type: integer
+          readOnly: true
+        salary:
+          allOf:
+          - $ref: '#/components/schemas/Salary'
+          nullable: true
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        closes_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        timezone:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - closes_at
+      - employment_type
+      - id
+      - locations
+      - openings
+      - organisation
+      - published_at
+      - salary
+      - seniority
+      - slug
+      - summary
+      - timezone
+      - title
+      - workplace_type
+    PublicLocation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        city:
+          type: string
+      required:
+      - city
+      - id
+      - name
+    PublicOption:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+      required:
+      - label
+      - value
+    PublicOrg:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        logo_url:
+          type: string
+          nullable: true
+        verified:
+          type: boolean
+      required:
+      - logo_url
+      - name
+      - slug
+      - verified
+    PublicQuestion:
+      type: object
+      properties:
+        key:
+          type: string
+        section:
+          type: string
+        type:
+          type: string
+        prompt:
+          type: string
+        help_text:
+          type: string
+        required:
+          type: boolean
+        config:
+          type: object
+          additionalProperties: {}
+        branching:
+          type: object
+          additionalProperties: {}
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicOption'
+      required:
+      - branching
+      - config
+      - help_text
+      - key
+      - options
+      - prompt
+      - required
+      - section
+      - type
     QualificationLevel:
       type: object
       properties:
@@ -2568,6 +3082,46 @@ components:
         * `hiring_manager` - Hiring manager
         * `panelist` - Interview panel member
         * `auditor` - Auditor
+    Salary:
+      type: object
+      properties:
+        min:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        max:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        currency:
+          type: string
+        period:
+          type: string
+      required:
+      - currency
+      - max
+      - min
+      - period
+    SeniorityEnum:
+      enum:
+      - entry
+      - junior
+      - mid
+      - senior
+      - lead
+      - manager
+      - executive
+      type: string
+      description: |-
+        * `entry` - Entry level
+        * `junior` - Junior
+        * `mid` - Mid level
+        * `senior` - Senior
+        * `lead` - Lead / principal
+        * `manager` - Manager
+        * `executive` - Executive
     SizeBandEnum:
       enum:
       - 1-9
@@ -2645,7 +3199,7 @@ components:
       - is_current
       - last_seen_at
       - user_agent
-    WorkplaceTypeDefaultEnum:
+    WorkplaceTypeEnum:
       enum:
       - on_site
       - hybrid
