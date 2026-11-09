@@ -16,7 +16,9 @@ if env.bool("DJANGO_READ_DOT_ENV", default=False):
 SECRET_KEY = env("SECRET_KEY", default="insecure-dev-only-change-me")
 DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "backend"])
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000", "http://127.0.0.1:3000"]
+)
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 APP_NAME = "MUDHOTECH HR RECRUITING SYSTEM"
 # Strict tenant guard: evaluating an unscoped TenantModel queryset inside a request context raises.

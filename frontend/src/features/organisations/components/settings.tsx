@@ -195,7 +195,7 @@ function NameAdder({
   };
   const id = `add-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-end gap-2">
+    <form method="post" onSubmit={submit} className="flex flex-wrap items-end gap-2">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={id}>{label}</Label>
         <Input
@@ -465,6 +465,7 @@ export function TeamSettings() {
       {canInvite ? (
         <Section title={t("invitationsTitle")} description={t("invitationsHelp")}>
           <form
+            method="post"
             onSubmit={onInvite}
             noValidate
             className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end"
@@ -599,7 +600,7 @@ export function PolicySettings() {
   const e = form.formState.errors;
   const num = { setValueAs: (v: string) => (v === "" ? undefined : Number(v)) };
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-6">
+    <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-6">
       <ErrorSummary
         errors={e}
         formError={formError}

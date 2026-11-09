@@ -119,11 +119,15 @@ export async function allauth<T = Record<string, unknown>>(
     json = { status: res.status };
   }
   if (res.ok || res.status === 401) return { ...json, status: res.status };
+  // Django-level failures (CSRF, MFA enforcement) come back in the MHRS error envelope.
+  const envelope = (json as { error?: { code?: string; message?: string } }).error;
   const fallback =
     res.status === 429
       ? "Too many attempts. Please wait a moment and try again."
-      : "Something went wrong. Please try again.";
-  throw new AllauthError(res.status, json.errors ?? [], fallback);
+      : (envelope?.message ?? "Something went wrong. Please try again.");
+  const errors =
+    json.errors ?? (envelope?.code ? [{ code: envelope.code, message: fallback }] : []);
+  throw new AllauthError(res.status, errors, fallback);
 }
 
 export function pendingFlow<T>(resp: AllauthResponse<T>): FlowId | string | null {

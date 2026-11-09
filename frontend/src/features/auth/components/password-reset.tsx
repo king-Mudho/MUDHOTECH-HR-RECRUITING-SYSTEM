@@ -56,7 +56,7 @@ export function ForgotPasswordForm() {
   }
   return (
     <AuthCard title={t("title")} description={t("subtitle")}>
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <form method="post" onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <ErrorSummary
           errors={form.formState.errors}
           formError={formError}
@@ -129,7 +129,7 @@ export function ResetPasswordForm() {
   }
   return (
     <AuthCard title={t("title")}>
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <form method="post" onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <ErrorSummary
           errors={form.formState.errors}
           formError={formError}

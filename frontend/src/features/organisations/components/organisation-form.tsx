@@ -60,7 +60,7 @@ export function OrganisationForm({
   const labels = Object.fromEntries(FIELDS.map((f) => [f, t(f)]));
   const e = form.formState.errors;
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+    <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-4">
       <ErrorSummary
         errors={e}
         formError={formError}

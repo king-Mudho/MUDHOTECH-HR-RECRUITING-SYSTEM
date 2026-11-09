@@ -235,3 +235,27 @@ describe("proxy route guard", () => {
     expect(loginRedirect(new NextRequest("http://localhost:3000/jobs"))).toBeNull();
   });
 });
+
+describe("allauth client envelope fallback", () => {
+  it("surfaces MHRS envelope errors (e.g. CSRF failure) instead of a generic message", async () => {
+    document.cookie = "csrftoken=x";
+    const fetchImpl = vi.fn().mockResolvedValue(
+      json(
+        {
+          error: {
+            code: "permission_denied",
+            message: "CSRF verification failed.",
+            details: { reason: "csrf" },
+            request_id: "req_1",
+          },
+        },
+        403,
+      ),
+    );
+    const err = (await allauth("/auth/signup", { method: "POST", body: {}, fetchImpl }).catch(
+      (e: unknown) => e,
+    )) as AllauthError;
+    expect(err.message).toBe("CSRF verification failed.");
+    expect(err.hasCode("permission_denied")).toBe(true);
+  });
+});

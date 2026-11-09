@@ -55,7 +55,7 @@ export function ReauthDialog({
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("body")}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+        <form method="post" onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
           {formError ? (
             <p role="alert" className="text-destructive text-sm">
               {formError}

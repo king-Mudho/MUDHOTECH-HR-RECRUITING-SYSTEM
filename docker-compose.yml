@@ -137,6 +137,9 @@ services:
   backend:
     <<: *backend-common
     command: ["sh", "/app/docker/entrypoint-dev.sh"]
+    environment:
+      RUNSERVER_ARGS: ${RUNSERVER_ARGS:-}
+    restart: unless-stopped
     ports:
       - "${BACKEND_HOST_PORT:-8000}:8000"
     healthcheck:

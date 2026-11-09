@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { authApi, isAuthenticated, pendingFlow } from "../allauth";
 import { applyServerErrors } from "../form-errors";
 import { codeSchema, loginSchema, type CodeValues, type LoginValues } from "../schemas";
-import { fetchMe, homeFor, meQueryKey, safeNext } from "../session";
+import { homeFor, reloadMe, safeNext } from "../session";
 import { AuthCard } from "./auth-card";
 
 type Step = "credentials" | "mfa" | "verify_email";
@@ -30,7 +30,7 @@ export function LoginForm() {
   const [formError, setFormError] = useState<string | null>(null);
 
   const finish = async () => {
-    const me = await queryClient.fetchQuery({ queryKey: meQueryKey, queryFn: fetchMe });
+    const me = await reloadMe(queryClient);
     router.replace(safeNext(params.get("next")) ?? homeFor(me));
     router.refresh();
   };
@@ -85,7 +85,7 @@ export function LoginForm() {
   if (step === "mfa") {
     return (
       <AuthCard title={t("mfaTitle")} description={t("mfaBody")}>
-        <form onSubmit={onMfa} noValidate className="flex flex-col gap-4">
+        <form method="post" onSubmit={onMfa} noValidate className="flex flex-col gap-4">
           <ErrorSummary
             errors={mfa.formState.errors}
             formError={formError}
@@ -123,7 +123,7 @@ export function LoginForm() {
         </p>
       }
     >
-      <form onSubmit={onCredentials} noValidate className="flex flex-col gap-4">
+      <form method="post" onSubmit={onCredentials} noValidate className="flex flex-col gap-4">
         <ErrorSummary
           errors={credentials.formState.errors}
           formError={formError}

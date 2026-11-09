@@ -86,7 +86,7 @@ export function ChangePasswordCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} noValidate className="flex max-w-md flex-col gap-4">
+        <form method="post" onSubmit={onSubmit} noValidate className="flex max-w-md flex-col gap-4">
           {formError ? (
             <p role="alert" className="text-destructive text-sm">
               {formError}
@@ -164,7 +164,7 @@ export function ChangeEmailCard() {
         <CardDescription>{t("current", { email: me?.email ?? "…" })}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} noValidate className="flex max-w-md flex-col gap-4">
+        <form method="post" onSubmit={onSubmit} noValidate className="flex max-w-md flex-col gap-4">
           {formError ? (
             <p role="alert" className="text-destructive text-sm">
               {formError}
@@ -275,7 +275,12 @@ export function MfaCard() {
             </Button>
           </div>
         ) : setup ? (
-          <form onSubmit={onActivate} noValidate className="flex max-w-md flex-col gap-4">
+          <form
+            method="post"
+            onSubmit={onActivate}
+            noValidate
+            className="flex max-w-md flex-col gap-4"
+          >
             <ol className="list-decimal space-y-1 pl-5 text-sm">
               <li>{t("step1")}</li>
               <li>{t("step2")}</li>

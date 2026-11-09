@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { type QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError, api } from "@/lib/api-client";
 import type { components } from "@/types/api";
@@ -71,4 +71,16 @@ export function safeNext(next: string | null | undefined): string | null {
     return null;
   }
   return next;
+}
+
+/**
+ * Fetch `/me` fresh after the session changed (login, verification, accepting an invitation).
+ * Cancels in-flight `/me` requests first: those started before the session changed would resolve
+ * with the old (signed-out) answer and be reused by react-query's request de-duplication.
+ */
+export async function reloadMe(client: QueryClient): Promise<Me | null> {
+  await client.cancelQueries({ queryKey: meQueryKey });
+  const me = await fetchMe();
+  client.setQueryData(meQueryKey, me);
+  return me;
 }

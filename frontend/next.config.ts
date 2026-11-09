@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   // Django routes end with "/" - never let Next.js strip/redirect trailing slashes on /api.
   skipTrailingSlashRedirect: true,
+  // Dev server only: allow opening the app via 127.0.0.1 (Windows localhost/IPv6 quirks, E2E).
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   turbopack: {
     rules: {
       "*.css": {

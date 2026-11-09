@@ -64,7 +64,7 @@ export function RegisterForm() {
         </p>
       }
     >
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <form method="post" onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <ErrorSummary
           errors={form.formState.errors}
           formError={formError}

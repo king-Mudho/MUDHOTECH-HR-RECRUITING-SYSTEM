@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 import { AllauthError, authApi, isAuthenticated } from "../allauth";
-import { fetchMe, homeFor, meQueryKey } from "../session";
+import { homeFor, reloadMe } from "../session";
 import { AuthCard } from "./auth-card";
 
 type State = "ready" | "working" | "done" | "invalid";
@@ -34,7 +34,7 @@ export function VerifyEmail() {
       const resp = await authApi.verifyEmail(key);
       setState("done");
       if (isAuthenticated(resp)) {
-        const me = await queryClient.fetchQuery({ queryKey: meQueryKey, queryFn: fetchMe });
+        const me = await reloadMe(queryClient);
         router.replace(homeFor(me));
         router.refresh();
       }
