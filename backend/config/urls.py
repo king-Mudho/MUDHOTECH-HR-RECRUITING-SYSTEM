@@ -18,6 +18,7 @@ api_v1_patterns = [
     path("", api_root, name="api-root"),
     path("csrf/", csrf, name="csrf"),
     path("", include("apps.accounts.api.urls")),
+    path("", include("apps.organisations.api.urls")),
 ]
 
 urlpatterns = [
