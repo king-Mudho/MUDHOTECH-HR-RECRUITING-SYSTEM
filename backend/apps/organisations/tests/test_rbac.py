@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from types import SimpleNamespace
 from typing import Any
 
@@ -109,7 +110,7 @@ class TestIsAssignedToJob:
 
     def test_admin_hr_see_all_others_need_assignment(self) -> None:
         team = make_org_with_team()
-        job = SimpleNamespace(organisation_id=team.org.pk, pk="job-1")
+        job = SimpleNamespace(organisation_id=team.org.pk, pk=uuid.uuid4())
         p = perms.IsAssignedToJob()
         assert p.has_object_permission(self._req(team, team.hr_manager), view(), job)
         assert not p.has_object_permission(self._req(team, team.recruiter), view(), job)

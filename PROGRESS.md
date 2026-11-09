@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
-- **Current task:** P03-T07
+- **Current task:** P03-T08
 - **Last updated:** 2026-11-09
-- **Overall:** 37 / 193 tasks · 2 / 16 phases
+- **Overall:** 38 / 193 tasks · 2 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -93,7 +93,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-T04 — Prohibited-question linter (`questionnaires/linter.py`): keyword/phrase lexicon (age, date of birth, religion, …
 - [x] P03-T05 — Job services: create draft, update (lock), set criteria (validate essential justification), set rubric (weights = …
 - [x] P03-T06 — Beat tasks: publish scheduled jobs; auto-close at `closes_at` (job TZ aware)
-- [ ] P03-T07 — Job assignments + `IsAssignedToJob` permission (hr_manager sees all org jobs
+- [x] P03-T07 — Job assignments + `IsAssignedToJob` permission (hr_manager sees all org jobs
 - [ ] P03-T08 — AI assist stub (feature-flagged, default off): `POST /hr/jobs/{id}/ai-suggestions` returns criteria/question …
 - [ ] P03-T09 — Sanitisation: `nh3` allow-list for rich text (p, br, strong, em, ul, ol, li, h2–h4, a[href] with rel) applied …
 - [ ] P03-T10 — Public APIs: list with FTS + filters + sort + pagination
@@ -379,3 +379,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P03-T04 | linter lexicon (age/DOB, religion, tribe/totem, marital/children, pregnancy, HIV/health, disability, political incl ZANU/MDC/CCC, gender, national ID, appearance); questionnaires.services.replace_questions recomputes flags; record_protected_exception (hr_manager/admin via rbac questions.protected_exception, >=20 char reason, audited, reset on rewording); flagged questions block publishing |  |
 | 2026-11-09 | Impl | P03-T05 | jobs.services: create (creator auto-assigned recruiter, default 35/25/20/10/10 rubric, empty questionnaire), update w/ lock_version (EC-JOB-07; slug frozen after first publish EC-JOB-13), set_criteria (essential justification), set_rubric (=100, ordered bands), set_questionnaire; readiness(stage submit|publish) checklist + warnings (all-essential, <24h, protected topics); submit/approve/reject (dual control via policy.rubric_dual_control, approval freezes version+rubric+questionnaire+snapshot); publish/schedule/publish_scheduled/pause/resume/close/auto_close/archive/extend_deadline (reopens closed)/new_version (live advert swaps on approval, EC-JOB-06)/duplicate (EC-JOB-14); JobEvent+audit+outbox job.published/job.closed/...; 26 tests | dual control for job approval reuses policy.rubric_dual_control (no separate flag) |
 | 2026-11-09 | Impl | P03-T06 | apps.jobs.tasks publish_scheduled_jobs + close_expired_jobs (beat every minute, <= now catch-up EC-JOB-18, per-job lock + service re-check = idempotent, failures isolated); scheduled job past deadline reverts to approved; TZ-aware deadline test (EC-JOB-05) |  |
+| 2026-11-09 | Impl | P03-T07 | jobs.assignments: is_assigned registered as IsAssignedToJob checker, jobs_visible_to (admin/hr all; recruiter/hiring_manager assigned only; others none), set_assignments (admin/hr only, eligible org roles per role_on_job, active same-org members, open job needs a recruiter, audited), needs_reassignment provider (EC-ORG-09: sole recruiter on open jobs) |  |
