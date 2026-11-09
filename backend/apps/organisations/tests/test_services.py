@@ -274,3 +274,25 @@ def test_privileged_provider_ignores_inactive_memberships() -> None:
     services.deactivate_member(membership=m, actor=team.admin)
     assert not services.user_has_privileged_membership(team.hr_manager)
     assert not services.user_has_privileged_membership(team.recruiter)
+
+
+@pytest.mark.parametrize(
+    ("status", "verified", "error"),
+    [
+        (Organisation.Status.PENDING_VERIFICATION, False, "org_unverified"),
+        (Organisation.Status.ACTIVE, False, "org_unverified"),
+        (Organisation.Status.SUSPENDED, True, "org_suspended"),
+        (Organisation.Status.CLOSED, True, "org_suspended"),
+        (Organisation.Status.ACTIVE, True, None),
+    ],
+)
+def test_publish_eligibility_guard(status: str, verified: bool, error: str | None) -> None:
+    """EC-ORG-08: unverified orgs may draft but not publish (D-01)."""
+    team = make_org_with_team(status=status)
+    team.org.verified_at = time.now() if verified else None
+    if error is None:
+        services.assert_can_publish(team.org)
+        return
+    with pytest.raises(services.DomainError) as exc:
+        services.assert_can_publish(team.org)
+    assert exc.value.code == error

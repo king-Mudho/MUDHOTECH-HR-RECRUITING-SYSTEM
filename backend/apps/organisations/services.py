@@ -436,6 +436,29 @@ def deactivate_member(
     return DeactivationResult(membership, revoked, pending)
 
 
+class OrgUnverifiedError(DomainError):
+    code = "org_unverified"
+    status_code = 422
+    default_message = (
+        "Your organisation must be verified before vacancies can be published. "
+        "You can keep preparing drafts in the meantime."
+    )
+
+
+def assert_can_publish(org: Organisation) -> None:
+    """D-01 / EC-ORG-08: only verified, active organisations may publish vacancies.
+
+    Suspended/closed organisations are read-only (``org_suspended``); unverified ones may draft but
+    not publish (``org_unverified``). Called by the jobs publish service (Phase 03).
+    """
+    from apps.core.exceptions import OrgSuspendedError
+
+    if org.is_read_only:
+        raise OrgSuspendedError()
+    if org.status != Organisation.Status.ACTIVE or org.verified_at is None:
+        raise OrgUnverifiedError()
+
+
 def user_has_privileged_membership(user: User) -> bool:
     return (
         Membership.objects.unscoped()

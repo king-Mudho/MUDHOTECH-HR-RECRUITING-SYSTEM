@@ -2,8 +2,9 @@
 """Edge-case coverage report (docs/09 §2).
 
 For every phase file whose tasks are complete (or the phases passed with --phase), collect the EC
-ids listed under "## Edge cases covered in this phase" and check that each id appears in at least
-one test file (backend ``test_*.py`` / frontend ``*.test.ts(x)`` / ``e2e/*.spec.ts``).
+ids listed under the phase's "## Edge cases..." heading (single ids or ranges such as
+``EC-ACC-01..08``) and check that each id appears in at least one test file (backend
+``test_*.py`` / frontend ``*.test.ts(x)`` / ``e2e/*.spec.ts``).
 
 Usage:
     python scripts/ec_coverage.py                 # phases whose tasks are all ticked
@@ -22,6 +23,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 EC_RE = re.compile(r"\bEC-[A-Z]+-\d{2,3}\b")
+RANGE_RE = re.compile(r"\b(EC-[A-Z]+)-(\d{2,3})\.\.(?:EC-[A-Z]+-)?(\d{2,3})\b")
 TASK_RE = re.compile(r"^- \[( |x)\] \*\*P\d\d-T\d\d\*\*", re.MULTILINE)
 TEST_GLOBS = [
     "backend/**/test_*.py",
@@ -39,10 +41,19 @@ def phase_files() -> dict[str, Path]:
     return {p.name[6:8]: p for p in sorted((ROOT / "phases").glob("PHASE_*.md"))}
 
 
+def expand_ids(text: str) -> set[str]:
+    """``EC-ACC-01..03`` -> {EC-ACC-01, EC-ACC-02, EC-ACC-03}; plain ids pass through."""
+    ids = set(EC_RE.findall(text))
+    for prefix, start, end in RANGE_RE.findall(text):
+        width = len(start)
+        ids |= {f"{prefix}-{n:0{width}d}" for n in range(int(start), int(end) + 1)}
+    return ids
+
+
 def phase_ec_ids(path: Path) -> set[str]:
     text = path.read_text(encoding="utf-8")
-    match = re.search(r"## Edge cases covered in this phase\n(.*?)(\n## |\Z)", text, re.DOTALL)
-    return set(EC_RE.findall(match.group(1))) if match else set()
+    match = re.search(r"\n## Edge cases[^\n]*\n(.*?)(\n## |\Z)", text, re.DOTALL)
+    return expand_ids(match.group(1)) if match else set()
 
 
 def phase_complete(path: Path) -> bool:
@@ -56,7 +67,7 @@ def covered_ids() -> dict[str, list[str]]:
         for f in ROOT.glob(pattern):
             if SKIP_PARTS.intersection(f.parts):
                 continue
-            for ec in set(EC_RE.findall(f.read_text(encoding="utf-8", errors="ignore"))):
+            for ec in expand_ids(f.read_text(encoding="utf-8", errors="ignore")):
                 found.setdefault(ec, []).append(str(f.relative_to(ROOT)))
     return found
 
