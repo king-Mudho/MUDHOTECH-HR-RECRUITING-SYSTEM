@@ -1,0 +1,8 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+{% block content %}{% autoescape off %}{% blocktrans with until=until|date:"j M Y H:i T" %}We noticed several unsuccessful sign-in attempts on your account, so we have locked it for {{ minutes }} minutes (until {{ until }}) to keep it safe.
+
+If this was you, you can wait and try again, or reset your password now to unlock it immediately:
+{{ reset_url }}
+
+If this was not you, we recommend resetting your password.{% endblocktrans %}{% endautoescape %}{% endblock content %}

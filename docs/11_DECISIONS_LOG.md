@@ -25,6 +25,7 @@ Status: **Accepted** = implement as written · **OWNER-DECISION** = default appl
 | ADR-019 | Interview panelists don't see AI scores by default | Accepted | Anchoring bias |
 | ADR-020 | Package manager: `uv` for Python (pyproject), npm for frontend | Accepted | Speed, lockfiles |
 | ADR-021 | Dev-only S3 emulator: **SeaweedFS** (`chrislusf/seaweedfs`, S3 gateway on :9000) + `amazon/aws-cli` bucket init, replacing MinIO in dev | Accepted (2026-11-08) | `minio/minio` and `minio/mc` images are no longer publicly pullable (Docker Hub/quay deny). Production remains AWS S3; app code uses plain boto3/S3 API so the emulator is swappable (RustFS is the fallback). |
+| ADR-023 | Email verification **mandatory before login** (allauth `ACCOUNT_EMAIL_VERIFICATION="mandatory"`, auto-login on confirmation); submit endpoints still enforce `require_verified_email` | Accepted (2026-11-09) | allauth can only keep signup enumeration-free (EC-ACC-02, FR-M01-05) when verification is mandatory. Trade-off: unverified users cannot log in to draft (EC-ACC-03 drafting case) — they verify first, which is one click from the signup email |
 | ADR-022 | Dev host ports are configurable via `*_HOST_PORT` env vars; defaults Postgres **55432**, Redis **6380** (others standard) | Accepted (2026-11-08) | Avoid clashes with other local Postgres/Redis instances on developer machines; container-internal ports unchanged |
 
 ## Owner decisions (defaults in brackets — development proceeds with defaults)

@@ -10,6 +10,8 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_BROKER_URL = "memory://"
+OUTBOX_EAGER_PUBLISH = True
+# allauth rate limits use the cache; keep them generous unless a test overrides them.
 # Deterministic Fernet keys used ONLY by the test-suite.
 FIELD_ENCRYPTION_KEYS = (
     "k2:Mz9sV0pZQ3JhQnB5d1hGc3V6b0pVVVdoT2l6a2Q4S2s=,"

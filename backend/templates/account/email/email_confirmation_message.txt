@@ -1,0 +1,8 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+{% block content %}{% autoescape off %}{% trans "Please confirm that this email address belongs to you. You need a confirmed email address before you can submit job applications." %}
+
+{% if code %}{% trans "Your confirmation code is:" %} {{ code }}{% else %}{% trans "Confirm your email address:" %}
+{{ activate_url }}{% endif %}
+
+{% trans "If you did not create an account, you can ignore this email." %}{% endautoescape %}{% endblock content %}

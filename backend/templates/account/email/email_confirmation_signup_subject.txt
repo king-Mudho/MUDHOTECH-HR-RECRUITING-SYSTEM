@@ -1,0 +1,1 @@
+{% load i18n %}{% autoescape off %}{% trans "Welcome - please confirm your email address" %}{% endautoescape %}

@@ -19,6 +19,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiRoot'
           description: ''
+  /api/v1/csrf/:
+    get:
+      operationId: auth_csrf
+      description: Sets `csrftoken` (readable by JS) so the SPA can send `X-CSRFToken`
+        on unsafe requests.
+      summary: Set the CSRF cookie for the browser client
+      tags:
+      - csrf
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
+          description: ''
 components:
   schemas:
     ApiRoot:
@@ -35,6 +53,13 @@ components:
       - name
       - server_time
       - version
+    CsrfToken:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
   securitySchemes:
     cookieAuth:
       type: apiKey

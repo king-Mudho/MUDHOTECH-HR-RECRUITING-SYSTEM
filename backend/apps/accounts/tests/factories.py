@@ -26,3 +26,18 @@ class UserFactory(factory.django.DjangoModelFactory):
         self.set_password(extracted or DEFAULT_PASSWORD)
         if create:
             self.save(update_fields=["password"])
+
+    @factory.post_generation
+    def verified(self, create: bool, extracted: bool | None, **kwargs: Any) -> None:
+        """Verified primary EmailAddress by default (allauth requires it to log in)."""
+        if not create or extracted is False:
+            return
+        from allauth.account.models import EmailAddress
+
+        from apps.core import time
+
+        EmailAddress.objects.update_or_create(
+            user=self, email=self.email, defaults={"verified": True, "primary": True}
+        )
+        self.email_verified_at = time.now()
+        self.save(update_fields=["email_verified_at"])

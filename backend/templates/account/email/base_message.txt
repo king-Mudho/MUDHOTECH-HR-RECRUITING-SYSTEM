@@ -1,0 +1,8 @@
+{% load i18n %}{% autoescape off %}{% trans "Hello," %}
+
+{% block content %}{% endblock content %}
+
+{% trans "Kind regards," %}
+MUDHOTECH HR RECRUITING SYSTEM
+{% trans "This is an automated message - replies to this address are not monitored." %}
+{% endautoescape %}

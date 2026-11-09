@@ -1,0 +1,6 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+{% block content %}{% autoescape off %}{% blocktrans %}Someone (hopefully you) tried to create a new account with {{ email }}, but an account with this address already exists.
+
+If you have forgotten your password, you can reset it here:
+{{ password_reset_url }}{% endblocktrans %}{% endautoescape %}{% endblock content %}

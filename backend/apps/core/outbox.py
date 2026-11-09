@@ -115,6 +115,11 @@ Publisher = Callable[[str, OutboxEvent], None]
 def _celery_publish(task_name: str, event: OutboxEvent) -> None:
     from config.celery import app
 
+    # Tests (OUTBOX_EAGER_PUBLISH) run locally registered consumers in-process so end-to-end flows
+    # (e.g. signup -> verification email) can be asserted without a broker.
+    if getattr(settings, "OUTBOX_EAGER_PUBLISH", False) and task_name in app.tasks:
+        app.tasks[task_name].apply(args=(str(event.id),))
+        return
     app.send_task(task_name, args=[str(event.id)], headers={"mhrs_request_id": event.request_id})
 
 

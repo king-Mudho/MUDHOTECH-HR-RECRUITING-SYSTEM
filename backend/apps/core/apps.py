@@ -8,4 +8,4 @@ class CoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self) -> None:
-        from . import signals  # noqa: F401
+        from . import email, signals  # noqa: F401  (registers signal handlers + consumers)

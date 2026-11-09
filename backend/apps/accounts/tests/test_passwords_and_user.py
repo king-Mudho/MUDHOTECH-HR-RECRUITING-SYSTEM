@@ -48,7 +48,9 @@ def test_validator_help_text() -> None:
 
 
 def test_user_profile_fields_and_platform_role() -> None:
-    user = UserFactory(preferred_name="Tino", first_name="Tinotenda", last_name="Moyo")
+    user = UserFactory(
+        preferred_name="Tino", first_name="Tinotenda", last_name="Moyo", verified=False
+    )
     assert user.display_name == "Tino"
     assert user.locale == "en" and user.timezone == "Africa/Harare"
     assert user.platform_role == PlatformRole.NONE and not user.is_platform_staff

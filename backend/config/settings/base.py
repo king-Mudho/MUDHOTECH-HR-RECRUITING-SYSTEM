@@ -35,6 +35,11 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "storages",
+    "allauth",
+    "allauth.account",
+    "allauth.mfa",
+    "allauth.usersessions",
+    "allauth.headless",
     # local
     "apps.core",
     "apps.accounts",
@@ -50,6 +55,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "allauth.usersessions.middleware.UserSessionsMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -289,3 +296,54 @@ if SENTRY_DSN:  # pragma: no cover
     import sentry_sdk
 
     sentry_sdk.init(dsn=SENTRY_DSN, send_default_pii=False, traces_sample_rate=0.05)
+
+# --- Authentication: django-allauth headless (ADR-004, docs/02 §5.5) ---
+AUTHENTICATION_BACKENDS = [
+    "apps.accounts.auth_backends.LockoutAwareAuthenticationBackend",
+]
+ACCOUNT_ADAPTER = "apps.accounts.adapter.AccountAdapter"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_UNIQUE_EMAIL = True
+# ADR-023: verification is required before login - this is what lets signup stay enumeration-free
+# (EC-ACC-02). Submit endpoints additionally call require_verified_email() (EC-ACC-03).
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_CHANGE_EMAIL = True  # new address must be verified before it replaces the old one
+ACCOUNT_EMAIL_NOTIFICATIONS = True  # notice to the old address on email/password change
+ACCOUNT_PREVENT_ENUMERATION = True  # EC-ACC-02 / EC-ACC-06
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MHRS] "
+ACCOUNT_PASSWORD_MIN_LENGTH = 10
+ACCOUNT_RATE_LIMITS = {
+    "login": "30/m/ip",
+    "login_failed": "10/m/ip,10/5m/key",
+    "signup": "20/m/ip",
+    "confirm_email": "1/3m/key",
+    "reset_password": "20/m/ip,5/m/key",
+    "reset_password_from_key": "20/m/ip",
+    "change_password": "5/m/user",
+    "manage_email": "10/m/user",
+}
+PASSWORD_RESET_TIMEOUT = 60 * 60  # single-use reset tokens valid 1 h (docs/06 §2)
+# Progressive lockout (EC-ACC-05): lock after N failures, doubling from the base duration.
+ACCOUNT_LOCKOUT_THRESHOLD = 10
+ACCOUNT_LOCKOUT_BASE_MINUTES = 15
+ACCOUNT_LOCKOUT_MAX_MINUTES = 24 * 60
+
+HEADLESS_ONLY = True
+HEADLESS_CLIENTS = ("browser",)
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": f"{FRONTEND_URL}/verify-email?key={{key}}",
+    "account_reset_password_from_key": f"{FRONTEND_URL}/reset-password?key={{key}}",
+    "account_signup": f"{FRONTEND_URL}/register",
+    "account_reset_password": f"{FRONTEND_URL}/forgot-password",
+}
+
+MFA_SUPPORTED_TYPES = ["totp", "recovery_codes"]
+MFA_TOTP_ISSUER = "MUDHOTECH HR RECRUITING SYSTEM"
+MFA_RECOVERY_CODE_COUNT = 10
+USERSESSIONS_TRACK_ACTIVITY = True
