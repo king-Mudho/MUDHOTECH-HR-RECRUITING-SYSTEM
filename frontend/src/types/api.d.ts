@@ -1235,19 +1235,19 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
             /** Format: decimal */
-            readonly salary_min: string;
+            readonly salary_min: string | null;
             /** Format: decimal */
-            readonly salary_max: string;
+            readonly salary_max: string | null;
             readonly salary_currency: components["schemas"]["SalaryCurrencyEnum"];
             readonly salary_period: components["schemas"]["SalaryPeriodEnum"];
             readonly salary_disclosed: boolean;
             /** Format: date */
             readonly start_date: string | null;
             readonly close_reason: string;
-            readonly published_version_number: number;
+            readonly published_version_number: number | null;
             readonly version: components["schemas"]["Version"] | null;
             readonly criteria: components["schemas"]["Criterion"][];
-            readonly rubric: components["schemas"]["RubricInput"];
+            readonly rubric: components["schemas"]["RubricOut"] | null;
             readonly questions: components["schemas"]["QuestionOut"][];
         };
         HRJobList: {
@@ -2076,13 +2076,14 @@ export interface components {
             weight: number;
             bands: components["schemas"]["RubricBandRequest"][];
         };
-        RubricInput: {
-            lock_version?: number;
-            categories: components["schemas"]["RubricCategory"][];
-        };
         RubricInputRequest: {
             lock_version?: number;
             categories: components["schemas"]["RubricCategoryRequest"][];
+        };
+        RubricOut: {
+            categories: components["schemas"]["RubricCategory"][];
+            total_weight: number;
+            status: string;
         };
         Salary: {
             /** Format: decimal */

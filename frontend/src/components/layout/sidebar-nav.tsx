@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
@@ -46,16 +47,17 @@ export function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SidebarNav({
+function NavList({
   items,
   labelKey,
   onNavigate,
+  pathname,
 }: {
   items: NavItem[];
   labelKey: string;
   onNavigate?: () => void;
+  pathname: string;
 }) {
-  const pathname = usePathname() ?? "";
   const t = useTranslations("nav");
   return (
     <nav aria-label={t(labelKey)}>
@@ -84,5 +86,22 @@ export function SidebarNav({
         })}
       </ul>
     </nav>
+  );
+}
+
+function NavWithPath(props: { items: NavItem[]; labelKey: string; onNavigate?: () => void }) {
+  return <NavList {...props} pathname={usePathname() ?? ""} />;
+}
+
+/**
+ * Area navigation. The active-item highlight reads the URL, so it streams in under Suspense
+ * (dynamic routes cannot know their pathname at prerender); the fallback is the same list
+ * without a highlight.
+ */
+export function SidebarNav(props: { items: NavItem[]; labelKey: string; onNavigate?: () => void }) {
+  return (
+    <Suspense fallback={<NavList {...props} pathname="" />}>
+      <NavWithPath {...props} />
+    </Suspense>
   );
 }

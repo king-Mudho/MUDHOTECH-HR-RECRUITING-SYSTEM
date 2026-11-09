@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { PageSkeleton } from "@/components/states/page-skeleton";
 import { UserMenu } from "@/components/layout/user-menu";
 import { AuthGate } from "@/features/auth/components/auth-gate";
 import { ADMIN_NAV } from "@/components/layout/navigation";
@@ -22,7 +23,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         </>
       }
     >
-      <AuthGate area="admin">{children}</AuthGate>
+      <Suspense fallback={<PageSkeleton />}>
+        <AuthGate area="admin">{children}</AuthGate>
+      </Suspense>
     </AppShell>
   );
 }

@@ -3019,11 +3019,13 @@ components:
           format: decimal
           pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
           readOnly: true
+          nullable: true
         salary_max:
           type: string
           format: decimal
           pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
           readOnly: true
+          nullable: true
         salary_currency:
           allOf:
           - $ref: '#/components/schemas/SalaryCurrencyEnum'
@@ -3045,6 +3047,7 @@ components:
           readOnly: true
         published_version_number:
           type: integer
+          nullable: true
           readOnly: true
         version:
           allOf:
@@ -3058,7 +3061,8 @@ components:
           readOnly: true
         rubric:
           allOf:
-          - $ref: '#/components/schemas/RubricInput'
+          - $ref: '#/components/schemas/RubricOut'
+          nullable: true
           readOnly: true
         questions:
           type: array
@@ -5186,18 +5190,6 @@ components:
       - bands
       - key
       - weight
-    RubricInput:
-      type: object
-      properties:
-        lock_version:
-          type: integer
-          minimum: 1
-        categories:
-          type: array
-          items:
-            $ref: '#/components/schemas/RubricCategory'
-      required:
-      - categories
     RubricInputRequest:
       type: object
       properties:
@@ -5210,6 +5202,21 @@ components:
             $ref: '#/components/schemas/RubricCategoryRequest'
       required:
       - categories
+    RubricOut:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricCategory'
+        total_weight:
+          type: integer
+        status:
+          type: string
+      required:
+      - categories
+      - status
+      - total_weight
     Salary:
       type: object
       properties:

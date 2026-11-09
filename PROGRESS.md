@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
-- **Current task:** P03-T12
+- **Current task:** P03-T13
 - **Last updated:** 2026-11-09
-- **Overall:** 42 / 193 tasks · 2 / 16 phases
+- **Overall:** 43 / 193 tasks · 2 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -98,7 +98,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-T09 — Sanitisation: `nh3` allow-list for rich text (p, br, strong, em, ul, ol, li, h2–h4, a[href] with rel) applied …
 - [x] P03-T10 — Public APIs: list with FTS + filters + sort + pagination
 - [x] P03-T11 — HR APIs per `docs/04` Jobs section with OpenAPI
-- [ ] P03-T12 — Frontend HR: `/hr/jobs` table (status filters, search), 5-step job wizard (Details → Requirements (criteria builder …
+- [x] P03-T12 — Frontend HR: `/hr/jobs` table (status filters, search), 5-step job wizard (Details → Requirements (criteria builder …
 - [ ] P03-T13 — Frontend public: `/` home with search, `/jobs` (SSR, URL filters, pagination), `/jobs/[slug]` (deadline in job TZ + …
 - [ ] P03-T14 — Seed: `seed_demo` extended with 2 orgs and 3 published jobs (Software Developer per Blueprint Appendix A, …
 - [ ] P03-EXIT — All exit criteria verified with evidence
@@ -384,3 +384,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P03-T09 | core.sanitize nh3 allow-list (p, br, strong, em, ul, ol, li, h2-h4, a[href http/https/mailto] rel=noopener nofollow ugc) applied in jobs.services on every rich-text save; 20-payload XSS suite x 3 fields (EC-JOB-12) + allowed-markup and stripped-tag tests |  |
 | 2026-11-09 | Impl | P03-T10 | public APIs: GET /jobs (websearch FTS rank + location/workplace/employment/seniority/org/posted_within/closing_within filters, relevance|newest|closing|title ordering, page pagination, public_search throttle), /jobs/{slug|id} (published/paused/unlisted; closed 200+is_closed for 90 days then 410 gone; old-slug 301), /jobs/{slug}/questions (approved published-version questions, scoring/knockout stripped), /companies/{slug} open_jobs, /sitemap.xml, /jobs/feed.rss|json; suspended orgs hidden; salary only when disclosed (decimal strings); schema + api.d.ts regenerated | frontend proxies /sitemap.xml + feeds in P03-T13 |
 | 2026-11-09 | Impl | P03-T11 | HR job API /api/v1/hr/jobs (X-Org-Id context): list (status/search/assigned/ordering) + create + retrieve + PATCH(lock_version) + PUT criteria/rubric/questionnaire + lint + ai-suggestions + questions/{key}/protected-exception + submit/approve/reject/publish/schedule/pause/resume/close/archive/extend-deadline/duplicate/new-version + assignments GET/PUT + events + versions; rbac jobs.assign; auditor read-only access to org jobs; tenant guard treats related managers of loaded tenant objects as scoped; 31 endpoints registered (org_header, targets_object, per-endpoint setup -> suites 84 s); 11 API tests; schema validated, api.d.ts regenerated; 861 backend tests |  |
+| 2026-11-09 | Impl | P03-T12 | frontend HR vacancies: /hr/jobs table (status filters, debounced search, paging, empty/error/permission states), 5-step wizard /hr/jobs/new + /hr/jobs/[id]/edit (Details w/ TipTap rich text + deadline in vacancy TZ; Requirements criteria builder w/ taxonomy combobox, essential justification, equivalents, AI suggestions panel (flagged, accept-only); Questions builder w/ options, scoring per type, knock-out, earlier-question branching, protected-topic notices + HR exception, question bank; Rubric sliders w/ live total=100 + bands; Preview + readiness checklist + submit), debounced autosave with lock_version and 409 conflict reload, locked-version state; /hr/jobs/[id] overview (status actions w/ reason/date dialogs, 422 checklist, assignments editor, versions, activity); AuthGate + sidebar active state under Suspense (dynamic routes PPR); status badge contrast fix (axe); seed_demo command (2 orgs, users per role, 3 published jobs) + scripts/run_backend_host.py; 16 vitest + Playwright journey (desktop+mobile, axe) green | seed_demo also covers P03-T14 (tick after skill linking + tests) |

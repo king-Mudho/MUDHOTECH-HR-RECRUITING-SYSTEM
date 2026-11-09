@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { PageSkeleton } from "@/components/states/page-skeleton";
 import { UserMenu } from "@/components/layout/user-menu";
 import { AuthGate } from "@/features/auth/components/auth-gate";
 import { HR_NAV } from "@/components/layout/navigation";
@@ -24,7 +25,9 @@ export default async function HrLayout({ children }: { children: ReactNode }) {
         </>
       }
     >
-      <AuthGate area="hr">{children}</AuthGate>
+      <Suspense fallback={<PageSkeleton />}>
+        <AuthGate area="hr">{children}</AuthGate>
+      </Suspense>
     </AppShell>
   );
 }

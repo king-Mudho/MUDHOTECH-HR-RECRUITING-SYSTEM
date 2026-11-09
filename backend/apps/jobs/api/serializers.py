@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -107,6 +106,12 @@ class RubricCategorySerializer(serializers.Serializer):
 
 class RubricInputSerializer(LockedListSerializer):
     categories = RubricCategorySerializer(many=True)
+
+
+class RubricOutSerializer(serializers.Serializer):
+    categories = RubricCategorySerializer(many=True)
+    total_weight = serializers.IntegerField()
+    status = serializers.CharField()
 
 
 class QuestionOptionInputSerializer(serializers.Serializer):
@@ -320,8 +325,12 @@ class HRJobListSerializer(serializers.ModelSerializer):
 class HRJobDetailSerializer(HRJobListSerializer):
     version = serializers.SerializerMethodField()
     published_version_number = serializers.SerializerMethodField()
-    salary_min = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
-    salary_max = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    salary_min = serializers.DecimalField(
+        max_digits=12, decimal_places=2, read_only=True, allow_null=True
+    )
+    salary_max = serializers.DecimalField(
+        max_digits=12, decimal_places=2, read_only=True, allow_null=True
+    )
     criteria = serializers.SerializerMethodField()
     rubric = serializers.SerializerMethodField()
     questions = serializers.SerializerMethodField()
@@ -349,7 +358,7 @@ class HRJobDetailSerializer(HRJobListSerializer):
         v = obj.current_version
         return VersionSerializer(v).data if v else None
 
-    @extend_schema_field(OpenApiTypes.INT)
+    @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_published_version_number(self, obj: Job) -> int | None:
         return obj.published_version.number if obj.published_version else None
 
@@ -361,7 +370,7 @@ class HRJobDetailSerializer(HRJobListSerializer):
         qs = JobCriterion.objects.for_org(obj.organisation_id).filter(job_version=v)
         return list(CriterionSerializer(qs.order_by("order"), many=True).data)
 
-    @extend_schema_field(RubricInputSerializer)
+    @extend_schema_field(RubricOutSerializer(allow_null=True))
     def get_rubric(self, obj: Job) -> dict[str, Any] | None:
         from apps.jobs.models import Rubric
 

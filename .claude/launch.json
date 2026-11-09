@@ -1,0 +1,27 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend-host",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "scripts/run_backend_host.py",
+        "runserver",
+        "127.0.0.1:8000",
+        "--noreload"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "frontend-start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "frontend",
+        "run",
+        "start"
+      ],
+      "port": 3000
+    }
+  ]
+}

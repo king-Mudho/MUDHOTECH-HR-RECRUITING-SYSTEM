@@ -34,13 +34,24 @@ export const STATUS_TONES: Record<string, StatusTone> = {
   deactivated: "neutral",
 };
 
+// Label text always uses the foreground colour (WCAG AA contrast on the tinted background);
+// the tone is carried by the tint, the border and the shaped dot.
 const TONE_CLASSES: Record<StatusTone, string> = {
   neutral: "bg-muted text-foreground border-border",
-  info: "bg-info/10 text-info border-info/30",
-  success: "bg-success/10 text-success border-success/30",
-  warning: "bg-warning/10 text-warning border-warning/30",
-  danger: "bg-destructive/10 text-destructive border-destructive/30",
-  brand: "bg-brand-accent/10 text-brand-accent border-brand-accent/30",
+  info: "bg-info/10 text-foreground border-info/40",
+  success: "bg-success/10 text-foreground border-success/40",
+  warning: "bg-warning/10 text-foreground border-warning/40",
+  danger: "bg-destructive/10 text-foreground border-destructive/40",
+  brand: "bg-brand-accent/10 text-foreground border-brand-accent/40",
+};
+
+const DOT_COLOUR: Record<StatusTone, string> = {
+  neutral: "bg-muted-foreground",
+  info: "bg-info",
+  success: "bg-success",
+  warning: "bg-warning",
+  danger: "bg-destructive",
+  brand: "bg-brand-accent",
 };
 
 const DOT_SHAPE: Record<StatusTone, string> = {
@@ -66,7 +77,7 @@ export function StatusBadge({ status, className }: { status: string; className?:
         className,
       )}
     >
-      <span aria-hidden="true" className={cn("size-1.5 bg-current", DOT_SHAPE[tone])} />
+      <span aria-hidden="true" className={cn("size-2", DOT_COLOUR[tone], DOT_SHAPE[tone])} />
       {label}
     </span>
   );
