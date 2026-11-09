@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "apps.audit",
     "apps.platform",
     "apps.taxonomy",
+    "apps.jobs",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
