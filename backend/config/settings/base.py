@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "apps.organisations",
     "apps.audit",
     "apps.platform",
+    "apps.taxonomy",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -87,7 +88,7 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres://mhrs:mhrs@localhost:55432/mhrs"),
+    "default": env.db("DATABASE_URL", default="postgres://mhrs:mhrs@localhost:15432/mhrs"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = False
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)

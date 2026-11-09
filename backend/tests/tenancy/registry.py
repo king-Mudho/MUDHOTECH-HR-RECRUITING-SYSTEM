@@ -66,6 +66,15 @@ def base_setup(ctx: Ctx) -> None:
     ctx.objects["invitation"] = services.invite_member(
         org=team.org, actor=team.admin, email="pending@example.test", role=Role.RECRUITER
     ).invitation
+    from apps.taxonomy.models import Skill
+
+    ctx.objects["custom_skill"] = Skill.objects.create(
+        organisation=team.org,
+        canonical_name="Legacy Payroll System",
+        slug="legacy-payroll-system",
+        category="business",
+        taxonomy_version="org",
+    )
 
 
 def build_ctx(**org_kwargs: Any) -> Ctx:
@@ -203,6 +212,29 @@ REGISTRY: list[Endpoint] = [
         "delete",
         lambda c: f"{_org(c)}/invitations/{c.objects['invitation'].pk}/",
         "invitations.manage",
+    ),
+    # taxonomy (organisation custom skills)
+    Endpoint(
+        "custom-skills",
+        "get",
+        lambda c: f"{_org(c)}/custom-skills/",
+        "structure.view",
+        is_list=True,
+    ),
+    Endpoint(
+        "custom-skills",
+        "post",
+        lambda c: f"{_org(c)}/custom-skills/",
+        "taxonomy.manage",
+        success=201,
+        data=lambda c: {"canonical_name": "In-house ERP", "category": "business"},
+    ),
+    Endpoint(
+        "custom-skill",
+        "delete",
+        lambda c: f"{_org(c)}/custom-skills/{c.objects['custom_skill'].pk}/",
+        "taxonomy.manage",
+        success=204,
     ),
 ]
 

@@ -211,6 +211,41 @@ export interface paths {
         patch: operations["organisations_partial_update"];
         trace?: never;
     };
+    "/api/v1/organisations/{organisation_id}/custom-skills/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_custom_skills_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_custom_skills_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/custom-skills/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        delete: operations["organisations_custom_skills_deactivate"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organisations/{organisation_id}/departments/": {
         parameters: {
             query?: never;
@@ -506,6 +541,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/taxonomy/qualification-levels/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 🌐 Qualification levels (ZW framework + international) with aliases. */
+        get: operations["taxonomy_qualification_levels"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/taxonomy/skills/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Autocomplete for criteria builders and candidate profiles (platform + own org skills). */
+        get: operations["taxonomy_skills_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -527,8 +596,31 @@ export interface components {
         };
         /** @enum {unknown} */
         BlankEnum: "";
+        /**
+         * @description * `software_it` - Software & IT
+         *     * `finance` - Finance & accounting
+         *     * `engineering` - Engineering
+         *     * `health` - Health
+         *     * `sales_marketing` - Sales & marketing
+         *     * `logistics` - Logistics & supply chain
+         *     * `education` - Education
+         *     * `agriculture` - Agriculture
+         *     * `mining` - Mining
+         *     * `ngo` - NGO & development
+         *     * `business` - Business, HR & administration
+         *     * `legal` - Legal
+         *     * `language` - Languages
+         *     * `general` - General & soft skills
+         * @enum {string}
+         */
+        CategoryEnum: "software_it" | "finance" | "engineering" | "health" | "sales_marketing" | "logistics" | "education" | "agriculture" | "mining" | "ngo" | "business" | "legal" | "language" | "general";
         CsrfToken: {
             csrf_token: string;
+        };
+        CustomSkillCreateRequest: {
+            canonical_name: string;
+            category: components["schemas"]["CategoryEnum"];
+            aliases?: string[];
         };
         Department: {
             /** Format: uuid */
@@ -547,6 +639,12 @@ export interface components {
          * @enum {string}
          */
         DuplicatePolicyEnum: "one_active" | "allow_resubmit_replace" | "allow_multiple";
+        /**
+         * @description * `ZW` - Zimbabwe
+         *     * `INTL` - International
+         * @enum {string}
+         */
+        FrameworkEnum: "ZW" | "INTL";
         Invitation: {
             /** Format: uuid */
             readonly id: string;
@@ -796,6 +894,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["PlatformOrganisation"][];
         };
+        PaginatedSkillList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Skill"][];
+        };
         PatchedDepartmentRequest: {
             name?: string;
         };
@@ -909,6 +1022,16 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        QualificationLevel: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly code: string;
+            readonly name: string;
+            /** @description Higher = more advanced; used for minimums. */
+            readonly rank: number;
+            readonly framework: components["schemas"]["FrameworkEnum"];
+            readonly aliases: string[];
+        };
         RequiredReasonRequest: {
             reason: string;
         };
@@ -934,6 +1057,15 @@ export interface components {
          * @enum {string}
          */
         SizeBandEnum: "1-9" | "10-49" | "50-249" | "250-999" | "1000+";
+        Skill: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly canonical_name: string;
+            readonly slug: string;
+            readonly category: components["schemas"]["CategoryEnum"];
+            readonly aliases: string[];
+            readonly is_custom: boolean;
+        };
         UserSession: {
             readonly id: number;
             /** Format: date-time */
@@ -1258,6 +1390,85 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Organisation"];
                 };
+            };
+        };
+    };
+    organisations_custom_skills_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSkillList"];
+                };
+            };
+        };
+    };
+    organisations_custom_skills_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomSkillCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CustomSkillCreateRequest"];
+                "multipart/form-data": components["schemas"]["CustomSkillCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Skill"];
+                };
+            };
+        };
+    };
+    organisations_custom_skills_deactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this skill. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2002,6 +2213,49 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    taxonomy_qualification_levels: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualificationLevel"][];
+                };
+            };
+        };
+    };
+    taxonomy_skills_search: {
+        parameters: {
+            query?: {
+                /** @description Max results (1-50, default 20) */
+                limit?: number;
+                /** @description Text to match (names and aliases) */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Skill"][];
                 };
             };
         };

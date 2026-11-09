@@ -23,6 +23,7 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     # structure
     "structure.view": ALL_STAFF,
     "structure.manage": ADMIN_HR,
+    "taxonomy.manage": ADMIN_HR,
     # team
     "members.view": ADMIN_HR,
     "members.manage": ADMIN,

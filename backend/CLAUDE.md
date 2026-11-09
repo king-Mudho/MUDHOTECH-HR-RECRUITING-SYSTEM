@@ -58,6 +58,6 @@ ruff format . && ruff check . && mypy apps ai_engine
 celery -A config worker -Q documents -c 2 -l info
 ```
 On the host (Windows, `backend/`): `python -m uv sync` creates `.venv` (Python 3.12), then
-`.venv/Scripts/python -m pytest -q` — host runs use `localhost:55432` (Postgres) and `localhost:6380` (Redis)
+`.venv/Scripts/python -m pytest -q` — host runs use `localhost:15432` (Postgres) and `localhost:6380` (Redis)
 from the dev stack; `.env` is NOT auto-loaded (set `DJANGO_READ_DOT_ENV=true` to opt in).
 pytest always uses `config.settings.test` (`--ds` in `pyproject.toml`), even inside containers.

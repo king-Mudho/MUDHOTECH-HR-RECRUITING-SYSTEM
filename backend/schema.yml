@@ -299,6 +299,113 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organisation'
           description: ''
+  /api/v1/organisations/{organisation_id}/custom-skills/:
+    get:
+      operationId: organisations_custom_skills_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSkillList'
+          description: ''
+    post:
+      operationId: organisations_custom_skills_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomSkillCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomSkillCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomSkillCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+          description: ''
+  /api/v1/organisations/{organisation_id}/custom-skills/{id}/:
+    delete:
+      operationId: organisations_custom_skills_deactivate
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this skill.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/organisations/{organisation_id}/departments/:
     get:
       operationId: organisations_departments_list
@@ -1281,6 +1388,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
           description: ''
+  /api/v1/taxonomy/qualification-levels/:
+    get:
+      operationId: taxonomy_qualification_levels
+      description: "\U0001F310 Qualification levels (ZW framework + international)
+        with aliases."
+      tags:
+      - taxonomy
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QualificationLevel'
+          description: ''
+  /api/v1/taxonomy/skills/:
+    get:
+      operationId: taxonomy_skills_search
+      description: Autocomplete for criteria builders and candidate profiles (platform
+        + own org skills).
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Max results (1-50, default 20)
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Text to match (names and aliases)
+      tags:
+      - taxonomy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+          description: ''
 components:
   schemas:
     ActiveOrg:
@@ -1319,6 +1474,38 @@ components:
     BlankEnum:
       enum:
       - ''
+    CategoryEnum:
+      enum:
+      - software_it
+      - finance
+      - engineering
+      - health
+      - sales_marketing
+      - logistics
+      - education
+      - agriculture
+      - mining
+      - ngo
+      - business
+      - legal
+      - language
+      - general
+      type: string
+      description: |-
+        * `software_it` - Software & IT
+        * `finance` - Finance & accounting
+        * `engineering` - Engineering
+        * `health` - Health
+        * `sales_marketing` - Sales & marketing
+        * `logistics` - Logistics & supply chain
+        * `education` - Education
+        * `agriculture` - Agriculture
+        * `mining` - Mining
+        * `ngo` - NGO & development
+        * `business` - Business, HR & administration
+        * `legal` - Legal
+        * `language` - Languages
+        * `general` - General & soft skills
     CsrfToken:
       type: object
       properties:
@@ -1326,6 +1513,25 @@ components:
           type: string
       required:
       - csrf_token
+    CustomSkillCreateRequest:
+      type: object
+      properties:
+        canonical_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        aliases:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 150
+          maxItems: 20
+      required:
+      - canonical_name
+      - category
     Department:
       type: object
       properties:
@@ -1363,6 +1569,14 @@ components:
         * `one_active` - One active application per vacancy
         * `allow_resubmit_replace` - Resubmit replaces previous
         * `allow_multiple` - Allow multiple
+    FrameworkEnum:
+      enum:
+      - ZW
+      - INTL
+      type: string
+      description: |-
+        * `ZW` - Zimbabwe
+        * `INTL` - International
     Invitation:
       type: object
       properties:
@@ -1956,6 +2170,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformOrganisation'
+    PaginatedSkillList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
     PatchedDepartmentRequest:
       type: object
       properties:
@@ -2266,6 +2503,39 @@ components:
       - name
       - open_jobs
       - slug
+    QualificationLevel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        rank:
+          type: integer
+          readOnly: true
+          description: Higher = more advanced; used for minimums.
+        framework:
+          allOf:
+          - $ref: '#/components/schemas/FrameworkEnum'
+          readOnly: true
+        aliases:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - aliases
+      - code
+      - framework
+      - id
+      - name
+      - rank
     RequiredReasonRequest:
       type: object
       properties:
@@ -2312,6 +2582,39 @@ components:
         * `50-249` - 50-249
         * `250-999` - 250-999
         * `1000+` - 1000+
+    Skill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        canonical_name:
+          type: string
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          readOnly: true
+        aliases:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        is_custom:
+          type: boolean
+          readOnly: true
+      required:
+      - aliases
+      - canonical_name
+      - category
+      - id
+      - is_custom
+      - slug
     UserSession:
       type: object
       properties:

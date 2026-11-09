@@ -29,6 +29,7 @@ dependencies = [
   "django-allauth[mfa]~=65.21",
   "argon2-cffi>=23",
   "pillow>=11",
+  "pgvector>=0.4",
 ]
 
 [dependency-groups]

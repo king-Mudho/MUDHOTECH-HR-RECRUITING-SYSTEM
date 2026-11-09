@@ -1,0 +1,379 @@
+{
+ "version": "2026.11.1",
+ "levels": [
+  {
+   "code": "ZW_GRADE7",
+   "name": "Grade 7 certificate",
+   "rank": 10,
+   "framework": "ZW",
+   "aliases": [
+    "grade 7",
+    "primary school certificate"
+   ]
+  },
+  {
+   "code": "ZW_OLEVEL",
+   "name": "ZIMSEC O-Level",
+   "rank": 20,
+   "framework": "ZW",
+   "aliases": [
+    "O-Level",
+    "O Level",
+    "Ordinary Level",
+    "5 O' Levels",
+    "5 O Levels",
+    "ZJC O-Level",
+    "ZIMSEC Ordinary Level"
+   ]
+  },
+  {
+   "code": "INTL_IGCSE",
+   "name": "Cambridge IGCSE / O-Level",
+   "rank": 20,
+   "framework": "INTL",
+   "aliases": [
+    "IGCSE",
+    "Cambridge O Level",
+    "GCSE"
+   ]
+  },
+  {
+   "code": "ZW_ALEVEL",
+   "name": "ZIMSEC A-Level",
+   "rank": 30,
+   "framework": "ZW",
+   "aliases": [
+    "A-Level",
+    "A Level",
+    "Advanced Level",
+    "2 A Levels",
+    "ZIMSEC Advanced Level"
+   ]
+  },
+  {
+   "code": "INTL_AS_A",
+   "name": "Cambridge AS / A Level",
+   "rank": 30,
+   "framework": "INTL",
+   "aliases": [
+    "AS Level",
+    "Cambridge A Level",
+    "Cambridge AS"
+   ]
+  },
+  {
+   "code": "ZW_CERT",
+   "name": "Certificate (vocational)",
+   "rank": 35,
+   "framework": "ZW",
+   "aliases": [
+    "Certificate",
+    "Skills certificate",
+    "Trade test",
+    "Journeyman"
+   ]
+  },
+  {
+   "code": "ZW_NC",
+   "name": "National Certificate (NC)",
+   "rank": 40,
+   "framework": "ZW",
+   "aliases": [
+    "NC",
+    "National Certificate"
+   ]
+  },
+  {
+   "code": "ZW_ND",
+   "name": "National Diploma (ND)",
+   "rank": 50,
+   "framework": "ZW",
+   "aliases": [
+    "ND",
+    "National Diploma",
+    "Diploma"
+   ]
+  },
+  {
+   "code": "ZW_HND",
+   "name": "Higher National Diploma (HND)",
+   "rank": 60,
+   "framework": "ZW",
+   "aliases": [
+    "HND",
+    "Higher National Diploma"
+   ]
+  },
+  {
+   "code": "BACHELOR",
+   "name": "Bachelor's degree",
+   "rank": 70,
+   "framework": "INTL",
+   "aliases": [
+    "Bachelor",
+    "Bachelors",
+    "BSc",
+    "B.Sc",
+    "BA",
+    "B.A",
+    "BCom",
+    "B.Com",
+    "BEng",
+    "B.Eng",
+    "B.Tech",
+    "BTech",
+    "BBA",
+    "LLB",
+    "MBChB",
+    "Degree",
+    "Undergraduate degree",
+    "Bachelor of Science",
+    "Bachelor of Arts",
+    "Bachelor of Commerce"
+   ]
+  },
+  {
+   "code": "HONOURS",
+   "name": "Bachelor's degree (Honours)",
+   "rank": 75,
+   "framework": "INTL",
+   "aliases": [
+    "Honours",
+    "Hons",
+    "BSc Hons",
+    "BSc (Hons)",
+    "BA Hons",
+    "BCom Hons",
+    "BEng Hons",
+    "Honours degree"
+   ]
+  },
+  {
+   "code": "PGDIP",
+   "name": "Postgraduate Diploma",
+   "rank": 80,
+   "framework": "INTL",
+   "aliases": [
+    "PGD",
+    "PGDip",
+    "Postgraduate Diploma",
+    "Graduate Diploma"
+   ]
+  },
+  {
+   "code": "MASTERS",
+   "name": "Master's degree",
+   "rank": 90,
+   "framework": "INTL",
+   "aliases": [
+    "Masters",
+    "Master's",
+    "MSc",
+    "M.Sc",
+    "MA",
+    "MBA",
+    "MPhil",
+    "MEng",
+    "LLM",
+    "MPH",
+    "Master of Science",
+    "Master of Business Administration"
+   ]
+  },
+  {
+   "code": "PHD",
+   "name": "Doctorate (PhD)",
+   "rank": 100,
+   "framework": "INTL",
+   "aliases": [
+    "PhD",
+    "Ph.D",
+    "DPhil",
+    "Doctorate",
+    "Doctor of Philosophy"
+   ]
+  }
+ ],
+ "professional_bodies": [
+  {
+   "code": "ACCA",
+   "name": "Association of Chartered Certified Accountants",
+   "country": "GB",
+   "designations": [
+    "ACCA",
+    "FCCA",
+    "Chartered Certified Accountant"
+   ]
+  },
+  {
+   "code": "CIMA",
+   "name": "Chartered Institute of Management Accountants",
+   "country": "GB",
+   "designations": [
+    "ACMA",
+    "CGMA",
+    "FCMA"
+   ]
+  },
+  {
+   "code": "ICAZ",
+   "name": "Institute of Chartered Accountants of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "CA(Z)",
+    "Chartered Accountant (Zimbabwe)"
+   ]
+  },
+  {
+   "code": "CIS",
+   "name": "Chartered Governance Institute (ICSAZ)",
+   "country": "ZW",
+   "designations": [
+    "CIS",
+    "Chartered Secretary"
+   ]
+  },
+  {
+   "code": "CIPS",
+   "name": "Chartered Institute of Procurement & Supply",
+   "country": "GB",
+   "designations": [
+    "MCIPS",
+    "FCIPS"
+   ]
+  },
+  {
+   "code": "IODZ",
+   "name": "Institute of Directors Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "IoDZ member"
+   ]
+  },
+  {
+   "code": "ECZ",
+   "name": "Engineering Council of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "Registered Engineer",
+    "Pr.Eng"
+   ]
+  },
+  {
+   "code": "ZIE",
+   "name": "Zimbabwe Institution of Engineers",
+   "country": "ZW",
+   "designations": [
+    "MZIE",
+    "FZIE"
+   ]
+  },
+  {
+   "code": "NCZ",
+   "name": "Nursing Council of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "Registered General Nurse",
+    "RGN",
+    "State Certified Nurse",
+    "Registered Midwife"
+   ]
+  },
+  {
+   "code": "MDPCZ",
+   "name": "Medical and Dental Practitioners Council of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "Registered Medical Practitioner"
+   ]
+  },
+  {
+   "code": "PCZ",
+   "name": "Pharmacists Council of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "Registered Pharmacist"
+   ]
+  },
+  {
+   "code": "LSZ",
+   "name": "Law Society of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "Registered Legal Practitioner",
+    "Attorney"
+   ]
+  },
+  {
+   "code": "IPMZ",
+   "name": "Institute of People Management of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "MIPMZ",
+    "IPMZ Diploma"
+   ]
+  },
+  {
+   "code": "CILT",
+   "name": "Chartered Institute of Logistics and Transport",
+   "country": "GB",
+   "designations": [
+    "MCILT"
+   ]
+  },
+  {
+   "code": "IIA",
+   "name": "Institute of Internal Auditors",
+   "country": "US",
+   "designations": [
+    "CIA",
+    "Certified Internal Auditor"
+   ]
+  },
+  {
+   "code": "ISACA",
+   "name": "ISACA",
+   "country": "US",
+   "designations": [
+    "CISA",
+    "CISM",
+    "CRISC"
+   ]
+  },
+  {
+   "code": "PMI",
+   "name": "Project Management Institute",
+   "country": "US",
+   "designations": [
+    "PMP",
+    "CAPM"
+   ]
+  },
+  {
+   "code": "ZIQS",
+   "name": "Zimbabwe Institute of Quantity Surveyors",
+   "country": "ZW",
+   "designations": [
+    "MZIQS"
+   ]
+  },
+  {
+   "code": "CMA",
+   "name": "Chartered Institute of Marketing",
+   "country": "GB",
+   "designations": [
+    "MCIM",
+    "CIM Diploma"
+   ]
+  },
+  {
+   "code": "IBZ",
+   "name": "Institute of Bankers of Zimbabwe",
+   "country": "ZW",
+   "designations": [
+    "AIBZ",
+    "Diploma in Banking"
+   ]
+  }
+ ]
+}
