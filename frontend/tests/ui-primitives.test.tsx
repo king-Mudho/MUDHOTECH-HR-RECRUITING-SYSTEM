@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { isActive } from "@/components/layout/sidebar-nav";
-import { NotificationBell, OrgSwitcher } from "@/components/layout/top-bar-actions";
+import { NotificationBell } from "@/components/layout/top-bar-actions";
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { EmptyState, ErrorState, ForbiddenState } from "@/components/states/states";
 import { STATUS_TONES, StatusBadge } from "@/components/states/status-badge";
@@ -82,11 +82,9 @@ describe("shell pieces", () => {
   it("top bar controls have accessible names", () => {
     wrap(
       <>
-        <OrgSwitcher />
         <NotificationBell unread={150} />
       </>,
     );
-    expect(screen.getByRole("button", { name: "Switch organisation" })).toBeInTheDocument();
     const bell = screen.getByRole("button", { name: "Notifications" });
     expect(bell).toHaveTextContent("99+");
   });

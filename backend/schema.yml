@@ -870,6 +870,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/organisations/{organisation_id}/logo/:
+    post:
+      operationId: organisations_logo_upload
+      description: Simple direct logo upload (re-encoded PNG, max 512 px); replaced
+        by Phase 04 uploads.
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+          description: ''
   /api/v1/organisations/{organisation_id}/members/:
     get:
       operationId: organisations_members_list
@@ -1299,11 +1328,6 @@ components:
       - csrf_token
     Department:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         id:
           type: string
@@ -1322,11 +1346,6 @@ components:
       - name
     DepartmentRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -1392,11 +1411,6 @@ components:
       - status
     InvitationCreateRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         email:
           type: string
@@ -1442,11 +1456,6 @@ components:
       - status
     Location:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         id:
           type: string
@@ -1473,11 +1482,6 @@ components:
       - name
     LocationRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -1494,13 +1498,16 @@ components:
           $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
       required:
       - name
+    LogoUploadRequest:
+      type: object
+      properties:
+        logo:
+          type: string
+          format: binary
+      required:
+      - logo
     Me:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         id:
           type: string
@@ -1622,6 +1629,10 @@ components:
           type: string
           format: uuid
           readOnly: true
+        organisation_id:
+          type: string
+          format: uuid
+          readOnly: true
         user:
           allOf:
           - $ref: '#/components/schemas/MemberUser'
@@ -1643,6 +1654,7 @@ components:
       required:
       - id
       - mfa_enabled
+      - organisation_id
       - role
       - user
     MembershipStatusEnum:
@@ -1676,11 +1688,6 @@ components:
       - required
     Organisation:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         id:
           type: string
@@ -1707,6 +1714,10 @@ components:
           format: date-time
           readOnly: true
         my_role:
+          type: string
+          nullable: true
+          readOnly: true
+        logo_url:
           type: string
           nullable: true
           readOnly: true
@@ -1754,6 +1765,7 @@ components:
       - created_at
       - id
       - logo_key
+      - logo_url
       - my_role
       - name
       - slug
@@ -1761,11 +1773,6 @@ components:
       - verified_at
     OrganisationCreateRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -1942,11 +1949,6 @@ components:
             $ref: '#/components/schemas/PlatformOrganisation'
     PatchedDepartmentRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -1954,11 +1956,6 @@ components:
           maxLength: 150
     PatchedLocationRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -1975,11 +1972,6 @@ components:
           $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
     PatchedMeRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         first_name:
           type: string
@@ -2003,11 +1995,6 @@ components:
           maxLength: 64
     PatchedMembershipUpdateRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         role:
           $ref: '#/components/schemas/RoleEnum'
@@ -2016,11 +2003,6 @@ components:
           maxLength: 500
     PatchedOrganisationRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         name:
           type: string
@@ -2068,11 +2050,6 @@ components:
           maxLength: 3
     PatchedPolicyRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         lock_version:
           type: integer
@@ -2165,11 +2142,6 @@ components:
       - verified_by_email
     PlatformReasonRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         reason:
           type: string
@@ -2186,11 +2158,6 @@ components:
         * `platform_support` - Platform support
     PlatformSuspendReasonRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         reason:
           type: string
@@ -2200,11 +2167,6 @@ components:
       - reason
     Policy:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         version:
           type: integer
@@ -2269,9 +2231,10 @@ components:
             maxLength: 200
           - type: string
             maxLength: 0
-        logo_key:
+        logo_url:
           type: string
-          maxLength: 255
+          nullable: true
+          readOnly: true
         size_band:
           oneOf:
           - $ref: '#/components/schemas/SizeBandEnum'
@@ -2283,16 +2246,12 @@ components:
             additionalProperties: {}
           readOnly: true
       required:
+      - logo_url
       - name
       - open_jobs
       - slug
     RequiredReasonRequest:
       type: object
-      description: |-
-        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-        write that does not explicitly accept them.
       properties:
         reason:
           type: string

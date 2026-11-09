@@ -339,6 +339,23 @@ export interface paths {
         patch: operations["organisations_locations_partial_update"];
         trace?: never;
     };
+    "/api/v1/organisations/{organisation_id}/logo/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Simple direct logo upload (re-encoded PNG, max 512 px); replaced by Phase 04 uploads. */
+        post: operations["organisations_logo_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organisations/{organisation_id}/members/": {
         parameters: {
             query?: never;
@@ -513,12 +530,6 @@ export interface components {
         CsrfToken: {
             csrf_token: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         Department: {
             /** Format: uuid */
             readonly id: string;
@@ -526,12 +537,6 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         DepartmentRequest: {
             name: string;
         };
@@ -561,12 +566,6 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         InvitationCreateRequest: {
             /** Format: email */
             email: string;
@@ -585,12 +584,6 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         Location: {
             /** Format: uuid */
             readonly id: string;
@@ -601,24 +594,16 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         LocationRequest: {
             name: string;
             city?: string;
             country?: string;
             workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
+        LogoUploadRequest: {
+            /** Format: binary */
+            logo: string;
+        };
         Me: {
             /** Format: uuid */
             readonly id: string;
@@ -662,6 +647,8 @@ export interface components {
         Membership: {
             /** Format: uuid */
             readonly id: string;
+            /** Format: uuid */
+            readonly organisation_id: string;
             readonly user: components["schemas"]["MemberUser"];
             role: components["schemas"]["RoleEnum"];
             status?: components["schemas"]["MembershipStatusEnum"];
@@ -685,12 +672,6 @@ export interface components {
             in_grace: boolean;
             enforced: boolean;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         Organisation: {
             /** Format: uuid */
             readonly id: string;
@@ -702,6 +683,7 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
             readonly my_role: string | null;
+            readonly logo_url: string | null;
             name: string;
             legal_name?: string;
             registration_number?: string;
@@ -716,12 +698,6 @@ export interface components {
             default_timezone?: string;
             default_currency?: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         OrganisationCreateRequest: {
             name: string;
             legal_name?: string;
@@ -820,33 +796,15 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["PlatformOrganisation"][];
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedDepartmentRequest: {
             name?: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedLocationRequest: {
             name?: string;
             city?: string;
             country?: string;
             workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedMeRequest: {
             first_name?: string;
             last_name?: string;
@@ -855,22 +813,10 @@ export interface components {
             locale?: string;
             timezone?: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedMembershipUpdateRequest: {
             role?: components["schemas"]["RoleEnum"];
             reason?: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedOrganisationRequest: {
             name?: string;
             legal_name?: string;
@@ -886,12 +832,6 @@ export interface components {
             default_timezone?: string;
             default_currency?: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PatchedPolicyRequest: {
             lock_version?: number;
             privacy_notice?: string;
@@ -925,12 +865,6 @@ export interface components {
             readonly verified_by_email: string | null;
             readonly member_count: number;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PlatformReasonRequest: {
             reason?: string;
         };
@@ -941,21 +875,9 @@ export interface components {
          * @enum {string}
          */
         PlatformRoleEnum: "none" | "platform_admin" | "platform_support";
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         PlatformSuspendReasonRequest: {
             reason: string;
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         Policy: {
             /** @description Optimistic lock (lock_version). */
             readonly version: number;
@@ -980,18 +902,12 @@ export interface components {
             city?: string;
             country?: string;
             website?: string;
-            logo_key?: string;
+            readonly logo_url: string | null;
             size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
             readonly open_jobs: {
                 [key: string]: unknown;
             }[];
         };
-        /**
-         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-         *
-         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-         *     write that does not explicitly accept them.
-         */
         RequiredReasonRequest: {
             reason: string;
         };
@@ -1762,6 +1678,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Location"];
+                };
+            };
+        };
+    };
+    organisations_logo_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["LogoUploadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organisation"];
                 };
             };
         };

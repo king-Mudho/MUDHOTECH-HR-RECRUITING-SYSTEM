@@ -8,11 +8,10 @@ from rest_framework import serializers
 
 
 class StrictFieldsMixin:
-    """Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
-
-    Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
-    write that does not explicitly accept them.
-    """
+    # Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5):
+    # clients must never sneak ``organisation``, ``status``, ``role`` or ``score`` into a write
+    # that does not explicitly accept them. (A comment, not a docstring: drf-spectacular would
+    # copy an inherited docstring into every serializer's OpenAPI description.)
 
     def to_internal_value(self, data: Any) -> Any:
         if isinstance(data, dict):

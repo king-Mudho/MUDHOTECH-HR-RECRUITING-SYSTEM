@@ -29,6 +29,11 @@ urlpatterns = [
     path("organisations/", OrganisationViewSet.as_view({"post": "create"}), name="organisations"),
     path("organisations/<uuid:organisation_id>/", organisation, name="organisation-detail"),
     path(
+        "organisations/<uuid:organisation_id>/logo/",
+        OrganisationViewSet.as_view({"post": "logo"}),
+        name="organisation-logo",
+    ),
+    path(
         "organisations/<uuid:organisation_id>/policies/",
         PolicyView.as_view(),
         name="organisation-policies",

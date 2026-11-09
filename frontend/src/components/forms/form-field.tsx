@@ -116,3 +116,64 @@ export function ErrorSummary<T extends FieldValues>({
     </div>
   );
 }
+
+interface SelectFieldProps extends Omit<ComponentProps<"select">, "id"> {
+  label: string;
+  name: string;
+  options: { value: string; label: string }[];
+  description?: ReactNode;
+  error?: FieldError;
+  required?: boolean;
+}
+
+/** Native select (accessible, works on low-end phones) with the same wiring as TextField. */
+export function SelectField({
+  label,
+  name,
+  options,
+  description,
+  error,
+  required,
+  className,
+  ...props
+}: SelectFieldProps) {
+  const id = `field-${name}`;
+  const tc = useTranslations("common");
+  const errorText = useErrorText()(error?.message);
+  const descId = description ? `${id}-desc` : undefined;
+  const errId = errorText ? `${id}-err` : undefined;
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label htmlFor={id}>
+        {label}
+        {required ? (
+          <span className="text-muted-foreground font-normal"> {tc("required")}</span>
+        ) : null}
+      </Label>
+      <select
+        id={id}
+        name={name}
+        aria-invalid={errorText ? true : undefined}
+        aria-describedby={[descId, errId].filter(Boolean).join(" ") || undefined}
+        className="border-input bg-background focus-visible:ring-ring/50 h-10 rounded-md border px-2 text-sm"
+        {...props}
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      {description ? (
+        <p id={descId} className="text-muted-foreground text-xs">
+          {description}
+        </p>
+      ) : null}
+      {errorText ? (
+        <p id={errId} className="text-destructive text-sm" role="alert">
+          {errorText}
+        </p>
+      ) : null}
+    </div>
+  );
+}

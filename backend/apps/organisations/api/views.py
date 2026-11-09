@@ -8,6 +8,7 @@ from django.db.models import QuerySet
 from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -27,6 +28,7 @@ from .serializers import (
     InvitationPublicSerializer,
     InvitationSerializer,
     LocationSerializer,
+    LogoUploadSerializer,
     MembershipSerializer,
     MembershipUpdateSerializer,
     OrganisationCreateSerializer,
@@ -72,6 +74,7 @@ class OrganisationViewSet(
     rbac_actions: ClassVar[dict[str, str]] = {
         "retrieve": "org.view",
         "partial_update": "org.update",
+        "logo": "org.update",
     }
 
     def get_permissions(self) -> list[BasePermission]:
@@ -105,6 +108,27 @@ class OrganisationViewSet(
             data=ser.validated_data,
             request=request,
         )
+        return Response(OrganisationSerializer(org, context={"request": request}).data)
+
+    @extend_schema(
+        operation_id="organisations_logo_upload",
+        request={"multipart/form-data": LogoUploadSerializer},
+        responses=OrganisationSerializer,
+    )
+    @action(detail=True, methods=["post"], parser_classes=[MultiPartParser])
+    def logo(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """Simple direct logo upload (re-encoded PNG, max 512 px); replaced by Phase 04 uploads."""
+        from apps.organisations.logo import set_logo
+
+        ser = LogoUploadSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        set_logo(
+            org=self.get_object(),
+            actor=authed_user(request),
+            upload=ser.validated_data["logo"],
+            request=request,
+        )
+        org = Organisation.objects.get(pk=self.get_object().pk)
         return Response(OrganisationSerializer(org, context={"request": request}).data)
 
 

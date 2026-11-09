@@ -20,6 +20,7 @@ from apps.organisations.services import ORG_EDITABLE_FIELDS, POLICY_EDITABLE_FIE
 
 class OrganisationSerializer(StrictModelSerializer):
     my_role = serializers.SerializerMethodField()
+    logo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Organisation
@@ -31,10 +32,16 @@ class OrganisationSerializer(StrictModelSerializer):
             "logo_key",
             "created_at",
             "my_role",
+            "logo_url",
             *ORG_EDITABLE_FIELDS,
         ]
         read_only_fields = ["id", "slug", "status", "verified_at", "logo_key", "created_at"]
         extra_kwargs = {"name": {"required": True}}
+
+    def get_logo_url(self, obj: Organisation) -> str | None:
+        from apps.organisations.logo import logo_url
+
+        return logo_url(obj)
 
     def get_my_role(self, obj: Organisation) -> str | None:
         membership = getattr(self.context.get("request"), "membership", None)
@@ -48,6 +55,12 @@ class OrganisationCreateSerializer(OrganisationSerializer):
 
 class PublicCompanySerializer(serializers.ModelSerializer):
     open_jobs = serializers.SerializerMethodField()
+    logo_url = serializers.SerializerMethodField()
+
+    def get_logo_url(self, obj: Organisation) -> str | None:
+        from apps.organisations.logo import logo_url
+
+        return logo_url(obj)
 
     class Meta:
         model = Organisation
@@ -59,7 +72,7 @@ class PublicCompanySerializer(serializers.ModelSerializer):
             "city",
             "country",
             "website",
-            "logo_key",
+            "logo_url",
             "size_band",
             "open_jobs",
         ]
@@ -116,7 +129,16 @@ class MembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Membership
-        fields = ["id", "user", "role", "status", "joined_at", "deactivated_at", "mfa_enabled"]
+        fields = [
+            "id",
+            "organisation_id",
+            "user",
+            "role",
+            "status",
+            "joined_at",
+            "deactivated_at",
+            "mfa_enabled",
+        ]
 
     def get_mfa_enabled(self, obj: Membership) -> bool:
         from apps.accounts.mfa import has_mfa
@@ -193,3 +215,7 @@ class InvitationPublicSerializer(serializers.Serializer):
             "status": inv.status,
             "expires_at": inv.expires_at,
         }
+
+
+class LogoUploadSerializer(serializers.Serializer):
+    logo = serializers.FileField()
