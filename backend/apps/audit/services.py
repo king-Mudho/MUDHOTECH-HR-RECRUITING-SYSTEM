@@ -76,7 +76,7 @@ def compute_hash(event: AuditEvent) -> str:
 def _json_safe(value: dict[str, Any] | None) -> dict[str, Any] | None:
     if value is None:
         return None
-    return json.loads(json.dumps(value, cls=DjangoJSONEncoder))  # type: ignore[no-any-return]
+    return json.loads(json.dumps(value, cls=DjangoJSONEncoder))
 
 
 def record(
