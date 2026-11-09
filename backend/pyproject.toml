@@ -26,6 +26,8 @@ dependencies = [
   "phonenumbers>=9",
   "pydantic~=2.11",
   "flower~=2.0",
+  "django-allauth[mfa]~=65.21",
+  "argon2-cffi>=23",
 ]
 
 [dependency-groups]

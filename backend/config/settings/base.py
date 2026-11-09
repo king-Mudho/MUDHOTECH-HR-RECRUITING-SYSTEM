@@ -92,15 +92,20 @@ CACHES = {
     }
 }
 
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+]
+# FR-M01-06: min 10 chars + breached/common list, no composition rules.
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 10},
     },
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "apps.accounts.password_validation.BreachedPasswordValidator"},
 ]
+BREACHED_PASSWORDS_FILE = env("BREACHED_PASSWORDS_FILE", default=None)
 
 LANGUAGE_CODE = "en"
 TIME_ZONE = "UTC"

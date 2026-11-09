@@ -1,11 +1,13 @@
-"""User model (email login).
+"""User model (email login) - docs/03 accounts.
 
-Created in Phase 01 so that the swappable ``AUTH_USER_MODEL`` exists before the first auth
-migration; Phase 02 (P02-T01) completes it (normalisation rules, platform roles, profile fields).
+* Email is normalised (trim + lower-case) and unique case-insensitively (EC-ACC-01).
+* Roles are per organisation membership; only platform roles live on the user (SRS §2).
+* Session metadata (IP, user agent, last seen, revoke) is stored by ``allauth.usersessions``.
 """
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import Any
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -13,11 +15,20 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models.functions import Lower
 
+from apps.core import time
 from apps.core.models import BaseModel
+
+MFA_GRACE_PERIOD = timedelta(days=7)
 
 
 def normalize_email_address(email: str) -> str:
     return email.strip().lower()
+
+
+class PlatformRole(models.TextChoices):
+    NONE = "none", "None"
+    PLATFORM_ADMIN = "platform_admin", "Platform admin"
+    PLATFORM_SUPPORT = "platform_support", "Platform support"
 
 
 class UserManager(BaseUserManager["User"]):
@@ -49,11 +60,22 @@ class UserManager(BaseUserManager["User"]):
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=254, unique=True)
+    email_verified_at = models.DateTimeField(null=True, blank=True)
     first_name = models.CharField(max_length=150, blank=True, default="")
     last_name = models.CharField(max_length=150, blank=True, default="")
+    preferred_name = models.CharField(max_length=150, blank=True, default="")
+    phone_e164 = models.CharField(max_length=20, blank=True, default="")
+    platform_role = models.CharField(
+        max_length=32, choices=PlatformRole.choices, default=PlatformRole.NONE
+    )
+    locale = models.CharField(max_length=10, default="en")
+    timezone = models.CharField(max_length=64, default="Africa/Harare")
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False, help_text="Django admin access.")
+    is_staff = models.BooleanField(default=False, help_text="Django admin access only.")
     date_joined = models.DateTimeField(auto_now_add=True)
+    # Start of the 7-day MFA grace period once a privileged role is held (FR-M01-04).
+    mfa_grace_started_at = models.DateTimeField(null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, help_text="Anonymisation marker.")
 
     objects = UserManager()
 
@@ -72,6 +94,34 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         super().clean()
         self.email = normalize_email_address(self.email)
 
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        self.email = normalize_email_address(self.email or "")
+        super().save(*args, **kwargs)
+
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}".strip()
+
+    @property
+    def display_name(self) -> str:
+        return self.preferred_name or self.full_name or self.email
+
+    @property
+    def is_email_verified(self) -> bool:
+        return self.email_verified_at is not None
+
+    @property
+    def is_platform_staff(self) -> bool:
+        return self.platform_role in (PlatformRole.PLATFORM_ADMIN, PlatformRole.PLATFORM_SUPPORT)
+
+    @property
+    def mfa_grace_deadline(self) -> datetime | None:
+        if self.mfa_grace_started_at is None:
+            return None
+        return self.mfa_grace_started_at + MFA_GRACE_PERIOD
+
+    def start_mfa_grace(self) -> None:
+        """Called when the user first gains a privileged role (idempotent)."""
+        if self.mfa_grace_started_at is None:
+            self.mfa_grace_started_at = time.now()
+            self.save(update_fields=["mfa_grace_started_at", "updated_at"])

@@ -6,15 +6,15 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T01
-- **Last updated:** 2026-11-08
-- **Overall:** 17 / 193 tasks · 1 / 16 phases
+- **Current task:** P02-T02
+- **Last updated:** 2026-11-09
+- **Overall:** 18 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
 |---|---|---|---|---|---|
 | 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | ✅ Done | 2026-11-08 |
-| 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ⬜ Not started | |
+| 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | 🟦 In progress | |
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ⬜ Not started | |
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ⬜ Not started | |
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ⬜ Not started | |
@@ -70,7 +70,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P01-EXIT — All exit criteria verified with evidence
 
 ### Phase 02 — Identity, Tenancy & Access Control  (`phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md`)
-- [ ] P02-T01 — Custom `User` model (email login, citext, normalisation) before first migrate of auth
+- [x] P02-T01 — Custom `User` model (email login, citext, normalisation) before first migrate of auth
 - [ ] P02-T02 — django-allauth headless (browser client): signup, email verification (mandatory before application submit), login, …
 - [ ] P02-T03 — MFA via `allauth.mfa`: TOTP + recovery codes
 - [ ] P02-T04 — Rate limiting & lockout: DRF throttles + django-axes (or custom) progressive lockout
@@ -315,6 +315,8 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | P01-T08/T10 | Dev S3 = SeaweedFS instead of MinIO | MinIO images no longer pullable | ADR-021 |
 | 2026-11-08 | P01-T10 | Dev host ports Postgres 55432 / Redis 6380 (configurable) | Port clashes on dev machines | ADR-022 |
 | 2026-11-08 | P01-T03 | Django admin served at `/django-admin/` | `/admin` belongs to the Next.js platform-admin UI | — |
+| 2026-11-09 | P02-T01 | Bundled breached-password list = Django common-password corpus (19,640 SHA-1 hashes), not top-100k | No vetted 100k list bundled offline; `build_breached_passwords --source` + `BREACHED_PASSWORDS_FILE` let ops swap in a larger list | — |
+| 2026-11-09 | P02-T01/T04 | Session metadata via `allauth.usersessions.UserSession` instead of a custom `UserSessionMeta` model | Same fields (ip, user_agent, created, last_seen), maintained by allauth; `/me/sessions` API built on top; IP truncation added in Phase 09 retention | — |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -339,3 +341,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | Impl | P01-T17 | Clean clone (path with spaces) -> scripts/dev-up.ps1: all 11 services healthy in 79 s (cached images, fresh volumes); /readyz 200 (db/redis/s3), frontend home via proxy 200, /api/v1/ through Next rewrite 200, celery ping -> pong (worker-default), send_test_email received in Mailpit; Playwright+axe smoke 4/4 (desktop+mobile). Fixed dev-up.ps1 stderr handling | Host RAM pressure (~1 GB free) caused one transient ENOMEM + an earlier Docker engine hang |
 | 2026-11-08 | Impl | P01-EXIT (verify) | Exit criteria: clean-clone stack 79 s ✅, apps/core coverage 97% ✅, /api/docs + gen:api + tsc ✅, CI on main ❌ not verifiable (no remote; all CI steps green locally) | Phase 01 NOT closed; need GitHub remote from owner |
 | 2026-11-08 | Impl | P01-EXIT | CI fixed on GitHub (scripts ruff config, trivy-action pinned by SHA, empty public/ in frontend image, Debian security updates in backend images); CI green on main run 42523821127; Phase 01 closed | Start P02-T01 |
+| 2026-11-09 | Impl | P02-T01 | User completed: email_verified_at, preferred_name, phone_e164, platform_role (none/platform_admin/platform_support), locale, timezone, mfa_grace_started_at, deleted_at; email normalised on save; Argon2 hasher; validators = min 10 + similarity + BreachedPasswordValidator (SHA-1 gz list, build_breached_passwords command); 13 new tests | Swap in a top-100k list when owner supplies one |

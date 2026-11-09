@@ -8,7 +8,7 @@ Users can register/verify/login (MFA for privileged roles), create organisations
 orgs; every request is tenant-scoped and authorised server-side; all sensitive actions are audited.
 
 ## Tasks
-- [ ] **P02-T01** — Custom `User` model (email login, citext, normalisation) **before first migrate of auth**; Argon2 hasher; password validators incl. breached-password list (bundled top-100k hashed list); `UserSessionMeta`.
+- [x] **P02-T01** — Custom `User` model (email login, citext, normalisation) **before first migrate of auth**; Argon2 hasher; password validators incl. breached-password list (bundled top-100k hashed list); `UserSessionMeta`.
 - [ ] **P02-T02** — django-allauth headless (browser client): signup, email verification (mandatory before application submit), login, logout, password reset/change, email change with re-verification + notice to old address; generic responses (no enumeration); custom email templates branded MHRS.
 - [ ] **P02-T03** — MFA via `allauth.mfa`: TOTP + recovery codes; enforcement middleware: users with platform role or membership role in {org_admin, hr_manager} must have MFA (7-day grace with banner, then blocked from staff APIs with `mfa_required`).
 - [ ] **P02-T04** — Rate limiting & lockout: DRF throttles + django-axes (or custom) progressive lockout; notify user on lockout. Session list/revoke endpoints `/me/sessions`.
