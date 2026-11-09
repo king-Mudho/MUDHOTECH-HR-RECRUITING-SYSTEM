@@ -61,6 +61,400 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/jobs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_jobs_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_jobs_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["hr_jobs_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/ai-suggestions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_ai_suggestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/archive/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_archive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/assignments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_jobs_assignments"];
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["hr_jobs_assignments_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/close/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_close"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/criteria/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["hr_jobs_criteria"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/duplicate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_duplicate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/events/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_jobs_events"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/extend-deadline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_extend_deadline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/lint/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_lint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/new-version/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_new_version"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/pause/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_pause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/publish/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/questionnaire/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["hr_jobs_questionnaire"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/questions/{key}/protected-exception/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_protected_exception"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/resume/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_resume"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/rubric/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["hr_jobs_rubric"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/schedule/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_schedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/submit-for-approval/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_jobs_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{id}/versions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_jobs_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invitations/{token}/": {
         parameters: {
             query?: never;
@@ -676,6 +1070,25 @@ export interface components {
             /** Format: date-time */
             server_time: string;
         };
+        Assignment: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly membership: string;
+            readonly role_on_job: components["schemas"]["RoleOnJobEnum"];
+            readonly user_name: string;
+            readonly org_role: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        AssignmentInputRequest: {
+            /** Format: uuid */
+            membership_id: string;
+            role_on_job: components["schemas"]["RoleOnJobEnum"];
+        };
+        AssignmentsInputRequest: {
+            assignments: components["schemas"]["AssignmentInputRequest"][];
+        };
         /** @enum {unknown} */
         BlankEnum: "";
         /**
@@ -696,6 +1109,51 @@ export interface components {
          * @enum {string}
          */
         CategoryEnum: "software_it" | "finance" | "engineering" | "health" | "sales_marketing" | "logistics" | "education" | "agriculture" | "mining" | "ngo" | "business" | "legal" | "language" | "general";
+        CommentRequest: {
+            comment?: string;
+        };
+        CriteriaInputRequest: {
+            lock_version?: number;
+            criteria: components["schemas"]["CriterionInputRequest"][];
+        };
+        Criterion: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly order: number;
+            readonly type: components["schemas"]["TypeEnum"];
+            readonly importance: components["schemas"]["ImportanceEnum"];
+            readonly title: string;
+            readonly description: string;
+            readonly evidence_guidance: string;
+            /** @description Required when essential. */
+            readonly justification: string;
+            /** Format: uuid */
+            readonly skill: string | null;
+            /** Format: uuid */
+            readonly qualification_level: string | null;
+            readonly min_months: number | null;
+            readonly equivalents: unknown;
+            readonly rubric_category: components["schemas"]["RubricCategoryEnum"];
+            /** Format: decimal */
+            readonly weight_within_category: string;
+        };
+        CriterionInputRequest: {
+            type: string;
+            importance: string;
+            title: string;
+            description?: string;
+            evidence_guidance?: string;
+            justification?: string;
+            /** Format: uuid */
+            skill_id?: string | null;
+            /** Format: uuid */
+            qualification_level_id?: string | null;
+            min_months?: number | null;
+            equivalents?: string[];
+            rubric_category?: string;
+            /** Format: decimal */
+            weight_within_category?: string;
+        };
         CsrfToken: {
             csrf_token: string;
         };
@@ -721,6 +1179,9 @@ export interface components {
          * @enum {string}
          */
         DuplicatePolicyEnum: "one_active" | "allow_resubmit_replace" | "allow_multiple";
+        DuplicateRequest: {
+            title?: string;
+        };
         /**
          * @description * `full_time` - Full-time
          *     * `part_time` - Part-time
@@ -732,12 +1193,100 @@ export interface components {
          * @enum {string}
          */
         EmploymentTypeEnum: "full_time" | "part_time" | "contract" | "internship" | "attachment" | "temporary" | "graduate_trainee";
+        ExtendRequest: {
+            /** Format: date-time */
+            closes_at: string;
+            reason: string;
+        };
         /**
          * @description * `ZW` - Zimbabwe
          *     * `INTL` - International
          * @enum {string}
          */
         FrameworkEnum: "ZW" | "INTL";
+        HRJobDetail: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly slug: string;
+            readonly title: string;
+            readonly reference_code: string;
+            readonly status: components["schemas"]["JobStatusEnum"];
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            /** Format: uuid */
+            readonly department: string | null;
+            readonly locations: string[];
+            readonly workplace_type: components["schemas"]["WorkplaceTypeEnum"];
+            readonly employment_type: components["schemas"]["EmploymentTypeEnum"];
+            readonly seniority: components["schemas"]["SeniorityEnum"];
+            readonly openings: number;
+            /** Format: date-time */
+            readonly closes_at: string | null;
+            readonly timezone: string;
+            /** Format: date-time */
+            readonly publish_at: string | null;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly closed_at: string | null;
+            readonly current_version: components["schemas"]["VersionSummary"] | null;
+            readonly lock_version: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: decimal */
+            readonly salary_min: string;
+            /** Format: decimal */
+            readonly salary_max: string;
+            readonly salary_currency: components["schemas"]["SalaryCurrencyEnum"];
+            readonly salary_period: components["schemas"]["SalaryPeriodEnum"];
+            readonly salary_disclosed: boolean;
+            /** Format: date */
+            readonly start_date: string | null;
+            readonly close_reason: string;
+            readonly published_version_number: number;
+            readonly version: components["schemas"]["Version"] | null;
+            readonly criteria: components["schemas"]["Criterion"][];
+            readonly rubric: components["schemas"]["RubricInput"];
+            readonly questions: components["schemas"]["QuestionOut"][];
+        };
+        HRJobList: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly slug: string;
+            readonly title: string;
+            readonly reference_code: string;
+            readonly status: components["schemas"]["JobStatusEnum"];
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            /** Format: uuid */
+            readonly department: string | null;
+            readonly locations: string[];
+            readonly workplace_type: components["schemas"]["WorkplaceTypeEnum"];
+            readonly employment_type: components["schemas"]["EmploymentTypeEnum"];
+            readonly seniority: components["schemas"]["SeniorityEnum"];
+            readonly openings: number;
+            /** Format: date-time */
+            readonly closes_at: string | null;
+            readonly timezone: string;
+            /** Format: date-time */
+            readonly publish_at: string | null;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly closed_at: string | null;
+            readonly current_version: components["schemas"]["VersionSummary"] | null;
+            readonly lock_version: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `essential` - Essential
+         *     * `preferred` - Preferred
+         * @enum {string}
+         */
+        ImportanceEnum: "essential" | "preferred";
         Invitation: {
             /** Format: uuid */
             readonly id: string;
@@ -774,6 +1323,69 @@ export interface components {
             status: string;
             /** Format: date-time */
             expires_at: string;
+        };
+        JobEvent: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly action: string;
+            readonly from_status: string;
+            readonly to_status: string;
+            /** Format: uuid */
+            readonly actor: string | null;
+            readonly reason: string;
+            readonly version_number: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `draft` - Draft
+         *     * `in_review` - In review
+         *     * `approved` - Approved
+         *     * `scheduled` - Scheduled
+         *     * `published` - Published
+         *     * `paused` - Paused
+         *     * `closed` - Closed
+         *     * `archived` - Archived
+         * @enum {string}
+         */
+        JobStatusEnum: "draft" | "in_review" | "approved" | "scheduled" | "published" | "paused" | "closed" | "archived";
+        /**
+         * @description * `draft` - Draft
+         *     * `in_review` - In review
+         *     * `approved` - Approved
+         *     * `superseded` - Superseded
+         * @enum {string}
+         */
+        JobVersionStatusEnum: "draft" | "in_review" | "approved" | "superseded";
+        JobWriteRequest: {
+            title: string;
+            reference_code?: string;
+            visibility?: components["schemas"]["VisibilityEnum"];
+            workplace_type?: components["schemas"]["WorkplaceTypeEnum"];
+            employment_type?: components["schemas"]["EmploymentTypeEnum"];
+            seniority?: components["schemas"]["SeniorityEnum"] | components["schemas"]["BlankEnum"];
+            openings?: number;
+            /** Format: date-time */
+            closes_at?: string | null;
+            timezone?: string;
+            /** Format: decimal */
+            salary_min?: string | null;
+            /** Format: decimal */
+            salary_max?: string | null;
+            salary_currency?: components["schemas"]["SalaryCurrencyEnum"];
+            salary_period?: components["schemas"]["SalaryPeriodEnum"];
+            salary_disclosed?: boolean;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: uuid */
+            department_id?: string | null;
+            location_ids?: string[];
+            summary?: string;
+            responsibilities_html?: string;
+            requirements_html?: string;
+            benefits_html?: string;
+            required_documents?: string[];
+            change_note?: string;
         };
         Location: {
             /** Format: uuid */
@@ -912,6 +1524,21 @@ export interface components {
          * @enum {string}
          */
         OrganisationStatusEnum: "pending_verification" | "active" | "suspended" | "closed";
+        PaginatedAssignmentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Assignment"][];
+        };
         PaginatedDepartmentList: {
             /** @example 123 */
             count: number;
@@ -927,6 +1554,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Department"][];
         };
+        PaginatedHRJobListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["HRJobList"][];
+        };
         PaginatedInvitationList: {
             /** @example 123 */
             count: number;
@@ -941,6 +1583,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Invitation"][];
+        };
+        PaginatedJobEventList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["JobEvent"][];
         };
         PaginatedLocationList: {
             /** @example 123 */
@@ -1017,8 +1674,54 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Skill"][];
         };
+        PaginatedVersionSummaryList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["VersionSummary"][];
+        };
         PatchedDepartmentRequest: {
             name?: string;
+        };
+        PatchedJobPatchRequest: {
+            title?: string;
+            reference_code?: string;
+            visibility?: components["schemas"]["VisibilityEnum"];
+            workplace_type?: components["schemas"]["WorkplaceTypeEnum"];
+            employment_type?: components["schemas"]["EmploymentTypeEnum"];
+            seniority?: components["schemas"]["SeniorityEnum"] | components["schemas"]["BlankEnum"];
+            openings?: number;
+            /** Format: date-time */
+            closes_at?: string | null;
+            timezone?: string;
+            /** Format: decimal */
+            salary_min?: string | null;
+            /** Format: decimal */
+            salary_max?: string | null;
+            salary_currency?: components["schemas"]["SalaryCurrencyEnum"];
+            salary_period?: components["schemas"]["SalaryPeriodEnum"];
+            salary_disclosed?: boolean;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: uuid */
+            department_id?: string | null;
+            location_ids?: string[];
+            summary?: string;
+            responsibilities_html?: string;
+            requirements_html?: string;
+            benefits_html?: string;
+            required_documents?: string[];
+            change_note?: string;
+            lock_version?: number;
         };
         PatchedLocationRequest: {
             name?: string;
@@ -1114,6 +1817,9 @@ export interface components {
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
+        };
+        ProtectedExceptionRequest: {
+            reason: string;
         };
         PublicCompany: {
             slug: string;
@@ -1229,6 +1935,95 @@ export interface components {
             readonly framework: components["schemas"]["FrameworkEnum"];
             readonly aliases: string[];
         };
+        QuestionInputRequest: {
+            key: string;
+            section?: string;
+            type: string;
+            prompt: string;
+            help_text?: string;
+            /** @default true */
+            required: boolean;
+            config?: {
+                [key: string]: unknown;
+            };
+            branching?: {
+                [key: string]: unknown;
+            };
+            scoring?: {
+                [key: string]: unknown;
+            };
+            /** @default false */
+            is_knockout: boolean;
+            knockout_expected?: unknown;
+            /** Format: uuid */
+            criterion_id?: string | null;
+            options?: components["schemas"]["QuestionOptionInputRequest"][];
+        };
+        QuestionOptionInput: {
+            label: string;
+            value: string;
+            /** Format: decimal */
+            points?: string | null;
+        };
+        QuestionOptionInputRequest: {
+            label: string;
+            value: string;
+            /** Format: decimal */
+            points?: string | null;
+        };
+        QuestionOut: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            section: string;
+            order: number;
+            type: string;
+            prompt: string;
+            help_text: string;
+            required: boolean;
+            config: {
+                [key: string]: unknown;
+            };
+            branching: {
+                [key: string]: unknown;
+            };
+            scoring: {
+                [key: string]: unknown;
+            };
+            is_knockout: boolean;
+            knockout_expected: unknown;
+            /** Format: uuid */
+            criterion_id: string | null;
+            protected_topic_flag: {
+                [key: string]: unknown;
+            }[];
+            protected_exception_reason: string;
+            options: components["schemas"]["QuestionOptionInput"][];
+        };
+        QuestionnaireInputRequest: {
+            lock_version?: number;
+            questions: components["schemas"]["QuestionInputRequest"][];
+        };
+        Readiness: {
+            ready: boolean;
+            stage: string;
+            checks: components["schemas"]["ReadinessCheck"][];
+            warnings: {
+                [key: string]: unknown;
+            }[];
+        };
+        ReadinessCheck: {
+            id: string;
+            ok: boolean;
+            message: string;
+            blocking: boolean;
+            details: {
+                [key: string]: unknown;
+            };
+        };
+        ReasonRequest: {
+            reason?: string;
+        };
         RequiredReasonRequest: {
             reason: string;
         };
@@ -1245,6 +2040,50 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "org_admin" | "hr_manager" | "recruiter" | "hiring_manager" | "panelist" | "auditor";
+        /**
+         * @description * `recruiter` - Recruiter
+         *     * `hiring_manager` - Hiring manager
+         *     * `approver` - Approver
+         * @enum {string}
+         */
+        RoleOnJobEnum: "recruiter" | "hiring_manager" | "approver";
+        RubricBand: {
+            score: number;
+            descriptor: string;
+        };
+        RubricBandRequest: {
+            score: number;
+            descriptor: string;
+        };
+        RubricCategory: {
+            key: string;
+            label?: string;
+            weight: number;
+            bands: components["schemas"]["RubricBand"][];
+        };
+        /**
+         * @description * `technical` - Technical skills
+         *     * `experience` - Relevant experience
+         *     * `competency` - Job competencies
+         *     * `qualification` - Qualifications
+         *     * `answers` - Screening answers
+         * @enum {string}
+         */
+        RubricCategoryEnum: "technical" | "experience" | "competency" | "qualification" | "answers";
+        RubricCategoryRequest: {
+            key: string;
+            label?: string;
+            weight: number;
+            bands: components["schemas"]["RubricBandRequest"][];
+        };
+        RubricInput: {
+            lock_version?: number;
+            categories: components["schemas"]["RubricCategory"][];
+        };
+        RubricInputRequest: {
+            lock_version?: number;
+            categories: components["schemas"]["RubricCategoryRequest"][];
+        };
         Salary: {
             /** Format: decimal */
             min: string | null;
@@ -1252,6 +2091,24 @@ export interface components {
             max: string | null;
             currency: string;
             period: string;
+        };
+        /**
+         * @description * `USD` - US dollar
+         *     * `ZWG` - Zimbabwe Gold
+         * @enum {string}
+         */
+        SalaryCurrencyEnum: "USD" | "ZWG";
+        /**
+         * @description * `hour` - per hour
+         *     * `day` - per day
+         *     * `month` - per month
+         *     * `year` - per year
+         * @enum {string}
+         */
+        SalaryPeriodEnum: "hour" | "day" | "month" | "year";
+        ScheduleRequest: {
+            /** Format: date-time */
+            publish_at: string;
         };
         /**
          * @description * `entry` - Entry level
@@ -1282,6 +2139,28 @@ export interface components {
             readonly aliases: string[];
             readonly is_custom: boolean;
         };
+        Suggestions: {
+            engine: string;
+            requires_acceptance: boolean;
+            criteria: {
+                [key: string]: unknown;
+            }[];
+            questions: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description * `skill` - Skill
+         *     * `experience` - Experience
+         *     * `qualification` - Qualification
+         *     * `certification` - Certification
+         *     * `competency` - Competency
+         *     * `language` - Language
+         *     * `licence` - Licence
+         *     * `eligibility` - Eligibility
+         * @enum {string}
+         */
+        TypeEnum: "skill" | "experience" | "qualification" | "certification" | "competency" | "language" | "licence" | "eligibility";
         UserSession: {
             readonly id: number;
             /** Format: date-time */
@@ -1292,6 +2171,47 @@ export interface components {
             readonly user_agent: string;
             readonly is_current: boolean;
         };
+        Version: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly number: number;
+            readonly status: components["schemas"]["JobVersionStatusEnum"];
+            readonly summary: string;
+            readonly responsibilities_html: string;
+            readonly requirements_html: string;
+            readonly benefits_html: string;
+            readonly required_documents: unknown;
+            readonly change_note: string;
+            /** Format: uuid */
+            readonly submitted_by: string | null;
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            /** Format: uuid */
+            readonly approved_by: string | null;
+            /** Format: date-time */
+            readonly approved_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        VersionSummary: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly number: number;
+            readonly status: components["schemas"]["JobVersionStatusEnum"];
+            readonly change_note: string;
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            /** Format: date-time */
+            readonly approved_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `public` - Public (listed)
+         *     * `unlisted` - Unlisted (link only)
+         * @enum {string}
+         */
+        VisibilityEnum: "public" | "unlisted";
         /**
          * @description * `on_site` - On-site
          *     * `hybrid` - Hybrid
@@ -1363,6 +2283,725 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfToken"];
+                };
+            };
+        };
+    };
+    hr_jobs_list: {
+        parameters: {
+            query?: {
+                /** @description Only my assignments */
+                assigned?: "me";
+                ordering?: "-created_at" | "-updated_at" | "closes_at" | "title";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description Title or reference contains */
+                search?: string;
+                /** @description Comma-separated statuses */
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedHRJobListList"];
+                };
+            };
+        };
+    };
+    hr_jobs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["JobWriteRequest"];
+                "multipart/form-data": components["schemas"]["JobWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedJobPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedJobPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedJobPatchRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_ai_suggestions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Suggestions"];
+                };
+            };
+        };
+    };
+    hr_jobs_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CommentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommentRequest"];
+                "multipart/form-data": components["schemas"]["CommentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_assignments: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAssignmentList"];
+                };
+            };
+        };
+    };
+    hr_jobs_assignments_update: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentsInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AssignmentsInputRequest"];
+                "multipart/form-data": components["schemas"]["AssignmentsInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAssignmentList"];
+                };
+            };
+        };
+    };
+    hr_jobs_close: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_criteria: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CriteriaInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CriteriaInputRequest"];
+                "multipart/form-data": components["schemas"]["CriteriaInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_duplicate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DuplicateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DuplicateRequest"];
+                "multipart/form-data": components["schemas"]["DuplicateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_events: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedJobEventList"];
+                };
+            };
+        };
+    };
+    hr_jobs_extend_deadline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtendRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExtendRequest"];
+                "multipart/form-data": components["schemas"]["ExtendRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_lint: {
+        parameters: {
+            query?: {
+                stage?: "publish" | "submit";
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Readiness"];
+                };
+            };
+        };
+    };
+    hr_jobs_new_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_pause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_questionnaire: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionnaireInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["QuestionnaireInputRequest"];
+                "multipart/form-data": components["schemas"]["QuestionnaireInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_protected_exception: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProtectedExceptionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ProtectedExceptionRequest"];
+                "multipart/form-data": components["schemas"]["ProtectedExceptionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+        };
+    };
+    hr_jobs_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_resume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_rubric: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RubricInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RubricInputRequest"];
+                "multipart/form-data": components["schemas"]["RubricInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_schedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ScheduleRequest"];
+                "multipart/form-data": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CommentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommentRequest"];
+                "multipart/form-data": components["schemas"]["CommentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_jobs_versions: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedVersionSummaryList"];
                 };
             };
         };

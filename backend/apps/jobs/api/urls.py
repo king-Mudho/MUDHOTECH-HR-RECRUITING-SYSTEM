@@ -1,4 +1,5 @@
-from django.urls import path, re_path
+from django.urls import include, path, re_path
+from rest_framework.routers import SimpleRouter
 
 from .public import (
     JobsFeedView,
@@ -7,8 +8,13 @@ from .public import (
     PublicJobQuestionsView,
     SitemapView,
 )
+from .views import HRJobViewSet
+
+router = SimpleRouter()
+router.register("hr/jobs", HRJobViewSet, basename="hr-jobs")
 
 urlpatterns = [
+    path("", include(router.urls)),
     path("jobs/", PublicJobListView.as_view(), name="jobs-public-list"),
     re_path(r"^jobs/feed\.(?P<fmt>rss|json)/?$", JobsFeedView.as_view(), name="jobs-feed"),
     path("sitemap.xml", SitemapView.as_view(), name="jobs-sitemap"),

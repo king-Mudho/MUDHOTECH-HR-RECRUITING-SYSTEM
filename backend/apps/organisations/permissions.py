@@ -116,6 +116,11 @@ class IsAssignedToJob(BasePermission):
             raise NotFoundError()
         if membership.role in rbac.ADMIN_HR:
             return True
+        read_only = request.method in SAFE_METHODS or getattr(view, "action", None) in getattr(
+            view, "read_only_actions", ()
+        )
+        if membership.role == Role.AUDITOR and read_only:
+            return True  # governance read access across the organisation's vacancies
         return bool(_assignment_checker and _assignment_checker(membership, job))
 
 

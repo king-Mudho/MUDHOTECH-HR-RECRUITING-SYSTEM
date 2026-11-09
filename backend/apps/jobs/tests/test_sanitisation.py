@@ -7,7 +7,7 @@ import re
 import pytest
 
 from apps.jobs import services
-from apps.jobs.tests.test_services import draft_job, team  # noqa: F401
+from apps.jobs.tests.test_services import draft_job
 
 pytestmark = pytest.mark.django_db
 
@@ -42,7 +42,7 @@ DANGEROUS = re.compile(
 
 @pytest.mark.parametrize("payload", PAYLOADS)
 @pytest.mark.parametrize("field", ["responsibilities_html", "requirements_html", "benefits_html"])
-def test_payload_is_neutralised_on_save(team, field: str, payload: str) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_payload_is_neutralised_on_save(team, field: str, payload: str) -> None:  # type: ignore[no-untyped-def]
     job = draft_job(team)
     services.update_job(job, actor=team.recruiter, data={field: payload}, lock_version=None)
     job.refresh_from_db()
@@ -50,7 +50,7 @@ def test_payload_is_neutralised_on_save(team, field: str, payload: str) -> None:
     assert not DANGEROUS.search(stored), stored
 
 
-def test_allowed_markup_survives_and_links_get_rel(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_allowed_markup_survives_and_links_get_rel(team) -> None:  # type: ignore[no-untyped-def]
     job = draft_job(team)
     html = (
         "<h2>About</h2><p><strong>Bold</strong> <em>it</em><br></p>"
@@ -66,7 +66,7 @@ def test_allowed_markup_survives_and_links_get_rel(team) -> None:  # type: ignor
     assert 'href="https://mudhotech.example/jobs"' in stored
 
 
-def test_h1_and_tables_are_stripped_but_text_kept(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_h1_and_tables_are_stripped_but_text_kept(team) -> None:  # type: ignore[no-untyped-def]
     job = draft_job(team)
     services.update_job(
         job,

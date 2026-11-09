@@ -51,6 +51,16 @@ class Endpoint:
     data: DataFn = lambda ctx: None
     setup: Setup | None = None
     is_list: bool = False  # list endpoints: cross-tenant check also asserts exclusion
+    # Context-scoped endpoints (``/hr/...``) take the organisation from ``X-Org-Id``. The
+    # cross-tenant suite sends the *attacker's own* org id (a legitimate header) with a path to the
+    # victim's object, so the object lookup itself must 404.
+    org_header: bool = False
+    # Collection endpoints (list/create) name no victim object, so the cross-tenant suite sends the
+    # victim's org id in the header instead (must 404 + audit as a tenant violation).
+    targets_object: bool = True
+
+    def headers(self, ctx: Ctx) -> dict[str, str]:
+        return {"HTTP_X_ORG_ID": ctx.org_id} if self.org_header else {}
 
     def __str__(self) -> str:
         return f"{self.method.upper()} {self.name}"
@@ -77,12 +87,17 @@ def base_setup(ctx: Ctx) -> None:
     )
 
 
-def build_ctx(**org_kwargs: Any) -> Ctx:
+def build_ctx(*endpoints: Endpoint, **org_kwargs: Any) -> Ctx:
+    """Organisation + team + objects. With ``endpoints``, only their extra setups run (each once);
+    without, every registered setup runs."""
     ctx = Ctx(team=make_org_with_team(**org_kwargs))
     base_setup(ctx)
-    for ep in REGISTRY:
-        if ep.setup is not None:
-            ep.setup(ctx)
+    setups: list[Setup] = []
+    for ep in endpoints or tuple(REGISTRY):
+        if ep.setup is not None and ep.setup not in setups:
+            setups.append(ep.setup)
+    for setup in setups:
+        setup(ctx)
     return ctx
 
 
@@ -237,6 +252,11 @@ REGISTRY: list[Endpoint] = [
         success=204,
     ),
 ]
+
+
+from tests.tenancy.jobs_endpoints import JOB_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(JOB_ENDPOINTS)
 
 
 def register(endpoint: Endpoint) -> Endpoint:

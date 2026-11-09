@@ -10,7 +10,7 @@ from rest_framework.test import APIClient
 from apps.core.time import now
 from apps.jobs import services
 from apps.jobs.models import Job, JobSlugRedirect, JobStatus
-from apps.jobs.tests.test_services import QUESTIONS, published_job, team  # noqa: F401
+from apps.jobs.tests.test_services import QUESTIONS, published_job
 from apps.organisations.models import Organisation
 
 pytestmark = pytest.mark.django_db
@@ -21,7 +21,7 @@ def client() -> APIClient:
     return APIClient()
 
 
-def _live(team, **header):  # type: ignore[no-untyped-def]  # noqa: F811
+def _live(team, **header):  # type: ignore[no-untyped-def]
     job = published_job(team)
     if header:
         Job.objects.for_org(team.org).filter(pk=job.pk).update(**header)
@@ -32,7 +32,7 @@ def _live(team, **header):  # type: ignore[no-untyped-def]  # noqa: F811
     return job
 
 
-def test_list_search_filters_and_ordering(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_list_search_filters_and_ordering(client, team) -> None:  # type: ignore[no-untyped-def]
     dev = _live(team, title="Python Developer", workplace_type="remote")
     nurse = _live(team, title="Registered Nurse", employment_type="contract")
     res = client.get("/api/v1/jobs/")
@@ -57,7 +57,7 @@ def test_list_search_filters_and_ordering(client, team) -> None:  # type: ignore
     assert client.get("/api/v1/jobs/?page_size=1").json()["next"] is not None
 
 
-def test_list_hides_drafts_unlisted_paused_closed_and_suspended_orgs(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_list_hides_drafts_unlisted_paused_closed_and_suspended_orgs(client, team) -> None:  # type: ignore[no-untyped-def]
     from apps.jobs.tests.test_services import approved_job, draft_job
 
     draft_job(team)
@@ -77,7 +77,7 @@ def test_list_hides_drafts_unlisted_paused_closed_and_suspended_orgs(client, tea
     assert client.get(f"/api/v1/jobs/{visible.slug}/").status_code == 404
 
 
-def test_detail_by_slug_or_id_with_criteria_split(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_detail_by_slug_or_id_with_criteria_split(client, team) -> None:  # type: ignore[no-untyped-def]
     job = _live(team)
     by_slug = client.get(f"/api/v1/jobs/{job.slug}/")
     by_id = client.get(f"/api/v1/jobs/{job.pk}/")
@@ -91,7 +91,7 @@ def test_detail_by_slug_or_id_with_criteria_split(client, team) -> None:  # type
     assert client.get("/api/v1/jobs/does-not-exist/").status_code == 404
 
 
-def test_draft_job_is_404(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_draft_job_is_404(client, team) -> None:  # type: ignore[no-untyped-def]
     from apps.jobs.tests.test_services import draft_job
 
     job = draft_job(team)
@@ -99,7 +99,7 @@ def test_draft_job_is_404(client, team) -> None:  # type: ignore[no-untyped-def]
     assert client.get(f"/api/v1/jobs/{job.slug}/questions/").status_code == 404
 
 
-def test_closed_job_200_with_flag_then_410_after_90_days(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_closed_job_200_with_flag_then_410_after_90_days(client, team) -> None:  # type: ignore[no-untyped-def]
     job = _live(team)
     services.close(job, actor=team.hr_manager, reason="Position filled")
     res = client.get(f"/api/v1/jobs/{job.slug}/")
@@ -111,7 +111,7 @@ def test_closed_job_200_with_flag_then_410_after_90_days(client, team) -> None: 
     assert res.status_code == 410 and res.json()["error"]["code"] == "gone"
 
 
-def test_old_slug_redirects(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_old_slug_redirects(client, team) -> None:  # type: ignore[no-untyped-def]
     """EC-JOB-13."""
     job = _live(team)
     JobSlugRedirect.objects.create(old_slug="old-title-acme", job=job)
@@ -119,7 +119,7 @@ def test_old_slug_redirects(client, team) -> None:  # type: ignore[no-untyped-de
     assert res.status_code == 301 and res.json()["redirect"] == job.slug
 
 
-def test_questions_hide_scoring_and_knockout(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_questions_hide_scoring_and_knockout(client, team) -> None:  # type: ignore[no-untyped-def]
     from apps.jobs.tests.test_services import draft_job
 
     job = draft_job(team)
@@ -148,14 +148,14 @@ def test_questions_hide_scoring_and_knockout(client, team) -> None:  # type: ign
     assert "scoring" not in text and "knockout" not in text and "expected" not in text
 
 
-def test_paused_job_detail_visible_but_not_accepting(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_paused_job_detail_visible_but_not_accepting(client, team) -> None:  # type: ignore[no-untyped-def]
     job = _live(team)
     services.pause(job, actor=team.hr_manager)
     body = client.get(f"/api/v1/jobs/{job.slug}/").json()
     assert body["status"] == JobStatus.PAUSED and body["accepts_applications"] is False
 
 
-def test_salary_only_when_disclosed(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_salary_only_when_disclosed(client, team) -> None:  # type: ignore[no-untyped-def]
     hidden = _live(team, salary_min=800, salary_max=1200)
     shown = _live(
         team, salary_min=800, salary_max=1200, salary_disclosed=True, salary_currency="ZWG"
@@ -165,7 +165,7 @@ def test_salary_only_when_disclosed(client, team) -> None:  # type: ignore[no-un
     assert salary["currency"] == "ZWG" and salary["min"] == "800.00"
 
 
-def test_company_profile_lists_open_jobs(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_company_profile_lists_open_jobs(client, team) -> None:  # type: ignore[no-untyped-def]
     job = _live(team)
     closed = _live(team)
     services.close(closed, actor=team.hr_manager, reason="Position filled")
@@ -173,7 +173,7 @@ def test_company_profile_lists_open_jobs(client, team) -> None:  # type: ignore[
     assert [j["id"] for j in body["open_jobs"]] == [str(job.pk)]
 
 
-def test_sitemap_and_feeds(client, team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_sitemap_and_feeds(client, team) -> None:  # type: ignore[no-untyped-def]
     job = _live(team, title="Data <Analyst> & Co")
     sitemap = client.get("/api/v1/sitemap.xml")
     assert sitemap.status_code == 200 and sitemap["Content-Type"].startswith("application/xml")

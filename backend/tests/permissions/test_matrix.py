@@ -14,10 +14,10 @@ pytestmark = pytest.mark.django_db
 
 @pytest.mark.parametrize(("ep", "role"), CASES, ids=lambda v: str(v))
 def test_role_endpoint_matrix(ep: Endpoint, role: str) -> None:
-    ctx = build_ctx()
+    ctx = build_ctx(ep)
     client = APIClient()
     client.force_login(ctx.team.user_for(role))
-    resp = getattr(client, ep.method)(ep.path(ctx), ep.data(ctx), format="json")
+    resp = getattr(client, ep.method)(ep.path(ctx), ep.data(ctx), format="json", **ep.headers(ctx))
     expected = expected_status(ep, role)
     assert resp.status_code == expected, (str(ep), role, resp.status_code, resp.content[:300])
     if expected == 403:

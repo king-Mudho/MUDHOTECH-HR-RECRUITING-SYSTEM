@@ -80,7 +80,18 @@ class TenantQuerySet(models.QuerySet):
 
     @property
     def is_scoped(self) -> bool:
-        return self._mhrs_scoped or _where_filters_org(self.query.where)
+        return (
+            self._mhrs_scoped
+            or _where_filters_org(self.query.where)
+            or self._reached_from_tenant_instance()
+        )
+
+    def _reached_from_tenant_instance(self) -> bool:
+        """Related managers / prefetches of an already-loaded tenant object (``job.versions``,
+        ``version.criteria``) are scoped by that object: it could only have been loaded through
+        a scoped query, and services keep children in their parent's organisation."""
+        instance = getattr(self, "_hints", {}).get("instance")
+        return isinstance(instance, TenantModel) and instance.organisation_id is not None
 
     def _guard(self) -> None:
         if (

@@ -48,8 +48,8 @@ def is_assigned(membership: Membership, job: Any) -> bool:
 
 def jobs_visible_to(membership: Membership) -> QuerySet[Job]:
     qs = Job.objects.for_org(membership.organisation_id)
-    if membership.role in rbac.ADMIN_HR:
-        return qs
+    if membership.role in rbac.ADMIN_HR or membership.role == Role.AUDITOR:
+        return qs  # auditors read everything (write actions are denied by RBAC)
     if membership.role not in {Role.RECRUITER, Role.HIRING_MANAGER}:
         return qs.none()
     return qs.filter(assignments__membership=membership).distinct()

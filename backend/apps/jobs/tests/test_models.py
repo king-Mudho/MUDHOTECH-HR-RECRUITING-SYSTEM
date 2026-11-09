@@ -81,3 +81,18 @@ def test_search_vector_ranks_title_and_body() -> None:
 
 def test_plain_text_strips_markup() -> None:
     assert plain_text("<p>Hello <strong>world</strong></p>\n<script>x</script>") == "Hello world"
+
+
+@pytest.mark.usefixtures("tenant_guard")
+def test_related_managers_of_loaded_tenant_objects_count_as_scoped() -> None:
+    from apps.core.models import UnscopedTenantQueryError
+    from apps.jobs.models import JobCriterion
+
+    job = JobFactory()
+    loaded = Job.objects.for_org(job.organisation).get(pk=job.pk)
+    assert loaded.versions.count() == 1
+    version = loaded.versions.get()
+    assert version.criteria.all().count() == 1
+    assert list(loaded.locations.all()) == []
+    with pytest.raises(UnscopedTenantQueryError):
+        JobCriterion.objects.filter(job_version=version).count()

@@ -31,9 +31,14 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
 ## Rules
 1. Tenant models inherit `TenantModel`; query via `Model.objects.for_org(request.organisation)`; views subclass
    `TenantScopedViewSet`. `.unscoped()` only in vetted system code (relays, retention, platform admin).
+   Related managers/prefetches reached from an already-loaded tenant object (`job.versions`,
+   `version.criteria`) count as scoped; cross-org public reads (job board) use `.unscoped()` + explicit
+   status/visibility filters and `Prefetch(..., queryset=X.objects.unscoped())`.
    New org-scoped endpoint ⇒ add an `Endpoint` to `tests/tenancy/registry.py` (RBAC action + success code);
    the cross-tenant suite and the role matrix (`tests/permissions/matrix.py`, derived from
-   `apps/organisations/rbac.py`) then cover it automatically. Declare permissions explicitly on every view.
+   `apps/organisations/rbac.py`) then cover it automatically. Context-scoped `/hr/...` endpoints set `org_header=True`
+   (collection endpoints also `targets_object=False`); give each a `setup` that builds only what it
+   needs (`build_ctx(ep)` runs just that setup). Declare permissions explicitly on every view.
 2. Writes only through services; services wrap `transaction.atomic()`, lock rows with `select_for_update()` for
    state changes, call `audit.record(...)`, and `outbox.emit(...)` (never `.delay()` inside atomic).
 3. Application status changes ONLY via `apps.applications.services.transition()`. Consequential states require

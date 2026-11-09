@@ -60,6 +60,954 @@ paths:
               schema:
                 $ref: '#/components/schemas/CsrfToken'
           description: ''
+  /api/v1/hr/jobs/:
+    get:
+      operationId: hr_jobs_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: query
+        name: assigned
+        schema:
+          type: string
+          enum:
+          - me
+        description: Only my assignments
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - -created_at
+          - -updated_at
+          - closes_at
+          - title
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Title or reference contains
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Comma-separated statuses
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHRJobListList'
+          description: ''
+    post:
+      operationId: hr_jobs_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobWriteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/:
+    get:
+      operationId: hr_jobs_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+    patch:
+      operationId: hr_jobs_partial_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedJobPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedJobPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedJobPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/ai-suggestions/:
+    post:
+      operationId: hr_jobs_ai_suggestions
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suggestions'
+          description: ''
+  /api/v1/hr/jobs/{id}/approve/:
+    post:
+      operationId: hr_jobs_approve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/archive/:
+    post:
+      operationId: hr_jobs_archive
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/assignments/:
+    get:
+      operationId: hr_jobs_assignments
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssignmentList'
+          description: ''
+    put:
+      operationId: hr_jobs_assignments_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssignmentList'
+          description: ''
+  /api/v1/hr/jobs/{id}/close/:
+    post:
+      operationId: hr_jobs_close
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/criteria/:
+    put:
+      operationId: hr_jobs_criteria
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriteriaInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CriteriaInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CriteriaInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/duplicate/:
+    post:
+      operationId: hr_jobs_duplicate
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuplicateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DuplicateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DuplicateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/events/:
+    get:
+      operationId: hr_jobs_events
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobEventList'
+          description: ''
+  /api/v1/hr/jobs/{id}/extend-deadline/:
+    post:
+      operationId: hr_jobs_extend_deadline
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExtendRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExtendRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/lint/:
+    post:
+      operationId: hr_jobs_lint
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - in: query
+        name: stage
+        schema:
+          type: string
+          enum:
+          - publish
+          - submit
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Readiness'
+          description: ''
+  /api/v1/hr/jobs/{id}/new-version/:
+    post:
+      operationId: hr_jobs_new_version
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/pause/:
+    post:
+      operationId: hr_jobs_pause
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/publish/:
+    post:
+      operationId: hr_jobs_publish
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/questionnaire/:
+    put:
+      operationId: hr_jobs_questionnaire
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionnaireInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuestionnaireInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuestionnaireInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/questions/{key}/protected-exception/:
+    post:
+      operationId: hr_jobs_protected_exception
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - in: path
+        name: key
+        schema:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,59}$
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtectedExceptionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProtectedExceptionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProtectedExceptionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionOut'
+          description: ''
+  /api/v1/hr/jobs/{id}/reject/:
+    post:
+      operationId: hr_jobs_reject
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/resume/:
+    post:
+      operationId: hr_jobs_resume
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/rubric/:
+    put:
+      operationId: hr_jobs_rubric
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RubricInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RubricInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RubricInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/schedule/:
+    post:
+      operationId: hr_jobs_schedule
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/submit-for-approval/:
+    post:
+      operationId: hr_jobs_submit
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{id}/versions/:
+    get:
+      operationId: hr_jobs_versions
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVersionSummaryList'
+          description: ''
   /api/v1/invitations/{token}/:
     get:
       operationId: invitations_preview
@@ -1639,6 +2587,58 @@ components:
       - name
       - server_time
       - version
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        membership:
+          type: string
+          format: uuid
+          readOnly: true
+        role_on_job:
+          allOf:
+          - $ref: '#/components/schemas/RoleOnJobEnum'
+          readOnly: true
+        user_name:
+          type: string
+          readOnly: true
+        org_role:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - membership
+      - org_role
+      - role_on_job
+      - user_name
+    AssignmentInputRequest:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        role_on_job:
+          $ref: '#/components/schemas/RoleOnJobEnum'
+      required:
+      - membership_id
+      - role_on_job
+    AssignmentsInputRequest:
+      type: object
+      properties:
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssignmentInputRequest'
+      required:
+      - assignments
     BlankEnum:
       enum:
       - ''
@@ -1674,6 +2674,147 @@ components:
         * `legal` - Legal
         * `language` - Languages
         * `general` - General & soft skills
+    CommentRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          maxLength: 1000
+    CriteriaInputRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          minimum: 1
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/CriterionInputRequest'
+      required:
+      - criteria
+    Criterion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        order:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        importance:
+          allOf:
+          - $ref: '#/components/schemas/ImportanceEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        evidence_guidance:
+          type: string
+          readOnly: true
+        justification:
+          type: string
+          readOnly: true
+          description: Required when essential.
+        skill:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        qualification_level:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        min_months:
+          type: integer
+          readOnly: true
+          nullable: true
+        equivalents:
+          readOnly: true
+        rubric_category:
+          allOf:
+          - $ref: '#/components/schemas/RubricCategoryEnum'
+          readOnly: true
+        weight_within_category:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - description
+      - equivalents
+      - evidence_guidance
+      - id
+      - importance
+      - justification
+      - min_months
+      - order
+      - qualification_level
+      - rubric_category
+      - skill
+      - title
+      - type
+      - weight_within_category
+    CriterionInputRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+          maxLength: 16
+        importance:
+          type: string
+          minLength: 1
+          maxLength: 16
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+        evidence_guidance:
+          type: string
+          maxLength: 2000
+        justification:
+          type: string
+          maxLength: 2000
+        skill_id:
+          type: string
+          format: uuid
+          nullable: true
+        qualification_level_id:
+          type: string
+          format: uuid
+          nullable: true
+        min_months:
+          type: integer
+          nullable: true
+        equivalents:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          maxItems: 20
+        rubric_category:
+          type: string
+          maxLength: 16
+        weight_within_category:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+      required:
+      - importance
+      - title
+      - type
     CsrfToken:
       type: object
       properties:
@@ -1737,6 +2878,13 @@ components:
         * `one_active` - One active application per vacancy
         * `allow_resubmit_replace` - Resubmit replaces previous
         * `allow_multiple` - Allow multiple
+    DuplicateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
     EmploymentTypeEnum:
       enum:
       - full_time
@@ -1755,6 +2903,19 @@ components:
         * `attachment` - Attachment / industrial attachment
         * `temporary` - Temporary
         * `graduate_trainee` - Graduate trainee
+    ExtendRequest:
+      type: object
+      properties:
+        closes_at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - closes_at
+      - reason
     FrameworkEnum:
       enum:
       - ZW
@@ -1763,6 +2924,301 @@ components:
       description: |-
         * `ZW` - Zimbabwe
         * `INTL` - International
+    HRJobDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        reference_code:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/JobStatusEnum'
+          readOnly: true
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          readOnly: true
+        department:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        locations:
+          type: array
+          items:
+            type: string
+            format: uuid
+          readOnly: true
+        workplace_type:
+          allOf:
+          - $ref: '#/components/schemas/WorkplaceTypeEnum'
+          readOnly: true
+        employment_type:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentTypeEnum'
+          readOnly: true
+        seniority:
+          allOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          readOnly: true
+        openings:
+          type: integer
+          readOnly: true
+        closes_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        timezone:
+          type: string
+          readOnly: true
+        publish_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        current_version:
+          allOf:
+          - $ref: '#/components/schemas/VersionSummary'
+          nullable: true
+          readOnly: true
+        lock_version:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        salary_min:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        salary_max:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        salary_currency:
+          allOf:
+          - $ref: '#/components/schemas/SalaryCurrencyEnum'
+          readOnly: true
+        salary_period:
+          allOf:
+          - $ref: '#/components/schemas/SalaryPeriodEnum'
+          readOnly: true
+        salary_disclosed:
+          type: boolean
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        close_reason:
+          type: string
+          readOnly: true
+        published_version_number:
+          type: integer
+          readOnly: true
+        version:
+          allOf:
+          - $ref: '#/components/schemas/Version'
+          nullable: true
+          readOnly: true
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/Criterion'
+          readOnly: true
+        rubric:
+          allOf:
+          - $ref: '#/components/schemas/RubricInput'
+          readOnly: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOut'
+          readOnly: true
+      required:
+      - close_reason
+      - closed_at
+      - closes_at
+      - created_at
+      - criteria
+      - current_version
+      - department
+      - employment_type
+      - id
+      - locations
+      - lock_version
+      - openings
+      - publish_at
+      - published_at
+      - published_version_number
+      - questions
+      - reference_code
+      - rubric
+      - salary_currency
+      - salary_disclosed
+      - salary_max
+      - salary_min
+      - salary_period
+      - seniority
+      - slug
+      - start_date
+      - status
+      - timezone
+      - title
+      - updated_at
+      - version
+      - visibility
+      - workplace_type
+    HRJobList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        reference_code:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/JobStatusEnum'
+          readOnly: true
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          readOnly: true
+        department:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        locations:
+          type: array
+          items:
+            type: string
+            format: uuid
+          readOnly: true
+        workplace_type:
+          allOf:
+          - $ref: '#/components/schemas/WorkplaceTypeEnum'
+          readOnly: true
+        employment_type:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentTypeEnum'
+          readOnly: true
+        seniority:
+          allOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          readOnly: true
+        openings:
+          type: integer
+          readOnly: true
+        closes_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        timezone:
+          type: string
+          readOnly: true
+        publish_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        current_version:
+          allOf:
+          - $ref: '#/components/schemas/VersionSummary'
+          nullable: true
+          readOnly: true
+        lock_version:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - closed_at
+      - closes_at
+      - created_at
+      - current_version
+      - department
+      - employment_type
+      - id
+      - locations
+      - lock_version
+      - openings
+      - publish_at
+      - published_at
+      - reference_code
+      - seniority
+      - slug
+      - status
+      - timezone
+      - title
+      - updated_at
+      - visibility
+      - workplace_type
+    ImportanceEnum:
+      enum:
+      - essential
+      - preferred
+      type: string
+      description: |-
+        * `essential` - Essential
+        * `preferred` - Preferred
     Invitation:
       type: object
       properties:
@@ -1854,6 +3310,165 @@ components:
       - organisation_slug
       - role
       - status
+    JobEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        action:
+          type: string
+          readOnly: true
+        from_status:
+          type: string
+          readOnly: true
+        to_status:
+          type: string
+          readOnly: true
+        actor:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        reason:
+          type: string
+          readOnly: true
+        version_number:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - action
+      - actor
+      - created_at
+      - from_status
+      - id
+      - reason
+      - to_status
+      - version_number
+    JobStatusEnum:
+      enum:
+      - draft
+      - in_review
+      - approved
+      - scheduled
+      - published
+      - paused
+      - closed
+      - archived
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `in_review` - In review
+        * `approved` - Approved
+        * `scheduled` - Scheduled
+        * `published` - Published
+        * `paused` - Paused
+        * `closed` - Closed
+        * `archived` - Archived
+    JobVersionStatusEnum:
+      enum:
+      - draft
+      - in_review
+      - approved
+      - superseded
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `in_review` - In review
+        * `approved` - Approved
+        * `superseded` - Superseded
+    JobWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        reference_code:
+          type: string
+          maxLength: 50
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        workplace_type:
+          $ref: '#/components/schemas/WorkplaceTypeEnum'
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        seniority:
+          oneOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        openings:
+          type: integer
+          maximum: 1000
+          minimum: 1
+        closes_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        salary_min:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        salary_max:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        salary_currency:
+          $ref: '#/components/schemas/SalaryCurrencyEnum'
+        salary_period:
+          $ref: '#/components/schemas/SalaryPeriodEnum'
+        salary_disclosed:
+          type: boolean
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        department_id:
+          type: string
+          format: uuid
+          nullable: true
+        location_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+        summary:
+          type: string
+          maxLength: 2000
+        responsibilities_html:
+          type: string
+          maxLength: 20000
+        requirements_html:
+          type: string
+          maxLength: 20000
+        benefits_html:
+          type: string
+          maxLength: 20000
+        required_documents:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 10
+        change_note:
+          type: string
+          maxLength: 500
+      required:
+      - title
     Location:
       type: object
       properties:
@@ -2241,6 +3856,29 @@ components:
         * `active` - Active
         * `suspended` - Suspended
         * `closed` - Closed
+    PaginatedAssignmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
     PaginatedDepartmentList:
       type: object
       required:
@@ -2264,6 +3902,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Department'
+    PaginatedHRJobListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HRJobList'
     PaginatedInvitationList:
       type: object
       required:
@@ -2287,6 +3948,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Invitation'
+    PaginatedJobEventList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobEvent'
     PaginatedLocationList:
       type: object
       required:
@@ -2402,6 +4086,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Skill'
+    PaginatedVersionSummaryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionSummary'
     PatchedDepartmentRequest:
       type: object
       properties:
@@ -2409,6 +4116,93 @@ components:
           type: string
           minLength: 1
           maxLength: 150
+    PatchedJobPatchRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        reference_code:
+          type: string
+          maxLength: 50
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        workplace_type:
+          $ref: '#/components/schemas/WorkplaceTypeEnum'
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        seniority:
+          oneOf:
+          - $ref: '#/components/schemas/SeniorityEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        openings:
+          type: integer
+          maximum: 1000
+          minimum: 1
+        closes_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        salary_min:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        salary_max:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        salary_currency:
+          $ref: '#/components/schemas/SalaryCurrencyEnum'
+        salary_period:
+          $ref: '#/components/schemas/SalaryPeriodEnum'
+        salary_disclosed:
+          type: boolean
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        department_id:
+          type: string
+          format: uuid
+          nullable: true
+        location_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+        summary:
+          type: string
+          maxLength: 2000
+        responsibilities_html:
+          type: string
+          maxLength: 20000
+        requirements_html:
+          type: string
+          maxLength: 20000
+        benefits_html:
+          type: string
+          maxLength: 20000
+        required_documents:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 10
+        change_note:
+          type: string
+          maxLength: 500
+        lock_version:
+          type: integer
+          minimum: 1
     PatchedLocationRequest:
       type: object
       properties:
@@ -2664,6 +4458,15 @@ components:
           minimum: 0
       required:
       - version
+    ProtectedExceptionRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
     PublicCompany:
       type: object
       properties:
@@ -3050,6 +4853,216 @@ components:
       - id
       - name
       - rank
+    QuestionInputRequest:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        section:
+          type: string
+          maxLength: 120
+        type:
+          type: string
+          minLength: 1
+          maxLength: 24
+        prompt:
+          type: string
+          maxLength: 1000
+        help_text:
+          type: string
+          maxLength: 1000
+        required:
+          type: boolean
+          default: true
+        config:
+          type: object
+          additionalProperties: {}
+        branching:
+          type: object
+          additionalProperties: {}
+        scoring:
+          type: object
+          additionalProperties: {}
+        is_knockout:
+          type: boolean
+          default: false
+        knockout_expected:
+          nullable: true
+        criterion_id:
+          type: string
+          format: uuid
+          nullable: true
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOptionInputRequest'
+      required:
+      - key
+      - prompt
+      - type
+    QuestionOptionInput:
+      type: object
+      properties:
+        label:
+          type: string
+          maxLength: 200
+        value:
+          type: string
+          maxLength: 100
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - label
+      - value
+    QuestionOptionInputRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        value:
+          type: string
+          minLength: 1
+          maxLength: 100
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - label
+      - value
+    QuestionOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        section:
+          type: string
+        order:
+          type: integer
+        type:
+          type: string
+        prompt:
+          type: string
+        help_text:
+          type: string
+        required:
+          type: boolean
+        config:
+          type: object
+          additionalProperties: {}
+        branching:
+          type: object
+          additionalProperties: {}
+        scoring:
+          type: object
+          additionalProperties: {}
+        is_knockout:
+          type: boolean
+        knockout_expected:
+          nullable: true
+        criterion_id:
+          type: string
+          format: uuid
+          nullable: true
+        protected_topic_flag:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        protected_exception_reason:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOptionInput'
+      required:
+      - branching
+      - config
+      - criterion_id
+      - help_text
+      - id
+      - is_knockout
+      - key
+      - knockout_expected
+      - options
+      - order
+      - prompt
+      - protected_exception_reason
+      - protected_topic_flag
+      - required
+      - scoring
+      - section
+      - type
+    QuestionnaireInputRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          minimum: 1
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionInputRequest'
+      required:
+      - questions
+    Readiness:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        stage:
+          type: string
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadinessCheck'
+        warnings:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - checks
+      - ready
+      - stage
+      - warnings
+    ReadinessCheck:
+      type: object
+      properties:
+        id:
+          type: string
+        ok:
+          type: boolean
+        message:
+          type: string
+        blocking:
+          type: boolean
+        details:
+          type: object
+          additionalProperties: {}
+      required:
+      - blocking
+      - details
+      - id
+      - message
+      - ok
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
     RequiredReasonRequest:
       type: object
       properties:
@@ -3082,6 +5095,121 @@ components:
         * `hiring_manager` - Hiring manager
         * `panelist` - Interview panel member
         * `auditor` - Auditor
+    RoleOnJobEnum:
+      enum:
+      - recruiter
+      - hiring_manager
+      - approver
+      type: string
+      description: |-
+        * `recruiter` - Recruiter
+        * `hiring_manager` - Hiring manager
+        * `approver` - Approver
+    RubricBand:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 100
+          minimum: 0
+        descriptor:
+          type: string
+          maxLength: 300
+      required:
+      - descriptor
+      - score
+    RubricBandRequest:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 100
+          minimum: 0
+        descriptor:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - descriptor
+      - score
+    RubricCategory:
+      type: object
+      properties:
+        key:
+          type: string
+          maxLength: 16
+        label:
+          type: string
+          maxLength: 100
+        weight:
+          type: integer
+        bands:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricBand'
+      required:
+      - bands
+      - key
+      - weight
+    RubricCategoryEnum:
+      enum:
+      - technical
+      - experience
+      - competency
+      - qualification
+      - answers
+      type: string
+      description: |-
+        * `technical` - Technical skills
+        * `experience` - Relevant experience
+        * `competency` - Job competencies
+        * `qualification` - Qualifications
+        * `answers` - Screening answers
+    RubricCategoryRequest:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 16
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        weight:
+          type: integer
+        bands:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricBandRequest'
+      required:
+      - bands
+      - key
+      - weight
+    RubricInput:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          minimum: 1
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricCategory'
+      required:
+      - categories
+    RubricInputRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          minimum: 1
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricCategoryRequest'
+      required:
+      - categories
     Salary:
       type: object
       properties:
@@ -3104,6 +5232,34 @@ components:
       - max
       - min
       - period
+    SalaryCurrencyEnum:
+      enum:
+      - USD
+      - ZWG
+      type: string
+      description: |-
+        * `USD` - US dollar
+        * `ZWG` - Zimbabwe Gold
+    SalaryPeriodEnum:
+      enum:
+      - hour
+      - day
+      - month
+      - year
+      type: string
+      description: |-
+        * `hour` - per hour
+        * `day` - per day
+        * `month` - per month
+        * `year` - per year
+    ScheduleRequest:
+      type: object
+      properties:
+        publish_at:
+          type: string
+          format: date-time
+      required:
+      - publish_at
     SeniorityEnum:
       enum:
       - entry
@@ -3169,6 +5325,48 @@ components:
       - id
       - is_custom
       - slug
+    Suggestions:
+      type: object
+      properties:
+        engine:
+          type: string
+        requires_acceptance:
+          type: boolean
+        criteria:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - criteria
+      - engine
+      - questions
+      - requires_acceptance
+    TypeEnum:
+      enum:
+      - skill
+      - experience
+      - qualification
+      - certification
+      - competency
+      - language
+      - licence
+      - eligibility
+      type: string
+      description: |-
+        * `skill` - Skill
+        * `experience` - Experience
+        * `qualification` - Qualification
+        * `certification` - Certification
+        * `competency` - Competency
+        * `language` - Language
+        * `licence` - Licence
+        * `eligibility` - Eligibility
     UserSession:
       type: object
       properties:
@@ -3199,6 +5397,123 @@ components:
       - is_current
       - last_seen_at
       - user_agent
+    Version:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        number:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/JobVersionStatusEnum'
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        responsibilities_html:
+          type: string
+          readOnly: true
+        requirements_html:
+          type: string
+          readOnly: true
+        benefits_html:
+          type: string
+          readOnly: true
+        required_documents:
+          readOnly: true
+        change_note:
+          type: string
+          readOnly: true
+        submitted_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        approved_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - approved_at
+      - approved_by
+      - benefits_html
+      - change_note
+      - created_at
+      - id
+      - number
+      - required_documents
+      - requirements_html
+      - responsibilities_html
+      - status
+      - submitted_at
+      - submitted_by
+      - summary
+    VersionSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        number:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/JobVersionStatusEnum'
+          readOnly: true
+        change_note:
+          type: string
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - approved_at
+      - change_note
+      - created_at
+      - id
+      - number
+      - status
+      - submitted_at
+    VisibilityEnum:
+      enum:
+      - public
+      - unlisted
+      type: string
+      description: |-
+        * `public` - Public (listed)
+        * `unlisted` - Unlisted (link only)
     WorkplaceTypeEnum:
       enum:
       - on_site

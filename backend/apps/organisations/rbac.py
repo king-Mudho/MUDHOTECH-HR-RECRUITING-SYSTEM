@@ -36,6 +36,7 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "jobs.create": RECRUITING,
     "jobs.approve": ADMIN_HR,
     "jobs.publish": ADMIN_HR,
+    "jobs.assign": ADMIN_HR,
     "questions.protected_exception": ADMIN_HR,
     "applications.view": RECRUITING | {Role.HIRING_MANAGER},
     "applications.transition": RECRUITING,

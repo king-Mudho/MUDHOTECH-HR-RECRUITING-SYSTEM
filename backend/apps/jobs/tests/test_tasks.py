@@ -12,7 +12,7 @@ from django.conf import settings
 from apps.core.time import now
 from apps.jobs import services, tasks
 from apps.jobs.models import Job, JobEvent, JobStatus
-from apps.jobs.tests.test_services import approved_job, published_job, team  # noqa: F401
+from apps.jobs.tests.test_services import approved_job, published_job
 
 pytestmark = pytest.mark.django_db
 
@@ -22,7 +22,7 @@ def test_beat_schedule_registers_both_tasks() -> None:
     assert {"apps.jobs.tasks.publish_scheduled_jobs", "apps.jobs.tasks.close_expired_jobs"} <= names
 
 
-def test_catch_up_publishes_overdue_scheduled_jobs_once(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_catch_up_publishes_overdue_scheduled_jobs_once(team) -> None:  # type: ignore[no-untyped-def]
     """EC-JOB-18: publish_at passed while the system was down -> published on the next run."""
     job = approved_job(team)
     services.schedule(job, actor=team.hr_manager, publish_at=now() + timedelta(hours=1))
@@ -35,7 +35,7 @@ def test_catch_up_publishes_overdue_scheduled_jobs_once(team) -> None:  # type: 
     assert JobEvent.objects.for_org(team.org).filter(job=job, action="published").count() == 1
 
 
-def test_scheduled_job_past_its_deadline_is_not_published(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_scheduled_job_past_its_deadline_is_not_published(team) -> None:  # type: ignore[no-untyped-def]
     job = approved_job(team)
     services.schedule(job, actor=team.hr_manager, publish_at=now() + timedelta(hours=1))
     Job.objects.for_org(team.org).filter(pk=job.pk).update(
@@ -47,7 +47,7 @@ def test_scheduled_job_past_its_deadline_is_not_published(team) -> None:  # type
     assert JobEvent.objects.for_org(team.org).filter(job=job, action="schedule_cancelled").exists()
 
 
-def test_close_expired_jobs_respects_job_timezone(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_close_expired_jobs_respects_job_timezone(team) -> None:  # type: ignore[no-untyped-def]
     """EC-JOB-05: 23:59 Africa/Harare is 21:59 UTC; the job closes at that instant."""
     job = published_job(team)
     harare = zoneinfo.ZoneInfo("Africa/Harare")
@@ -67,7 +67,7 @@ def test_close_expired_jobs_respects_job_timezone(team) -> None:  # type: ignore
     assert JobEvent.objects.for_org(team.org).filter(job=job, action="auto_closed").count() == 1
 
 
-def test_paused_jobs_also_close_and_failures_are_isolated(team) -> None:  # type: ignore[no-untyped-def]  # noqa: F811
+def test_paused_jobs_also_close_and_failures_are_isolated(team) -> None:  # type: ignore[no-untyped-def]
     a = published_job(team)
     b = published_job(team)
     services.pause(b, actor=team.hr_manager)

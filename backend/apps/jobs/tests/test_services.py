@@ -48,17 +48,6 @@ QUESTIONS = [
 ]
 
 
-@pytest.fixture
-def team() -> OrgTeam:
-    t = make_org_with_team()
-    t.org.verified_at = now()
-    t.org.save(update_fields=["verified_at"])
-    OrganisationPolicy.objects.filter(organisation=t.org).update(
-        privacy_notice="We process your application data to assess suitability for the role."
-    )
-    return t
-
-
 def draft_job(team: OrgTeam, **extra: Any) -> Job:
     loc = LocationFactory(organisation=team.org)
     data = {

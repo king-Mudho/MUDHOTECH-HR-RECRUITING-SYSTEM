@@ -564,7 +564,7 @@ def set_rubric(
         }
         for c in categories
     ]
-    rubric, _ = Rubric.objects.update_or_create(
+    rubric, _ = Rubric.objects.for_org(job.organisation_id).update_or_create(
         job_version=version,
         defaults={"organisation": job.organisation, "categories": clean, "total_weight": 100},
     )
@@ -594,7 +594,7 @@ def set_questionnaire(
                 "Linked criterion not found on this version.",
                 details={str(i): {"criterion_id": ["Unknown criterion."]}},
             )
-    questionnaire, _ = Questionnaire.objects.get_or_create(
+    questionnaire, _ = Questionnaire.objects.for_org(job.organisation_id).get_or_create(
         job_version=version, defaults={"organisation": job.organisation}
     )
     replace_questions(questionnaire, questions, actor=actor)

@@ -14,25 +14,26 @@ from .registry import REGISTRY, Endpoint, build_ctx
 pytestmark = pytest.mark.django_db
 
 
-def call(client: APIClient, ep: Endpoint, ctx: Any, **headers: Any) -> Any:
+def call(client: APIClient, ep: Endpoint, ctx: Any, header_ctx: Any = None) -> Any:
+    headers = ep.headers(header_ctx or ctx)
     return getattr(client, ep.method)(ep.path(ctx), ep.data(ctx), format="json", **headers)
 
 
 @pytest.mark.parametrize("ep", REGISTRY, ids=str)
 def test_member_of_other_org_gets_404(ep: Endpoint) -> None:
-    victim = build_ctx()
-    attacker = build_ctx()
+    victim = build_ctx(ep)
+    attacker = build_ctx(ep)
     client = APIClient()
     client.force_login(attacker.team.admin)  # most privileged role in their own org
-    resp = call(client, ep, victim)
+    resp = call(client, ep, victim, header_ctx=attacker if ep.targets_object else victim)
     assert resp.status_code == 404, (str(ep), resp.status_code, resp.content[:200])
     assert resp.json()["error"]["code"] == "not_found"
 
 
 @pytest.mark.parametrize("ep", [e for e in REGISTRY if e.is_list], ids=str)
 def test_lists_never_include_other_org_rows(ep: Endpoint) -> None:
-    victim = build_ctx()
-    attacker = build_ctx()
+    victim = build_ctx(ep)
+    attacker = build_ctx(ep)
     client = APIClient()
     client.force_login(attacker.team.admin)
     rows = call(client, ep, attacker).json()["results"]
