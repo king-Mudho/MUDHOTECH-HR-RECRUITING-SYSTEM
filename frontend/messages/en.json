@@ -43,7 +43,9 @@
     "hrNavigation": "HR navigation",
     "candidateNavigation": "Candidate navigation",
     "adminNavigation": "Platform administration navigation",
-    "footerNavigation": "Footer"
+    "footerNavigation": "Footer",
+    "security": "Account security",
+    "signOut": "Sign out"
   },
   "footer": {
     "privacy": "Privacy",
@@ -93,5 +95,155 @@
     "paused": "Paused",
     "archived": "Archived",
     "unknown": "Unknown"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalidEmail": "Enter a valid email address.",
+    "passwordTooShort": "Use at least 10 characters.",
+    "passwordsDoNotMatch": "The passwords do not match.",
+    "mustAcceptTerms": "You need to accept the terms to continue.",
+    "invalidCode": "Enter the code from your authenticator app or a recovery code."
+  },
+  "forms": {
+    "errorSummaryTitle": "Please fix the following:"
+  },
+  "auth": {
+    "titles": {
+      "signIn": "Sign in",
+      "register": "Create account",
+      "verifyEmail": "Confirm your email",
+      "forgotPassword": "Forgot password",
+      "resetPassword": "Choose a new password"
+    },
+    "fields": {
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "newEmail": "New email address",
+      "code": "Verification code"
+    },
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Welcome back. Sign in to continue.",
+      "submit": "Sign in",
+      "signingIn": "Signing in…",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "New here?",
+      "createAccount": "Create an account",
+      "genericError": "We couldn't sign you in with those details. Check them and try again.",
+      "mfaTitle": "Two-factor authentication",
+      "mfaBody": "Enter the 6-digit code from your authenticator app.",
+      "mfaCodeHelp": "Lost your device? Enter one of your recovery codes instead.",
+      "verify": "Verify",
+      "verifying": "Verifying…",
+      "invalidCode": "That code didn't work. Try again.",
+      "verifyTitle": "Confirm your email first",
+      "verifyBody": "We sent a confirmation link to your email address.",
+      "verifyHint": "Open the link in that email to activate your account, then sign in. Check your spam folder if you can't find it.",
+      "backToSignIn": "Back to sign in"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Apply for jobs and track your applications in one place.",
+      "submit": "Create account",
+      "creating": "Creating account…",
+      "passwordHelp": "At least {min} characters. A short phrase you can remember works well.",
+      "terms": "Terms",
+      "termsLabel": "I agree to the <terms>Terms of use</terms> and have read the <privacy>Privacy notice</privacy>.",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxBody": "If {email} can be used, we've sent a link to confirm it.",
+      "checkInboxHint": "Open the link in the email to finish creating your account. It can take a few minutes to arrive.",
+      "goToSignIn": "Go to sign in"
+    },
+    "verify": {
+      "title": "Confirm your email address",
+      "body": "Select the button below to confirm this email address belongs to you.",
+      "confirm": "Confirm my email",
+      "confirming": "Confirming…",
+      "doneTitle": "Email confirmed",
+      "doneBody": "Thanks - your email address is confirmed.",
+      "continue": "Continue",
+      "invalidTitle": "This link has expired or was already used",
+      "invalidBody": "Sign in and we'll send you a fresh confirmation link.",
+      "signInToResend": "Sign in"
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a link to reset it.",
+      "submit": "Send reset link",
+      "sentTitle": "Check your email",
+      "sentBody": "If an account exists for that address, we've sent a link to reset the password. The link works once and expires in 1 hour.",
+      "backToSignIn": "Back to sign in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "submit": "Save new password",
+      "passwordHelp": "At least {min} characters.",
+      "doneTitle": "Password updated",
+      "doneBody": "Your password has been changed. You can now sign in.",
+      "signIn": "Sign in",
+      "expiredTitle": "This reset link is no longer valid",
+      "expiredBody": "Reset links work once and expire after 1 hour. Request a new one.",
+      "requestNew": "Request a new link"
+    },
+    "gate": {
+      "forbiddenBody": "Your account doesn't have access to this area.",
+      "goHome": "Go to home page",
+      "mfaBanner": "Your role requires two-factor authentication. Please <link>set it up</link> before {date}."
+    }
+  },
+  "account": {
+    "title": "Account security",
+    "subtitle": "Manage your password, email, two-factor authentication and signed-in devices.",
+    "reauth": {
+      "title": "Confirm it's you",
+      "body": "For your security, enter your password to continue.",
+      "confirm": "Confirm"
+    },
+    "password": {
+      "title": "Change password",
+      "submit": "Change password",
+      "changed": "Your password has been changed.",
+      "help": "At least {min} characters."
+    },
+    "email": {
+      "title": "Email address",
+      "current": "Current address: {email}",
+      "help": "We'll send a confirmation link to the new address. Your current address stays active until you confirm.",
+      "submit": "Change email",
+      "sent": "We sent a confirmation link to {email}."
+    },
+    "mfa": {
+      "title": "Two-factor authentication",
+      "description": "Protect your account with a code from an authenticator app (Google Authenticator, Microsoft Authenticator, Authy…).",
+      "requiredTitle": "Required for your role",
+      "graceBody": "Set up two-factor authentication before {date} to keep access to HR features.",
+      "enforcedBody": "Access to HR features is paused until you set up two-factor authentication.",
+      "enabled": "Two-factor authentication is on.",
+      "setUp": "Set up two-factor authentication",
+      "step1": "Scan the QR code with your authenticator app (or enter the key manually).",
+      "step2": "Enter the 6-digit code the app shows.",
+      "qrAlt": "QR code to add this account to an authenticator app",
+      "manualKey": "Key:",
+      "activate": "Turn on",
+      "showCodes": "Show recovery codes",
+      "codesTitle": "Recovery codes",
+      "codesBody": "Store these somewhere safe. Each code works once if you lose your device."
+    },
+    "sessions": {
+      "title": "Signed-in devices",
+      "description": "Sign out of devices you don't recognise.",
+      "loading": "Loading sessions",
+      "unknownDevice": "Unknown device",
+      "meta": "Network {ip} · last active {lastSeen}",
+      "thisDevice": "This device",
+      "revoke": "Sign out",
+      "revokeOthers": "Sign out of all other devices",
+      "revokedCount": "Signed out of {count, plural, one {# device} other {# devices}}."
+    }
   }
 }

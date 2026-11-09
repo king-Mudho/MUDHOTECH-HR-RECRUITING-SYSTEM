@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { UserMenu } from "@/components/layout/user-menu";
+import { AuthGate } from "@/features/auth/components/auth-gate";
 import { ADMIN_NAV } from "@/components/layout/navigation";
 import { NotificationBell } from "@/components/layout/top-bar-actions";
 
@@ -13,9 +15,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       navLabelKey="adminNavigation"
       areaLabel={t("adminTitle")}
       homeHref="/admin/dashboard"
-      topBarActions={<NotificationBell />}
+      topBarActions={
+        <>
+          <NotificationBell />
+          <UserMenu />
+        </>
+      }
     >
-      {children}
+      <AuthGate area="admin">{children}</AuthGate>
     </AppShell>
   );
 }

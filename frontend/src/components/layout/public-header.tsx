@@ -8,7 +8,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
+import { useMe } from "@/features/auth/session";
+
 import { Brand } from "./brand";
+import { UserMenu } from "./user-menu";
 
 const LINKS = [
   { href: "/jobs", key: "jobs" },
@@ -20,6 +23,7 @@ export function PublicHeader() {
   const t = useTranslations("nav");
   const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
+  const { data: me } = useMe();
   return (
     <header className="bg-background/95 sticky top-0 z-30 border-b backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4">
@@ -39,12 +43,18 @@ export function PublicHeader() {
           </ul>
         </nav>
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" className="min-h-10">
-            <Link href="/login">{t("login")}</Link>
-          </Button>
-          <Button asChild className="min-h-10">
-            <Link href="/register">{t("register")}</Link>
-          </Button>
+          {me ? (
+            <UserMenu showDashboard />
+          ) : (
+            <>
+              <Button asChild variant="ghost" className="min-h-10">
+                <Link href="/login">{t("login")}</Link>
+              </Button>
+              <Button asChild className="min-h-10">
+                <Link href="/register">{t("register")}</Link>
+              </Button>
+            </>
+          )}
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
