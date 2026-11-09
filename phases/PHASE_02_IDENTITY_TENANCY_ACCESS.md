@@ -21,7 +21,7 @@ orgs; every request is tenant-scoped and authorised server-side; all sensitive a
 - [x] **P02-T11** — Tests: permission matrix (parametrised), **cross-tenant suite scaffold** (`tests/tenancy/`) that later phases extend automatically by registering endpoints, invitation flows, last-admin, MFA enforcement, lockout, audit chain integrity.
 - [x] **P02-T12** — Frontend auth: `/register`, `/login` (+MFA step), `/verify-email`, `/forgot-password`, `/reset-password`, account settings (password, email, MFA setup with QR + recovery codes, sessions). Auth context from `/me`; route guards per group (middleware redirect for unauthenticated; role-based UI gating — server remains source of truth).
 - [x] **P02-T13** — Frontend org: employer sign-up flow (`/employers` → create organisation), HR settings pages: organisation profile (logo upload placeholder until Phase 4 uploader → use simple direct upload), departments, locations, team (invite, role change, deactivate), policies; org switcher; invitation accept page.
-- [ ] **P02-T14** — Admin UI: `/admin/organisations` list + verify/suspend actions.
+- [x] **P02-T14** — Admin UI: `/admin/organisations` list + verify/suspend actions.
 
 ## Edge cases
 EC-ACC-01..08, EC-ACC-11, EC-ACC-12, EC-ORG-01..09 (EC-ORG-09 reassignment list completed in Phase 03 once jobs exist).

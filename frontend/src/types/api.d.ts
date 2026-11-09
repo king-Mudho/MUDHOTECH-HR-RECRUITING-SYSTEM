@@ -650,12 +650,12 @@ export interface components {
             /** Format: uuid */
             readonly organisation_id: string;
             readonly user: components["schemas"]["MemberUser"];
-            role: components["schemas"]["RoleEnum"];
-            status?: components["schemas"]["MembershipStatusEnum"];
+            readonly role: components["schemas"]["RoleEnum"];
+            readonly status: components["schemas"]["MembershipStatusEnum"];
             /** Format: date-time */
-            joined_at?: string;
+            readonly joined_at: string;
             /** Format: date-time */
-            deactivated_at?: string | null;
+            readonly deactivated_at: string | null;
             readonly mfa_enabled: boolean;
         };
         /**
@@ -849,18 +849,19 @@ export interface components {
         PlatformOrganisation: {
             /** Format: uuid */
             readonly id: string;
-            name: string;
-            slug: string;
-            status?: components["schemas"]["OrganisationStatusEnum"];
-            industry?: string;
-            city?: string;
-            country?: string;
-            website?: string;
-            registration_number?: string;
+            readonly name: string;
+            readonly slug: string;
+            readonly status: components["schemas"]["OrganisationStatusEnum"];
+            readonly industry: string;
+            readonly city: string;
+            readonly country: string;
+            /** Format: uri */
+            readonly website: string;
+            readonly registration_number: string;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
-            verified_at?: string | null;
+            readonly verified_at: string | null;
             /** Format: email */
             readonly verified_by_email: string | null;
             readonly member_count: number;

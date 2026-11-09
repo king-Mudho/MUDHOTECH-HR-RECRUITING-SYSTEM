@@ -94,7 +94,11 @@
     "closed": "Closed",
     "paused": "Paused",
     "archived": "Archived",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "pending_verification": "Pending verification",
+    "active": "Active",
+    "suspended": "Suspended",
+    "deactivated": "Deactivated"
   },
   "validation": {
     "required": "This field is required.",
@@ -395,6 +399,32 @@
       "status_revoked": "This invitation was revoked.",
       "status_accepted": "This invitation has already been used.",
       "genericError": "We couldn't accept the invitation. Please try again."
+    }
+  },
+  "admin": {
+    "organisations": {
+      "title": "Organisations",
+      "subtitle": "Verify new employers and manage tenant status. Every action is audited.",
+      "subtitleReadOnly": "Read-only view for platform support.",
+      "filterLabel": "Filter by status",
+      "all": "All",
+      "search": "Search by name or registration number",
+      "empty": "No organisations match these filters",
+      "name": "Organisation",
+      "status": "Status",
+      "members": "Members",
+      "created": "Created",
+      "actions": "Actions",
+      "verify": "Verify",
+      "suspend": "Suspend",
+      "reactivate": "Reactivate",
+      "verifyTitle": "Verify {name}?",
+      "verifyBody": "Verified organisations can publish vacancies. Confirm you have checked their registration details.",
+      "suspendTitle": "Suspend {name}?",
+      "suspendBody": "Their public vacancies will be hidden, staff become read-only and processing pauses. Candidates see that recruitment is paused.",
+      "reactivateTitle": "Reactivate {name}?",
+      "reactivateBody": "Staff regain normal access. If the organisation was never verified it returns to pending verification.",
+      "error": "The action could not be completed. Please try again."
     }
   }
 }

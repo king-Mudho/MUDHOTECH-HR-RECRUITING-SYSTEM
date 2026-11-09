@@ -441,7 +441,7 @@ export function TeamSettings() {
                   </td>
                   <td className="py-2 pr-3">{m.mfa_enabled ? t("mfaOn") : t("mfaOff")}</td>
                   <td className="py-2 pr-3">
-                    <StatusBadge status={m.status === "active" ? "published" : "archived"} />
+                    <StatusBadge status={m.status} />
                   </td>
                   <td className="py-2 text-right">
                     {manage && m.status === "active" ? (

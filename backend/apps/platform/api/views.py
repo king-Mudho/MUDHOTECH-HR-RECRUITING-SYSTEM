@@ -43,6 +43,7 @@ class PlatformOrganisationSerializer(serializers.ModelSerializer):
             "verified_by_email",
             "member_count",
         ]
+        read_only_fields = fields
 
 
 class PlatformReasonSerializer(StrictSerializer):

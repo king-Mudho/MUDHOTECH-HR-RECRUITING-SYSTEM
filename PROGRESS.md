@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T14
+- **Current task:** P02-EXIT
 - **Last updated:** 2026-11-09
-- **Overall:** 30 / 193 tasks · 1 / 16 phases
+- **Overall:** 31 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -83,7 +83,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P02-T11 — Tests: permission matrix (parametrised), cross-tenant suite scaffold (`tests/tenancy/`) that later phases extend …
 - [x] P02-T12 — Frontend auth: `/register`, `/login` (+MFA step), `/verify-email`, `/forgot-password`, `/reset-password`, account …
 - [x] P02-T13 — Frontend org: employer sign-up flow (`/employers` → create organisation), HR settings pages: organisation profile …
-- [ ] P02-T14 — Admin UI: `/admin/organisations` list + verify/suspend actions
+- [x] P02-T14 — Admin UI: `/admin/organisations` list + verify/suspend actions
 - [ ] P02-EXIT — All exit criteria verified with evidence
 
 ### Phase 03 — Vacancy Management, Taxonomy & Public Job Board  (`phases/PHASE_03_VACANCIES_JOB_BOARD.md`)
@@ -354,3 +354,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T11 | Test scaffolds: tests/tenancy/registry.py (21 org endpoints, Ctx + setup hooks for later phases), cross-tenant suite (404 for every endpoint from another org's admin, list exclusion, foreign X-Org-Id audited, unauthenticated rejected), tests/permissions/matrix.py derived from rbac (21 endpoints x 6 roles), meta-test every DRF view declares permissions, integration: MFA enforced on staff API after grace, audit chain verifies after API activity; org publish guard assert_can_publish (EC-ORG-08); ec_coverage supports ranges/heading variants (Phase 02 19/19); 435 backend tests, 98% coverage | - |
 | 2026-11-09 | Impl | P02-T12 | Frontend auth: typed allauth headless client (CSRF bootstrap, 401 flows vs errors), zod schemas, accessible TextField + ErrorSummary, pages /login (+MFA step, verify-email notice, ?next with open-redirect guard), /register (no-enumeration 'check inbox'), /verify-email (explicit confirm, expired page), /forgot-password, /reset-password; /account/security (MFA setup with QR + recovery codes behind reauth dialog, change password, change email, sessions list/revoke/revoke-others); useMe auth context, AuthGate per area (MFA grace banner, forbidden state), UserMenu in shells/header, proxy.ts redirect for signed-out visitors; en.json strings; 21 new Vitest tests (43 total), build OK | Playwright auth journey in P02 exit verification |
 | 2026-11-09 | Impl | P02-T13 | Backend: POST /organisations/{id}/logo/ (Pillow verify + re-encode PNG <=512px, metadata stripped, private bucket, audited), logo_url presigned in org + company serializers, organisation_id on memberships, spectacular doc leak fixed. Frontend: /employers (pitch + create-org form -> active org -> settings), HR settings layout + tabs: organisation (profile + logo upload, verification/suspension notice), structure (departments/locations CRUD), team (members table w/ role change + deactivate ConfirmDialog with reason, invitations invite/resend/revoke), policies (lock_version, stale-conflict handling, read-only for HR managers); real OrgSwitcher (POST /me/active-org); /invitations/[token] accept page (signed-out sign-in path, expired/revoked/used/email-mismatch states); UI role helper mirroring rbac (hiding only); SelectField + ConfirmDialog; 13 component tests (56 total); 7 backend logo tests | - |
+| 2026-11-09 | Impl | P02-T14 | Admin UI /admin/organisations: status filter (pending by default), search, table (status badge, members, created), verify / suspend (required reason) / reactivate via ConfirmDialog, platform support read-only; output serializers marked read-only (precise OpenAPI types); status tones for org/membership states; 4 component tests (60 total) | - |

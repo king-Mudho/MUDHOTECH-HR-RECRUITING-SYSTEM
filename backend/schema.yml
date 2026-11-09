@@ -1638,24 +1638,33 @@ components:
           - $ref: '#/components/schemas/MemberUser'
           readOnly: true
         role:
-          $ref: '#/components/schemas/RoleEnum'
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
         status:
-          $ref: '#/components/schemas/MembershipStatusEnum'
+          allOf:
+          - $ref: '#/components/schemas/MembershipStatusEnum'
+          readOnly: true
         joined_at:
           type: string
           format: date-time
+          readOnly: true
         deactivated_at:
           type: string
           format: date-time
+          readOnly: true
           nullable: true
         mfa_enabled:
           type: boolean
           readOnly: true
       required:
+      - deactivated_at
       - id
+      - joined_at
       - mfa_enabled
       - organisation_id
       - role
+      - status
       - user
     MembershipStatusEnum:
       enum:
@@ -2091,32 +2100,31 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 200
+          readOnly: true
         slug:
           type: string
-          maxLength: 80
+          readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
         status:
-          $ref: '#/components/schemas/OrganisationStatusEnum'
+          allOf:
+          - $ref: '#/components/schemas/OrganisationStatusEnum'
+          readOnly: true
         industry:
           type: string
-          maxLength: 100
+          readOnly: true
         city:
           type: string
-          maxLength: 100
+          readOnly: true
         country:
           type: string
-          maxLength: 2
+          readOnly: true
         website:
-          oneOf:
-          - type: string
-            format: uri
-            maxLength: 200
-          - type: string
-            maxLength: 0
+          type: string
+          format: uri
+          readOnly: true
         registration_number:
           type: string
-          maxLength: 100
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -2124,6 +2132,7 @@ components:
         verified_at:
           type: string
           format: date-time
+          readOnly: true
           nullable: true
         verified_by_email:
           type: string
@@ -2134,12 +2143,19 @@ components:
           type: integer
           readOnly: true
       required:
+      - city
+      - country
       - created_at
       - id
+      - industry
       - member_count
       - name
+      - registration_number
       - slug
+      - status
+      - verified_at
       - verified_by_email
+      - website
     PlatformReasonRequest:
       type: object
       properties:

@@ -139,6 +139,7 @@ class MembershipSerializer(serializers.ModelSerializer):
             "deactivated_at",
             "mfa_enabled",
         ]
+        read_only_fields = fields
 
     def get_mfa_enabled(self, obj: Membership) -> bool:
         from apps.accounts.mfa import has_mfa

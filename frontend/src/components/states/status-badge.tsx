@@ -28,6 +28,10 @@ export const STATUS_TONES: Record<string, StatusTone> = {
   closed: "neutral",
   paused: "warning",
   archived: "neutral",
+  pending_verification: "warning",
+  active: "success",
+  suspended: "danger",
+  deactivated: "neutral",
 };
 
 const TONE_CLASSES: Record<StatusTone, string> = {
