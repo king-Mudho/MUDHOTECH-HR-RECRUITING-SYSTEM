@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from apps.core.exceptions import DomainError
 
 from .models import User
@@ -19,3 +21,11 @@ def require_verified_email(user: User) -> None:
         raise EmailUnverifiedError(
             details={"resend_endpoint": "/api/v1/auth/browser/v1/auth/email/verify/resend"}
         )
+
+
+def authed_user(request: Any) -> User:
+    """Narrow ``request.user`` to ``User`` in views that already require authentication."""
+    user = request.user
+    if not isinstance(user, User):
+        raise TypeError("authed_user() used on an unauthenticated request")
+    return user

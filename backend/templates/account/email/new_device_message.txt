@@ -1,0 +1,10 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+{% block content %}{% autoescape off %}{% blocktrans with when=when|date:"j M Y H:i T" %}Your account was just signed in to from a device or network we haven't seen before:
+
+- When: {{ when }}
+- Network: {{ ip }}
+- Browser: {{ user_agent }}
+
+If this was you, there is nothing to do. If not, change your password and sign out the unknown session here:
+{{ sessions_url }}{% endblocktrans %}{% endautoescape %}{% endblock content %}

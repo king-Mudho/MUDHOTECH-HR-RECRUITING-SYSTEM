@@ -46,8 +46,11 @@ def _on_password_reset(user: User, **_: Any) -> None:
 
 
 @receiver(user_logged_in)
-def _on_login(user: User, **_: Any) -> None:
+def _on_login(user: User, request: Any = None, **_: Any) -> None:
     # Starts the 7-day MFA grace period the first time a privileged user signs in.
     from .mfa import mfa_status
+    from .sessions import notify_if_new_device
 
     mfa_status(user)
+    if request is not None:
+        notify_if_new_device(user, request)

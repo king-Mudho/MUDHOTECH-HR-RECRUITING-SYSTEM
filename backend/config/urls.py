@@ -17,6 +17,7 @@ from apps.core.health import healthz, readyz
 api_v1_patterns = [
     path("", api_root, name="api-root"),
     path("csrf/", csrf, name="csrf"),
+    path("", include("apps.accounts.api.urls")),
 ]
 
 urlpatterns = [

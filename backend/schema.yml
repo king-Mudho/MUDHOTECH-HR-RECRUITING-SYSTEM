@@ -37,6 +37,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/CsrfToken'
           description: ''
+  /api/v1/me/sessions/:
+    get:
+      operationId: me_sessions_list
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSession'
+          description: ''
+  /api/v1/me/sessions/{session_id}/:
+    delete:
+      operationId: me_sessions_revoke
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/sessions/revoke-others/:
+    post:
+      operationId: me_sessions_revoke_others
+      description: '''Log out all other devices''.'
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevokedSessions'
+          description: ''
 components:
   schemas:
     ApiRoot:
@@ -60,6 +107,43 @@ components:
           type: string
       required:
       - csrf_token
+    RevokedSessions:
+      type: object
+      properties:
+        revoked:
+          type: integer
+      required:
+      - revoked
+    UserSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_seen_at:
+          type: string
+          format: date-time
+          readOnly: true
+        ip:
+          type: string
+          readOnly: true
+        user_agent:
+          type: string
+          readOnly: true
+        is_current:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - ip
+      - is_current
+      - last_seen_at
+      - user_agent
   securitySchemes:
     cookieAuth:
       type: apiKey

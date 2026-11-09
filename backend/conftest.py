@@ -43,3 +43,13 @@ def tenant_guard() -> Iterator[None]:
     token = tenant_guard_var.set(True)
     yield
     tenant_guard_var.reset(token)
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache() -> Iterator[None]:
+    """Rate-limit/lockout/flag state lives in the cache: isolate every test."""
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()
