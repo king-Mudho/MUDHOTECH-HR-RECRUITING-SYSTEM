@@ -27,10 +27,10 @@ orgs; every request is tenant-scoped and authorised server-side; all sensitive a
 EC-ACC-01..08, EC-ACC-11, EC-ACC-12, EC-ORG-01..09 (EC-ORG-09 reassignment list completed in Phase 03 once jobs exist).
 
 ## Exit criteria
-- [ ] Candidate and staff journeys work end to end in browser (manual + Playwright smoke).
-- [ ] Permission matrix + cross-tenant tests green; no endpoint without explicit permission class (test asserts all registered views declare permissions).
-- [ ] MFA enforced for privileged roles; audit chain verifies.
-- [ ] Listed EC ids have tests.
+- [x] Candidate and staff journeys work end to end in browser (manual + Playwright smoke). *(2026-11-09: e2e/auth.spec.ts 4/4 desktop Chromium + 6/6 mobile incl. smoke; Mailpit-verified signup, sign out/in, create org -> invite -> accept; axe clean on auth pages)*
+- [x] Permission matrix + cross-tenant tests green; no endpoint without explicit permission class (test asserts all registered views declare permissions). *(126 role x endpoint cases, 21 cross-tenant 404 cases, declaration meta-test; 442 backend tests, CI run 42570014917 green)*
+- [x] MFA enforced for privileged roles; audit chain verifies. *(grace -> 401 mfa_required on staff APIs, integration-tested; verify_audit_chain OK after API activity; tamper/delete detection tested)*
+- [x] Listed EC ids have tests. *(scripts/ec_coverage.py --phase 02: 19/19)*
 
 ## Verification
 `pytest apps/accounts apps/organisations apps/audit tests/tenancy tests/permissions -q` · `npx playwright test e2e/auth.spec.ts`

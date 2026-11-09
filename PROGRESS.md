@@ -5,16 +5,16 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-EXIT
+- **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
+- **Current task:** P03-T01
 - **Last updated:** 2026-11-09
-- **Overall:** 31 / 193 tasks · 1 / 16 phases
+- **Overall:** 31 / 193 tasks · 2 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
 |---|---|---|---|---|---|
 | 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | ✅ Done | 2026-11-08 |
-| 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | 🟦 In progress | |
+| 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ✅ Done | 2026-11-09 |
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ⬜ Not started | |
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ⬜ Not started | |
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ⬜ Not started | |
@@ -84,7 +84,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P02-T12 — Frontend auth: `/register`, `/login` (+MFA step), `/verify-email`, `/forgot-password`, `/reset-password`, account …
 - [x] P02-T13 — Frontend org: employer sign-up flow (`/employers` → create organisation), HR settings pages: organisation profile …
 - [x] P02-T14 — Admin UI: `/admin/organisations` list + verify/suspend actions
-- [ ] P02-EXIT — All exit criteria verified with evidence
+- [x] P02-EXIT — All exit criteria verified with evidence
 
 ### Phase 03 — Vacancy Management, Taxonomy & Public Job Board  (`phases/PHASE_03_VACANCIES_JOB_BOARD.md`)
 - [ ] P03-T01 — `apps.taxonomy`: models (skills, aliases, relations, qualification levels/aliases, professional bodies, taxonomy …
@@ -308,6 +308,23 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 - **Known limitations / follow-ups:** host RAM pressure on the dev machine caused a Docker engine hang and a transient ENOMEM;
   ClamAV only under compose profile `full`; `gh` CLI not installed (CI checked via the public API).
 
+### Phase 02 — Identity, Tenancy & Access Control (closed 2026-11-09)
+- **Built:** complete `User` (email login, platform roles, MFA grace), Argon2 + breached-password validator; allauth headless
+  (signup/verify/login/reset/email change, enumeration-free, branded emails via the outbox); TOTP MFA + recovery codes with
+  privileged-role enforcement; progressive lockout, DRF throttles, session list/revoke + new-device notice; append-only,
+  hash-chained audit (DB trigger) + access log; organisations, policies, departments, locations, memberships, invitations and
+  services (last-admin guard, EC-ORG-01..09); org context middleware (X-Org-Id/session, violation audit, suspended 423); RBAC
+  matrix + permission classes (HasOrgRole/Action, IsAssignedToJob stub, platform, candidate owner, conflict-of-interest hook);
+  full org/team/me/platform APIs; logo upload; frontend auth pages, account security (MFA/sessions), auth context + route
+  guards, employer sign-up, HR settings (profile, structure, team, policies), org switcher, invitation accept, admin orgs UI.
+- **Evidence:** 442 backend tests (98% coverage), 61 Vitest, Playwright journeys desktop + mobile, EC 19/19, CI green.
+- **Deviations:** ADR-023 email verification mandatory before login (no-enumeration signup); breached list = Django corpus
+  (19,640) not top-100k; session metadata via allauth.usersessions; logo direct upload until Phase 04 uploader.
+- **Found in exit verification and fixed:** pre-hydration native form submit could put passwords in the URL (all forms now
+  POST); Next 16 `allowedDevOrigins`; CSRF trusted origin for 127.0.0.1; stale de-duplicated `/me` after login/verify.
+- **Follow-ups:** EC-ORG-09 reassignment list filled by jobs (Phase 03); `IsAssignedToJob` checker registered in P03-T07;
+  `assert_can_publish` to be called by the job publish service; dev host memory pressure (use RUNSERVER_ARGS=--noreload).
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -355,3 +372,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T12 | Frontend auth: typed allauth headless client (CSRF bootstrap, 401 flows vs errors), zod schemas, accessible TextField + ErrorSummary, pages /login (+MFA step, verify-email notice, ?next with open-redirect guard), /register (no-enumeration 'check inbox'), /verify-email (explicit confirm, expired page), /forgot-password, /reset-password; /account/security (MFA setup with QR + recovery codes behind reauth dialog, change password, change email, sessions list/revoke/revoke-others); useMe auth context, AuthGate per area (MFA grace banner, forbidden state), UserMenu in shells/header, proxy.ts redirect for signed-out visitors; en.json strings; 21 new Vitest tests (43 total), build OK | Playwright auth journey in P02 exit verification |
 | 2026-11-09 | Impl | P02-T13 | Backend: POST /organisations/{id}/logo/ (Pillow verify + re-encode PNG <=512px, metadata stripped, private bucket, audited), logo_url presigned in org + company serializers, organisation_id on memberships, spectacular doc leak fixed. Frontend: /employers (pitch + create-org form -> active org -> settings), HR settings layout + tabs: organisation (profile + logo upload, verification/suspension notice), structure (departments/locations CRUD), team (members table w/ role change + deactivate ConfirmDialog with reason, invitations invite/resend/revoke), policies (lock_version, stale-conflict handling, read-only for HR managers); real OrgSwitcher (POST /me/active-org); /invitations/[token] accept page (signed-out sign-in path, expired/revoked/used/email-mismatch states); UI role helper mirroring rbac (hiding only); SelectField + ConfirmDialog; 13 component tests (56 total); 7 backend logo tests | - |
 | 2026-11-09 | Impl | P02-T14 | Admin UI /admin/organisations: status filter (pending by default), search, table (status badge, members, created), verify / suspend (required reason) / reactivate via ConfirmDialog, platform support read-only; output serializers marked read-only (precise OpenAPI types); status tones for org/membership states; 4 component tests (60 total) | - |
+| 2026-11-09 | Impl | P02-EXIT | Phase 02 journeys pass in Playwright (desktop + mobile); fixed pre-hydration GET submit (password in URL), dev origins, CSRF origin, stale /me refresh; CI green run 42570014917; Phase 02 closed | Start P03-T01 |
