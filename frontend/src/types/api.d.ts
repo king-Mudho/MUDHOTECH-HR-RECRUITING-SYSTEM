@@ -24,6 +24,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/companies/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 🌐 Public careers profile (FR-M02-01). Only active organisations are visible. */
+        get: operations["companies_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/csrf/": {
         parameters: {
             query?: never;
@@ -42,6 +59,56 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invitations/{token}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 🌐 Invitation preview before sign-in (no token echo, masked email). */
+        get: operations["invitations_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invitations/{token}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Accept an invitation as the signed-in, verified invitee (EC-ORG-04/05). */
+        post: operations["invitations_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["me_update"];
         trace?: never;
     };
     "/api/v1/me/active-org/": {
@@ -109,6 +176,239 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organisations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["organisations_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/departments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_departments_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_departments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/departments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_departments_retrieve"];
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["organisations_departments_update"];
+        post?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        delete: operations["organisations_departments_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["organisations_departments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/invitations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_invitations_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_invitations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/invitations/{invitation_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        delete: operations["organisations_invitations_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/invitations/{invitation_id}/resend/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_invitations_resend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/locations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_locations_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["organisations_locations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/locations/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_locations_retrieve"];
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        put: operations["organisations_locations_update"];
+        post?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        delete: operations["organisations_locations_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["organisations_locations_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/members/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_members_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/members/{membership_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        delete: operations["organisations_members_deactivate"];
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["organisations_members_update"];
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/members/{membership_id}/reset-mfa/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description EC-ACC-08: admin-assisted reset after an out-of-band identity check (reason required). */
+        post: operations["organisations_members_reset_mfa"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organisations/{organisation_id}/policies/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["organisations_policies_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        patch: operations["organisations_policies_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -128,12 +428,463 @@ export interface components {
             /** Format: date-time */
             server_time: string;
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         CsrfToken: {
             csrf_token: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        Department: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        DepartmentRequest: {
+            name: string;
+        };
+        /**
+         * @description * `one_active` - One active application per vacancy
+         *     * `allow_resubmit_replace` - Resubmit replaces previous
+         *     * `allow_multiple` - Allow multiple
+         * @enum {string}
+         */
+        DuplicatePolicyEnum: "one_active" | "allow_resubmit_replace" | "allow_multiple";
+        Invitation: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: email */
+            email: string;
+            role: components["schemas"]["RoleEnum"];
+            readonly status: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            accepted_at?: string | null;
+            /** Format: date-time */
+            revoked_at?: string | null;
+            readonly invited_by: components["schemas"]["MemberUser"];
+            vacancy_ids?: unknown;
+            allow_any_email?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        InvitationCreateRequest: {
+            /** Format: email */
+            email: string;
+            role: components["schemas"]["RoleEnum"];
+            vacancy_ids?: string[];
+            /** @default false */
+            allow_any_email: boolean;
+        };
+        /** @description What an invitee sees before signing in (no token, partially masked email). */
+        InvitationPublic: {
+            organisation_name: string;
+            organisation_slug: string;
+            role: string;
+            email_hint: string;
+            status: string;
+            /** Format: date-time */
+            expires_at: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        Location: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            city?: string;
+            country?: string;
+            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        LocationRequest: {
+            name: string;
+            city?: string;
+            country?: string;
+            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        Me: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: email */
+            readonly email: string;
+            readonly email_verified: boolean;
+            first_name?: string;
+            last_name?: string;
+            preferred_name?: string;
+            readonly display_name: string;
+            phone_e164?: string;
+            locale?: string;
+            timezone?: string;
+            readonly platform_role: components["schemas"]["PlatformRoleEnum"];
+            readonly memberships: components["schemas"]["MeMembership"][];
+            /** Format: uuid */
+            readonly active_organisation_id: string | null;
+            readonly mfa: components["schemas"]["MfaStatus"];
+            /** Format: uuid */
+            readonly candidate_profile_id: string | null;
+        };
+        MeMembership: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organisation_id: string;
+            organisation_name: string;
+            organisation_slug: string;
+            organisation_status: string;
+            role: string;
+        };
+        MemberUser: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: email */
+            email: string;
+            first_name?: string;
+            last_name?: string;
+            readonly display_name: string;
+        };
+        Membership: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly user: components["schemas"]["MemberUser"];
+            role: components["schemas"]["RoleEnum"];
+            status?: components["schemas"]["MembershipStatusEnum"];
+            /** Format: date-time */
+            joined_at?: string;
+            /** Format: date-time */
+            deactivated_at?: string | null;
+            readonly mfa_enabled: boolean;
+        };
+        /**
+         * @description * `active` - Active
+         *     * `deactivated` - Deactivated
+         * @enum {string}
+         */
+        MembershipStatusEnum: "active" | "deactivated";
+        MfaStatus: {
+            required: boolean;
+            enabled: boolean;
+            /** Format: date-time */
+            grace_deadline: string | null;
+            in_grace: boolean;
+            enforced: boolean;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        Organisation: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly slug: string;
+            readonly status: components["schemas"]["OrganisationStatusEnum"];
+            /** Format: date-time */
+            readonly verified_at: string | null;
+            readonly logo_key: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly my_role: string | null;
+            name: string;
+            legal_name?: string;
+            registration_number?: string;
+            industry?: string;
+            size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
+            country?: string;
+            city?: string;
+            address?: string;
+            website?: string;
+            /** @description Sanitised HTML. */
+            description?: string;
+            default_timezone?: string;
+            default_currency?: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        OrganisationCreateRequest: {
+            name: string;
+            legal_name?: string;
+            registration_number?: string;
+            industry?: string;
+            size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
+            country?: string;
+            city?: string;
+            address?: string;
+            website?: string;
+            /** @description Sanitised HTML. */
+            description?: string;
+            default_timezone?: string;
+            default_currency?: string;
+        };
+        /**
+         * @description * `pending_verification` - Pending verification
+         *     * `active` - Active
+         *     * `suspended` - Suspended
+         *     * `closed` - Closed
+         * @enum {string}
+         */
+        OrganisationStatusEnum: "pending_verification" | "active" | "suspended" | "closed";
+        PaginatedDepartmentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Department"][];
+        };
+        PaginatedInvitationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Invitation"][];
+        };
+        PaginatedLocationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Location"][];
+        };
+        PaginatedMembershipList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Membership"][];
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedDepartmentRequest: {
+            name?: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedLocationRequest: {
+            name?: string;
+            city?: string;
+            country?: string;
+            workplace_type_default?: components["schemas"]["WorkplaceTypeDefaultEnum"];
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedMeRequest: {
+            first_name?: string;
+            last_name?: string;
+            preferred_name?: string;
+            phone_e164?: string;
+            locale?: string;
+            timezone?: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedMembershipUpdateRequest: {
+            role?: components["schemas"]["RoleEnum"];
+            reason?: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedOrganisationRequest: {
+            name?: string;
+            legal_name?: string;
+            registration_number?: string;
+            industry?: string;
+            size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
+            country?: string;
+            city?: string;
+            address?: string;
+            website?: string;
+            /** @description Sanitised HTML. */
+            description?: string;
+            default_timezone?: string;
+            default_currency?: string;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PatchedPolicyRequest: {
+            lock_version?: number;
+            privacy_notice?: string;
+            retention_months?: number;
+            duplicate_policy?: components["schemas"]["DuplicatePolicyEnum"];
+            shortlist_dual_control?: boolean;
+            rubric_dual_control?: boolean;
+            ai_enabled?: boolean;
+            llm_enabled?: boolean;
+            blind_review_default?: boolean;
+            notification_delay_minutes?: number;
+            hide_ai_from_panelists?: boolean;
+            rights_request_sla_days?: number;
+        };
+        /**
+         * @description * `none` - None
+         *     * `platform_admin` - Platform admin
+         *     * `platform_support` - Platform support
+         * @enum {string}
+         */
+        PlatformRoleEnum: "none" | "platform_admin" | "platform_support";
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        Policy: {
+            /** @description Optimistic lock (lock_version). */
+            readonly version: number;
+            privacy_notice?: string;
+            retention_months?: number;
+            duplicate_policy?: components["schemas"]["DuplicatePolicyEnum"];
+            shortlist_dual_control?: boolean;
+            rubric_dual_control?: boolean;
+            ai_enabled?: boolean;
+            llm_enabled?: boolean;
+            blind_review_default?: boolean;
+            notification_delay_minutes?: number;
+            hide_ai_from_panelists?: boolean;
+            rights_request_sla_days?: number;
+        };
+        PublicCompany: {
+            slug: string;
+            name: string;
+            /** @description Sanitised HTML. */
+            description?: string;
+            industry?: string;
+            city?: string;
+            country?: string;
+            website?: string;
+            logo_key?: string;
+            size_band?: components["schemas"]["SizeBandEnum"] | components["schemas"]["BlankEnum"];
+            readonly open_jobs: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        RequiredReasonRequest: {
+            reason: string;
         };
         RevokedSessions: {
             revoked: number;
         };
+        /**
+         * @description * `org_admin` - Company admin
+         *     * `hr_manager` - HR manager
+         *     * `recruiter` - Recruiter
+         *     * `hiring_manager` - Hiring manager
+         *     * `panelist` - Interview panel member
+         *     * `auditor` - Auditor
+         * @enum {string}
+         */
+        RoleEnum: "org_admin" | "hr_manager" | "recruiter" | "hiring_manager" | "panelist" | "auditor";
+        /**
+         * @description * `1-9` - 1-9
+         *     * `10-49` - 10-49
+         *     * `50-249` - 50-249
+         *     * `250-999` - 250-999
+         *     * `1000+` - 1000+
+         * @enum {string}
+         */
+        SizeBandEnum: "1-9" | "10-49" | "50-249" | "250-999" | "1000+";
         UserSession: {
             readonly id: number;
             /** Format: date-time */
@@ -144,6 +895,13 @@ export interface components {
             readonly user_agent: string;
             readonly is_current: boolean;
         };
+        /**
+         * @description * `on_site` - On-site
+         *     * `hybrid` - Hybrid
+         *     * `remote` - Remote
+         * @enum {string}
+         */
+        WorkplaceTypeDefaultEnum: "on_site" | "hybrid" | "remote";
     };
     responses: never;
     parameters: never;
@@ -172,6 +930,27 @@ export interface operations {
             };
         };
     };
+    companies_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicCompany"];
+                };
+            };
+        };
+    };
     auth_csrf: {
         parameters: {
             query?: never;
@@ -187,6 +966,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfToken"];
+                };
+            };
+        };
+    };
+    invitations_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationPublic"];
+                };
+            };
+        };
+    };
+    invitations_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    me_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMeRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
                 };
             };
         };
@@ -270,6 +1135,658 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RevokedSessions"];
+                };
+            };
+        };
+    };
+    organisations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganisationCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OrganisationCreateRequest"];
+                "multipart/form-data": components["schemas"]["OrganisationCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organisation"];
+                };
+            };
+        };
+    };
+    organisations_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organisation"];
+                };
+            };
+        };
+    };
+    organisations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOrganisationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOrganisationRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOrganisationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organisation"];
+                };
+            };
+        };
+    };
+    organisations_departments_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDepartmentList"];
+                };
+            };
+        };
+    };
+    organisations_departments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DepartmentRequest"];
+                "multipart/form-data": components["schemas"]["DepartmentRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Department"];
+                };
+            };
+        };
+    };
+    organisations_departments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this department. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Department"];
+                };
+            };
+        };
+    };
+    organisations_departments_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this department. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DepartmentRequest"];
+                "multipart/form-data": components["schemas"]["DepartmentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Department"];
+                };
+            };
+        };
+    };
+    organisations_departments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this department. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organisations_departments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this department. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDepartmentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDepartmentRequest"];
+                "multipart/form-data": components["schemas"]["PatchedDepartmentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Department"];
+                };
+            };
+        };
+    };
+    organisations_invitations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedInvitationList"];
+                };
+            };
+        };
+    };
+    organisations_invitations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InvitationCreateRequest"];
+                "multipart/form-data": components["schemas"]["InvitationCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+        };
+    };
+    organisations_invitations_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this invitation. */
+                invitation_id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organisations_invitations_resend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this invitation. */
+                invitation_id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+        };
+    };
+    organisations_locations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedLocationList"];
+                };
+            };
+        };
+    };
+    organisations_locations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LocationRequest"];
+                "multipart/form-data": components["schemas"]["LocationRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Location"];
+                };
+            };
+        };
+    };
+    organisations_locations_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this location. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Location"];
+                };
+            };
+        };
+    };
+    organisations_locations_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this location. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LocationRequest"];
+                "multipart/form-data": components["schemas"]["LocationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Location"];
+                };
+            };
+        };
+    };
+    organisations_locations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this location. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organisations_locations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this location. */
+                id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedLocationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedLocationRequest"];
+                "multipart/form-data": components["schemas"]["PatchedLocationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Location"];
+                };
+            };
+        };
+    };
+    organisations_members_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMembershipList"];
+                };
+            };
+        };
+    };
+    organisations_members_deactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this membership. */
+                membership_id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organisations_members_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this membership. */
+                membership_id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMembershipUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMembershipUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMembershipUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    organisations_members_reset_mfa: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this membership. */
+                membership_id: string;
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequiredReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RequiredReasonRequest"];
+                "multipart/form-data": components["schemas"]["RequiredReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description Authenticators removed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    organisations_policies_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Policy"];
+                };
+            };
+        };
+    };
+    organisations_policies_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPolicyRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPolicyRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPolicyRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Policy"];
                 };
             };
         };

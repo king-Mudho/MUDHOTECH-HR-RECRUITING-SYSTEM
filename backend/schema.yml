@@ -19,6 +19,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiRoot'
           description: ''
+  /api/v1/companies/{slug}/:
+    get:
+      operationId: companies_retrieve
+      description: "\U0001F310 Public careers profile (FR-M02-01). Only active organisations
+        are visible."
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - companies
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicCompany'
+          description: ''
   /api/v1/csrf/:
     get:
       operationId: auth_csrf
@@ -36,6 +59,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CsrfToken'
+          description: ''
+  /api/v1/invitations/{token}/:
+    get:
+      operationId: invitations_preview
+      description: "\U0001F310 Invitation preview before sign-in (no token echo, masked
+        email)."
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - invitations
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationPublic'
+          description: ''
+  /api/v1/invitations/{token}/accept/:
+    post:
+      operationId: invitations_accept
+      description: Accept an invitation as the signed-in, verified invitee (EC-ORG-04/05).
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - invitations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /api/v1/me/:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+    patch:
+      operationId: me_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMeRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
           description: ''
   /api/v1/me/active-org/:
     post:
@@ -110,6 +215,868 @@ paths:
               schema:
                 $ref: '#/components/schemas/RevokedSessions'
           description: ''
+  /api/v1/organisations/:
+    post:
+      operationId: organisations_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganisationCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganisationCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganisationCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+          description: ''
+  /api/v1/organisations/{organisation_id}/:
+    get:
+      operationId: organisations_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+          description: ''
+    patch:
+      operationId: organisations_partial_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+          description: ''
+  /api/v1/organisations/{organisation_id}/departments/:
+    get:
+      operationId: organisations_departments_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDepartmentList'
+          description: ''
+    post:
+      operationId: organisations_departments_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+  /api/v1/organisations/{organisation_id}/departments/{id}/:
+    get:
+      operationId: organisations_departments_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this department.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    put:
+      operationId: organisations_departments_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this department.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    patch:
+      operationId: organisations_departments_partial_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this department.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    delete:
+      operationId: organisations_departments_destroy
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this department.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/organisations/{organisation_id}/invitations/:
+    get:
+      operationId: organisations_invitations_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvitationList'
+          description: ''
+    post:
+      operationId: organisations_invitations_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvitationCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvitationCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+          description: ''
+  /api/v1/organisations/{organisation_id}/invitations/{invitation_id}/:
+    delete:
+      operationId: organisations_invitations_revoke
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this invitation.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/organisations/{organisation_id}/invitations/{invitation_id}/resend/:
+    post:
+      operationId: organisations_invitations_resend
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this invitation.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+          description: ''
+  /api/v1/organisations/{organisation_id}/locations/:
+    get:
+      operationId: organisations_locations_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+          description: ''
+    post:
+      operationId: organisations_locations_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/v1/organisations/{organisation_id}/locations/{id}/:
+    get:
+      operationId: organisations_locations_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this location.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    put:
+      operationId: organisations_locations_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this location.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    patch:
+      operationId: organisations_locations_partial_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this location.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    delete:
+      operationId: organisations_locations_destroy
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this location.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/organisations/{organisation_id}/members/:
+    get:
+      operationId: organisations_members_list
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMembershipList'
+          description: ''
+  /api/v1/organisations/{organisation_id}/members/{membership_id}/:
+    patch:
+      operationId: organisations_members_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this membership.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+    delete:
+      operationId: organisations_members_deactivate
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this membership.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/organisations/{organisation_id}/members/{membership_id}/reset-mfa/:
+    post:
+      operationId: organisations_members_reset_mfa
+      description: 'EC-ACC-08: admin-assisted reset after an out-of-band identity
+        check (reason required).'
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this membership.
+        required: true
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequiredReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RequiredReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RequiredReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Authenticators removed
+  /api/v1/organisations/{organisation_id}/policies/:
+    get:
+      operationId: organisations_policies_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+          description: ''
+    patch:
+      operationId: organisations_policies_update
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organisations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPolicyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPolicyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPolicyRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+          description: ''
 components:
   schemas:
     ActiveOrg:
@@ -145,6 +1112,9 @@ components:
       - name
       - server_time
       - version
+    BlankEnum:
+      enum:
+      - ''
     CsrfToken:
       type: object
       properties:
@@ -152,6 +1122,903 @@ components:
           type: string
       required:
       - csrf_token
+    Department:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+    DepartmentRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - name
+    DuplicatePolicyEnum:
+      enum:
+      - one_active
+      - allow_resubmit_replace
+      - allow_multiple
+      type: string
+      description: |-
+        * `one_active` - One active application per vacancy
+        * `allow_resubmit_replace` - Resubmit replaces previous
+        * `allow_multiple` - Allow multiple
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        status:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        invited_by:
+          allOf:
+          - $ref: '#/components/schemas/MemberUser'
+          readOnly: true
+        vacancy_ids: {}
+        allow_any_email:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - expires_at
+      - id
+      - invited_by
+      - role
+      - status
+    InvitationCreateRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        vacancy_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        allow_any_email:
+          type: boolean
+          default: false
+      required:
+      - email
+      - role
+    InvitationPublic:
+      type: object
+      description: What an invitee sees before signing in (no token, partially masked
+        email).
+      properties:
+        organisation_name:
+          type: string
+        organisation_slug:
+          type: string
+        role:
+          type: string
+        email_hint:
+          type: string
+        status:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - email_hint
+      - expires_at
+      - organisation_name
+      - organisation_slug
+      - role
+      - status
+    Location:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 2
+        workplace_type_default:
+          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+    LocationRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          minLength: 1
+          maxLength: 2
+        workplace_type_default:
+          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+      required:
+      - name
+    Me:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        email_verified:
+          type: boolean
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_name:
+          type: string
+          maxLength: 150
+        display_name:
+          type: string
+          readOnly: true
+        phone_e164:
+          type: string
+          maxLength: 20
+        locale:
+          type: string
+          maxLength: 10
+        timezone:
+          type: string
+          maxLength: 64
+        platform_role:
+          allOf:
+          - $ref: '#/components/schemas/PlatformRoleEnum'
+          readOnly: true
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeMembership'
+          readOnly: true
+        active_organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        mfa:
+          allOf:
+          - $ref: '#/components/schemas/MfaStatus'
+          readOnly: true
+        candidate_profile_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+      required:
+      - active_organisation_id
+      - candidate_profile_id
+      - display_name
+      - email
+      - email_verified
+      - id
+      - memberships
+      - mfa
+      - platform_role
+    MeMembership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organisation_id:
+          type: string
+          format: uuid
+        organisation_name:
+          type: string
+        organisation_slug:
+          type: string
+        organisation_status:
+          type: string
+        role:
+          type: string
+      required:
+      - id
+      - organisation_id
+      - organisation_name
+      - organisation_slug
+      - organisation_status
+      - role
+    MemberUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        display_name:
+          type: string
+          readOnly: true
+      required:
+      - display_name
+      - email
+      - id
+    Membership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/MemberUser'
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        status:
+          $ref: '#/components/schemas/MembershipStatusEnum'
+        joined_at:
+          type: string
+          format: date-time
+        deactivated_at:
+          type: string
+          format: date-time
+          nullable: true
+        mfa_enabled:
+          type: boolean
+          readOnly: true
+      required:
+      - id
+      - mfa_enabled
+      - role
+      - user
+    MembershipStatusEnum:
+      enum:
+      - active
+      - deactivated
+      type: string
+      description: |-
+        * `active` - Active
+        * `deactivated` - Deactivated
+    MfaStatus:
+      type: object
+      properties:
+        required:
+          type: boolean
+        enabled:
+          type: boolean
+        grace_deadline:
+          type: string
+          format: date-time
+          nullable: true
+        in_grace:
+          type: boolean
+        enforced:
+          type: boolean
+      required:
+      - enabled
+      - enforced
+      - grace_deadline
+      - in_grace
+      - required
+    Organisation:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        status:
+          allOf:
+          - $ref: '#/components/schemas/OrganisationStatusEnum'
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        logo_key:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        my_role:
+          type: string
+          nullable: true
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        legal_name:
+          type: string
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        industry:
+          type: string
+          maxLength: 100
+        size_band:
+          oneOf:
+          - $ref: '#/components/schemas/SizeBandEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        country:
+          type: string
+          maxLength: 2
+        city:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        description:
+          type: string
+          description: Sanitised HTML.
+        default_timezone:
+          type: string
+          maxLength: 64
+        default_currency:
+          type: string
+          maxLength: 3
+      required:
+      - created_at
+      - id
+      - logo_key
+      - my_role
+      - name
+      - slug
+      - status
+      - verified_at
+    OrganisationCreateRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        legal_name:
+          type: string
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        industry:
+          type: string
+          maxLength: 100
+        size_band:
+          oneOf:
+          - $ref: '#/components/schemas/SizeBandEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        country:
+          type: string
+          minLength: 1
+          maxLength: 2
+        city:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        description:
+          type: string
+          description: Sanitised HTML.
+        default_timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        default_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+      required:
+      - name
+    OrganisationStatusEnum:
+      enum:
+      - pending_verification
+      - active
+      - suspended
+      - closed
+      type: string
+      description: |-
+        * `pending_verification` - Pending verification
+        * `active` - Active
+        * `suspended` - Suspended
+        * `closed` - Closed
+    PaginatedDepartmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+    PaginatedInvitationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+    PaginatedLocationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    PaginatedMembershipList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Membership'
+    PatchedDepartmentRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+    PatchedLocationRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          minLength: 1
+          maxLength: 2
+        workplace_type_default:
+          $ref: '#/components/schemas/WorkplaceTypeDefaultEnum'
+    PatchedMeRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_name:
+          type: string
+          maxLength: 150
+        phone_e164:
+          type: string
+          maxLength: 20
+        locale:
+          type: string
+          minLength: 1
+          maxLength: 10
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+    PatchedMembershipUpdateRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        reason:
+          type: string
+          maxLength: 500
+    PatchedOrganisationRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        legal_name:
+          type: string
+          maxLength: 255
+        registration_number:
+          type: string
+          maxLength: 100
+        industry:
+          type: string
+          maxLength: 100
+        size_band:
+          oneOf:
+          - $ref: '#/components/schemas/SizeBandEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        country:
+          type: string
+          minLength: 1
+          maxLength: 2
+        city:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        description:
+          type: string
+          description: Sanitised HTML.
+        default_timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        default_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+    PatchedPolicyRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        lock_version:
+          type: integer
+          writeOnly: true
+        privacy_notice:
+          type: string
+        retention_months:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        duplicate_policy:
+          $ref: '#/components/schemas/DuplicatePolicyEnum'
+        shortlist_dual_control:
+          type: boolean
+        rubric_dual_control:
+          type: boolean
+        ai_enabled:
+          type: boolean
+        llm_enabled:
+          type: boolean
+        blind_review_default:
+          type: boolean
+        notification_delay_minutes:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        hide_ai_from_panelists:
+          type: boolean
+        rights_request_sla_days:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    PlatformRoleEnum:
+      enum:
+      - none
+      - platform_admin
+      - platform_support
+      type: string
+      description: |-
+        * `none` - None
+        * `platform_admin` - Platform admin
+        * `platform_support` - Platform support
+    Policy:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        version:
+          type: integer
+          readOnly: true
+          description: Optimistic lock (lock_version).
+        privacy_notice:
+          type: string
+        retention_months:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        duplicate_policy:
+          $ref: '#/components/schemas/DuplicatePolicyEnum'
+        shortlist_dual_control:
+          type: boolean
+        rubric_dual_control:
+          type: boolean
+        ai_enabled:
+          type: boolean
+        llm_enabled:
+          type: boolean
+        blind_review_default:
+          type: boolean
+        notification_delay_minutes:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        hide_ai_from_panelists:
+          type: boolean
+        rights_request_sla_days:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - version
+    PublicCompany:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 80
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Sanitised HTML.
+        industry:
+          type: string
+          maxLength: 100
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 2
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        logo_key:
+          type: string
+          maxLength: 255
+        size_band:
+          oneOf:
+          - $ref: '#/components/schemas/SizeBandEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        open_jobs:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - name
+      - open_jobs
+      - slug
+    RequiredReasonRequest:
+      type: object
+      description: |-
+        Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+
+        Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+        write that does not explicitly accept them.
+      properties:
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 500
+      required:
+      - reason
     RevokedSessions:
       type: object
       properties:
@@ -159,6 +2026,36 @@ components:
           type: integer
       required:
       - revoked
+    RoleEnum:
+      enum:
+      - org_admin
+      - hr_manager
+      - recruiter
+      - hiring_manager
+      - panelist
+      - auditor
+      type: string
+      description: |-
+        * `org_admin` - Company admin
+        * `hr_manager` - HR manager
+        * `recruiter` - Recruiter
+        * `hiring_manager` - Hiring manager
+        * `panelist` - Interview panel member
+        * `auditor` - Auditor
+    SizeBandEnum:
+      enum:
+      - 1-9
+      - 10-49
+      - 50-249
+      - 250-999
+      - 1000+
+      type: string
+      description: |-
+        * `1-9` - 1-9
+        * `10-49` - 10-49
+        * `50-249` - 50-249
+        * `250-999` - 250-999
+        * `1000+` - 1000+
     UserSession:
       type: object
       properties:
@@ -189,6 +2086,16 @@ components:
       - is_current
       - last_seen_at
       - user_agent
+    WorkplaceTypeDefaultEnum:
+      enum:
+      - on_site
+      - hybrid
+      - remote
+      type: string
+      description: |-
+        * `on_site` - On-site
+        * `hybrid` - Hybrid
+        * `remote` - Remote
   securitySchemes:
     cookieAuth:
       type: apiKey
