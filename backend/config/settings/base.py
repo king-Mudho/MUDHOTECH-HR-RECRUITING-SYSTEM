@@ -224,6 +224,16 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.core.tasks.purge_expired_idempotency_keys",
         "schedule": timedelta(hours=1),
     },
+    "jobs-publish-scheduled": {
+        "task": "apps.jobs.tasks.publish_scheduled_jobs",
+        "schedule": timedelta(minutes=1),
+        "options": {"expires": 50},
+    },
+    "jobs-close-expired": {
+        "task": "apps.jobs.tasks.close_expired_jobs",
+        "schedule": timedelta(minutes=1),
+        "options": {"expires": 50},
+    },
 }
 
 # --- Outbox ---
