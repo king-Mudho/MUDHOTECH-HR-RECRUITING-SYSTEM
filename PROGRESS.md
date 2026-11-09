@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
-- **Current task:** P03-T05
+- **Current task:** P03-T06
 - **Last updated:** 2026-11-09
-- **Overall:** 35 / 193 tasks · 2 / 16 phases
+- **Overall:** 36 / 193 tasks · 2 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -91,7 +91,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-T02 — `apps.jobs` models: Job, JobVersion, JobCriterion, Rubric, JobApproval, JobAssignment, JobEvent
 - [x] P03-T03 — `apps.questionnaires` models: Questionnaire, Question, QuestionOption, (QuestionResponse table created now, used in …
 - [x] P03-T04 — Prohibited-question linter (`questionnaires/linter.py`): keyword/phrase lexicon (age, date of birth, religion, …
-- [ ] P03-T05 — Job services: create draft, update (lock), set criteria (validate essential justification), set rubric (weights = …
+- [x] P03-T05 — Job services: create draft, update (lock), set criteria (validate essential justification), set rubric (weights = …
 - [ ] P03-T06 — Beat tasks: publish scheduled jobs; auto-close at `closes_at` (job TZ aware)
 - [ ] P03-T07 — Job assignments + `IsAssignedToJob` permission (hr_manager sees all org jobs
 - [ ] P03-T08 — AI assist stub (feature-flagged, default off): `POST /hr/jobs/{id}/ai-suggestions` returns criteria/question …
@@ -377,3 +377,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P03-T02 | apps.jobs models: Job (header + lifecycle status, visibility public/unlisted, locations M2M, salary Decimal USD/ZWG, timezone, lock_version, SearchVectorField + GIN, check constraints openings>=1 & salary_min<=max), JobSlugRedirect, JobVersion (draft/in_review/approved/superseded, content + snapshot), JobCriterion (type/importance/justification/skill/qualification/min_months/equivalents/rubric category), Rubric (DB check: approved => total 100), JobApproval, JobAssignment, JobEvent; search.py unique global slugs (redirect-aware) + weighted FTS vector; JobFactory; 7 tests | - |
 | 2026-11-09 | Impl | P03-T03 | questionnaires app: Questionnaire (job_version 1:1 or template), Question (stable key, branching show_if, scoring config, knockout, protected flag + exception reason), QuestionOption, QuestionResponse; pure validation (types, options, config, scoring modes per type, salary never scored, branching only to earlier questions); 543 tests pass | backend dev image stale (no pgvector) - rebuild before E2E |
 | 2026-11-09 | Impl | P03-T04 | linter lexicon (age/DOB, religion, tribe/totem, marital/children, pregnancy, HIV/health, disability, political incl ZANU/MDC/CCC, gender, national ID, appearance); questionnaires.services.replace_questions recomputes flags; record_protected_exception (hr_manager/admin via rbac questions.protected_exception, >=20 char reason, audited, reset on rewording); flagged questions block publishing |  |
+| 2026-11-09 | Impl | P03-T05 | jobs.services: create (creator auto-assigned recruiter, default 35/25/20/10/10 rubric, empty questionnaire), update w/ lock_version (EC-JOB-07; slug frozen after first publish EC-JOB-13), set_criteria (essential justification), set_rubric (=100, ordered bands), set_questionnaire; readiness(stage submit|publish) checklist + warnings (all-essential, <24h, protected topics); submit/approve/reject (dual control via policy.rubric_dual_control, approval freezes version+rubric+questionnaire+snapshot); publish/schedule/publish_scheduled/pause/resume/close/auto_close/archive/extend_deadline (reopens closed)/new_version (live advert swaps on approval, EC-JOB-06)/duplicate (EC-JOB-14); JobEvent+audit+outbox job.published/job.closed/...; 26 tests | dual control for job approval reuses policy.rubric_dual_control (no separate flag) |
