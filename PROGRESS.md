@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T06
+- **Current task:** P02-T07
 - **Last updated:** 2026-11-09
-- **Overall:** 22 / 193 tasks · 1 / 16 phases
+- **Overall:** 23 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -75,7 +75,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P02-T03 — MFA via `allauth.mfa`: TOTP + recovery codes
 - [x] P02-T04 — Rate limiting & lockout: DRF throttles + django-axes (or custom) progressive lockout
 - [x] P02-T05 — `apps.audit`: `AuditEvent` append-only with hash chain (`prev_hash`, `hash` = sha256 of canonical JSON + prev), …
-- [ ] P02-T06 — `apps.organisations` models: Organisation, OrganisationPolicy (defaults per `docs/03`), Department, Location, …
+- [x] P02-T06 — `apps.organisations` models: Organisation, OrganisationPolicy (defaults per `docs/03`), Department, Location, …
 - [ ] P02-T07 — Org context: `OrganisationContextMiddleware` resolving `request.organisation` + `request.membership` from `X-Org-Id` …
 - [ ] P02-T08 — RBAC: permission classes `HasOrgRole(*roles)`, `IsAssignedToJob` (stub interface for Phase 3), `IsPlatformAdmin`, …
 - [ ] P02-T09 — APIs per `docs/04` (me, organisations, policies, departments, locations, members, invitations, public company …
@@ -346,3 +346,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T05 | apps.audit: AuditEvent hash chain per organisation (+platform), sha256(canonical JSON + prev_hash), advisory-lock serialised; Postgres trigger rejects UPDATE/DELETE (opt-in maintenance flag for Phase 09); audit.record(actor, action, target, before/after minimised, reason, request -> ip /24|/48 + UA hash + request_id); AccessLog + log_access; verify_audit_chain command; 14 tests incl. tamper/delete detection + concurrent writers. Done before T03 (reset_mfa needs it) | - |
 | 2026-11-09 | Impl | P02-T03 | MFA via allauth.mfa (TOTP + 10 recovery codes); policy module accounts/mfa.py (privilege-provider registry: platform roles now, org_admin/hr_manager registered by organisations), 7-day grace started on first login/contact, MfaEnforcementMiddleware returns 401 mfa_required on staff API prefixes after grace; reset_mfa (EC-ACC-08) audited; 11 tests incl. enrolment, 2FA login, recovery-code single use, grace/enforced | Frontend must handle allauth 'reauthenticate' flow before TOTP setup / recovery codes |
 | 2026-11-09 | Impl | P02-T04 | Progressive lockout (10 fails -> 15 min, doubling to 24 h cap, per normalised email, generic too_many_login_attempts, owner notified, cleared by password reset or time) via allauth adapter + lockout-aware backend; allauth IP/key rate limits; DRF Anon/User throttles; /api/v1/me/sessions list (truncated IP, is_current), revoke one, revoke-others (audited); revoke_all_sessions helper (EC-ACC-12); new-device sign-in email (EC-ACC-11); global cache-clear test fixture; 13 tests | - |
+| 2026-11-09 | Impl | P02-T06 | Organisation (full profile, statuses incl. closed), OrganisationPolicy (defaults per docs/03 + decisions, version lock), Department, Location, Membership (6 roles), Invitation (sha256 token hash, 7-day expiry, single open invite per email, allow_any_email). Services: create (creator org_admin, pending_verification, slug de-dup), update (nh3 sanitised), update_policy (409 stale), invite/resend (rotates token)/revoke/accept (EC-ORG-03/04/05) with outbox email, change_role + deactivate with last-admin guard, deactivation revokes sessions + reassignment provider hook; org privilege registered for MFA; core.sanitize; factories + make_org_with_team; 17 tests | EC-ORG-09 reassignment list populated by jobs in Phase 03 |

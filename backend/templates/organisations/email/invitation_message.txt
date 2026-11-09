@@ -1,0 +1,8 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+{% block content %}{% autoescape off %}{% blocktrans with org=organisation.name until=expires_at|date:"j M Y H:i T" %}You have been invited to join {{ org }} on MUDHOTECH HR RECRUITING SYSTEM as: {{ role }}.
+
+Accept the invitation (you will be asked to sign in or create an account with this email address):
+{{ accept_url }}
+
+This invitation expires on {{ until }} and can only be used once. If you were not expecting it, you can ignore this email.{% endblocktrans %}{% endautoescape %}{% endblock content %}

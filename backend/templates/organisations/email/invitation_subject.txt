@@ -1,0 +1,1 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with org=organisation.name %}You're invited to join {{ org }}{% endblocktrans %}{% endautoescape %}
