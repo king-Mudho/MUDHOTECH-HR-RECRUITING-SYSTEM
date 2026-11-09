@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.organisations",
     "apps.audit",
+    "apps.platform",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -176,6 +177,12 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {
+        "OrganisationStatusEnum": "apps.organisations.models.Organisation.Status",
+        "MembershipStatusEnum": "apps.organisations.models.Membership.Status",
+        "RoleEnum": "apps.organisations.models.Role",
+        "PlatformRoleEnum": "apps.accounts.models.PlatformRole",
+    },
 }
 
 # --- Celery ---

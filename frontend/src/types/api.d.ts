@@ -409,6 +409,86 @@ export interface paths {
         patch: operations["organisations_policies_update"];
         trace?: never;
     };
+    "/api/v1/platform/organisations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_organisations_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organisations/{organisation_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_organisations_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organisations/{organisation_id}/reactivate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_organisations_reactivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organisations/{organisation_id}/suspend/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_organisations_suspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organisations/{organisation_id}/verify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_organisations_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -725,6 +805,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Membership"][];
         };
+        PaginatedPlatformOrganisationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["PlatformOrganisation"][];
+        };
         /**
          * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
          *
@@ -811,6 +906,34 @@ export interface components {
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
         };
+        PlatformOrganisation: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            slug: string;
+            status?: components["schemas"]["OrganisationStatusEnum"];
+            industry?: string;
+            city?: string;
+            country?: string;
+            website?: string;
+            registration_number?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            verified_at?: string | null;
+            /** Format: email */
+            readonly verified_by_email: string | null;
+            readonly member_count: number;
+        };
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PlatformReasonRequest: {
+            reason?: string;
+        };
         /**
          * @description * `none` - None
          *     * `platform_admin` - Platform admin
@@ -818,6 +941,15 @@ export interface components {
          * @enum {string}
          */
         PlatformRoleEnum: "none" | "platform_admin" | "platform_support";
+        /**
+         * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
+         *
+         *     Clients must never be able to sneak ``organisation``, ``status``, ``role`` or ``score`` into a
+         *     write that does not explicitly accept them.
+         */
+        PlatformSuspendReasonRequest: {
+            reason: string;
+        };
         /**
          * @description Reject unknown input keys instead of silently ignoring them (docs/06 §2, backend rule 5).
          *
@@ -1787,6 +1919,147 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Policy"];
+                };
+            };
+        };
+    };
+    platform_organisations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                /**
+                 * @description * `pending_verification` - Pending verification
+                 *     * `active` - Active
+                 *     * `suspended` - Suspended
+                 *     * `closed` - Closed
+                 */
+                status?: "active" | "closed" | "pending_verification" | "suspended";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPlatformOrganisationList"];
+                };
+            };
+        };
+    };
+    platform_organisations_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this organisation. */
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_organisations_reactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this organisation. */
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PlatformReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PlatformReasonRequest"];
+                "multipart/form-data": components["schemas"]["PlatformReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_organisations_suspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this organisation. */
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformSuspendReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PlatformSuspendReasonRequest"];
+                "multipart/form-data": components["schemas"]["PlatformSuspendReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_organisations_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this organisation. */
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PlatformReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PlatformReasonRequest"];
+                "multipart/form-data": components["schemas"]["PlatformReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrganisation"];
                 };
             };
         };

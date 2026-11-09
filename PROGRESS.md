@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T10
+- **Current task:** P02-T11
 - **Last updated:** 2026-11-09
-- **Overall:** 26 / 193 tasks · 1 / 16 phases
+- **Overall:** 27 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -79,7 +79,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P02-T07 — Org context: `OrganisationContextMiddleware` resolving `request.organisation` + `request.membership` from `X-Org-Id` …
 - [x] P02-T08 — RBAC: permission classes `HasOrgRole(*roles)`, `IsAssignedToJob` (stub interface for Phase 3), `IsPlatformAdmin`, …
 - [x] P02-T09 — APIs per `docs/04` (me, organisations, policies, departments, locations, members, invitations, public company …
-- [ ] P02-T10 — Platform admin basics: platform_role on user
+- [x] P02-T10 — Platform admin basics: platform_role on user
 - [ ] P02-T11 — Tests: permission matrix (parametrised), cross-tenant suite scaffold (`tests/tenancy/`) that later phases extend …
 - [ ] P02-T12 — Frontend auth: `/register`, `/login` (+MFA step), `/verify-email`, `/forgot-password`, `/reset-password`, account …
 - [ ] P02-T13 — Frontend org: employer sign-up flow (`/employers` → create organisation), HR settings pages: organisation profile …
@@ -350,3 +350,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T07 | OrganisationContextMiddleware: request.organisation/membership from X-Org-Id (validated active membership, closed orgs excluded) or session active org (stale cleared); foreign/invalid header -> 404 + audit tenant_violation_attempt (EC-ORG-06); suspended/closed org -> 423 org_suspended for unsafe requests on context-scoped staff APIs (EC-ORG-07); POST /api/v1/me/active-org/; selectors active_membership/memberships_for_user; 13 tests | - |
 | 2026-11-09 | Impl | P02-T08 | RBAC: central role x action matrix organisations/rbac.py (fails closed on unknown actions); permission classes HasOrgRole(*roles)/HasOrgAction(action) (path organisation_id or context; non-member 404, wrong role 403, suspended writes 423), IsAssignedToJob (Phase 03 registers checker), IsPlatformAdmin, IsPlatformStaff (support read-only), IsCandidateOwner (404 for others), conflict-of-interest checker registry + audited 403 (EC-ACC-09/10); 20 tests | - |
 | 2026-11-09 | Impl | P02-T09 | APIs (OpenAPI-annotated, schema clean): GET/PATCH /me (memberships, active org, MFA status, E.164 phone, tz/locale validation, audited), POST /organisations, GET/PATCH /organisations/{id}, GET/PATCH .../policies (lock_version), CRUD .../departments + .../locations (audited, case-insensitive unique), .../members list/PATCH role/DELETE deactivate (reassignment list)/POST reset-mfa, .../invitations list/create/resend/revoke, public GET /invitations/{token} (masked email) + POST accept, public GET /companies/{slug} (active only); StrictFieldsMixin rejects unknown fields; RbacActionMixin maps DRF actions to rbac matrix; 16 API tests; TS types regenerated | - |
+| 2026-11-09 | Impl | P02-T10 | apps.platform: services verify/suspend(reason required)/reactivate (state checks -> 409 invalid_transition, audited, outbox organisation.* events for downstream pause/hide); /api/v1/platform/organisations list (status filter, search, member_count) + retrieve (admin + support read-only) + verify/suspend/reactivate (admin only); create_platform_admin command from PLATFORM_ADMIN_EMAIL/PASSWORD env (idempotent, verified email, MFA grace); enum name overrides; 13 tests | - |
