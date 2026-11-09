@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from allauth.account.models import EmailAddress
-from allauth.account.signals import email_changed, email_confirmed, password_reset
+from allauth.account.signals import email_changed, email_confirmed, password_reset, user_logged_in
 from django.dispatch import receiver
 
 from apps.core import time
@@ -43,3 +43,11 @@ def _on_email_changed(user: User, **_: Any) -> None:
 @receiver(password_reset)
 def _on_password_reset(user: User, **_: Any) -> None:
     lockout.clear(user.email)
+
+
+@receiver(user_logged_in)
+def _on_login(user: User, **_: Any) -> None:
+    # Starts the 7-day MFA grace period the first time a privileged user signs in.
+    from .mfa import mfa_status
+
+    mfa_status(user)

@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T03
+- **Current task:** P02-T04
 - **Last updated:** 2026-11-09
-- **Overall:** 20 / 193 tasks · 1 / 16 phases
+- **Overall:** 21 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -72,7 +72,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 ### Phase 02 — Identity, Tenancy & Access Control  (`phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md`)
 - [x] P02-T01 — Custom `User` model (email login, citext, normalisation) before first migrate of auth
 - [x] P02-T02 — django-allauth headless (browser client): signup, email verification (mandatory before application submit), login, …
-- [ ] P02-T03 — MFA via `allauth.mfa`: TOTP + recovery codes
+- [x] P02-T03 — MFA via `allauth.mfa`: TOTP + recovery codes
 - [ ] P02-T04 — Rate limiting & lockout: DRF throttles + django-axes (or custom) progressive lockout
 - [x] P02-T05 — `apps.audit`: `AuditEvent` append-only with hash chain (`prev_hash`, `hash` = sha256 of canonical JSON + prev), …
 - [ ] P02-T06 — `apps.organisations` models: Organisation, OrganisationPolicy (defaults per `docs/03`), Department, Location, …
@@ -344,3 +344,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T01 | User completed: email_verified_at, preferred_name, phone_e164, platform_role (none/platform_admin/platform_support), locale, timezone, mfa_grace_started_at, deleted_at; email normalised on save; Argon2 hasher; validators = min 10 + similarity + BreachedPasswordValidator (SHA-1 gz list, build_breached_passwords command); 13 new tests | Swap in a top-100k list when owner supplies one |
 | 2026-11-09 | Impl | P02-T02 | allauth headless (browser) at /api/v1/auth/browser/v1/*: signup, verify (link -> frontend /verify-email, auto-login), login/logout, password reset (1 h single-use) + change, email change with re-verification + notice to old address; enumeration-free (ADR-023: verification mandatory before login); /api/v1/csrf/; branded MHRS email templates; all auth email goes through outbox (core.email.queue_email, bodies encrypted); email_verified_at synced via signals; require_verified_email guard; 11 flow tests | Lockout hooks wired here; tests + session API in P02-T04 |
 | 2026-11-09 | Impl | P02-T05 | apps.audit: AuditEvent hash chain per organisation (+platform), sha256(canonical JSON + prev_hash), advisory-lock serialised; Postgres trigger rejects UPDATE/DELETE (opt-in maintenance flag for Phase 09); audit.record(actor, action, target, before/after minimised, reason, request -> ip /24|/48 + UA hash + request_id); AccessLog + log_access; verify_audit_chain command; 14 tests incl. tamper/delete detection + concurrent writers. Done before T03 (reset_mfa needs it) | - |
+| 2026-11-09 | Impl | P02-T03 | MFA via allauth.mfa (TOTP + 10 recovery codes); policy module accounts/mfa.py (privilege-provider registry: platform roles now, org_admin/hr_manager registered by organisations), 7-day grace started on first login/contact, MfaEnforcementMiddleware returns 401 mfa_required on staff API prefixes after grace; reset_mfa (EC-ACC-08) audited; 11 tests incl. enrolment, 2FA login, recovery-code single use, grace/enforced | Frontend must handle allauth 'reauthenticate' flow before TOTP setup / recovery codes |
