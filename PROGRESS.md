@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 02 — Identity, Tenancy & Access Control
-- **Current task:** P02-T08
+- **Current task:** P02-T09
 - **Last updated:** 2026-11-09
-- **Overall:** 24 / 193 tasks · 1 / 16 phases
+- **Overall:** 25 / 193 tasks · 1 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -77,7 +77,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P02-T05 — `apps.audit`: `AuditEvent` append-only with hash chain (`prev_hash`, `hash` = sha256 of canonical JSON + prev), …
 - [x] P02-T06 — `apps.organisations` models: Organisation, OrganisationPolicy (defaults per `docs/03`), Department, Location, …
 - [x] P02-T07 — Org context: `OrganisationContextMiddleware` resolving `request.organisation` + `request.membership` from `X-Org-Id` …
-- [ ] P02-T08 — RBAC: permission classes `HasOrgRole(*roles)`, `IsAssignedToJob` (stub interface for Phase 3), `IsPlatformAdmin`, …
+- [x] P02-T08 — RBAC: permission classes `HasOrgRole(*roles)`, `IsAssignedToJob` (stub interface for Phase 3), `IsPlatformAdmin`, …
 - [ ] P02-T09 — APIs per `docs/04` (me, organisations, policies, departments, locations, members, invitations, public company …
 - [ ] P02-T10 — Platform admin basics: platform_role on user
 - [ ] P02-T11 — Tests: permission matrix (parametrised), cross-tenant suite scaffold (`tests/tenancy/`) that later phases extend …
@@ -348,3 +348,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P02-T04 | Progressive lockout (10 fails -> 15 min, doubling to 24 h cap, per normalised email, generic too_many_login_attempts, owner notified, cleared by password reset or time) via allauth adapter + lockout-aware backend; allauth IP/key rate limits; DRF Anon/User throttles; /api/v1/me/sessions list (truncated IP, is_current), revoke one, revoke-others (audited); revoke_all_sessions helper (EC-ACC-12); new-device sign-in email (EC-ACC-11); global cache-clear test fixture; 13 tests | - |
 | 2026-11-09 | Impl | P02-T06 | Organisation (full profile, statuses incl. closed), OrganisationPolicy (defaults per docs/03 + decisions, version lock), Department, Location, Membership (6 roles), Invitation (sha256 token hash, 7-day expiry, single open invite per email, allow_any_email). Services: create (creator org_admin, pending_verification, slug de-dup), update (nh3 sanitised), update_policy (409 stale), invite/resend (rotates token)/revoke/accept (EC-ORG-03/04/05) with outbox email, change_role + deactivate with last-admin guard, deactivation revokes sessions + reassignment provider hook; org privilege registered for MFA; core.sanitize; factories + make_org_with_team; 17 tests | EC-ORG-09 reassignment list populated by jobs in Phase 03 |
 | 2026-11-09 | Impl | P02-T07 | OrganisationContextMiddleware: request.organisation/membership from X-Org-Id (validated active membership, closed orgs excluded) or session active org (stale cleared); foreign/invalid header -> 404 + audit tenant_violation_attempt (EC-ORG-06); suspended/closed org -> 423 org_suspended for unsafe requests on context-scoped staff APIs (EC-ORG-07); POST /api/v1/me/active-org/; selectors active_membership/memberships_for_user; 13 tests | - |
+| 2026-11-09 | Impl | P02-T08 | RBAC: central role x action matrix organisations/rbac.py (fails closed on unknown actions); permission classes HasOrgRole(*roles)/HasOrgAction(action) (path organisation_id or context; non-member 404, wrong role 403, suspended writes 423), IsAssignedToJob (Phase 03 registers checker), IsPlatformAdmin, IsPlatformStaff (support read-only), IsCandidateOwner (404 for others), conflict-of-interest checker registry + audited 403 (EC-ACC-09/10); 20 tests | - |
