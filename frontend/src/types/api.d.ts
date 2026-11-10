@@ -24,6 +24,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_list"];
+        put?: never;
+        post: operations["applications_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["applications_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/answers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["applications_answers_upsert"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/documents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["applications_documents_set"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/review/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_review"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/profile/": {
         parameters: {
             query?: never;
@@ -1345,12 +1425,67 @@ export interface components {
             /** Format: uuid */
             organisation_id: string;
         };
+        AnswerItemRequest: {
+            key: string;
+            value: unknown;
+        };
+        AnswersRequest: {
+            answers: components["schemas"]["AnswerItemRequest"][];
+        };
         ApiRoot: {
             name: string;
             version: string;
             /** Format: date-time */
             server_time: string;
         };
+        Application: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly reference: string | null;
+            readonly status: components["schemas"]["ApplicationStatusEnum"];
+            readonly job: components["schemas"]["JobBrief"];
+            /** @description Wizard step 1 (draft only). */
+            readonly contact: unknown;
+            readonly last_step: number;
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            /** Format: date-time */
+            readonly withdrawn_at: string | null;
+            readonly lock_version: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `cv` - CV
+         *     * `cover_letter` - Cover letter
+         *     * `certificate` - Certificate
+         *     * `transcript` - Transcript
+         *     * `portfolio` - Portfolio
+         *     * `other` - Other
+         * @enum {string}
+         */
+        ApplicationDocumentRoleEnum: "cv" | "cover_letter" | "certificate" | "transcript" | "portfolio" | "other";
+        /**
+         * @description * `draft` - Draft
+         *     * `submitted` - Submitted
+         *     * `processing` - Processing
+         *     * `processing_error` - Processing problem
+         *     * `needs_information` - Clarification requested
+         *     * `under_review` - Under review
+         *     * `on_hold` - On hold
+         *     * `shortlisted` - Shortlisted
+         *     * `interview` - Interview
+         *     * `offer` - Offer
+         *     * `hired` - Hired
+         *     * `not_selected` - Not selected
+         *     * `withdrawn` - Withdrawn
+         *     * `offer_declined` - Offer declined
+         *     * `abandoned` - Abandoned
+         * @enum {string}
+         */
+        ApplicationStatusEnum: "draft" | "submitted" | "processing" | "processing_error" | "needs_information" | "under_review" | "on_hold" | "shortlisted" | "interview" | "offer" | "hired" | "not_selected" | "withdrawn" | "offer_declined" | "abandoned";
         Assignment: {
             /** Format: uuid */
             readonly id: string;
@@ -1369,6 +1504,24 @@ export interface components {
         };
         AssignmentsInputRequest: {
             assignments: components["schemas"]["AssignmentInputRequest"][];
+        };
+        AttachItemRequest: {
+            /** Format: uuid */
+            document_id: string;
+            role: components["schemas"]["ApplicationDocumentRoleEnum"];
+            required_doc_key?: string;
+        };
+        AttachRequest: {
+            documents: components["schemas"]["AttachItemRequest"][];
+        };
+        AttachedDocument: {
+            /** Format: uuid */
+            readonly document: string;
+            readonly role: components["schemas"]["ApplicationDocumentRoleEnum"];
+            readonly required_doc_key: string;
+            readonly filename: string;
+            readonly scan_status: string;
+            readonly size_bytes: number;
         };
         /**
          * @description * `immediate` - Immediately
@@ -1453,6 +1606,13 @@ export interface components {
         };
         CommentRequest: {
             comment?: string;
+        };
+        ContactRequest: {
+            first_name?: string;
+            last_name?: string;
+            preferred_name?: string;
+            phone?: string;
+            city?: string;
         };
         CriteriaInputRequest: {
             lock_version?: number;
@@ -1746,6 +1906,16 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
+        JobBrief: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            title: string;
+            organisation_name: string;
+            /** Format: date-time */
+            closes_at: string | null;
+            timezone: string;
+        };
         JobEvent: {
             /** Format: uuid */
             readonly id: string;
@@ -1929,6 +2099,11 @@ export interface components {
             grace_deadline: string | null;
             in_grace: boolean;
             enforced: boolean;
+        };
+        MissingItem: {
+            step: string;
+            code: string;
+            key: string;
         };
         Organisation: {
             /** Format: uuid */
@@ -2166,6 +2341,11 @@ export interface components {
         };
         PatchedDepartmentRequest: {
             name?: string;
+        };
+        PatchedDraftPatchRequest: {
+            lock_version?: number;
+            contact?: components["schemas"]["ContactRequest"];
+            last_step?: number;
         };
         /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
         PatchedEducationRequest: {
@@ -2579,6 +2759,16 @@ export interface components {
         RequiredReasonRequest: {
             reason: string;
         };
+        Review: {
+            application: components["schemas"]["Application"];
+            ready: boolean;
+            missing: components["schemas"]["MissingItem"][];
+            visible_questions: string[];
+            documents: components["schemas"]["AttachedDocument"][];
+            answers: {
+                [key: string]: unknown;
+            };
+        };
         RevokedSessions: {
             revoked: number;
         };
@@ -2708,6 +2898,13 @@ export interface components {
          * @enum {string}
          */
         SourceEnum: "manual" | "cv_import";
+        StartRequest: {
+            /** Format: uuid */
+            job_id: string;
+            source?: {
+                [key: string]: string;
+            };
+        };
         Suggestions: {
             engine: string;
             requires_acceptance: boolean;
@@ -2830,6 +3027,181 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiRoot"];
+                };
+            };
+        };
+    };
+    applications_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"][];
+                };
+            };
+        };
+    };
+    applications_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StartRequest"];
+                "multipart/form-data": components["schemas"]["StartRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    applications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    applications_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDraftPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDraftPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedDraftPatchRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    applications_answers_upsert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswersRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AnswersRequest"];
+                "multipart/form-data": components["schemas"]["AnswersRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    applications_documents_set: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttachRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AttachRequest"];
+                "multipart/form-data": components["schemas"]["AttachRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    applications_review: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
                 };
             };
         };

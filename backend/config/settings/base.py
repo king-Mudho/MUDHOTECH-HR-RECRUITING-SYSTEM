@@ -193,6 +193,7 @@ SPECTACULAR_SETTINGS = {
         "WorkplaceTypeEnum": "apps.jobs.models.WorkplaceType",
         "JobStatusEnum": "apps.jobs.models.JobStatus",
         "JobVersionStatusEnum": "apps.jobs.models.VersionStatus",
+        "ApplicationDocumentRoleEnum": "apps.applications.models.DocumentRole",
     },
 }
 

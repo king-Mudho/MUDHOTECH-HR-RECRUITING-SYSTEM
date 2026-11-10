@@ -268,3 +268,254 @@ def transition(
             organisation_id=app.organisation_id,
         )
     return app
+
+
+# ------------------------------------------------------------------------------ draft editing
+CONTACT_FIELDS = ("first_name", "last_name", "preferred_name", "phone", "city")
+# job-level required document key -> application document role
+REQUIRED_DOC_ROLES = {
+    "cv": "cv",
+    "cover_letter": "cover_letter",
+    "certificates": "certificate",
+    "transcripts": "transcript",
+    "portfolio": "portfolio",
+}
+
+
+def own_applications(user: Any) -> Any:
+    # Candidates read their own applications across organisations: owner-filtered by design.
+    return Application.objects.unscoped().filter(candidate_user=user)
+
+
+def get_own(user: Any, application_id: Any, *, lock: bool = False) -> Application:
+    from apps.core.exceptions import NotFoundError
+
+    qs = own_applications(user).select_related("job", "job_version", "organisation")
+    if lock:
+        qs = qs.select_for_update(of=("self",))
+    app = qs.filter(pk=application_id).first()
+    if app is None:
+        raise NotFoundError()
+    return app
+
+
+def _require_draft(app: Application) -> None:
+    if app.status != Status.DRAFT:
+        raise DomainError(
+            "conflict.not_draft",
+            "This application has been submitted and can no longer be edited.",
+            status_code=409,
+        )
+
+
+def _check_lock(app: Application, lock_version: int | None) -> None:
+    from apps.core.exceptions import StaleVersionError
+
+    if lock_version is not None and int(lock_version) != app.lock_version:
+        raise StaleVersionError(details={"current_lock_version": app.lock_version})
+
+
+@transaction.atomic
+def update_draft(
+    user: Any, application_id: Any, data: dict[str, Any], *, lock_version: int | None
+) -> Application:
+    app = get_own(user, application_id, lock=True)
+    _require_draft(app)
+    _check_lock(app, lock_version)
+    if "contact" in data:
+        contact = dict(app.contact)
+        for k in CONTACT_FIELDS:
+            if k in data["contact"]:
+                contact[k] = str(data["contact"][k] or "").strip()[:150]
+        if contact.get("phone"):
+            from apps.candidates.services import normalise_phone
+
+            contact["phone"] = normalise_phone(contact["phone"])
+        app.contact = contact
+    if "last_step" in data:
+        app.last_step = max(1, min(6, int(data["last_step"])))
+    app.lock_version += 1
+    app.save(update_fields=["contact", "last_step", "lock_version", "updated_at"])
+    return app
+
+
+@transaction.atomic
+def set_documents(user: Any, application_id: Any, items: list[dict[str, Any]]) -> Application:
+    """Replace the attached documents. Pending scans are fine; rejected/infected are not."""
+    from apps.documents.models import Document, ScanStatus
+    from apps.documents.services import APPLICATION_TOTAL_BYTES, MB
+
+    from .models import ApplicationDocument, DocumentRole
+
+    app = get_own(user, application_id, lock=True)
+    _require_draft(app)
+    errors: dict[str, dict[str, list[str]]] = {}
+    ids = [str(i.get("document_id")) for i in items]
+    docs = {
+        str(d.pk): d
+        for d in Document.objects.filter(pk__in=ids, owner_user=user, deleted_at__isnull=True)
+    }
+    for i, item in enumerate(items):
+        doc = docs.get(str(item.get("document_id")))
+        if doc is None:
+            errors[str(i)] = {"document_id": ["File not found."]}
+        elif doc.scan_status in (ScanStatus.INFECTED, ScanStatus.REJECTED, ScanStatus.ERROR):
+            errors[str(i)] = {"document_id": ["This file was not accepted. Upload another one."]}
+        elif item.get("role") not in DocumentRole.values:
+            errors[str(i)] = {"role": ["Unknown document role."]}
+    if len(set(ids)) != len(ids):
+        errors["non_field_errors"] = {"document_id": ["Each file can be attached once."]}
+    if errors:
+        raise DomainError("validation_error", "Check the attached files.", details=errors)
+    total = sum(docs[d].size_bytes for d in set(ids))
+    if total > APPLICATION_TOTAL_BYTES:
+        raise DomainError(
+            "payload_too_large",
+            f"Attachments may total at most {APPLICATION_TOTAL_BYTES // MB} MB.",
+            status_code=413,
+        )
+    ApplicationDocument.objects.for_org(app.organisation_id).filter(application=app).delete()
+    for item in items:
+        ApplicationDocument.objects.create(
+            organisation_id=app.organisation_id,
+            application=app,
+            document=docs[str(item["document_id"])],
+            role=item["role"],
+            required_doc_key=str(item.get("required_doc_key") or "")[:40],
+        )
+    app.lock_version += 1
+    app.save(update_fields=["lock_version", "updated_at"])
+    return app
+
+
+def question_defs(app: Application) -> list[dict[str, Any]]:
+    """The application's frozen questions (its job version) as plain dicts, in order."""
+    from apps.questionnaires.models import Question
+
+    qs = (
+        Question.objects.for_org(app.organisation_id)
+        .filter(questionnaire__job_version_id=app.job_version_id)
+        .order_by("order")
+        .prefetch_related("options")
+    )
+    return [
+        {
+            "id": q.pk,
+            "key": q.key,
+            "type": q.type,
+            "required": q.required,
+            "config": q.config,
+            "branching": q.branching,
+            "options": [o.value for o in q.options.all()],
+        }
+        for q in qs
+    ]
+
+
+def current_answers(app: Application) -> dict[str, Any]:
+    from apps.questionnaires.models import QuestionResponse
+
+    return {
+        r.question.key: r.value
+        for r in QuestionResponse.objects.for_org(app.organisation_id)
+        .filter(application=app)
+        .select_related("question")
+    }
+
+
+@transaction.atomic
+def upsert_answers(user: Any, application_id: Any, items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Bulk upsert (partial allowed in draft). Answers to questions hidden by branching are
+    discarded (also previously saved ones), so they are never stored or scored."""
+    from apps.documents.models import Document
+    from apps.questionnaires.models import QuestionResponse
+
+    from . import answers as ans
+
+    app = get_own(user, application_id, lock=True)
+    _require_draft(app)
+    defs = question_defs(app)
+    by_key = {q["key"]: q for q in defs}
+    merged = current_answers(app)
+    errors: dict[str, list[str]] = {}
+    for item in items:
+        key = str(item.get("key", ""))
+        q = by_key.get(key)
+        if q is None:
+            errors[key or "?"] = ["Unknown question."]
+            continue
+        value, err = ans.validate_answer(q, item.get("value"))
+        if err:
+            errors[key] = [err]
+            continue
+        if q["type"] == "file_upload" and value is not None:
+            ok = Document.objects.filter(
+                pk=value, owner_user=user, deleted_at__isnull=True
+            ).exists()
+            if not ok:
+                errors[key] = ["File not found."]
+                continue
+        merged[key] = value
+    if errors:
+        raise DomainError("validation_error", "Check the highlighted answers.", details=errors)
+    shown = set(ans.visible_keys(defs, merged))
+    stamp = now()
+    for key, q in by_key.items():
+        value = merged.get(key) if key in shown else None
+        if value is None:
+            QuestionResponse.objects.for_org(app.organisation_id).filter(
+                application=app, question_id=q["id"]
+            ).delete()
+            continue
+        QuestionResponse.objects.for_org(app.organisation_id).update_or_create(
+            application=app,
+            question_id=q["id"],
+            defaults={
+                "organisation_id": app.organisation_id,
+                "value": value,
+                "document_id": value if q["type"] == "file_upload" else None,
+                "answered_at": stamp,
+            },
+        )
+    app.lock_version += 1
+    app.save(update_fields=["lock_version", "updated_at"])
+    return {k: v for k, v in merged.items() if k in shown}
+
+
+def review(user: Any, application_id: Any) -> dict[str, Any]:
+    """Pre-submit checklist: everything still missing, so the wizard can link to each step."""
+    from apps.documents.models import ScanStatus
+
+    from . import answers as ans
+    from .models import ApplicationDocument
+
+    app = get_own(user, application_id)
+    defs = question_defs(app)
+    given = current_answers(app)
+    attached = list(
+        ApplicationDocument.objects.for_org(app.organisation_id)
+        .filter(application=app)
+        .select_related("document")
+    )
+    missing: list[dict[str, str]] = []
+    if user.email_verified_at is None:
+        missing.append({"step": "contact", "code": "email_unverified", "key": ""})
+    for key in app.job_version.required_documents or []:
+        role = REQUIRED_DOC_ROLES.get(key)
+        if not any(a.required_doc_key == key or (role and a.role == role) for a in attached):
+            missing.append({"step": "documents", "code": "document_required", "key": key})
+    for a in attached:
+        if a.document.scan_status in (ScanStatus.INFECTED, ScanStatus.REJECTED):
+            missing.append(
+                {"step": "documents", "code": "document_rejected", "key": str(a.document_id)}
+            )
+    for key in ans.missing_required(defs, given):
+        missing.append({"step": "questions", "code": "answer_required", "key": key})
+    return {
+        "application": app,
+        "ready": not missing,
+        "missing": missing,
+        "visible_questions": ans.visible_keys(defs, given),
+        "documents": attached,
+        "answers": given,
+    }

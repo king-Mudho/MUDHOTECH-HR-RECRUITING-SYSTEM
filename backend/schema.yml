@@ -19,6 +19,192 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiRoot'
           description: ''
+  /api/v1/applications/:
+    get:
+      operationId: applications_list
+      tags:
+      - applications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+          description: ''
+    post:
+      operationId: applications_start
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StartRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StartRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          description: ''
+  /api/v1/applications/{application_id}/:
+    get:
+      operationId: applications_retrieve
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          description: ''
+    patch:
+      operationId: applications_partial_update
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDraftPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDraftPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDraftPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          description: ''
+  /api/v1/applications/{application_id}/answers/:
+    put:
+      operationId: applications_answers_upsert
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswersRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnswersRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnswersRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+  /api/v1/applications/{application_id}/documents/:
+    put:
+      operationId: applications_documents_set
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttachRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+  /api/v1/applications/{application_id}/review/:
+    get:
+      operationId: applications_review
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
   /api/v1/candidate/profile/:
     get:
       operationId: candidate_profile_retrieve
@@ -3391,6 +3577,27 @@ components:
           format: uuid
       required:
       - organisation_id
+    AnswerItemRequest:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        value:
+          nullable: true
+      required:
+      - key
+      - value
+    AnswersRequest:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerItemRequest'
+      required:
+      - answers
     ApiRoot:
       type: object
       properties:
@@ -3405,6 +3612,114 @@ components:
       - name
       - server_time
       - version
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationStatusEnum'
+          readOnly: true
+        job:
+          allOf:
+          - $ref: '#/components/schemas/JobBrief'
+          readOnly: true
+        contact:
+          readOnly: true
+          description: Wizard step 1 (draft only).
+        last_step:
+          type: integer
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        withdrawn_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        lock_version:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - contact
+      - created_at
+      - id
+      - job
+      - last_step
+      - lock_version
+      - reference
+      - status
+      - submitted_at
+      - updated_at
+      - withdrawn_at
+    ApplicationDocumentRoleEnum:
+      enum:
+      - cv
+      - cover_letter
+      - certificate
+      - transcript
+      - portfolio
+      - other
+      type: string
+      description: |-
+        * `cv` - CV
+        * `cover_letter` - Cover letter
+        * `certificate` - Certificate
+        * `transcript` - Transcript
+        * `portfolio` - Portfolio
+        * `other` - Other
+    ApplicationStatusEnum:
+      enum:
+      - draft
+      - submitted
+      - processing
+      - processing_error
+      - needs_information
+      - under_review
+      - on_hold
+      - shortlisted
+      - interview
+      - offer
+      - hired
+      - not_selected
+      - withdrawn
+      - offer_declined
+      - abandoned
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `submitted` - Submitted
+        * `processing` - Processing
+        * `processing_error` - Processing problem
+        * `needs_information` - Clarification requested
+        * `under_review` - Under review
+        * `on_hold` - On hold
+        * `shortlisted` - Shortlisted
+        * `interview` - Interview
+        * `offer` - Offer
+        * `hired` - Hired
+        * `not_selected` - Not selected
+        * `withdrawn` - Withdrawn
+        * `offer_declined` - Offer declined
+        * `abandoned` - Abandoned
     Assignment:
       type: object
       properties:
@@ -3457,6 +3772,59 @@ components:
             $ref: '#/components/schemas/AssignmentInputRequest'
       required:
       - assignments
+    AttachItemRequest:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/ApplicationDocumentRoleEnum'
+        required_doc_key:
+          type: string
+          maxLength: 40
+      required:
+      - document_id
+      - role
+    AttachRequest:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachItemRequest'
+      required:
+      - documents
+    AttachedDocument:
+      type: object
+      properties:
+        document:
+          type: string
+          format: uuid
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationDocumentRoleEnum'
+          readOnly: true
+        required_doc_key:
+          type: string
+          readOnly: true
+        filename:
+          type: string
+          readOnly: true
+        scan_status:
+          type: string
+          readOnly: true
+        size_bytes:
+          type: integer
+          readOnly: true
+      required:
+      - document
+      - filename
+      - required_doc_key
+      - role
+      - scan_status
+      - size_bytes
     AvailabilityEnum:
       enum:
       - immediate
@@ -3646,6 +4014,24 @@ components:
         comment:
           type: string
           maxLength: 1000
+    ContactRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_name:
+          type: string
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 30
+        city:
+          type: string
+          maxLength: 100
     CriteriaInputRequest:
       type: object
       properties:
@@ -4506,6 +4892,31 @@ components:
       - organisation_slug
       - role
       - status
+    JobBrief:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        organisation_name:
+          type: string
+        closes_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+      required:
+      - closes_at
+      - id
+      - organisation_name
+      - slug
+      - timezone
+      - title
     JobEvent:
       type: object
       properties:
@@ -5021,6 +5432,19 @@ components:
       - grace_deadline
       - in_grace
       - required
+    MissingItem:
+      type: object
+      properties:
+        step:
+          type: string
+        code:
+          type: string
+        key:
+          type: string
+      required:
+      - code
+      - key
+      - step
     Organisation:
       type: object
       properties:
@@ -5477,6 +5901,18 @@ components:
           type: string
           minLength: 1
           maxLength: 150
+    PatchedDraftPatchRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          minimum: 1
+        contact:
+          $ref: '#/components/schemas/ContactRequest'
+        last_step:
+          type: integer
+          maximum: 6
+          minimum: 1
     PatchedEducationRequest:
       type: object
       description: 'Shared behaviour: ``source`` is read-only (CV imports go through
@@ -6636,6 +7072,36 @@ components:
           maxLength: 500
       required:
       - reason
+    Review:
+      type: object
+      properties:
+        application:
+          $ref: '#/components/schemas/Application'
+        ready:
+          type: boolean
+        missing:
+          type: array
+          items:
+            $ref: '#/components/schemas/MissingItem'
+        visible_questions:
+          type: array
+          items:
+            type: string
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachedDocument'
+        answers:
+          type: object
+          additionalProperties:
+            nullable: true
+      required:
+      - answers
+      - application
+      - documents
+      - missing
+      - ready
+      - visible_questions
     RevokedSessions:
       type: object
       properties:
@@ -6916,6 +7382,20 @@ components:
       description: |-
         * `manual` - Entered by the candidate
         * `cv_import` - Imported from a CV (confirmed by the candidate)
+    StartRequest:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        source:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 200
+      required:
+      - job_id
     Suggestions:
       type: object
       properties:
