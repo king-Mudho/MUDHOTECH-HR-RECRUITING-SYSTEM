@@ -58,6 +58,7 @@ def test_list_search_filters_and_ordering(client, team) -> None:  # type: ignore
 
 
 def test_list_hides_drafts_unlisted_paused_closed_and_suspended_orgs(client, team) -> None:  # type: ignore[no-untyped-def]
+    """EC-JOB-20 (MVP subset): unlisted vacancies are reachable by link but never listed."""
     from apps.jobs.tests.test_services import approved_job, draft_job
 
     draft_job(team)
@@ -185,3 +186,32 @@ def test_sitemap_and_feeds(client, team) -> None:  # type: ignore[no-untyped-def
     assert feed["version"].startswith("https://jsonfeed.org") and feed["items"][0]["id"] == str(
         job.pk
     )
+
+
+def test_multiple_openings_stored_and_shown(client, team) -> None:  # type: ignore[no-untyped-def]
+    """EC-JOB-19: a vacancy with several openings (e.g. 5 nurses) keeps and shows the number.
+
+    Shortlist-size suggestions that scale with openings and the offer limit come with screening
+    (Phase 07) and offers (Phase 10).
+    """
+    job = _live(team, openings=5)
+    assert client.get(f"/api/v1/jobs/{job.slug}/").json()["openings"] == 5
+    assert client.get("/api/v1/jobs/").json()["results"][0]["openings"] == 5
+
+
+def test_lists_are_paginated_with_constant_query_count(
+    client, team, django_assert_max_num_queries
+) -> None:  # type: ignore[no-untyped-def]
+    """EC-JOB-17 (job side): list endpoints page (max 100 rows) and their query count does not
+    grow with the number of vacancies; application-scale paging is covered from Phase 04."""
+    for _ in range(3):
+        _live(team)
+    with django_assert_max_num_queries(12) as small:
+        assert client.get("/api/v1/jobs/").status_code == 200
+    for _ in range(4):
+        _live(team)
+    with django_assert_max_num_queries(len(small.captured_queries)):
+        body = client.get("/api/v1/jobs/?page_size=500").json()
+    assert body["count"] == 7 and len(body["results"]) == 7
+    capped = client.get("/api/v1/jobs/?page_size=2").json()
+    assert len(capped["results"]) == 2 and capped["next"]
