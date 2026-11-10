@@ -2264,6 +2264,205 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedVersionSummaryList'
           description: ''
+  /api/v1/hr/notification-templates/:
+    get:
+      operationId: hr_notification_templates_list
+      description: The template in force for every notification (override if any,
+        else default).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTemplateList'
+          description: ''
+    post:
+      operationId: hr_notification_templates_create
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TemplateWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemplateWriteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+          description: ''
+  /api/v1/hr/notification-templates/{id}/:
+    get:
+      operationId: hr_notification_templates_retrieve
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this notification template.
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+          description: ''
+  /api/v1/hr/notification-templates/{id}/history/:
+    get:
+      operationId: hr_notification_templates_history
+      description: Every version of this template visible to the organisation (default
+        + own).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this notification template.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTemplateList'
+          description: ''
+  /api/v1/hr/notification-templates/{id}/preview/:
+    post:
+      operationId: hr_notification_templates_preview
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this notification template.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rendered'
+          description: ''
+  /api/v1/hr/notification-templates/revert/:
+    post:
+      operationId: hr_notification_templates_revert
+      description: Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny
+        by default).
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevertRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RevertRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RevertRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/invitations/{token}/:
     get:
       operationId: invitations_preview
@@ -4322,6 +4521,18 @@ components:
           minimum: 0
       required:
       - name
+    ChannelEnum:
+      enum:
+      - email
+      - inapp
+      - sms
+      - whatsapp
+      type: string
+      description: |-
+        * `email` - Email
+        * `inapp` - In-app
+        * `sms` - SMS
+        * `whatsapp` - WhatsApp
     CommentRequest:
       type: object
       properties:
@@ -5612,6 +5823,38 @@ components:
           maxLength: 500
       required:
       - title
+    KeyEnum:
+      enum:
+      - application_received
+      - application_withdrawn_confirmation
+      - clarification_reminder
+      - clarification_requested
+      - document_rejected_reupload
+      - draft_abandoned
+      - draft_deadline_reminder
+      - invitation_staff
+      - not_selected
+      - note_mention
+      - recruiter_digest
+      - recruitment_paused
+      - rights_request_update
+      - shortlisted
+      type: string
+      description: |-
+        * `application_received` - application_received
+        * `application_withdrawn_confirmation` - application_withdrawn_confirmation
+        * `clarification_reminder` - clarification_reminder
+        * `clarification_requested` - clarification_requested
+        * `document_rejected_reupload` - document_rejected_reupload
+        * `draft_abandoned` - draft_abandoned
+        * `draft_deadline_reminder` - draft_deadline_reminder
+        * `invitation_staff` - invitation_staff
+        * `not_selected` - not_selected
+        * `note_mention` - note_mention
+        * `recruiter_digest` - recruiter_digest
+        * `recruitment_paused` - recruitment_paused
+        * `rights_request_update` - rights_request_update
+        * `shortlisted` - shortlisted
     Language:
       type: object
       properties:
@@ -6396,6 +6639,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Skill'
+    PaginatedTemplateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
     PaginatedVersionSummaryList:
       type: object
       required:
@@ -6947,6 +7213,15 @@ components:
           minimum: 0
       required:
       - version
+    PreviewRequest:
+      type: object
+      properties:
+        context:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 500
     Profile:
       type: object
       properties:
@@ -7638,6 +7913,19 @@ components:
         reason:
           type: string
           maxLength: 1000
+    Rendered:
+      type: object
+      properties:
+        subject:
+          type: string
+        text:
+          type: string
+        html:
+          type: string
+      required:
+      - html
+      - subject
+      - text
     RequiredReasonRequest:
       type: object
       properties:
@@ -7678,6 +7966,22 @@ components:
       - rejected_reason
       - scan_status
       - size_bytes
+    RevertRequest:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/KeyEnum'
+        channel:
+          allOf:
+          - $ref: '#/components/schemas/ChannelEnum'
+          default: email
+        locale:
+          type: string
+          minLength: 1
+          default: en
+          maxLength: 10
+      required:
+      - key
     Review:
       type: object
       properties:
@@ -8052,6 +8356,92 @@ components:
       - engine
       - questions
       - requires_acceptance
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        key:
+          type: string
+          readOnly: true
+        channel:
+          allOf:
+          - $ref: '#/components/schemas/ChannelEnum'
+          readOnly: true
+        locale:
+          type: string
+          readOnly: true
+        subject:
+          type: string
+          readOnly: true
+        body_md:
+          type: string
+          readOnly: true
+        variables:
+          readOnly: true
+          description: Placeholders used
+        version:
+          type: integer
+          readOnly: true
+        active:
+          type: boolean
+          readOnly: true
+        is_default:
+          type: boolean
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        allowed_variables:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - active
+      - allowed_variables
+      - body_md
+      - channel
+      - created_at
+      - description
+      - id
+      - is_default
+      - key
+      - locale
+      - subject
+      - variables
+      - version
+    TemplateWriteRequest:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/KeyEnum'
+        channel:
+          allOf:
+          - $ref: '#/components/schemas/ChannelEnum'
+          default: email
+        locale:
+          type: string
+          minLength: 1
+          default: en
+          maxLength: 10
+        subject:
+          type: string
+          default: ''
+          maxLength: 300
+        body_md:
+          type: string
+          minLength: 1
+          maxLength: 25000
+      required:
+      - body_md
+      - key
     TimelineEntry:
       type: object
       properties:

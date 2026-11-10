@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "apps.documents",
     "apps.applications",
     "apps.privacy",
+    "apps.notifications",
 ]
 
 AUTH_USER_MODEL = "accounts.User"

@@ -42,6 +42,8 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "applications.transition": RECRUITING,
     "shortlist.propose": RECRUITING,
     "shortlist.approve": ADMIN_HR,
+    # notifications (Phase 05)
+    "notifications.manage": ADMIN_HR,
 }
 
 

@@ -961,6 +961,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/notification-templates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The template in force for every notification (override if any, else default). */
+        get: operations["hr_notification_templates_list"];
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_notification_templates_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/notification-templates/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        get: operations["hr_notification_templates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/notification-templates/{id}/history/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Every version of this template visible to the organisation (default + own). */
+        get: operations["hr_notification_templates_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/notification-templates/{id}/preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_notification_templates_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/notification-templates/revert/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
+        post: operations["hr_notification_templates_revert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invitations/{token}/": {
         parameters: {
             query?: never;
@@ -1772,6 +1858,14 @@ export interface components {
             credential_id?: string;
             order?: number;
         };
+        /**
+         * @description * `email` - Email
+         *     * `inapp` - In-app
+         *     * `sms` - SMS
+         *     * `whatsapp` - WhatsApp
+         * @enum {string}
+         */
+        ChannelEnum: "email" | "inapp" | "sms" | "whatsapp";
         CommentRequest: {
             comment?: string;
         };
@@ -2223,6 +2317,24 @@ export interface components {
             required_documents?: string[];
             change_note?: string;
         };
+        /**
+         * @description * `application_received` - application_received
+         *     * `application_withdrawn_confirmation` - application_withdrawn_confirmation
+         *     * `clarification_reminder` - clarification_reminder
+         *     * `clarification_requested` - clarification_requested
+         *     * `document_rejected_reupload` - document_rejected_reupload
+         *     * `draft_abandoned` - draft_abandoned
+         *     * `draft_deadline_reminder` - draft_deadline_reminder
+         *     * `invitation_staff` - invitation_staff
+         *     * `not_selected` - not_selected
+         *     * `note_mention` - note_mention
+         *     * `recruiter_digest` - recruiter_digest
+         *     * `recruitment_paused` - recruitment_paused
+         *     * `rights_request_update` - rights_request_update
+         *     * `shortlisted` - shortlisted
+         * @enum {string}
+         */
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_update" | "shortlisted";
         Language: {
             /** Format: uuid */
             readonly id: string;
@@ -2569,6 +2681,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Skill"][];
         };
+        PaginatedTemplateList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Template"][];
+        };
         PaginatedVersionSummaryList: {
             /** @example 123 */
             count: number;
@@ -2782,6 +2909,11 @@ export interface components {
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
+        };
+        PreviewRequest: {
+            context?: {
+                [key: string]: string;
+            };
         };
         Profile: {
             /** Format: uuid */
@@ -3021,6 +3153,11 @@ export interface components {
         ReasonRequest: {
             reason?: string;
         };
+        Rendered: {
+            subject: string;
+            text: string;
+            html: string;
+        };
         RequiredReasonRequest: {
             reason: string;
         };
@@ -3035,6 +3172,13 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             is_default: boolean;
+        };
+        RevertRequest: {
+            key: components["schemas"]["KeyEnum"];
+            /** @default email */
+            channel: components["schemas"]["ChannelEnum"];
+            /** @default en */
+            locale: string;
         };
         Review: {
             application: components["schemas"]["Application"];
@@ -3204,6 +3348,34 @@ export interface components {
             questions: {
                 [key: string]: unknown;
             }[];
+        };
+        Template: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly key: string;
+            readonly channel: components["schemas"]["ChannelEnum"];
+            readonly locale: string;
+            readonly subject: string;
+            readonly body_md: string;
+            /** @description Placeholders used */
+            readonly variables: unknown;
+            readonly version: number;
+            readonly active: boolean;
+            readonly is_default: boolean;
+            readonly description: string;
+            readonly allowed_variables: string[];
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        TemplateWriteRequest: {
+            key: components["schemas"]["KeyEnum"];
+            /** @default email */
+            channel: components["schemas"]["ChannelEnum"];
+            /** @default en */
+            locale: string;
+            /** @default  */
+            subject: string;
+            body_md: string;
         };
         TimelineEntry: {
             status: string;
@@ -5232,6 +5404,164 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PaginatedVersionSummaryList"];
                 };
+            };
+        };
+    };
+    hr_notification_templates_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTemplateList"];
+                };
+            };
+        };
+    };
+    hr_notification_templates_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TemplateWriteRequest"];
+                "multipart/form-data": components["schemas"]["TemplateWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Template"];
+                };
+            };
+        };
+    };
+    hr_notification_templates_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this notification template. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Template"];
+                };
+            };
+        };
+    };
+    hr_notification_templates_history: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this notification template. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTemplateList"];
+                };
+            };
+        };
+    };
+    hr_notification_templates_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this notification template. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PreviewRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PreviewRequest"];
+                "multipart/form-data": components["schemas"]["PreviewRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Rendered"];
+                };
+            };
+        };
+    };
+    hr_notification_templates_revert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevertRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RevertRequest"];
+                "multipart/form-data": components["schemas"]["RevertRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

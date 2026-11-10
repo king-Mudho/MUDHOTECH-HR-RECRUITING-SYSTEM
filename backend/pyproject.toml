@@ -32,6 +32,7 @@ dependencies = [
   "pgvector>=0.4",
   "pymupdf~=1.28.2",
   "python-magic==0.4.27 ; sys_platform != 'win32'",
+  "markdown~=3.9",
 ]
 
 [dependency-groups]
@@ -51,6 +52,7 @@ dev = [
   "pip-audit>=2.9",
   "detect-secrets>=1.5.0",
   "pre-commit>=4.7.0",
+  "types-markdown>=3.11.3.20261108",
 ]
 
 [tool.uv]
