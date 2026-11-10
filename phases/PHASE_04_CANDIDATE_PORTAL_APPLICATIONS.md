@@ -23,7 +23,7 @@ and submit exactly once — with an immediate reference number — regardless of
 - [x] **P04-T13** — Frontend candidate: `/candidate/dashboard`, `/candidate/profile` (sections + completeness), `/candidate/documents` (CV library, set default), `/candidate/applications` + detail (timeline, withdraw), `/candidate/settings`.
 - [x] **P04-T14** — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions (aria-live), word counters, error summary, review step (extracted-data panel placeholder until Phase 6), consent, submit with idempotency key, confirmation page; handles `deadline_passed`, `duplicate_application`, `org_suspended`, session expiry (EC-APP-06/14/19/20).
 - [x] **P04-T15** — HR minimal list: `/hr/jobs/[id]/applications` basic table (status, submitted at, candidate name) + application detail read-only (documents viewer via download, answers) — full review UI in Phase 8.
-- [ ] **P04-T16** — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt; withdraw flow; duplicate attempt.
+- [x] **P04-T16** — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt; withdraw flow; duplicate attempt.
 
 ## Edge cases
 EC-APP-01..23 (EC-APP-15/16 flags computed in Phase 6), EC-DOC-04..08, EC-DOC-25, EC-ACC-03, EC-OPS-02.

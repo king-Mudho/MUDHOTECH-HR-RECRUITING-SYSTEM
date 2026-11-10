@@ -49,6 +49,11 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
     metadata is in `<head>`; do NOT set `htmlLimitedBots: /.*/` (it makes browser prefetches hang).
 13. Area layouts wrap `AuthGate` in `<Suspense>`; client hooks reading the URL (`usePathname`, `useSearchParams`) in
     shared layouts must sit under Suspense or dynamic routes fail to build.
+14. Dynamic signed-in pages follow `candidate/applications/[id]`: a sync page with `<Suspense>` around a client
+    `…Route` wrapper that reads the segment via `useParams` (an `async` page awaiting `params` inside the area's
+    AuthGate hung on full loads). Never render `<noscript>` inside these trees (React #418 hydration mismatch).
+15. Mutations that change an object's `lock_version` server-side (e.g. attaching documents/answers to a draft) must
+    feed the returned object back into the cache before the next optimistic-locked PATCH.
 
 ## Commands
 

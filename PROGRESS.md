@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T16
+- **Current task:** P04-EXIT
 - **Last updated:** 2026-11-10
-- **Overall:** 60 / 193 tasks · 3 / 16 phases
+- **Overall:** 61 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -119,7 +119,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T13 — Frontend candidate: `/candidate/dashboard`, `/candidate/profile` (sections + completeness), `/candidate/documents` …
 - [x] P04-T14 — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions …
 - [x] P04-T15 — HR minimal list: `/hr/jobs/[id]/applications` basic table (status, submitted at, candidate name) + application …
-- [ ] P04-T16 — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt
+- [x] P04-T16 — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt
 - [ ] P04-EXIT — All exit criteria verified with evidence
 
 ### Phase 05 — ATS Workflow, Notifications & Messaging  (`phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md`)
@@ -432,3 +432,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T13 | candidate frontend: /candidate/dashboard (things to do: drafts to finish + profile completeness, active application counts, jobs matching profile skills via public FTS), /candidate/profile (completeness meter + missing checklist, details form with lock_version conflict handling, generic section manager for experience/education/certifications/skills/languages), /candidate/documents (FileUploader, CV library with scan chips, set default, download, remove with confirm), /candidate/applications + [id] (status list, draft continue link, candidate timeline, what you sent, withdraw/discard with optional reason), /candidate/settings; shared candidate layout with main landmark; backend: CV library API (GET /candidate/resumes, set-default, DELETE unless used by a submitted application) and GET /applications/{id}/timeline (internal steps folded, no staff reasons); 3 backend + 5 Vitest tests |  |
 | 2026-11-10 | Impl | P04-T14 | Apply wizard /apply/[jobId]: 5 steps + confirmation, resume from last_step, autosave indicator, conditional questions (client mirror of branching), word counters, required-doc picker/uploader, review with blocking list and go-to-step links, privacy consent + AI objection, idempotent submit, specific messages for deadline/paused/closed/suspended/unverified/duplicate, 401 -> sign-in and back (EC-APP-06); 7 Vitest tests | 360px/keyboard/axe verified in P04-T16 Playwright |
 | 2026-11-10 | Impl | P04-T15 | HR minimal applications: GET /hr/jobs/{id}/applications (status/search/paging, drafts hidden, assignment-scoped) + GET /hr/applications/{id} (snapshot, documents, answers, status history; access logged); staff document access checker (submitted + visible apps only); cross-tenant + role matrix entries; HR list/detail pages + 'View applications' on vacancy; fixed reference collisions for orgs sharing a slug prefix (org code = 6-char slug prefix + 4 chars of org id); backend 1545 passed, Vitest 101 | Full review workspace in Phase 08 |
+| 2026-11-10 | Impl | P04-T16 | E2E e2e/apply.spec.ts: register -> verify via Mailpit -> apply to seeded Software Developer with synthetic PDF CV + answers (keyboard checkbox) at 360px -> receipt email with reference -> duplicate attempt points to existing app -> withdraw; signed-out apply -> login?next; axe on each wizard step; no uncaught page errors. Passed mobile x3 + chromium x2. Fixed: hydration error (noscript) and hang on full load (async params page) -> Suspense + useParams route wrapper; lock_version sync after documents/answers saves; opaque sticky header. Host runner gained celery mode (worker -P solo + separate beat on Windows) and S3 rewrite |  |

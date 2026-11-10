@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, CircleAlert, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -42,7 +42,7 @@ function StepHeader({ step, save }: { step: Step; save: SaveState }) {
   const t = useTranslations("apply");
   const index = STEPS.indexOf(step);
   return (
-    <div className="bg-background/95 sticky top-14 z-20 -mx-4 flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 backdrop-blur">
+    <div className="bg-background sticky top-14 z-20 -mx-4 flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
       <p className="text-sm font-medium" aria-live="polite">
         {t("stepOf", { n: Math.min(index + 1, 5), total: 5, title: t(`steps.${step}`) })}
       </p>
@@ -873,6 +873,10 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
     }
     return !(res instanceof ApiError);
   };
+  const syncApp = (latest: Application) => {
+    appRef.current = latest;
+    client.setQueryData(["apply", jobId], latest);
+  };
   const goTo = (s: Step) => {
     setStep(s);
     if (s !== "done") void patch({ last_step: STEPS.indexOf(s) + 1 });
@@ -938,7 +942,6 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
         </p>
       </div>
       <StepHeader step={shownStep} save={save} />
-      <noscript>{t("needsJs")}</noscript>
       <StepFrame title={t(`steps.${shownStep}`)} focusKey={shownStep}>
         {shownStep === "contact" ? (
           <ContactStep
@@ -958,6 +961,7 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
               const res = await handle(() => candidateApi.setDocuments(a.id, docs));
               if (res instanceof ApiError) return false;
               client.setQueryData(candidateKeys.review(a.id), res);
+              syncApp(res.application); // documents/answers bump lock_version
               goTo("questions");
               return true;
             }}
@@ -972,6 +976,7 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
               const res = await handle(() => candidateApi.setAnswers(a.id, answers));
               if (res instanceof ApiError) return res;
               client.setQueryData(candidateKeys.review(a.id), res);
+              syncApp(res.application); // documents/answers bump lock_version
               return null;
             }}
           />
@@ -993,4 +998,10 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
       </StepFrame>
     </div>
   );
+}
+
+/** Route wrapper that reads the dynamic `[jobId]` segment on the client. */
+export function ApplyWizardRoute() {
+  const { jobId } = useParams<{ jobId: string }>();
+  return <ApplyWizard jobId={jobId} />;
 }
