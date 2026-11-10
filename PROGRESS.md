@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T08
+- **Current task:** P04-T09
 - **Last updated:** 2026-11-10
-- **Overall:** 52 / 193 tasks · 3 / 16 phases
+- **Overall:** 53 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -111,7 +111,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T05 — `apps.applications` models: Application (+ reference counter table), ApplicationDocument, ApplicationStatusEvent, …
 - [x] P04-T06 — Application state machine module `applications/state_machine.py` implementing all transitions from SRS §3.3 with …
 - [x] P04-T07 — Draft APIs: create/resume draft, autosave PATCH with lock_version, attach documents by role, bulk upsert answers …
-- [ ] P04-T08 — Submit service: `@idempotent`, `atomic`, checks (email verified, job published & before deadline in job TZ, org …
+- [x] P04-T08 — Submit service: `@idempotent`, `atomic`, checks (email verified, job published & before deadline in job TZ, org …
 - [ ] P04-T09 — Withdraw service (any non-terminal state
 - [ ] P04-T10 — Consent records: application processing consent + AI-assisted screening notice version stored on submit
 - [ ] P04-T11 — Assisted application (staff creates on behalf
@@ -424,3 +424,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T05 | apps.applications: Application (all SRS 3.3 statuses, snapshot, reference, contact/last_step for the wizard, scoring fields, flags/tags arrays, lock_version, indexes) with active_key partial unique constraint + reference-after-submit check; ReferenceCounter (per org+year, row-locked MHRS-<ORG>-<YYYY>-<NNNNNN>); ApplicationDocument; append-only ApplicationStatusEvent (model guard + DB trigger reusing mhrs_audit_append_only); QuestionResponse.application now a FK; services: duplicate policy (one_active / allow_resubmit_replace / allow_multiple), start_or_resume_draft (resume draft, 409 duplicate_application with link, re-apply after withdrawal, concurrent-create safe, closed/paused/deadline 422); 12 tests |  |
 | 2026-11-10 | Impl | P04-T06 | applications/state_machine.py: full SRS 3.3 table with per-transition actors (candidate/staff/system) and reasons; consequential outcomes (shortlisted/not_selected/offer/hired) and reopen of terminal states human-only with reason; services.transition(): row lock, actor resolution (staff via rbac applications.transition, candidate = owner, system has no actor), reopen limited to org_admin/hr_manager, active_key maintained (withdraw frees slot, reopen conflicts with newer active), append-only status event + audit + outbox application.status_changed; exhaustive tests: 225 pairs vs an independent SRS table, every allowed transition x 3 actor kinds, disallowed pairs 409 (544 tests) | check constraint now allows abandoned drafts without a reference |
 | 2026-11-10 | Impl | P04-T07 | candidate draft APIs: POST /applications (create 201 / resume 200 / 409 duplicate / 404 / 422 closed), GET /applications, GET/PATCH /applications/{id} (contact + last_step autosave with lock_version, E.164 phone), PUT /documents (own, not rejected/infected, pending ok, unique, 25 MB total, role + required_doc_key), PUT /answers (per-type validation, file answers must be own documents, branching evaluated server-side and hidden answers deleted/ignored), GET /review (email_unverified, document_required, document_rejected, answer_required by step); pure answers.py (validate_answer, visible_keys incl. hidden-parent cascade, missing_required); 18 tests; 1480 backend tests |  |
+| 2026-11-10 | Impl | P04-T08 | POST /applications/{id}/submit (@idempotent Idempotency-Key, atomic): checks org active (423 org_suspended), job published / paused (job_paused) / closed, deadline by server time inclusive + APPLICATION_DEADLINE_GRACE_SECONDS (EC-APP-05), draft only, review checklist (email_unverified EC-ACC-03, required docs - scan pending ok, rejected not - required visible answers), privacy acceptance; freezes candidate_profile_snapshot (candidates.profile_snapshot, no protected fields) with job_version, gap-free reference MHRS-<ORG>-<YYYY>-<NNNNNN>, transition draft->submitted, outbox application.submitted (+objects_to_automated_processing), encrypted receipt email; allow_resubmit_replace withdraws the previous submitted one; 12 tests incl. 100 concurrent double-clicked HTTP submits -> 100 apps, refs 1..100, 100 receipts (EC-APP-01/04); 1492 backend tests | Locust scenario against the full stack in Phase 16 load testing; consent records persisted in P04-T10 |

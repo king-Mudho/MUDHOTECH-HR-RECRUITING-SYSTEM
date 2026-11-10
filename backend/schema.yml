@@ -205,6 +205,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/Review'
           description: ''
+  /api/v1/applications/{application_id}/submit/:
+    post:
+      operationId: applications_submit
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: UUID per user attempt (EC-APP-04)
+        required: true
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResult'
+          description: ''
   /api/v1/candidate/profile/:
     get:
       operationId: candidate_profile_retrieve
@@ -7396,6 +7435,34 @@ components:
             maxLength: 200
       required:
       - job_id
+    SubmitRequest:
+      type: object
+      properties:
+        accept_privacy:
+          type: boolean
+        objects_to_automated_processing:
+          type: boolean
+          default: false
+      required:
+      - accept_privacy
+    SubmitResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+      required:
+      - id
+      - reference
+      - status
+      - submitted_at
     Suggestions:
       type: object
       properties:

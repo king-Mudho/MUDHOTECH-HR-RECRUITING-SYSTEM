@@ -126,3 +126,74 @@ def recompute_completeness(profile: CandidateProfile) -> CandidateProfile:
         CandidateProfile.objects.filter(pk=profile.pk).update(profile_completeness=score)
         profile.profile_completeness = score
     return profile
+
+
+def profile_snapshot(user: Any, contact: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Frozen copy of the candidate's profile for an application (shared with the employer at
+    submit). Never contains protected attributes - the profile has none (FR-M06-02)."""
+    profile = get_or_create_profile(user)
+    contact = contact or {}
+
+    def d(value: Any) -> str | None:
+        return value.isoformat() if value else None
+
+    return {
+        "first_name": contact.get("first_name") or user.first_name,
+        "last_name": contact.get("last_name") or user.last_name,
+        "preferred_name": contact.get("preferred_name") or profile.preferred_name,
+        "email": user.email,
+        "phone": contact.get("phone") or profile.phone_e164,
+        "city": contact.get("city") or profile.city,
+        "country": profile.country,
+        "headline": profile.headline,
+        "summary": profile.summary,
+        "links": profile.links,
+        "availability": profile.availability,
+        "notice_period_days": profile.notice_period_days,
+        "open_to_relocation": profile.open_to_relocation,
+        "experiences": [
+            {
+                "employer": e.employer,
+                "title": e.title,
+                "location": e.location,
+                "start_date": d(e.start_date),
+                "end_date": d(e.end_date),
+                "is_current": e.is_current,
+                "description": e.description,
+                "source": e.source,
+            }
+            for e in profile.experiences.all()
+        ],
+        "educations": [
+            {
+                "institution": e.institution,
+                "qualification_text": e.qualification_text,
+                "qualification_level_id": str(e.qualification_level_id)
+                if e.qualification_level_id
+                else None,
+                "field": e.field,
+                "start_date": d(e.start_date),
+                "end_date": d(e.end_date),
+                "grade": e.grade,
+            }
+            for e in profile.educations.all()
+        ],
+        "certifications": [
+            {"name": c.name, "issued_at": d(c.issued_at), "expires_at": d(c.expires_at)}
+            for c in profile.certifications.all()
+        ],
+        "skills": [
+            {
+                "name": s.raw_name,
+                "skill_id": str(s.skill_id) if s.skill_id else None,
+                "proficiency": s.proficiency,
+                "years": str(s.years) if s.years is not None else None,
+            }
+            for s in profile.skills.all()
+        ],
+        "languages": [
+            {"language": lang.language, "proficiency": lang.proficiency}
+            for lang in profile.languages.all()
+        ],
+        "profile_updated_at": profile.updated_at.isoformat(),
+    }

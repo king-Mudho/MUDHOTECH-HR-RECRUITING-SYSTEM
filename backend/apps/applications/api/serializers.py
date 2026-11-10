@@ -114,3 +114,15 @@ class ReviewSerializer(serializers.Serializer):
     visible_questions = serializers.ListField(child=serializers.CharField())
     documents = AttachedDocumentSerializer(many=True)
     answers = serializers.DictField(child=serializers.JSONField(allow_null=True))
+
+
+class SubmitSerializer(StrictSerializer):
+    accept_privacy = serializers.BooleanField()
+    objects_to_automated_processing = serializers.BooleanField(required=False, default=False)
+
+
+class SubmitResultSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    reference = serializers.CharField()
+    submitted_at = serializers.DateTimeField()
+    status = serializers.CharField()

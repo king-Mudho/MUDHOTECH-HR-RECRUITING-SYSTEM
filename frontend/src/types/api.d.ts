@@ -104,6 +104,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/{application_id}/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["applications_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/profile/": {
         parameters: {
             query?: never;
@@ -2905,6 +2921,19 @@ export interface components {
                 [key: string]: string;
             };
         };
+        SubmitRequest: {
+            accept_privacy: boolean;
+            /** @default false */
+            objects_to_automated_processing: boolean;
+        };
+        SubmitResult: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            /** Format: date-time */
+            submitted_at: string;
+            status: string;
+        };
         Suggestions: {
             engine: string;
             requires_acceptance: boolean;
@@ -3202,6 +3231,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    applications_submit: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID per user attempt (EC-APP-04) */
+                "Idempotency-Key": string;
+            };
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SubmitRequest"];
+                "multipart/form-data": components["schemas"]["SubmitRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmitResult"];
                 };
             };
         };

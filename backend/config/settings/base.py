@@ -299,6 +299,8 @@ CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
 CLAMAV_TIMEOUT = env.int("CLAMAV_TIMEOUT", default=30)
 # clamd (default) | fake (tests: EICAR only) | skip (DEBUG only: no clamav container locally)
 DOCUMENT_SCANNER = env("DOCUMENT_SCANNER", default="clamd")
+# EC-APP-05: seconds after closes_at still accepted (server time is authoritative).
+APPLICATION_DEADLINE_GRACE_SECONDS = env.int("APPLICATION_DEADLINE_GRACE_SECONDS", default=0)
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")

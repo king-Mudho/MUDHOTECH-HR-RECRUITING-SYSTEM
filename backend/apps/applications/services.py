@@ -519,3 +519,139 @@ def review(user: Any, application_id: Any) -> dict[str, Any]:
         "documents": attached,
         "answers": given,
     }
+
+
+# ------------------------------------------------------------------------------------ submit
+class SubmitBlockedError(DomainError):
+    code = "submit_blocked"
+    status_code = 422
+    default_message = "Your application isn't complete yet."
+
+
+def _submit_checks(app: Application, user: Any) -> None:
+    from django.conf import settings
+
+    org = Organisation.objects.get(pk=app.organisation_id)
+    if org.is_read_only:  # EC-APP-19
+        raise DomainError(
+            "org_suspended",
+            "This employer isn't accepting applications at the moment.",
+            status_code=423,
+        )
+    job = Job.objects.unscoped().get(pk=app.job_id)
+    if job.status == JobStatus.PAUSED:  # EC-JOB-08: drafts are kept, submit waits
+        raise DomainError(
+            "job_paused",
+            "Applications for this vacancy are paused. Your draft is saved.",
+            status_code=422,
+        )
+    if job.status != JobStatus.PUBLISHED:
+        raise DomainError("job_not_accepting", "This vacancy is closed.", status_code=422)
+    grace = int(getattr(settings, "APPLICATION_DEADLINE_GRACE_SECONDS", 0))
+    from datetime import timedelta
+
+    if job.closes_at is not None and now() > job.closes_at + timedelta(seconds=grace):
+        # EC-APP-05: server time is authoritative; <= closes_at is accepted.
+        raise DomainError(
+            "deadline_passed", "The closing date for this vacancy has passed.", status_code=422
+        )
+    if app.status != Status.DRAFT:
+        raise DomainError(
+            "conflict.not_draft", "This application has already been submitted.", status_code=409
+        )
+    summary = review(user, app.pk)
+    if summary["missing"]:
+        unverified = any(m["code"] == "email_unverified" for m in summary["missing"])
+        raise SubmitBlockedError(
+            code="email_unverified" if unverified else "submit_blocked",
+            message=(
+                "Please verify your email address before submitting."  # EC-ACC-03
+                if unverified
+                else "Your application isn't complete yet."
+            ),
+            details={"missing": summary["missing"]},
+        )
+
+
+def submit(
+    user: Any,
+    application_id: Any,
+    *,
+    accept_privacy: bool,
+    objects_to_automated_processing: bool = False,
+    actor: Any = None,
+) -> Application:
+    """Submit exactly once (FR-M07-03). The request does no heavy work: screening starts from the
+    ``application.submitted`` outbox event, so later failures never lose the application."""
+    from apps.candidates.services import profile_snapshot
+    from apps.core import outbox
+    from apps.core.email import queue_email
+
+    if not accept_privacy:
+        raise DomainError(
+            "validation_error",
+            "Please confirm you have read the privacy notice.",
+            details={"accept_privacy": ["Required."]},
+        )
+    with transaction.atomic():
+        app = get_own(user, application_id, lock=True)
+        _submit_checks(app, user)
+        policy = duplicate_policy(app.organisation_id)
+        previous = None
+        if policy == DuplicatePolicy.ALLOW_RESUBMIT_REPLACE:
+            previous = (
+                Application.objects.for_org(app.organisation_id)
+                .filter(job_id=app.job_id, candidate_user=user)
+                .exclude(pk=app.pk)
+                .exclude(status__in=[*INACTIVE_STATUSES, Status.DRAFT])
+                .order_by("-submitted_at")
+                .first()
+            )
+        app.candidate_profile_snapshot = profile_snapshot(user, app.contact)
+        app.reference = next_reference(app.organisation)
+        app.submitted_at = now()
+        app.save(
+            update_fields=["candidate_profile_snapshot", "reference", "submitted_at", "updated_at"]
+        )
+        if previous is not None:  # allow_resubmit_replace: the new one replaces the old one
+            transition(
+                previous, Status.WITHDRAWN, actor=user, reason="Replaced by a new application"
+            )
+            app.duplicate_of = previous
+            app.save(update_fields=["duplicate_of"])
+        app = transition(
+            app,
+            Status.SUBMITTED,
+            actor=actor or user,
+            reason="Assisted application" if actor is not None and actor != user else "",
+            metadata={"objects_to_automated_processing": objects_to_automated_processing},
+        )
+        job = app.job
+        outbox.emit(
+            "application.submitted",
+            app,
+            {
+                "application_id": str(app.pk),
+                "job_id": str(app.job_id),
+                "job_version_id": str(app.job_version_id),
+                "reference": app.reference,
+                "objects_to_automated_processing": objects_to_automated_processing,
+            },
+            dedupe_key=f"application.submitted:{app.pk}",
+            organisation_id=app.organisation_id,
+        )
+        queue_email(
+            user.email,
+            f"Application received: {job.title} ({app.reference})",
+            (
+                f"Hello {app.candidate_profile_snapshot.get('first_name') or ''},\n\n"
+                f"Thank you for applying for {job.title} at {app.organisation.name}.\n"
+                f"Your reference number is {app.reference}.\n\n"
+                "Every application is reviewed by people at the employer. You can follow its "
+                "status, or withdraw it, from your applications page at any time.\n\n"
+                "MUDHOTECH HR RECRUITING SYSTEM"
+            ),
+            dedupe_key=f"email.application_receipt:{app.pk}",
+            organisation_id=app.organisation_id,
+        )
+    return app

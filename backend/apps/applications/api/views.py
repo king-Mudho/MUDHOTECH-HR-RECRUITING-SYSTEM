@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from apps.accounts.services import authed_user
 from apps.applications import services
 from apps.core.exceptions import NotFoundError
+from apps.core.idempotency import idempotent
 from apps.jobs.models import Job
 
 from . import serializers as s
@@ -117,3 +118,39 @@ class ApplicationReviewView(APIView):
     @extend_schema(operation_id="applications_review", responses=s.ReviewSerializer)
     def get(self, request: Request, application_id: str) -> Response:
         return _review_response(request, application_id)
+
+
+class ApplicationSubmitView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="applications_submit",
+        request=s.SubmitSerializer,
+        responses={201: s.SubmitResultSerializer},
+        parameters=[
+            OpenApiParameter(
+                "Idempotency-Key",
+                str,
+                OpenApiParameter.HEADER,
+                required=True,
+                description="UUID per user attempt (EC-APP-04)",
+            )
+        ],
+    )
+    @idempotent(endpoint="applications.submit")
+    def post(self, request: Request, application_id: str) -> Response:
+        ser = s.SubmitSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        app = services.submit(
+            authed_user(request),
+            application_id,
+            accept_privacy=ser.validated_data["accept_privacy"],
+            objects_to_automated_processing=ser.validated_data["objects_to_automated_processing"],
+        )
+        body = {
+            "id": app.pk,
+            "reference": app.reference,
+            "submitted_at": app.submitted_at,
+            "status": app.status,
+        }
+        return Response(s.SubmitResultSerializer(body).data, status=status.HTTP_201_CREATED)
