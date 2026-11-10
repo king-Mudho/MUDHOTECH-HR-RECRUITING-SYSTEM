@@ -19,6 +19,719 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiRoot'
           description: ''
+  /api/v1/candidate/profile/:
+    get:
+      operationId: candidate_profile_retrieve
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    patch:
+      operationId: candidate_profile_partial_update
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /api/v1/candidate/profile/certifications/:
+    get:
+      operationId: candidate_certifications_list
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certification'
+          description: ''
+    post:
+      operationId: candidate_certifications_create
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CertificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CertificationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certification'
+          description: ''
+  /api/v1/candidate/profile/certifications/{id}/:
+    get:
+      operationId: candidate_certifications_retrieve
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this certification.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certification'
+          description: ''
+    patch:
+      operationId: candidate_certifications_partial_update
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this certification.
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificationRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certification'
+          description: ''
+    delete:
+      operationId: candidate_certifications_destroy
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this certification.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/candidate/profile/educations/:
+    get:
+      operationId: candidate_educations_list
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Education'
+          description: ''
+    post:
+      operationId: candidate_educations_create
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EducationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EducationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+          description: ''
+  /api/v1/candidate/profile/educations/{id}/:
+    get:
+      operationId: candidate_educations_retrieve
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this education.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+          description: ''
+    patch:
+      operationId: candidate_educations_partial_update
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this education.
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEducationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEducationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEducationRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+          description: ''
+    delete:
+      operationId: candidate_educations_destroy
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this education.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/candidate/profile/experiences/:
+    get:
+      operationId: candidate_experiences_list
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experience'
+          description: ''
+    post:
+      operationId: candidate_experiences_create
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExperienceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperienceRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experience'
+          description: ''
+  /api/v1/candidate/profile/experiences/{id}/:
+    get:
+      operationId: candidate_experiences_retrieve
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this experience.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experience'
+          description: ''
+    patch:
+      operationId: candidate_experiences_partial_update
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this experience.
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExperienceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExperienceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExperienceRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experience'
+          description: ''
+    delete:
+      operationId: candidate_experiences_destroy
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this experience.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/candidate/profile/languages/:
+    get:
+      operationId: candidate_languages_list
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Language'
+          description: ''
+    post:
+      operationId: candidate_languages_create
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LanguageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LanguageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LanguageRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+  /api/v1/candidate/profile/languages/{id}/:
+    get:
+      operationId: candidate_languages_retrieve
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this language.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    patch:
+      operationId: candidate_languages_partial_update
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this language.
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLanguageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLanguageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLanguageRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+    delete:
+      operationId: candidate_languages_destroy
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this language.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/candidate/profile/skills/:
+    get:
+      operationId: candidate_skills_list
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CandidateSkill'
+          description: ''
+    post:
+      operationId: candidate_skills_create
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CandidateSkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CandidateSkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CandidateSkillRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateSkill'
+          description: ''
+  /api/v1/candidate/profile/skills/{id}/:
+    get:
+      operationId: candidate_skills_retrieve
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this candidate skill.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateSkill'
+          description: ''
+    patch:
+      operationId: candidate_skills_partial_update
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this candidate skill.
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCandidateSkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCandidateSkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCandidateSkillRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateSkill'
+          description: ''
+    delete:
+      operationId: candidate_skills_destroy
+      description: CRUD for one profile section; the profile always comes from the
+        signed-in user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this candidate skill.
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/companies/{slug}/:
     get:
       operationId: companies_retrieve
@@ -2639,9 +3352,92 @@ components:
             $ref: '#/components/schemas/AssignmentInputRequest'
       required:
       - assignments
+    AvailabilityEnum:
+      enum:
+      - immediate
+      - notice
+      - not_looking
+      type: string
+      description: |-
+        * `immediate` - Immediately
+        * `notice` - After my notice period
+        * `not_looking` - Not actively looking
     BlankEnum:
       enum:
       - ''
+    CandidateSkill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        skill:
+          type: string
+          format: uuid
+          nullable: true
+        raw_name:
+          type: string
+          maxLength: 150
+        proficiency:
+          oneOf:
+          - $ref: '#/components/schemas/CandidateSkillProficiencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        years:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - id
+      - raw_name
+      - source
+    CandidateSkillProficiencyEnum:
+      enum:
+      - beginner
+      - intermediate
+      - advanced
+      - expert
+      type: string
+      description: |-
+        * `beginner` - Beginner
+        * `intermediate` - Intermediate
+        * `advanced` - Advanced
+        * `expert` - Expert
+    CandidateSkillRequest:
+      type: object
+      properties:
+        skill:
+          type: string
+          format: uuid
+          nullable: true
+        raw_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        proficiency:
+          oneOf:
+          - $ref: '#/components/schemas/CandidateSkillProficiencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        years:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - raw_name
     CategoryEnum:
       enum:
       - software_it
@@ -2674,6 +3470,71 @@ components:
         * `legal` - Legal
         * `language` - Languages
         * `general` - General & soft skills
+    Certification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          format: uuid
+          nullable: true
+        issued_at:
+          type: string
+          format: date
+          nullable: true
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+        credential_id:
+          type: string
+          maxLength: 100
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - id
+      - name
+      - source
+    CertificationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          format: uuid
+          nullable: true
+        issued_at:
+          type: string
+          format: date
+          nullable: true
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+        credential_id:
+          type: string
+          maxLength: 100
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - name
     CommentRequest:
       type: object
       properties:
@@ -2885,6 +3746,90 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    Education:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        institution:
+          type: string
+          maxLength: 200
+        qualification_text:
+          type: string
+          maxLength: 200
+        qualification_level:
+          type: string
+          format: uuid
+          nullable: true
+        field:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 60
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - id
+      - institution
+      - qualification_text
+      - source
+    EducationRequest:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        institution:
+          type: string
+          minLength: 1
+          maxLength: 200
+        qualification_text:
+          type: string
+          minLength: 1
+          maxLength: 200
+        qualification_level:
+          type: string
+          format: uuid
+          nullable: true
+        field:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 60
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - institution
+      - qualification_text
     EmploymentTypeEnum:
       enum:
       - full_time
@@ -2903,6 +3848,86 @@ components:
         * `attachment` - Attachment / industrial attachment
         * `temporary` - Temporary
         * `graduate_trainee` - Graduate trainee
+    Experience:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        employer:
+          type: string
+          maxLength: 200
+        title:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_current:
+          type: boolean
+        description:
+          type: string
+          maxLength: 5000
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - employer
+      - id
+      - source
+      - start_date
+      - title
+    ExperienceRequest:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        employer:
+          type: string
+          minLength: 1
+          maxLength: 200
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_current:
+          type: boolean
+        description:
+          type: string
+          maxLength: 5000
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - employer
+      - start_date
+      - title
     ExtendRequest:
       type: object
       properties:
@@ -3473,6 +4498,121 @@ components:
           maxLength: 500
       required:
       - title
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        language:
+          type: string
+          maxLength: 60
+        proficiency:
+          $ref: '#/components/schemas/LanguageProficiencyEnum'
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - id
+      - language
+      - proficiency
+      - source
+    LanguageProficiencyEnum:
+      enum:
+      - basic
+      - conversational
+      - fluent
+      - native
+      type: string
+      description: |-
+        * `basic` - Basic
+        * `conversational` - Conversational
+        * `fluent` - Fluent
+        * `native` - Native
+    LanguageRequest:
+      type: object
+      properties:
+        language:
+          type: string
+          minLength: 1
+          maxLength: 60
+        proficiency:
+          $ref: '#/components/schemas/LanguageProficiencyEnum'
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - language
+      - proficiency
+    Links:
+      type: object
+      properties:
+        linkedin:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        github:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        portfolio:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        other:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+    LinksRequest:
+      type: object
+      properties:
+        linkedin:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        github:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        portfolio:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        other:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
     Location:
       type: object
       properties:
@@ -4113,6 +5253,56 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VersionSummary'
+    PatchedCandidateSkillRequest:
+      type: object
+      properties:
+        skill:
+          type: string
+          format: uuid
+          nullable: true
+        raw_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        proficiency:
+          oneOf:
+          - $ref: '#/components/schemas/CandidateSkillProficiencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        years:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    PatchedCertificationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          format: uuid
+          nullable: true
+        issued_at:
+          type: string
+          format: date
+          nullable: true
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+        credential_id:
+          type: string
+          maxLength: 100
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
     PatchedDepartmentRequest:
       type: object
       properties:
@@ -4120,6 +5310,73 @@ components:
           type: string
           minLength: 1
           maxLength: 150
+    PatchedEducationRequest:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        institution:
+          type: string
+          minLength: 1
+          maxLength: 200
+        qualification_text:
+          type: string
+          minLength: 1
+          maxLength: 200
+        qualification_level:
+          type: string
+          format: uuid
+          nullable: true
+        field:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 60
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    PatchedExperienceRequest:
+      type: object
+      description: 'Shared behaviour: ``source`` is read-only (CV imports go through
+        a confirmation flow).'
+      properties:
+        employer:
+          type: string
+          minLength: 1
+          maxLength: 200
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 150
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_current:
+          type: boolean
+        description:
+          type: string
+          maxLength: 5000
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
     PatchedJobPatchRequest:
       type: object
       properties:
@@ -4207,6 +5464,19 @@ components:
         lock_version:
           type: integer
           minimum: 1
+    PatchedLanguageRequest:
+      type: object
+      properties:
+        language:
+          type: string
+          minLength: 1
+          maxLength: 60
+        proficiency:
+          $ref: '#/components/schemas/LanguageProficiencyEnum'
+        order:
+          type: integer
+          maximum: 32767
+          minimum: 0
     PatchedLocationRequest:
       type: object
       properties:
@@ -4335,6 +5605,43 @@ components:
           type: integer
           maximum: 32767
           minimum: 0
+    PatchedProfileRequest:
+      type: object
+      properties:
+        preferred_name:
+          type: string
+          maxLength: 100
+        headline:
+          type: string
+          maxLength: 160
+        summary:
+          type: string
+          maxLength: 5000
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          minLength: 1
+          maxLength: 2
+        phone_e164:
+          type: string
+          maxLength: 20
+        links:
+          $ref: '#/components/schemas/LinksRequest'
+        availability:
+          oneOf:
+          - $ref: '#/components/schemas/AvailabilityEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        notice_period_days:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        open_to_relocation:
+          type: boolean
+        lock_version:
+          type: integer
     PlatformOrganisation:
       type: object
       properties:
@@ -4462,6 +5769,80 @@ components:
           minimum: 0
       required:
       - version
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        email_verified:
+          type: boolean
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        preferred_name:
+          type: string
+          maxLength: 100
+        headline:
+          type: string
+          maxLength: 160
+        summary:
+          type: string
+          maxLength: 5000
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 2
+        phone_e164:
+          type: string
+          maxLength: 20
+        links:
+          $ref: '#/components/schemas/Links'
+        availability:
+          oneOf:
+          - $ref: '#/components/schemas/AvailabilityEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        notice_period_days:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        open_to_relocation:
+          type: boolean
+        profile_completeness:
+          type: integer
+          readOnly: true
+        missing:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        lock_version:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - email
+      - email_verified
+      - first_name
+      - id
+      - last_name
+      - missing
+      - profile_completeness
+      - updated_at
     ProtectedExceptionRequest:
       type: object
       properties:
@@ -5332,6 +6713,14 @@ components:
       - id
       - is_custom
       - slug
+    SourceEnum:
+      enum:
+      - manual
+      - cv_import
+      type: string
+      description: |-
+        * `manual` - Entered by the candidate
+        * `cv_import` - Imported from a CV (confirmed by the candidate)
     Suggestions:
       type: object
       properties:

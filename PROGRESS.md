@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T01
+- **Current task:** P04-T02
 - **Last updated:** 2026-11-10
-- **Overall:** 45 / 193 tasks · 3 / 16 phases
+- **Overall:** 46 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -104,7 +104,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-EXIT — All exit criteria verified with evidence
 
 ### Phase 04 — Candidate Portal, Documents, Applications & Questionnaires  (`phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md`)
-- [ ] P04-T01 — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs
+- [x] P04-T01 — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs
 - [ ] P04-T02 — `apps.documents`: UploadSession + Document models
 - [ ] P04-T03 — Scan pipeline (documents queue): magic-byte detection (`python-magic` + custom DOCX/PDF checks), DOCX zip-bomb …
 - [ ] P04-T04 — Orphan cleanup beat task (upload sessions expired, objects in quarantine > 24 h) (EC-APP-08)
@@ -417,3 +417,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P03-T13 | public pages: / (search), /jobs (SSR GET form filters, pagination, empty/unavailable states), /jobs/[slug] (deadline in vacancy TZ + viewer local TZ, essential vs preferred, documents, Apply CTA, WhatsApp/LinkedIn/email/copy share, JSON-LD JobPosting with safe escaping, OG/canonical, closed banner + noindex, unlisted noindex, 410 gone page, old-slug permanent redirect), /companies/[slug]; 'use cache' data with 60 s cacheLife; robots.ts + /sitemap.xml and /jobs/feed.rss|json rewrites; root ships only public i18n namespaces (areas get full catalogue). Lighthouse mobile median of 3 (scripts/lighthouse.sh): /jobs perf 89 a11y 100 SEO 100; /jobs/[slug] perf 88 a11y 100 SEO 100. Playwright jobs journey 8/8 (desktop+mobile, axe). Found + fixed: htmlLimitedBots=/.*/ made browser prefetch requests hang -> removed; blocking render of detail pages keeps metadata in head instead | public pages are cached 60 s per URL, so a closed/edited vacancy can show stale for up to a minute (on-demand revalidation via outbox later) |
 | 2026-11-10 | Impl | P03-T14 | seed_demo (DEMO_PASSWORD env, refuses when DEBUG off unless --allow-non-debug): platform admin, MudhoTech Demo Ltd + Acme Mining Zimbabwe (verified, privacy notice, departments, locations, one user per role), 3 published jobs via the real services (Software Developer per Blueprint Appendix A, Accountant, Registered Nurse) with justified criteria linked to the taxonomy where skills exist (taxonomy auto-loaded), rubrics and valid questionnaires (branching, knock-out, salary never scored); idempotent; 5 tests; 866 backend tests pass |  |
 | 2026-11-10 | Close | P03-EXIT | Phase 03 closed: exit criteria verified (E2E 8/8, Lighthouse /jobs 89/100/100 and /jobs/[slug] 88/100/100, EC-JOB 20/20, 868 backend + 79 frontend tests, tenancy/matrix 360). Fixed during close: EC-JOB-17/19/20 tests, frontend Dockerfile public/ | Phase 04 started |
+| 2026-11-10 | Impl | P04-T01 | apps.candidates: CandidateProfile (user-owned, lock_version, E.164 phone, validated links, availability/notice) + Experience/Education/Certification/CandidateSkill/Language (source manual|cv_import read-only, date checks, case-insensitive uniqueness); /candidate/profile GET (auto-create)/PATCH + section CRUD scoped to request.user (404 for others); completeness 0-100 + missing list; test asserts no protected field names on any candidate model; schema + api.d.ts regenerated | default_resume FK added with documents in P04-T02 |

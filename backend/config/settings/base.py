@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "apps.taxonomy",
     "apps.jobs",
     "apps.questionnaires",
+    "apps.candidates",
 ]
 
 AUTH_USER_MODEL = "accounts.User"

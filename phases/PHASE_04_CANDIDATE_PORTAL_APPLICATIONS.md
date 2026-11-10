@@ -8,7 +8,7 @@ Candidates build a profile, upload CVs safely, complete a resumable 6-step appli
 and submit exactly once — with an immediate reference number — regardless of later processing outcomes.
 
 ## Tasks
-- [ ] **P04-T01** — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs; completeness score; **no protected fields** (test asserts model has none of the forbidden field names).
+- [x] **P04-T01** — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs; completeness score; **no protected fields** (test asserts model has none of the forbidden field names).
 - [ ] **P04-T02** — `apps.documents`: UploadSession + Document models; presign flow (`upload-sessions`, `complete`), direct-upload fallback; validation: declared type allow-list per purpose, size limits (configurable per org/purpose), filename sanitisation; download endpoint (permission-checked, 60 s presigned GET, access log).
 - [ ] **P04-T03** — Scan pipeline (documents queue): magic-byte detection (`python-magic` + custom DOCX/PDF checks), DOCX zip-bomb guard, PDF page count/encryption check, ClamAV `INSTREAM` scan, promote quarantine→documents bucket, `scan_status` updates, outbox `document.accepted|rejected`; candidate notified on rejection. Fake ClamAV in tests + EICAR test string integration test (nightly with real clamd).
 - [ ] **P04-T04** — Orphan cleanup beat task (upload sessions expired, objects in quarantine > 24 h) (EC-APP-08); sha256 dedupe per user (EC-DOC-25).

@@ -24,6 +24,207 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/candidate/profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_profile_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["candidate_profile_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/certifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_certifications_list"];
+        put?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        post: operations["candidate_certifications_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/certifications/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_certifications_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        delete: operations["candidate_certifications_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        patch: operations["candidate_certifications_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/educations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_educations_list"];
+        put?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        post: operations["candidate_educations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/educations/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_educations_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        delete: operations["candidate_educations_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        patch: operations["candidate_educations_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/experiences/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_experiences_list"];
+        put?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        post: operations["candidate_experiences_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/experiences/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_experiences_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        delete: operations["candidate_experiences_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        patch: operations["candidate_experiences_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/languages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_languages_list"];
+        put?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        post: operations["candidate_languages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/languages/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_languages_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        delete: operations["candidate_languages_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        patch: operations["candidate_languages_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/skills/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_skills_list"];
+        put?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        post: operations["candidate_skills_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/profile/skills/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        get: operations["candidate_skills_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        delete: operations["candidate_skills_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
+        patch: operations["candidate_skills_partial_update"];
+        trace?: never;
+    };
     "/api/v1/companies/{slug}/": {
         parameters: {
             query?: never;
@@ -1089,8 +1290,44 @@ export interface components {
         AssignmentsInputRequest: {
             assignments: components["schemas"]["AssignmentInputRequest"][];
         };
+        /**
+         * @description * `immediate` - Immediately
+         *     * `notice` - After my notice period
+         *     * `not_looking` - Not actively looking
+         * @enum {string}
+         */
+        AvailabilityEnum: "immediate" | "notice" | "not_looking";
         /** @enum {unknown} */
         BlankEnum: "";
+        CandidateSkill: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            skill?: string | null;
+            raw_name: string;
+            proficiency?: components["schemas"]["CandidateSkillProficiencyEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: decimal */
+            years?: string | null;
+            order?: number;
+            readonly source: components["schemas"]["SourceEnum"];
+        };
+        /**
+         * @description * `beginner` - Beginner
+         *     * `intermediate` - Intermediate
+         *     * `advanced` - Advanced
+         *     * `expert` - Expert
+         * @enum {string}
+         */
+        CandidateSkillProficiencyEnum: "beginner" | "intermediate" | "advanced" | "expert";
+        CandidateSkillRequest: {
+            /** Format: uuid */
+            skill?: string | null;
+            raw_name: string;
+            proficiency?: components["schemas"]["CandidateSkillProficiencyEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: decimal */
+            years?: string | null;
+            order?: number;
+        };
         /**
          * @description * `software_it` - Software & IT
          *     * `finance` - Finance & accounting
@@ -1109,6 +1346,31 @@ export interface components {
          * @enum {string}
          */
         CategoryEnum: "software_it" | "finance" | "engineering" | "health" | "sales_marketing" | "logistics" | "education" | "agriculture" | "mining" | "ngo" | "business" | "legal" | "language" | "general";
+        Certification: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** Format: uuid */
+            body?: string | null;
+            /** Format: date */
+            issued_at?: string | null;
+            /** Format: date */
+            expires_at?: string | null;
+            credential_id?: string;
+            order?: number;
+            readonly source: components["schemas"]["SourceEnum"];
+        };
+        CertificationRequest: {
+            name: string;
+            /** Format: uuid */
+            body?: string | null;
+            /** Format: date */
+            issued_at?: string | null;
+            /** Format: date */
+            expires_at?: string | null;
+            credential_id?: string;
+            order?: number;
+        };
         CommentRequest: {
             comment?: string;
         };
@@ -1182,6 +1444,37 @@ export interface components {
         DuplicateRequest: {
             title?: string;
         };
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        Education: {
+            /** Format: uuid */
+            readonly id: string;
+            institution: string;
+            qualification_text: string;
+            /** Format: uuid */
+            qualification_level?: string | null;
+            field?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            grade?: string;
+            order?: number;
+            readonly source: components["schemas"]["SourceEnum"];
+        };
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        EducationRequest: {
+            institution: string;
+            qualification_text: string;
+            /** Format: uuid */
+            qualification_level?: string | null;
+            field?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            grade?: string;
+            order?: number;
+        };
         /**
          * @description * `full_time` - Full-time
          *     * `part_time` - Part-time
@@ -1193,6 +1486,35 @@ export interface components {
          * @enum {string}
          */
         EmploymentTypeEnum: "full_time" | "part_time" | "contract" | "internship" | "attachment" | "temporary" | "graduate_trainee";
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        Experience: {
+            /** Format: uuid */
+            readonly id: string;
+            employer: string;
+            title: string;
+            location?: string;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date?: string | null;
+            is_current?: boolean;
+            description?: string;
+            order?: number;
+            readonly source: components["schemas"]["SourceEnum"];
+        };
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        ExperienceRequest: {
+            employer: string;
+            title: string;
+            location?: string;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date?: string | null;
+            is_current?: boolean;
+            description?: string;
+            order?: number;
+        };
         ExtendRequest: {
             /** Format: date-time */
             closes_at: string;
@@ -1386,6 +1708,39 @@ export interface components {
             benefits_html?: string;
             required_documents?: string[];
             change_note?: string;
+        };
+        Language: {
+            /** Format: uuid */
+            readonly id: string;
+            language: string;
+            proficiency: components["schemas"]["LanguageProficiencyEnum"];
+            order?: number;
+            readonly source: components["schemas"]["SourceEnum"];
+        };
+        /**
+         * @description * `basic` - Basic
+         *     * `conversational` - Conversational
+         *     * `fluent` - Fluent
+         *     * `native` - Native
+         * @enum {string}
+         */
+        LanguageProficiencyEnum: "basic" | "conversational" | "fluent" | "native";
+        LanguageRequest: {
+            language: string;
+            proficiency: components["schemas"]["LanguageProficiencyEnum"];
+            order?: number;
+        };
+        Links: {
+            linkedin?: string;
+            github?: string;
+            portfolio?: string;
+            other?: string;
+        };
+        LinksRequest: {
+            linkedin?: string;
+            github?: string;
+            portfolio?: string;
+            other?: string;
         };
         Location: {
             /** Format: uuid */
@@ -1689,8 +2044,55 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["VersionSummary"][];
         };
+        PatchedCandidateSkillRequest: {
+            /** Format: uuid */
+            skill?: string | null;
+            raw_name?: string;
+            proficiency?: components["schemas"]["CandidateSkillProficiencyEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: decimal */
+            years?: string | null;
+            order?: number;
+        };
+        PatchedCertificationRequest: {
+            name?: string;
+            /** Format: uuid */
+            body?: string | null;
+            /** Format: date */
+            issued_at?: string | null;
+            /** Format: date */
+            expires_at?: string | null;
+            credential_id?: string;
+            order?: number;
+        };
         PatchedDepartmentRequest: {
             name?: string;
+        };
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        PatchedEducationRequest: {
+            institution?: string;
+            qualification_text?: string;
+            /** Format: uuid */
+            qualification_level?: string | null;
+            field?: string;
+            /** Format: date */
+            start_date?: string | null;
+            /** Format: date */
+            end_date?: string | null;
+            grade?: string;
+            order?: number;
+        };
+        /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
+        PatchedExperienceRequest: {
+            employer?: string;
+            title?: string;
+            location?: string;
+            /** Format: date */
+            start_date?: string;
+            /** Format: date */
+            end_date?: string | null;
+            is_current?: boolean;
+            description?: string;
+            order?: number;
         };
         PatchedJobPatchRequest: {
             title?: string;
@@ -1722,6 +2124,11 @@ export interface components {
             required_documents?: string[];
             change_note?: string;
             lock_version?: number;
+        };
+        PatchedLanguageRequest: {
+            language?: string;
+            proficiency?: components["schemas"]["LanguageProficiencyEnum"];
+            order?: number;
         };
         PatchedLocationRequest: {
             name?: string;
@@ -1770,6 +2177,19 @@ export interface components {
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
         };
+        PatchedProfileRequest: {
+            preferred_name?: string;
+            headline?: string;
+            summary?: string;
+            city?: string;
+            country?: string;
+            phone_e164?: string;
+            links?: components["schemas"]["LinksRequest"];
+            availability?: components["schemas"]["AvailabilityEnum"] | components["schemas"]["BlankEnum"];
+            notice_period_days?: number | null;
+            open_to_relocation?: boolean;
+            lock_version?: number;
+        };
         PlatformOrganisation: {
             /** Format: uuid */
             readonly id: string;
@@ -1817,6 +2237,30 @@ export interface components {
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
+        };
+        Profile: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: email */
+            readonly email: string;
+            readonly email_verified: boolean;
+            readonly first_name: string;
+            readonly last_name: string;
+            preferred_name?: string;
+            headline?: string;
+            summary?: string;
+            city?: string;
+            country?: string;
+            phone_e164?: string;
+            links?: components["schemas"]["Links"];
+            availability?: components["schemas"]["AvailabilityEnum"] | components["schemas"]["BlankEnum"];
+            notice_period_days?: number | null;
+            open_to_relocation?: boolean;
+            readonly profile_completeness: number;
+            readonly missing: string[];
+            lock_version?: number;
+            /** Format: date-time */
+            readonly updated_at: string;
         };
         ProtectedExceptionRequest: {
             reason: string;
@@ -2140,6 +2584,12 @@ export interface components {
             readonly aliases: string[];
             readonly is_custom: boolean;
         };
+        /**
+         * @description * `manual` - Entered by the candidate
+         *     * `cv_import` - Imported from a CV (confirmed by the candidate)
+         * @enum {string}
+         */
+        SourceEnum: "manual" | "cv_import";
         Suggestions: {
             engine: string;
             requires_acceptance: boolean;
@@ -2244,6 +2694,650 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiRoot"];
+                };
+            };
+        };
+    };
+    candidate_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Profile"];
+                };
+            };
+        };
+    };
+    candidate_profile_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedProfileRequest"];
+                "multipart/form-data": components["schemas"]["PatchedProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Profile"];
+                };
+            };
+        };
+    };
+    candidate_certifications_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"][];
+                };
+            };
+        };
+    };
+    candidate_certifications_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CertificationRequest"];
+                "multipart/form-data": components["schemas"]["CertificationRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"];
+                };
+            };
+        };
+    };
+    candidate_certifications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this certification. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"];
+                };
+            };
+        };
+    };
+    candidate_certifications_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this certification. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_certifications_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this certification. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCertificationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCertificationRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCertificationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Certification"];
+                };
+            };
+        };
+    };
+    candidate_educations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"][];
+                };
+            };
+        };
+    };
+    candidate_educations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["EducationRequest"];
+                "multipart/form-data": components["schemas"]["EducationRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"];
+                };
+            };
+        };
+    };
+    candidate_educations_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this education. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"];
+                };
+            };
+        };
+    };
+    candidate_educations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this education. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_educations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this education. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEducationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEducationRequest"];
+                "multipart/form-data": components["schemas"]["PatchedEducationRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"];
+                };
+            };
+        };
+    };
+    candidate_experiences_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"][];
+                };
+            };
+        };
+    };
+    candidate_experiences_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExperienceRequest"];
+                "multipart/form-data": components["schemas"]["ExperienceRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"];
+                };
+            };
+        };
+    };
+    candidate_experiences_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this experience. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"];
+                };
+            };
+        };
+    };
+    candidate_experiences_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this experience. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_experiences_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this experience. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExperienceRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedExperienceRequest"];
+                "multipart/form-data": components["schemas"]["PatchedExperienceRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"];
+                };
+            };
+        };
+    };
+    candidate_languages_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Language"][];
+                };
+            };
+        };
+    };
+    candidate_languages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LanguageRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LanguageRequest"];
+                "multipart/form-data": components["schemas"]["LanguageRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Language"];
+                };
+            };
+        };
+    };
+    candidate_languages_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this language. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Language"];
+                };
+            };
+        };
+    };
+    candidate_languages_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this language. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_languages_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this language. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedLanguageRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedLanguageRequest"];
+                "multipart/form-data": components["schemas"]["PatchedLanguageRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Language"];
+                };
+            };
+        };
+    };
+    candidate_skills_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateSkill"][];
+                };
+            };
+        };
+    };
+    candidate_skills_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CandidateSkillRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CandidateSkillRequest"];
+                "multipart/form-data": components["schemas"]["CandidateSkillRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateSkill"];
+                };
+            };
+        };
+    };
+    candidate_skills_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this candidate skill. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateSkill"];
+                };
+            };
+        };
+    };
+    candidate_skills_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this candidate skill. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_skills_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this candidate skill. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCandidateSkillRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCandidateSkillRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCandidateSkillRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateSkill"];
                 };
             };
         };
