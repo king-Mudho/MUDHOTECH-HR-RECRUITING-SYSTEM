@@ -88,6 +88,45 @@ def _reject(
     _notify_rejection(doc, reason)
 
 
+def _find_original(doc: Document) -> Document | None:
+    """EC-DOC-25: an accepted, non-alias document of the same owner, purpose and bytes."""
+    return (
+        Document.objects.filter(
+            owner_user_id=doc.owner_user_id,
+            sha256=doc.sha256,
+            purpose=doc.purpose,
+            scan_status__in=[ScanStatus.CLEAN, ScanStatus.SKIPPED],
+            deleted_at__isnull=True,
+            duplicate_of__isnull=True,
+        )
+        .exclude(pk=doc.pk)
+        .order_by("created_at")
+        .first()
+    )
+
+
+def _alias(doc: Document, original: Document) -> None:
+    """Point a duplicate at the original's stored file and verdict (extraction is reused)."""
+    doc.duplicate_of = original
+    doc.bucket = original.bucket
+    doc.storage_key = original.storage_key
+    for name in ("mime_detected", "page_count", "size_bytes", "scan_status", "scan_engine_version"):
+        setattr(doc, name, getattr(original, name))
+    doc.scanned_at = now()
+    doc.save()
+    outbox.emit(
+        "document.accepted",
+        doc,
+        {
+            "document_id": str(doc.pk),
+            "purpose": doc.purpose,
+            "owner_user_id": str(doc.owner_user_id),
+            "duplicate_of": str(original.pk),
+        },
+        dedupe_key=f"document.accepted:{doc.pk}",
+    )
+
+
 def scan_document(document_id: Any) -> str:
     """Scan one quarantined document. Idempotent: anything but ``pending`` is a no-op."""
     with transaction.atomic():
@@ -99,61 +138,68 @@ def scan_document(document_id: Any) -> str:
         )
         if doc is None or doc.scan_status != ScanStatus.PENDING:
             return "noop"
+        quarantine_key = doc.storage_key
         limit = max_bytes(doc.purpose, doc.organisation_id)
-        data = storage.get_bytes("quarantine", doc.storage_key, max_bytes=limit + 1)
+        data = storage.get_bytes("quarantine", quarantine_key, max_bytes=limit + 1)
         doc.sha256 = hashlib.sha256(data).hexdigest()
         doc.mime_detected = inspect.sniff(data)
         if len(data) > limit:
             _reject(doc, ScanStatus.REJECTED, "size")
             return "rejected"
-        extension = PurePosixPath(doc.storage_key).suffix
-        expected = inspect.EXTENSION_MIME.get(extension)
-        sniffed_ok = doc.mime_detected == expected or (
-            expected == inspect.DOCX_MIME and doc.mime_detected == "application/zip"
+
+        original = _find_original(doc)
+        if original is not None:
+            _alias(doc, original)
+            outcome = "duplicate"
+        else:
+            outcome = _scan_and_promote(doc, data, quarantine_key)
+            if outcome != "accepted":
+                return outcome
+    storage.delete_object("quarantine", quarantine_key)
+    return outcome
+
+
+def _scan_and_promote(doc: Document, data: bytes, quarantine_key: str) -> str:
+    extension = PurePosixPath(quarantine_key).suffix
+    expected = inspect.EXTENSION_MIME.get(extension)
+    sniffed_ok = doc.mime_detected == expected or (
+        expected == inspect.DOCX_MIME and doc.mime_detected == "application/zip"
+    )
+    if not sniffed_ok:  # EC-DOC-05: refuse before handing bytes to any parser
+        _reject(doc, ScanStatus.REJECTED, "type_mismatch")
+        return "rejected"
+
+    verdict = antivirus.scan(data)  # ScannerUnavailableError -> retry; document stays pending
+    if not verdict.clean:
+        _reject(
+            doc, ScanStatus.INFECTED, "malware", signature=verdict.signature, engine=verdict.engine
         )
-        if not sniffed_ok:  # EC-DOC-05: refuse before handing bytes to any parser
-            _reject(doc, ScanStatus.REJECTED, "type_mismatch")
-            return "rejected"
+        return "infected"
 
-        verdict = antivirus.scan(
-            data
-        )  # ScannerUnavailableError -> task retry, document stays pending
-        if not verdict.clean:
-            _reject(
-                doc,
-                ScanStatus.INFECTED,
-                "malware",
-                signature=verdict.signature,
-                engine=verdict.engine,
-            )
-            return "infected"
+    try:
+        result = inspect.inspect(data, extension, RULES[doc.purpose].max_pages)
+    except inspect.RejectedFileError as exc:
+        _reject(doc, ScanStatus.REJECTED, exc.reason, engine=verdict.engine)
+        return "rejected"
 
-        try:
-            result = inspect.inspect(data, extension, RULES[doc.purpose].max_pages)
-        except inspect.RejectedFileError as exc:
-            _reject(doc, ScanStatus.REJECTED, exc.reason, engine=verdict.engine)
-            return "rejected"
-
-        body = result.replacement if result.replacement is not None else data
-        storage.put_bytes("documents", doc.storage_key, body, result.mime)
-        doc.bucket = "documents"
-        doc.mime_detected = result.mime
-        doc.page_count = result.page_count
-        doc.size_bytes = len(body)
-        doc.scan_status = ScanStatus.SKIPPED if verdict.skipped else ScanStatus.CLEAN
-        doc.scan_engine_version = verdict.engine[:100]
-        doc.scanned_at = now()
-        doc.save()
-        outbox.emit(
-            "document.accepted",
-            doc,
-            {
-                "document_id": str(doc.pk),
-                "purpose": doc.purpose,
-                "owner_user_id": str(doc.owner_user_id),
-            },
-            dedupe_key=f"document.accepted:{doc.pk}",
-        )
-        key = doc.storage_key
-    storage.delete_object("quarantine", key)
+    body = result.replacement if result.replacement is not None else data
+    storage.put_bytes("documents", doc.storage_key, body, result.mime)
+    doc.bucket = "documents"
+    doc.mime_detected = result.mime
+    doc.page_count = result.page_count
+    doc.size_bytes = len(body)
+    doc.scan_status = ScanStatus.SKIPPED if verdict.skipped else ScanStatus.CLEAN
+    doc.scan_engine_version = verdict.engine[:100]
+    doc.scanned_at = now()
+    doc.save()
+    outbox.emit(
+        "document.accepted",
+        doc,
+        {
+            "document_id": str(doc.pk),
+            "purpose": doc.purpose,
+            "owner_user_id": str(doc.owner_user_id),
+        },
+        dedupe_key=f"document.accepted:{doc.pk}",
+    )
     return "accepted"

@@ -11,7 +11,7 @@ from apps.core.models import OutboxEvent
 from apps.core.outbox import idempotent_consumer
 from apps.core.tasks import BaseTask
 
-from . import pipeline
+from . import cleanup, pipeline
 from .antivirus import ScannerUnavailableError
 
 
@@ -31,3 +31,14 @@ def on_document_uploaded(event: OutboxEvent) -> None:
     # Scan outside the consumer's transaction: storage + network I/O, idempotent on its own.
     document_id: Any = event.payload["document_id"]
     transaction.on_commit(lambda: scan_document.delay(document_id))
+
+
+@shared_task(name="apps.documents.tasks.cleanup_uploads", base=BaseTask, max_retries=0)
+def cleanup_uploads() -> dict[str, int]:
+    """Hourly: expire stale sessions, purge rejected files and quarantine orphans (EC-APP-08)."""
+    r = cleanup.run()
+    return {
+        "expired": r.sessions_expired,
+        "purged": r.rejected_purged,
+        "orphans": r.orphans_deleted,
+    }

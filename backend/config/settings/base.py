@@ -234,6 +234,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=1),
         "options": {"expires": 50},
     },
+    "documents-cleanup-uploads": {
+        "task": "apps.documents.tasks.cleanup_uploads",
+        "schedule": timedelta(hours=1),
+        "options": {"expires": 3000},
+    },
     "jobs-close-expired": {
         "task": "apps.jobs.tasks.close_expired_jobs",
         "schedule": timedelta(minutes=1),
