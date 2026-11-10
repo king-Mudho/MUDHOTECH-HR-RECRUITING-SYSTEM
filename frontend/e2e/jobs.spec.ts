@@ -102,3 +102,39 @@ test("HR manager approves and publishes; the vacancy is publicly searchable", as
   const body = (await res.json()) as { results: { title: string }[] };
   expect(body.results.map((r) => r.title)).toContain(title);
 });
+
+test("the public board finds the new vacancy by keyword", async ({ page }) => {
+  test.skip(!jobUrl, "previous step failed");
+  await page.goto("/");
+  await page.getByRole("searchbox", { name: "Keywords" }).fill(title);
+  await page.getByRole("button", { name: "Search" }).click();
+  await expect(page).toHaveURL(/\/jobs\?q=/);
+  const card = page.getByRole("link", { name: title });
+  await expect(card).toBeVisible();
+  await expect(card).toHaveAttribute("href", /^\/jobs\/e2e-data-engineer-/);
+  await expectNoSeriousA11yViolations(page);
+});
+
+test("a closed vacancy shows a closed banner and is not indexed", async ({ page }) => {
+  test.skip(!jobUrl, "previous step failed");
+  await signIn(page, "hr@mudhotech-demo.test");
+  await page.goto(jobUrl);
+  await page.getByRole("button", { name: "Close vacancy" }).click();
+  await page
+    .getByRole("dialog")
+    .getByLabel(/Reason/)
+    .fill("Position filled");
+  await page.getByRole("dialog").getByRole("button", { name: "Close vacancy" }).click();
+  await expect(page.getByText("Closed").first()).toBeVisible({ timeout: 15_000 });
+  const slug = (await page.getByRole("link", { name: "View public page" }).getAttribute("href"))!;
+
+  // First public visit after closing (public pages cache for 60 s per URL).
+  await page.goto(slug);
+  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  await expect(page.getByText("Applications have closed")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Apply now" })).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  expect(ld["@type"]).toBe("JobPosting");
+  await expectNoSeriousA11yViolations(page);
+});

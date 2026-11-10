@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 
+import { PUBLIC_NAMESPACES, pickMessages } from "@/i18n/client-messages";
+
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -40,7 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         >
           {t("skipToContent")}
         </a>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={pickMessages(messages, PUBLIC_NAMESPACES)}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>

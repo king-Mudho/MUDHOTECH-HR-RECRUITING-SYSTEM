@@ -59,7 +59,8 @@
     "searchLabel": "Search jobs",
     "searchPlaceholder": "Job title, skill or company",
     "searchButton": "Search",
-    "employersCta": "Hiring? Post vacancies and screen fairly"
+    "employersCta": "Hiring? Post vacancies and screen fairly",
+    "browseAll": "Browse all vacancies"
   },
   "areas": {
     "candidateTitle": "Candidate dashboard",
@@ -863,6 +864,82 @@
       "cancel": "Cancel",
       "none": "Nobody is assigned yet.",
       "failed": "The team could not be saved."
+    }
+  },
+  "publicJobs": {
+    "verified": "Verified employer",
+    "salary": "{currency} {range} {period, select, hour {per hour} day {per day} month {per month} year {per year} other {}}",
+    "closesOn": "Closes {date}",
+    "search": {
+      "keywords": "Keywords",
+      "keywordsPlaceholder": "Job title, skill or company",
+      "location": "Location",
+      "locationPlaceholder": "City, e.g. Harare",
+      "submit": "Search",
+      "employment": "Employment type",
+      "workplace": "Workplace",
+      "ordering": "Sort by",
+      "any": "Any",
+      "orderDefault": "Best match",
+      "orderNewest": "Newest first",
+      "orderClosing": "Closing soonest"
+    },
+    "list": {
+      "title": "Vacancies",
+      "description": "Open vacancies from verified employers in Zimbabwe. Every application is reviewed by people.",
+      "count": "{count, plural, =0 {No vacancies found} one {# vacancy} other {# vacancies}}",
+      "emptyTitle": "No vacancies match your search",
+      "empty": "Try fewer words, another location, or clear the filters.",
+      "clear": "Clear search",
+      "unavailable": "Vacancies can't be loaded right now. Please try again in a moment.",
+      "pagination": "Results pages",
+      "previous": "Previous page",
+      "next": "Next page"
+    },
+    "detail": {
+      "metaTitle": "{title} at {company}",
+      "notFoundTitle": "Vacancy not found",
+      "goneTitle": "This vacancy is no longer available",
+      "gone": "It closed some time ago and has been removed from the job board.",
+      "unavailableTitle": "We can't load this vacancy right now",
+      "unavailable": "Please try again in a moment.",
+      "browse": "Browse open vacancies",
+      "closedTitle": "Applications have closed",
+      "closed": "This vacancy is no longer accepting applications.",
+      "paused": "Applications for this vacancy are paused for now. Please check back soon.",
+      "verified": "Verified employer",
+      "openings": "{count} openings",
+      "closes": "Applications close {date} ({zone})",
+      "yourTime": "That is {time} your time ({zone}).",
+      "apply": "Apply now",
+      "responsibilities": "What you will do",
+      "requirements": "What we are looking for",
+      "essential": "Essential",
+      "preferred": "Preferred (nice to have)",
+      "minExperience": "at least {years} {years, plural, one {year} other {years}}",
+      "equivalents": "or equivalent: {list}",
+      "fairness": "Missing a preferred item doesn't rule you out. Every application is reviewed by a person; AI only helps them find evidence in what you send.",
+      "benefits": "Benefits",
+      "documents": "What to include",
+      "share": "Share this vacancy"
+    },
+    "share": {
+      "label": "Share",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "email": "Email",
+      "copy": "Copy link",
+      "copied": "Link copied"
+    },
+    "company": {
+      "metaTitle": "Jobs at {name}",
+      "metaDescription": "{count, plural, =0 {No open vacancies} one {# open vacancy} other {# open vacancies}} at {name}.",
+      "notFoundTitle": "Employer not found",
+      "unavailable": "This employer's page can't be loaded right now.",
+      "website": "Visit website",
+      "openJobs": "{count, plural, =0 {Open vacancies} one {# open vacancy} other {# open vacancies}}",
+      "noJobs": "No open vacancies right now.",
+      "browse": "Browse all vacancies"
     }
   }
 }

@@ -512,3 +512,58 @@ describe("JobOverview", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("public job SEO helpers", () => {
+  const detail = {
+    id: "j1",
+    slug: "software-developer-acme",
+    title: "Software Developer",
+    organisation: { slug: "acme", name: "Acme", logo_url: null, verified: true },
+    locations: [{ id: "l1", name: "Harare HQ", city: "Harare" }],
+    workplace_type: "remote",
+    employment_type: "contract",
+    seniority: "mid",
+    openings: 1,
+    salary: { min: "1200.00", max: "1800.00", currency: "USD", period: "month" },
+    summary: "Build apps",
+    closes_at: "2030-03-31T21:59:00Z",
+    timezone: "Africa/Harare",
+    published_at: "2026-11-01T08:00:00Z",
+    status: "published",
+    visibility: "public",
+    is_closed: false,
+    accepts_applications: true,
+    closed_at: null,
+    start_date: null,
+    version: 1,
+    responsibilities_html: "<p>Code</p>",
+    requirements_html: "",
+    benefits_html: "",
+    required_documents: ["cv"],
+    essential_criteria: [],
+    preferred_criteria: [],
+  };
+
+  it("builds a schema.org JobPosting", async () => {
+    const { jobPostingJsonLd } = await import("@/features/jobs/public-api");
+    const ld = jobPostingJsonLd(detail as never, "https://jobs.example");
+    expect(ld).toMatchObject({
+      "@type": "JobPosting",
+      title: "Software Developer",
+      employmentType: "CONTRACTOR",
+      jobLocationType: "TELECOMMUTE",
+      validThrough: "2030-03-31T21:59:00Z",
+      url: "https://jobs.example/jobs/software-developer-acme",
+      hiringOrganization: { name: "Acme", sameAs: "https://jobs.example/companies/acme" },
+      baseSalary: { currency: "USD", value: { minValue: 1200, maxValue: 1800, unitText: "MONTH" } },
+    });
+  });
+
+  it("escapes JSON-LD so job text cannot close the script tag", async () => {
+    const { safeJsonLd } = await import("@/features/jobs/public-api");
+    const out = safeJsonLd({ title: "</script><script>alert(1)</script> & co" });
+    expect(out).not.toContain("<");
+    expect(out).not.toContain(">");
+    expect(JSON.parse(out)).toEqual({ title: "</script><script>alert(1)</script> & co" });
+  });
+});
