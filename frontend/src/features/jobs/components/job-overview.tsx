@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, Pencil, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { APPLICATION_VIEWERS } from "@/features/hr-applications/api";
 import { useMembers } from "@/features/organisations/hooks";
 import { ApiError } from "@/lib/api-client";
 import { formatInZone, utcIsoToZonedLocal, zonedLocalToUtcIso } from "@/lib/timezone";
@@ -539,6 +540,14 @@ export function JobOverview({ jobId }: { jobId: string }) {
               <Link href={`/hr/jobs/${data.id}/edit`}>
                 <Pencil aria-hidden="true" />
                 {data.published_version_number ? t("editNewVersion") : t("edit")}
+              </Link>
+            </Button>
+          ) : null}
+          {live && role && APPLICATION_VIEWERS.includes(role) ? (
+            <Button asChild className="min-h-10">
+              <Link href={`/hr/jobs/${data.id}/applications`}>
+                <Users aria-hidden="true" />
+                {t("applications")}
               </Link>
             </Button>
           ) : null}

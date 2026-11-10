@@ -103,7 +103,8 @@
     "in_review": "In review",
     "approved": "Approved",
     "scheduled": "Scheduled",
-    "superseded": "Superseded"
+    "superseded": "Superseded",
+    "processing": "Processing"
   },
   "validation": {
     "required": "This field is required.",
@@ -849,7 +850,8 @@
       "scheduledFor": "publishes {when}",
       "editNewVersion": "Edit new version",
       "edit": "Edit",
-      "viewPublic": "View public page"
+      "viewPublic": "View public page",
+      "applications": "View applications"
     },
     "assignments": {
       "title": "Team on this vacancy",
@@ -1305,6 +1307,63 @@
       "next3": "We will email you when your status changes. You can withdraw at any time.",
       "track": "Track your application",
       "more": "Browse more vacancies"
+    }
+  },
+  "hrApplications": {
+    "title": "Applications",
+    "caption": "Applications for this vacancy",
+    "backToJob": "Back to vacancy",
+    "phaseNote": "Read-only list. Screening, shortlisting and messaging arrive in a later release.",
+    "search": "Search applications",
+    "searchPlaceholder": "Name, email or reference",
+    "filterLabel": "Filter by status",
+    "filters": {
+      "active": "Active",
+      "withdrawn": "Withdrawn",
+      "all": "All"
+    },
+    "columns": {
+      "candidate": "Candidate",
+      "status": "Status",
+      "submitted": "Submitted",
+      "reference": "Reference"
+    },
+    "emptyTitle": "No applications yet",
+    "empty": "Applications appear here as soon as candidates submit them.",
+    "noMatchesTitle": "No matching applications",
+    "noMatches": "Try another search or filter.",
+    "count": "{count, plural, one {# application} other {# applications}}",
+    "pagination": "Applications pages",
+    "previous": "Previous",
+    "next": "Next",
+    "unnamed": "Unnamed candidate",
+    "assisted": "Assisted",
+    "humanOnly": "Human review only",
+    "humanOnlyLong": "Candidate objects to automated processing — human review only",
+    "forbidden": "Your role can't view applications for this vacancy.",
+    "notFoundTitle": "Application not found",
+    "notFound": "It doesn't exist, isn't assigned to you, or belongs to another organisation.",
+    "backToList": "Back to applications for {job}",
+    "detail": {
+      "pageTitle": "Application",
+      "meta": "Reference {reference} · submitted {when} · vacancy version {version}",
+      "contact": "Candidate",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "Location",
+      "headline": "Headline",
+      "availability": "Availability",
+      "documents": "Documents",
+      "noDocuments": "No documents attached.",
+      "download": "Download {name}",
+      "answers": "Answers",
+      "noAnswers": "No questions were answered.",
+      "attachedFile": "Download attached file",
+      "timeline": "Status history",
+      "actor": {
+        "human": "by a person",
+        "system": "automatically"
+      }
     }
   }
 }

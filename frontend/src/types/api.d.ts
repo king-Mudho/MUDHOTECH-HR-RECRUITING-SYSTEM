@@ -518,6 +518,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_applications_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/": {
         parameters: {
             query?: never;
@@ -530,6 +546,22 @@ export interface paths {
         put?: never;
         /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
         post: operations["hr_jobs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/applications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_job_applications_list"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1929,6 +1961,60 @@ export interface components {
          * @enum {string}
          */
         FrameworkEnum: "ZW" | "INTL";
+        HRAnswer: {
+            key: string;
+            prompt: string;
+            type: string;
+            value: unknown;
+            /** Format: uuid */
+            document_id: string | null;
+        };
+        HRApplicationDetail: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly reference: string | null;
+            readonly status: components["schemas"]["ApplicationStatusEnum"];
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            readonly candidate_name: string;
+            readonly candidate_email: string;
+            readonly channel: string;
+            readonly is_assisted: boolean;
+            readonly objects_to_automated_processing: boolean;
+            /** Format: date-time */
+            readonly withdrawn_at: string | null;
+            readonly withdraw_reason: string;
+            readonly job: components["schemas"]["HRJobRef"];
+            readonly candidate: {
+                [key: string]: unknown;
+            };
+            readonly documents: components["schemas"]["HRDocument"][];
+            readonly answers: components["schemas"]["HRAnswer"][];
+            readonly timeline: components["schemas"]["HRStatusEvent"][];
+        };
+        HRApplicationList: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly reference: string | null;
+            readonly status: components["schemas"]["ApplicationStatusEnum"];
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            readonly candidate_name: string;
+            readonly candidate_email: string;
+            readonly channel: string;
+            readonly is_assisted: boolean;
+            readonly objects_to_automated_processing: boolean;
+        };
+        HRDocument: {
+            /** Format: uuid */
+            id: string;
+            role: string;
+            required_doc_key: string;
+            filename: string;
+            scan_status: string;
+            size_bytes: number;
+            available: boolean;
+        };
         HRJobDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -2005,6 +2091,21 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly updated_at: string;
+        };
+        HRJobRef: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            version: number;
+        };
+        HRStatusEvent: {
+            from_status: string;
+            to_status: string;
+            actor_type: string;
+            reason_code: string;
+            reason_text: string;
+            /** Format: date-time */
+            at: string;
         };
         /**
          * @description * `essential` - Essential
@@ -2332,6 +2433,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Department"][];
+        };
+        PaginatedHRApplicationListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["HRApplicationList"][];
         };
         PaginatedHRJobListList: {
             /** @example 123 */
@@ -4321,6 +4437,27 @@ export interface operations {
             };
         };
     };
+    hr_applications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRApplicationDetail"];
+                };
+            };
+        };
+    };
     hr_jobs_list: {
         parameters: {
             query?: {
@@ -4373,6 +4510,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HRJobDetail"];
+                };
+            };
+        };
+    };
+    hr_job_applications_list: {
+        parameters: {
+            query?: {
+                ordering?: "-submitted_at" | "submitted_at";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description Name, email or reference contains */
+                search?: string;
+                /** @description Comma-separated statuses */
+                status?: string;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedHRApplicationListList"];
                 };
             };
         };

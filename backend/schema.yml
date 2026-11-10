@@ -1212,6 +1212,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Document'
           description: ''
+  /api/v1/hr/applications/{application_id}/:
+    get:
+      operationId: hr_applications_retrieve
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRApplicationDetail'
+          description: ''
   /api/v1/hr/jobs/:
     get:
       operationId: hr_jobs_list
@@ -1293,6 +1314,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HRJobDetail'
+          description: ''
+  /api/v1/hr/jobs/{job_id}/applications/:
+    get:
+      operationId: hr_job_applications_list
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - -submitted_at
+          - submitted_at
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Name, email or reference contains
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Comma-separated statuses
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHRApplicationListList'
           description: ''
   /api/v1/hr/jobs/{id}/:
     get:
@@ -4755,6 +4826,181 @@ components:
       description: |-
         * `ZW` - Zimbabwe
         * `INTL` - International
+    HRAnswer:
+      type: object
+      properties:
+        key:
+          type: string
+        prompt:
+          type: string
+        type:
+          type: string
+        value:
+          nullable: true
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - document_id
+      - key
+      - prompt
+      - type
+      - value
+    HRApplicationDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationStatusEnum'
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        candidate_name:
+          type: string
+          readOnly: true
+        candidate_email:
+          type: string
+          readOnly: true
+        channel:
+          type: string
+          readOnly: true
+        is_assisted:
+          type: boolean
+          readOnly: true
+        objects_to_automated_processing:
+          type: boolean
+          readOnly: true
+        withdrawn_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        withdraw_reason:
+          type: string
+          readOnly: true
+        job:
+          allOf:
+          - $ref: '#/components/schemas/HRJobRef'
+          readOnly: true
+        candidate:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/HRDocument'
+          readOnly: true
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/HRAnswer'
+          readOnly: true
+        timeline:
+          type: array
+          items:
+            $ref: '#/components/schemas/HRStatusEvent'
+          readOnly: true
+      required:
+      - answers
+      - candidate
+      - candidate_email
+      - candidate_name
+      - channel
+      - documents
+      - id
+      - is_assisted
+      - job
+      - objects_to_automated_processing
+      - reference
+      - status
+      - submitted_at
+      - timeline
+      - withdraw_reason
+      - withdrawn_at
+    HRApplicationList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationStatusEnum'
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        candidate_name:
+          type: string
+          readOnly: true
+        candidate_email:
+          type: string
+          readOnly: true
+        channel:
+          type: string
+          readOnly: true
+        is_assisted:
+          type: boolean
+          readOnly: true
+        objects_to_automated_processing:
+          type: boolean
+          readOnly: true
+      required:
+      - candidate_email
+      - candidate_name
+      - channel
+      - id
+      - is_assisted
+      - objects_to_automated_processing
+      - reference
+      - status
+      - submitted_at
+    HRDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+        required_doc_key:
+          type: string
+        filename:
+          type: string
+        scan_status:
+          type: string
+        size_bytes:
+          type: integer
+        available:
+          type: boolean
+      required:
+      - available
+      - filename
+      - id
+      - required_doc_key
+      - role
+      - scan_status
+      - size_bytes
     HRJobDetail:
       type: object
       properties:
@@ -5046,6 +5292,43 @@ components:
       - updated_at
       - visibility
       - workplace_type
+    HRJobRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        version:
+          type: integer
+      required:
+      - id
+      - title
+      - version
+    HRStatusEvent:
+      type: object
+      properties:
+        from_status:
+          type: string
+        to_status:
+          type: string
+        actor_type:
+          type: string
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - actor_type
+      - at
+      - from_status
+      - reason_code
+      - reason_text
+      - to_status
     ImportanceEnum:
       enum:
       - essential
@@ -5906,6 +6189,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Department'
+    PaginatedHRApplicationListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HRApplicationList'
     PaginatedHRJobListList:
       type: object
       required:

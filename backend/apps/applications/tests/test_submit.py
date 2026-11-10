@@ -83,7 +83,7 @@ def test_submit_freezes_snapshot_assigns_reference_and_queues_receipt(job: Any) 
     res = submit(login(user), app)
     assert res.status_code == 201, res.content
     body = res.json()
-    assert re.fullmatch(r"MHRS-[A-Z0-9]{1,8}-\d{4}-\d{6}", body["reference"])
+    assert re.fullmatch(r"MHRS-[A-Z0-9]{5,10}-\d{4}-\d{6}", body["reference"])
     app.refresh_from_db()
     assert app.status == Status.SUBMITTED and app.submitted_at is not None
     assert app.candidate_profile_snapshot["headline"] == "Python developer"

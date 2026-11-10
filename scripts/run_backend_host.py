@@ -5,6 +5,8 @@
 Loads ``.env`` (secrets such as FIELD_ENCRYPTION_KEYS) and rewrites the in-network hostnames
 (``postgres:5432``, ``redis:6379``, ``mailpit:1025``) to the published host ports, so a low-memory
 machine can run only ``docker compose up -d postgres redis mailpit`` plus this process.
+``celery ...`` arguments run a host worker instead
+(``celery -A config worker -B -P solo -Q default,documents,ai,notifications,reports``).
 Existing environment variables win over ``.env``.
 """
 
@@ -19,6 +21,7 @@ REWRITES = {
     "@postgres:5432": f"@localhost:{os.environ.get('POSTGRES_HOST_PORT', '15432')}",
     "redis:6379": f"localhost:{os.environ.get('REDIS_HOST_PORT', '6380')}",
     "mailpit:1025": "localhost:1025",
+    "http://s3:9000": "http://localhost:9000",
 }
 
 
@@ -41,9 +44,15 @@ def main() -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
     sys.path.insert(0, str(ROOT / "backend"))
     os.chdir(ROOT / "backend")
+    args = sys.argv[1:] or ["runserver", "127.0.0.1:8000", "--noreload"]
+    if args[0] == "celery":  # e.g. celery -A config worker -B -P solo -Q default,documents,...
+        from celery.__main__ import main as celery_main
+
+        sys.argv = args
+        celery_main()
+        return
     from django.core.management import execute_from_command_line
 
-    args = sys.argv[1:] or ["runserver", "127.0.0.1:8000", "--noreload"]
     execute_from_command_line(["manage.py", *args])
 
 

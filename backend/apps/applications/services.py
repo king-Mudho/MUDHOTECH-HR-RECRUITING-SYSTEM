@@ -31,8 +31,11 @@ class DuplicateApplicationError(DomainError):
 
 
 def org_code(org: Organisation) -> str:
-    """Upper-case code for references, from the slug ('mudhotech-demo-ltd' -> 'MUDHOTEC')."""
-    return (re.sub(r"[^A-Z0-9]", "", org.slug.upper()) or "ORG")[:8]
+    """Upper-case code for references: a readable slug prefix plus 4 characters of the org id
+    ('mudhotech-demo-ltd' -> 'MUDHOT3F2A'). The suffix keeps references globally unique when
+    two organisations' slugs share a prefix (counters are per organisation)."""
+    prefix = (re.sub(r"[^A-Z0-9]", "", org.slug.upper()) or "ORG")[:6]
+    return f"{prefix}{org.pk.hex[:4].upper()}"
 
 
 def next_reference(org: Organisation, year: int | None = None) -> str:

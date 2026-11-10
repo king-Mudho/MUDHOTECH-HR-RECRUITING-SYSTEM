@@ -26,6 +26,7 @@ from apps.core.exceptions import DomainError
 from apps.core.time import now
 from apps.jobs.models import Job, JobStatus
 from apps.organisations.models import OrganisationPolicy
+from apps.organisations.tests.factories import OrganisationFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -40,6 +41,13 @@ def test_reference_format_and_sequence() -> None:
     assert next_reference(org, 2027).endswith("000001")  # new year restarts
     other = published_job().organisation
     assert next_reference(other, 2026).endswith("000001")  # per organisation
+
+
+def test_reference_codes_differ_for_orgs_with_the_same_slug_prefix() -> None:
+    a = published_job(organisation=OrganisationFactory(slug="synthetic-org-a")).organisation
+    b = published_job(organisation=OrganisationFactory(slug="synthetic-org-b")).organisation
+    assert org_code(a) != org_code(b) and org_code(a).startswith("SYNTHE")
+    assert next_reference(a, 2026) != next_reference(b, 2026)
 
 
 def test_submitted_application_requires_reference() -> None:

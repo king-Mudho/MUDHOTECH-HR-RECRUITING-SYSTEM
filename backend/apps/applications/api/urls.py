@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .hr import HRApplicationDetailView, HRJobApplicationsView
 from .views import (
     ApplicationAnswersView,
     ApplicationDetailView,
@@ -45,5 +46,15 @@ urlpatterns = [
         "applications/<uuid:application_id>/timeline/",
         ApplicationTimelineView.as_view(),
         name="application-timeline",
+    ),
+    path(
+        "hr/jobs/<uuid:job_id>/applications/",
+        HRJobApplicationsView.as_view(),
+        name="hr-job-applications",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/",
+        HRApplicationDetailView.as_view(),
+        name="hr-application",
     ),
 ]
