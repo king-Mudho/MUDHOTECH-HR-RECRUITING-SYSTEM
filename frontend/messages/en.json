@@ -1172,5 +1172,139 @@
       "privacyBody": "You can ask to see, correct or delete your data at any time.",
       "howWeUseAi": "How we use AI"
     }
+  },
+  "apply": {
+    "metaTitle": "Apply",
+    "applyingFor": "You are applying for",
+    "closes": "Closes {date} ({tz})",
+    "stepOf": "Step {n} of {total} — {title}",
+    "steps": {
+      "contact": "Contact details & privacy",
+      "profile": "Your profile",
+      "documents": "Documents",
+      "questions": "Questions",
+      "review": "Review & submit",
+      "done": "Application submitted"
+    },
+    "saving": "Saving…",
+    "saved": "All changes saved",
+    "notSaved": "Not saved — check your connection",
+    "saveExit": "Save & exit",
+    "back": "Back",
+    "continue": "Save and continue",
+    "needsJs": "This form needs JavaScript. Please enable it to apply.",
+    "duplicateTitle": "You have already applied",
+    "duplicate": "You already have an application for this vacancy.",
+    "openExisting": "Open your application",
+    "alreadySubmitted": "This application has already been submitted.",
+    "closedTitle": "This vacancy is closed",
+    "closed": "Applications are no longer accepted for this vacancy.",
+    "browse": "Browse other vacancies",
+    "contact": {
+      "intro": "We will contact you at {email}. Check your details below.",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "preferred_name": "Preferred name",
+      "phone": "Phone number",
+      "city": "City or town",
+      "required": "(required)",
+      "nameRequired": "Please enter your first and last name.",
+      "saveFailed": "We couldn't save your details. Please try again.",
+      "privacyTitle": "How your information is used",
+      "privacyDefault": "The employer uses the information in this application only to assess you for this vacancy and related recruitment steps. You can withdraw at any time."
+    },
+    "profile": {
+      "intro": "Your profile is shared with the employer together with this application.",
+      "headline": "Headline",
+      "summary": "Summary",
+      "completeness": "Profile completeness",
+      "percent": "{value}%",
+      "notAdded": "Not added yet",
+      "edit": "Edit your profile",
+      "editHelp": "Your application is saved; you can come back to this step afterwards."
+    },
+    "documents": {
+      "intro": "Attach the documents this employer asks for. Files are checked for safety before anyone opens them.",
+      "required": "(required)",
+      "chooseCv": "Choose a CV from your library",
+      "checking": "being checked",
+      "upload": "Upload a file",
+      "uploadAnother": "Or upload a different CV",
+      "attached": "File attached.",
+      "missing": "Still needed: {list}.",
+      "saveFailed": "We couldn't attach your documents. Please try again."
+    },
+    "questions": {
+      "intro": "Answer the employer's questions. Your answers are saved as you type.",
+      "none": "This vacancy has no extra questions.",
+      "required": "(required)",
+      "yes": "Yes",
+      "no": "No",
+      "words": "{count} of {limit} words",
+      "uploadFile": "Upload a file"
+    },
+    "review": {
+      "summary": "Your application",
+      "vacancy": "Vacancy",
+      "documents": "Documents",
+      "stillNeeded": "Before you can submit",
+      "fix": "Go to this step",
+      "missingDoc": "Attach your {doc}",
+      "missingAnswer": "Answer: {question}",
+      "codes": {
+        "emailUnverified": "Verify your email address (check your inbox for the link)",
+        "documentNotAccepted": "Replace a file that could not be accepted",
+        "other": "Complete the remaining information"
+      },
+      "extractedTitle": "What we read from your CV",
+      "extractedSoon": "After you submit, we read your CV to prepare it for the employer. You will be able to see and correct this information in a later update.",
+      "consents": "Consent",
+      "privacy": "I have read how {company} will use my information and agree to it being used for this application.",
+      "requiredMark": "(required)",
+      "aiNotice": "Software helps the employer organise applications. A person always makes the decision.",
+      "aiNoticeLink": "How we use AI (opens in a new tab)",
+      "object": "I object to automated processing — please have a person review my application without software assistance.",
+      "back": "Back",
+      "submit": "Submit application",
+      "submitting": "Submitting…",
+      "failedTitle": "Your application was not submitted",
+      "failed": "Something went wrong. Your draft is saved — please try again.",
+      "duplicateTitle": "You have already applied",
+      "duplicate": "You already have an application for this vacancy.",
+      "openExisting": "Open your application",
+      "alreadySubmitted": "This application has already been submitted.",
+      "errors": {
+        "deadline_passed": {
+          "title": "The closing date has passed",
+          "body": "This vacancy stopped accepting applications. Your draft is kept."
+        },
+        "job_paused": {
+          "title": "Applications are paused",
+          "body": "The employer has paused this vacancy. Your draft is saved — try again later."
+        },
+        "job_not_accepting": {
+          "title": "This vacancy is closed",
+          "body": "Applications are no longer accepted for this vacancy."
+        },
+        "org_suspended": {
+          "title": "Not accepting applications",
+          "body": "This employer isn't accepting applications at the moment. Your draft is saved."
+        },
+        "email_unverified": {
+          "title": "Verify your email first",
+          "body": "Open the link we emailed you, then submit again. Your draft is saved."
+        }
+      }
+    },
+    "done": {
+      "title": "Application submitted",
+      "reference": "Your reference is {reference}. We have emailed you a receipt.",
+      "nextTitle": "What happens next",
+      "next1": "We check your documents and prepare your application.",
+      "next2": "{company} reviews applications. A person makes every decision.",
+      "next3": "We will email you when your status changes. You can withdraw at any time.",
+      "track": "Track your application",
+      "more": "Browse more vacancies"
+    }
   }
 }

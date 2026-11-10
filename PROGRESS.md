@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T14
+- **Current task:** P04-T15
 - **Last updated:** 2026-11-10
-- **Overall:** 58 / 193 tasks · 3 / 16 phases
+- **Overall:** 59 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -117,7 +117,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T11 — Assisted application (staff creates on behalf
 - [x] P04-T12 — Frontend `FileUploader` (presign → PUT with progress → complete → poll scan status
 - [x] P04-T13 — Frontend candidate: `/candidate/dashboard`, `/candidate/profile` (sections + completeness), `/candidate/documents` …
-- [ ] P04-T14 — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions …
+- [x] P04-T14 — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions …
 - [ ] P04-T15 — HR minimal list: `/hr/jobs/[id]/applications` basic table (status, submitted at, candidate name) + application …
 - [ ] P04-T16 — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt
 - [ ] P04-EXIT — All exit criteria verified with evidence
@@ -430,3 +430,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T11 | assisted applications: POST /hr/jobs/{id}/assisted-applications (multipart or JSON; recruiting staff who are admin/HR or assigned): email required (EC-APP-18), consent confirmation + method (in_person|phone|written); finds or creates the candidate account (unusable password), runs the normal draft/document/answer/submit services with the staff member as actor (only the email-verification gate is skipped), flags is_assisted/assisted_by/channel, consent context names the method and staff member, audit application.assisted_created, invite email with set-password link for new/passwordless accounts (EC-APP-17); duplicate policy still applies; registered in cross-tenant + permission matrix (open_job fixture stage); 7 tests; 1521 backend tests |  |
 | 2026-11-10 | Impl | P04-T12 | frontend FileUploader (features/documents): upload session -> XHR PUT to presigned URL with progress -> complete -> poll scan status (2 s, ~2 min, then 'still checking' and carry on); falls back to multipart direct upload when storage is unreachable (status 0 / upload_failed); cancel (AbortController), retry only for transfer failures, client-side size check, purpose-specific accept list, friendly per-reason rejection messages, labelled file input + progressbar + aria-live status/alert; documentsApi client; 6 Vitest tests (happy path, fallback, polling, rejection, oversize, retry); 85 frontend tests |  |
 | 2026-11-10 | Impl | P04-T13 | candidate frontend: /candidate/dashboard (things to do: drafts to finish + profile completeness, active application counts, jobs matching profile skills via public FTS), /candidate/profile (completeness meter + missing checklist, details form with lock_version conflict handling, generic section manager for experience/education/certifications/skills/languages), /candidate/documents (FileUploader, CV library with scan chips, set default, download, remove with confirm), /candidate/applications + [id] (status list, draft continue link, candidate timeline, what you sent, withdraw/discard with optional reason), /candidate/settings; shared candidate layout with main landmark; backend: CV library API (GET /candidate/resumes, set-default, DELETE unless used by a submitted application) and GET /applications/{id}/timeline (internal steps folded, no staff reasons); 3 backend + 5 Vitest tests |  |
+| 2026-11-10 | Impl | P04-T14 | Apply wizard /apply/[jobId]: 5 steps + confirmation, resume from last_step, autosave indicator, conditional questions (client mirror of branching), word counters, required-doc picker/uploader, review with blocking list and go-to-step links, privacy consent + AI objection, idempotent submit, specific messages for deadline/paused/closed/suspended/unverified/duplicate, 401 -> sign-in and back (EC-APP-06); 7 Vitest tests | 360px/keyboard/axe verified in P04-T16 Playwright |
