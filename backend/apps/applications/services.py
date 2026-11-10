@@ -602,9 +602,11 @@ def submit(
 ) -> Application:
     """Submit exactly once (FR-M07-03). The request does no heavy work: screening starts from the
     ``application.submitted`` outbox event, so later failures never lose the application."""
+    from django.conf import settings
+
     from apps.candidates.services import profile_snapshot
     from apps.core import outbox
-    from apps.core.email import queue_email
+    from apps.notifications import delivery as notifications
 
     if not accept_privacy:
         raise DomainError(
@@ -692,18 +694,17 @@ def submit(
             dedupe_key=f"application.submitted:{app.pk}",
             organisation_id=app.organisation_id,
         )
-        queue_email(
-            user.email,
-            f"Application received: {job.title} ({app.reference})",
-            (
-                f"Hello {app.candidate_profile_snapshot.get('first_name') or ''},\n\n"
-                f"Thank you for applying for {job.title} at {app.organisation.name}.\n"
-                f"Your reference number is {app.reference}.\n\n"
-                "Every application is reviewed by people at the employer. You can follow its "
-                "status, or withdraw it, from your applications page at any time.\n\n"
-                "MUDHOTECH HR RECRUITING SYSTEM"
-            ),
-            dedupe_key=f"email.application_receipt:{app.pk}",
-            organisation_id=app.organisation_id,
+        notifications.notify(
+            user,
+            "application_received",
+            {
+                "organisation_name": app.organisation.name,
+                "job_title": job.title,
+                "reference": app.reference,
+                "application_url": f"{settings.FRONTEND_URL}/candidate/applications/{app.pk}",
+                "application_id": app.pk,
+            },
+            dedupe_key=f"application_received:{app.pk}",
+            organisation=app.organisation_id,
         )
     return app

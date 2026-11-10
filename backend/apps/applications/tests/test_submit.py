@@ -23,12 +23,12 @@ from apps.applications.models import (
 from apps.applications.services import start_or_resume_draft
 from apps.applications.tests.factories import published_job
 from apps.candidates.services import update_profile
-from apps.core import crypto
-from apps.core.email import EVENT as EMAIL_EVENT
 from apps.core.models import OutboxEvent
 from apps.core.time import now
 from apps.documents.models import Document, ScanStatus
 from apps.jobs.models import Job, JobStatus
+from apps.notifications.models import Notification
+from apps.notifications.testing import emails_for
 from apps.organisations.models import Organisation, OrganisationPolicy
 
 pytestmark = pytest.mark.django_db
@@ -94,12 +94,8 @@ def test_submit_freezes_snapshot_assigns_reference_and_queues_receipt(job: Any) 
     assert OutboxEvent.objects.filter(
         event_type="application.submitted", aggregate_id=str(app.pk)
     ).exists()
-    receipt = [
-        e
-        for e in OutboxEvent.objects.filter(event_type=EMAIL_EVENT)
-        if e.payload["to"] == [user.email]
-    ]
-    assert len(receipt) == 1 and body["reference"] in crypto.decrypt(receipt[0].payload["text_enc"])
+    receipt = emails_for(user, "application_received")
+    assert len(receipt) == 1 and body["reference"] in receipt[0]
 
 
 def test_scan_pending_documents_are_allowed(job: Any) -> None:
@@ -221,8 +217,7 @@ def test_one_hundred_concurrent_submissions() -> None:
     assert len(refs) == 100 and len(set(refs)) == 100
     numbers = sorted(int(r.rsplit("-", 1)[1]) for r in refs)
     assert numbers == list(range(1, 101))  # gap-free under contention
-    receipts = OutboxEvent.objects.filter(
-        event_type=EMAIL_EVENT, dedupe_key__startswith="email.application_receipt:"
-    )
+    receipts = Notification.objects.filter(key="application_received", channel="email")
     assert receipts.count() == 100
+    assert OutboxEvent.objects.filter(event_type="notification.queued").count() == 100
     assert OutboxEvent.objects.filter(event_type="application.submitted").count() == 100

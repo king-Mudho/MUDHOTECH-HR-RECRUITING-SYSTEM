@@ -19,6 +19,7 @@ from apps.core.models import OutboxEvent
 from apps.core.time import now
 from apps.jobs import services as jobs
 from apps.jobs.models import Job, JobAssignment, JobStatus
+from apps.notifications.testing import emails_for
 from apps.organisations.models import Membership
 from apps.organisations.tests.factories import make_org_with_team
 
@@ -74,6 +75,8 @@ def test_withdraw_after_shortlist_notifies_recruiter(world: Any) -> None:
     assert app.status == Status.WITHDRAWN and app.withdraw_reason == "Accepted another offer"
     [body] = emails_to(team.recruiter.email)
     assert app.reference in body and "Accepted another offer" in body
+    [confirmation] = emails_for(app.candidate_user, "application_withdrawn_confirmation")
+    assert app.reference in confirmation and "withdrawn" in confirmation
     again = client_for(app.candidate_user).post(
         f"/api/v1/applications/{app.pk}/withdraw/", {}, format="json"
     )
@@ -117,8 +120,8 @@ def test_closing_abandons_drafts_but_not_submitted(world: Any, commit: Any) -> N
     draft.refresh_from_db()
     submitted.refresh_from_db()
     assert draft.status == Status.ABANDONED and submitted.status == Status.SUBMITTED
-    [body] = emails_to(draft.candidate_user.email)
-    assert "have closed" in body
+    [body] = emails_for(draft.candidate_user, "draft_abandoned")
+    assert "has closed" in body
 
 
 def test_pausing_keeps_drafts(world: Any) -> None:

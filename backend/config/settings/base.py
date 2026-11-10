@@ -244,6 +244,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(hours=1),
         "options": {"expires": 3000},
     },
+    "notifications-send-due": {
+        "task": "apps.notifications.tasks.send_due",
+        "schedule": timedelta(minutes=5),
+        "options": {"expires": 240},
+    },
     "documents-cleanup-uploads": {
         "task": "apps.documents.tasks.cleanup_uploads",
         "schedule": timedelta(hours=1),
@@ -300,6 +305,7 @@ vars().update(EMAIL_CONFIG)
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL", default="MUDHOTECH HR RECRUITING SYSTEM <no-reply@mhrs.local>"
 )
+SUPPORT_EMAIL = env("SUPPORT_EMAIL", default="support@mhrs.local")
 
 # --- ClamAV ---
 CLAMAV_HOST = env("CLAMAV_HOST", default="localhost")

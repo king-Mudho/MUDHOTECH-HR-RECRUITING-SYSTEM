@@ -16,6 +16,8 @@ class NotificationsConfig(AppConfig):
     verbose_name = "Notifications"
 
     def ready(self) -> None:
+        from . import tasks  # noqa: F401  registers the delivery consumer
+
         post_migrate.connect(
             _sync_defaults, sender=self, dispatch_uid="notifications.sync_defaults"
         )

@@ -96,12 +96,16 @@ def test_existing_account_is_reused_without_reset_link(team: Any) -> None:
         fmt="json",
     )
     assert res.status_code == 201, res.content
-    texts = [
-        crypto.decrypt(e.payload["text_enc"])
+    from apps.notifications.testing import emails_for
+
+    reset_links = [
+        e
         for e in OutboxEvent.objects.filter(event_type=EMAIL_EVENT)
         if e.payload["to"] == [existing.email]
+        and "reset-password" in crypto.decrypt(e.payload["text_enc"])
     ]
-    assert texts and all("reset-password" not in t for t in texts)
+    assert reset_links == []
+    assert len(emails_for(existing, "application_received")) == 1
 
 
 def test_consent_and_email_required(team: Any) -> None:

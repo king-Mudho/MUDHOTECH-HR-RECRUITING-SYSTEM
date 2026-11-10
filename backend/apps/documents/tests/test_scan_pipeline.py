@@ -66,15 +66,10 @@ def upload(s3: Any, django_capture_on_commit_callbacks: Any) -> Any:
 
 
 def rejection_emails(user: Any) -> list[str]:
-    """Plain-text bodies of emails queued (via the outbox) to ``user``; bodies are encrypted."""
-    from apps.core import crypto
-    from apps.core.email import EVENT
+    """Rendered bodies of the re-upload requests queued for ``user``."""
+    from apps.notifications.testing import emails_for
 
-    return [
-        crypto.decrypt(e.payload["text_enc"])
-        for e in OutboxEvent.objects.filter(event_type=EVENT)
-        if e.payload["to"] == [user.email]
-    ]
+    return emails_for(user, "document_rejected_reupload")
 
 
 def quarantine_keys(s3: Any) -> list[str]:

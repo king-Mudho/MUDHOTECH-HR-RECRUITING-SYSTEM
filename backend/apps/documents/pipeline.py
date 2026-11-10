@@ -16,7 +16,6 @@ from django.db import transaction
 
 from apps.audit import services as audit
 from apps.core import outbox, storage
-from apps.core.email import queue_email
 from apps.core.time import now
 
 from . import antivirus, inspect
@@ -39,18 +38,22 @@ REASON_TEXT = {
 
 
 def _notify_rejection(doc: Document, reason: str) -> None:
+    from django.conf import settings
+
+    from apps.notifications import delivery as notifications
+
     why = REASON_TEXT.get(reason, "it could not be accepted")
-    queue_email(
-        doc.owner_user.email,
-        "We couldn't accept your file",
-        (
-            f'Hello,\n\nYour file "{doc.original_filename}" could not be accepted because {why}.\n'
-            "Please upload it again as a PDF or Word (.docx) file. Any application you have "
-            "started is saved and you can continue it at any time.\n\n"
-            "MUDHOTECH HR RECRUITING SYSTEM"
-        ),
-        dedupe_key=f"email.document_rejected:{doc.pk}",
-    )
+    with transaction.atomic():
+        notifications.notify(
+            doc.owner_user,
+            "document_rejected_reupload",
+            {
+                "document_name": doc.original_filename,
+                "reason": f"It could not be accepted because {why}.",
+                "application_url": f"{settings.FRONTEND_URL}/candidate/documents",
+            },
+            dedupe_key=f"document_rejected:{doc.pk}",
+        )
 
 
 def _reject(

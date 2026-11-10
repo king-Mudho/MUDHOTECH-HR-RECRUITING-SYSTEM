@@ -21,6 +21,7 @@ from apps.core.email import queue_email
 from apps.core.exceptions import DomainError
 from apps.core.time import now
 from apps.jobs.models import Job, JobAssignment, JobStatus
+from apps.notifications import delivery as notifications
 from apps.organisations.models import Membership
 
 from .models import TERMINAL_STATUSES, Application, ApplicationStatusEvent, Status
@@ -87,6 +88,18 @@ def withdraw(user: Any, application_id: Any, reason: str = "") -> Application:
             )
         app = transition(app, Status.WITHDRAWN, actor=user, reason=reason.strip()[:2000])
         _notify_recruiters(app, reason.strip())
+        notifications.notify(
+            user,
+            "application_withdrawn_confirmation",
+            {
+                "organisation_name": app.organisation.name,
+                "job_title": app.job.title,
+                "reference": app.reference,
+                "application_id": app.pk,
+            },
+            dedupe_key=f"application_withdrawn:{app.pk}:{app.lock_version}",
+            organisation=app.organisation_id,
+        )
     return app
 
 
@@ -100,17 +113,12 @@ def abandon_drafts(job: Job, *, reason_code: str = CLOSED_REASON) -> int:
     for app in drafts:
         with transaction.atomic():
             transition(app, Status.ABANDONED, actor_type="system", reason_code=reason_code)
-            queue_email(
-                app.candidate_user.email,
-                f"{job.title}: applications have closed",
-                (
-                    f"Hello,\n\nApplications for {job.title} have closed, so your unfinished "
-                    "application could not be submitted. If the employer reopens the vacancy we "
-                    "will let you know and your answers will still be there.\n\n"
-                    "MUDHOTECH HR RECRUITING SYSTEM"
-                ),
-                dedupe_key=f"email.draft_abandoned:{app.pk}",
-                organisation_id=app.organisation_id,
+            notifications.notify(
+                app.candidate_user,
+                "draft_abandoned",
+                {"organisation_name": job.organisation.name, "job_title": job.title},
+                dedupe_key=f"draft_abandoned:{app.pk}",
+                organisation=app.organisation_id,
             )
     return len(drafts)
 

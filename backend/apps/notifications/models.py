@@ -70,6 +70,7 @@ class NotificationTemplate(BaseModel):
 
 class NotificationStatus(models.TextChoices):
     QUEUED = "queued", "Queued"
+    SENDING = "sending", "Sending"  # claimed by a worker (internal)
     SENT = "sent", "Sent"
     DELIVERED = "delivered", "Delivered"
     FAILED = "failed", "Failed"
