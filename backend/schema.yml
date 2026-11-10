@@ -1476,6 +1476,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedAssignmentList'
           description: ''
+  /api/v1/hr/jobs/{id}/assisted-applications/:
+    post:
+      operationId: hr_jobs_assisted_application
+      description: 'FR-M07-08 / EC-APP-17: staff submits on a candidate''s behalf
+        (flagged, consented).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this job.
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssistedApplicationRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistedApplicationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistedApplicationResult'
+          description: ''
   /api/v1/hr/jobs/{id}/close/:
     post:
       operationId: hr_jobs_close
@@ -3852,6 +3885,59 @@ components:
             $ref: '#/components/schemas/AssignmentInputRequest'
       required:
       - assignments
+    AssistedApplicationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 30
+        consent_confirmed:
+          type: boolean
+        consent_method:
+          $ref: '#/components/schemas/ConsentMethodEnum'
+        note:
+          type: string
+          maxLength: 500
+        cv:
+          type: string
+          format: binary
+        answers: {}
+      required:
+      - consent_confirmed
+      - consent_method
+      - email
+      - first_name
+      - last_name
+    AssistedApplicationResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        status:
+          type: string
+        candidate_email:
+          type: string
+          format: email
+      required:
+      - candidate_email
+      - id
+      - reference
+      - status
     AttachItemRequest:
       type: object
       properties:
@@ -4094,6 +4180,16 @@ components:
         comment:
           type: string
           maxLength: 1000
+    ConsentMethodEnum:
+      enum:
+      - in_person
+      - phone
+      - written
+      type: string
+      description: |-
+        * `in_person` - in_person
+        * `phone` - phone
+        * `written` - written
     ContactRequest:
       type: object
       properties:

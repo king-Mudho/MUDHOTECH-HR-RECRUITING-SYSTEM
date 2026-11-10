@@ -13,6 +13,7 @@ from django.db.models import Q, QuerySet
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -86,6 +87,7 @@ class HRJobViewSet(RbacActionMixin, viewsets.GenericViewSet):
         "events": "jobs.view",
         "versions": "jobs.view",
         "protected_exception": "questions.protected_exception",
+        "assisted_application": "applications.transition",
     }
 
     def get_permissions(self) -> list[BasePermission]:
@@ -434,3 +436,63 @@ class HRJobViewSet(RbacActionMixin, viewsets.GenericViewSet):
         job = self._job()
         rows = JobVersion.objects.for_org(job.organisation_id).filter(job=job).order_by("-number")
         return Response(s.VersionSummarySerializer(rows, many=True).data)
+
+    # ----------------------------------------------------------- assisted application
+    @extend_schema(
+        operation_id="hr_jobs_assisted_application",
+        request={
+            "multipart/form-data": s.AssistedApplicationSerializer,
+            "application/json": s.AssistedApplicationSerializer,
+        },
+        responses={201: s.AssistedApplicationResultSerializer},
+    )
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="assisted-applications",
+        parser_classes=[MultiPartParser, JSONParser],
+    )
+    def assisted_application(self, request: Request, pk: str | None = None) -> Response:
+        """FR-M07-08 / EC-APP-17: staff submits on a candidate's behalf (flagged, consented)."""
+        import json
+
+        from apps.applications.assisted import create_assisted_application
+
+        ser = s.AssistedApplicationSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        d = ser.validated_data
+        answers = d.get("answers") or []
+        if isinstance(answers, str):
+            try:
+                answers = json.loads(answers)
+            except ValueError:
+                answers = None
+        if not isinstance(answers, list):
+            from apps.core.exceptions import DomainError
+
+            raise DomainError(
+                "validation_error", "Invalid answers.", details={"answers": ["Invalid."]}
+            )
+        app = create_assisted_application(
+            authed_user(request),
+            self._job(),
+            email=d["email"],
+            first_name=d["first_name"],
+            last_name=d["last_name"],
+            phone=d.get("phone", ""),
+            consent_confirmed=d["consent_confirmed"],
+            consent_method=d["consent_method"],
+            note=d.get("note", ""),
+            cv=d.get("cv"),
+            answers=answers,
+            ip=request.META.get("REMOTE_ADDR"),
+        )
+        body = {
+            "id": app.pk,
+            "reference": app.reference,
+            "status": app.status,
+            "candidate_email": app.candidate_user.email,
+        }
+        return Response(
+            s.AssistedApplicationResultSerializer(body).data, status=status.HTTP_201_CREATED
+        )

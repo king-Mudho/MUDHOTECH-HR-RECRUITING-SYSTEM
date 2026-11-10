@@ -528,7 +528,7 @@ class SubmitBlockedError(DomainError):
     default_message = "Your application isn't complete yet."
 
 
-def _submit_checks(app: Application, user: Any) -> None:
+def _submit_checks(app: Application, user: Any, *, assisted: bool = False) -> None:
     from django.conf import settings
 
     org = Organisation.objects.get(pk=app.organisation_id)
@@ -560,6 +560,8 @@ def _submit_checks(app: Application, user: Any) -> None:
             "conflict.not_draft", "This application has already been submitted.", status_code=409
         )
     summary = review(user, app.pk)
+    if assisted:  # staff confirmed the person directly; they verify by setting a password later
+        summary["missing"] = [m for m in summary["missing"] if m["code"] != "email_unverified"]
     if summary["missing"]:
         unverified = any(m["code"] == "email_unverified" for m in summary["missing"])
         raise SubmitBlockedError(
@@ -581,6 +583,7 @@ def submit(
     objects_to_automated_processing: bool = False,
     actor: Any = None,
     ip: str | None = None,
+    assisted: dict[str, Any] | None = None,
 ) -> Application:
     """Submit exactly once (FR-M07-03). The request does no heavy work: screening starts from the
     ``application.submitted`` outbox event, so later failures never lose the application."""
@@ -596,7 +599,7 @@ def submit(
         )
     with transaction.atomic():
         app = get_own(user, application_id, lock=True)
-        _submit_checks(app, user)
+        _submit_checks(app, user, assisted=assisted is not None)
         policy = duplicate_policy(app.organisation_id)
         previous = None
         if policy == DuplicatePolicy.ALLOW_RESUBMIT_REPLACE:
@@ -611,7 +614,9 @@ def submit(
         from apps.privacy import services as privacy
 
         notice_version, _ = privacy.privacy_notice_version(app.organisation_id)
-        context = {"application_id": str(app.pk), "job_id": str(app.job_id)}
+        context: dict[str, Any] = {"application_id": str(app.pk), "job_id": str(app.job_id)}
+        if assisted is not None:
+            context["assisted"] = assisted
         consent = privacy.record(
             user,
             "application_processing",

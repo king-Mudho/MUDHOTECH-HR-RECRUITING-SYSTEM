@@ -559,6 +559,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/jobs/{id}/assisted-applications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description FR-M07-08 / EC-APP-17: staff submits on a candidate's behalf (flagged, consented). */
+        post: operations["hr_jobs_assisted_application"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/{id}/close/": {
         parameters: {
             query?: never;
@@ -1539,6 +1556,27 @@ export interface components {
         AssignmentsInputRequest: {
             assignments: components["schemas"]["AssignmentInputRequest"][];
         };
+        AssistedApplicationRequest: {
+            /** Format: email */
+            email: string;
+            first_name: string;
+            last_name: string;
+            phone?: string;
+            consent_confirmed: boolean;
+            consent_method: components["schemas"]["ConsentMethodEnum"];
+            note?: string;
+            /** Format: binary */
+            cv?: string;
+            answers?: unknown;
+        };
+        AssistedApplicationResult: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            status: string;
+            /** Format: email */
+            candidate_email: string;
+        };
         AttachItemRequest: {
             /** Format: uuid */
             document_id: string;
@@ -1641,6 +1679,13 @@ export interface components {
         CommentRequest: {
             comment?: string;
         };
+        /**
+         * @description * `in_person` - in_person
+         *     * `phone` - phone
+         *     * `written` - written
+         * @enum {string}
+         */
+        ConsentMethodEnum: "in_person" | "phone" | "written";
         ContactRequest: {
             first_name?: string;
             last_name?: string;
@@ -4361,6 +4406,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedAssignmentList"];
+                };
+            };
+        };
+    };
+    hr_jobs_assisted_application: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this job. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["AssistedApplicationRequest"];
+                "application/json": components["schemas"]["AssistedApplicationRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistedApplicationResult"];
                 };
             };
         };

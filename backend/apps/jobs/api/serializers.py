@@ -446,3 +446,22 @@ class SuggestionsSerializer(serializers.Serializer):
     requires_acceptance = serializers.BooleanField()
     criteria = serializers.ListField(child=serializers.DictField())
     questions = serializers.ListField(child=serializers.DictField())
+
+
+class AssistedApplicationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
+    phone = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    consent_confirmed = serializers.BooleanField()
+    consent_method = serializers.ChoiceField(choices=["in_person", "phone", "written"])
+    note = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    cv = serializers.FileField(required=False)
+    answers = serializers.JSONField(required=False)
+
+
+class AssistedApplicationResultSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    reference = serializers.CharField()
+    status = serializers.CharField()
+    candidate_email = serializers.EmailField()

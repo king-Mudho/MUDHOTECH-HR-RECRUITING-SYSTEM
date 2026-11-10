@@ -64,12 +64,18 @@ def jobs_setup(ctx: Ctx, needs: tuple[str, ...] = STAGES) -> None:
         )
         services.set_criteria(job, actor=team.recruiter, criteria=CRITERIA)
         services.set_questionnaire(job, actor=team.recruiter, questions=questions or QUESTIONS)
-        if stage in {"review", "approved", "live", "paused"}:
+        if stage in {"review", "approved", "live", "paused", "open"}:
             services.submit_for_approval(job, actor=team.recruiter)
-        if stage in {"approved", "live", "paused"}:
+        if stage in {"approved", "live", "paused", "open"}:
             services.approve(job, actor=team.hr_manager)
-        if stage in {"live", "paused"}:
+        if stage in {"live", "paused", "open"}:
             services.publish(job, actor=team.hr_manager)
+        if stage == "open":  # test data: no required documents, so JSON-only applications work
+            from apps.jobs.models import JobVersion
+
+            JobVersion.objects.for_org(org).filter(pk=job.current_version_id).update(
+                required_documents=[]
+            )
         if stage == "paused":
             services.pause(job, actor=team.hr_manager)
         job.refresh_from_db()
@@ -253,6 +259,22 @@ JOB_ENDPOINTS: list[Endpoint] = [
                 {"membership_id": str(_member(c, "recruiter").pk), "role_on_job": "recruiter"}
             ]
         },
+    ),
+    ep(
+        "hr-job-assisted-application",
+        "post",
+        lambda c: f"{_job('open_job')(c)}/assisted-applications/",
+        "applications.transition",
+        success=201,
+        data=lambda c: {
+            "email": f"assisted.{c.org_id[:8]}@example.test",
+            "first_name": "Rudo",
+            "last_name": "Moyo",
+            "consent_confirmed": True,
+            "consent_method": "in_person",
+            "answers": [{"key": "portfolio", "value": "yes"}],
+        },
+        needs=("open_job",),
     ),
     ep("hr-job-events", "get", lambda c: f"{_job()(c)}/events/", "jobs.view"),
     ep("hr-job-versions", "get", lambda c: f"{_job()(c)}/versions/", "jobs.view"),
