@@ -7,7 +7,7 @@ from typing import Any, ClassVar
 from django.db import IntegrityError, transaction
 from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets
+from rest_framework import serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -105,3 +105,64 @@ EducationViewSet = _section(Education, s.EducationSerializer, "educations")
 CertificationViewSet = _section(Certification, s.CertificationSerializer, "certifications")
 SkillViewSet = _section(CandidateSkill, s.CandidateSkillSerializer, "skills")
 LanguageViewSet = _section(Language, s.LanguageSerializer, "languages")
+
+
+# ------------------------------------------------------------------------------- CV library
+class ResumeSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    original_filename = serializers.CharField()
+    size_bytes = serializers.IntegerField()
+    page_count = serializers.IntegerField(allow_null=True)
+    scan_status = serializers.CharField()
+    rejected_reason = serializers.CharField()
+    created_at = serializers.DateTimeField()
+    is_default = serializers.BooleanField()
+
+
+class ResumeListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(operation_id="candidate_resumes_list", responses=ResumeSerializer(many=True))
+    def get(self, request: Request) -> Response:
+        from apps.candidates import resumes
+
+        user = authed_user(request)
+        default_id = services.get_or_create_profile(user).default_resume_id
+        rows = [
+            {
+                "id": d.pk,
+                "original_filename": d.original_filename,
+                "size_bytes": d.size_bytes,
+                "page_count": d.page_count,
+                "scan_status": d.scan_status,
+                "rejected_reason": d.rejected_reason,
+                "created_at": d.created_at,
+                "is_default": d.pk == default_id,
+            }
+            for d in resumes.resumes(user)[:50]
+        ]
+        return Response(ResumeSerializer(rows, many=True).data)
+
+
+class ResumeSetDefaultView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="candidate_resumes_set_default", request=None, responses=s.ProfileSerializer
+    )
+    def post(self, request: Request, document_id: str) -> Response:
+        from apps.candidates import resumes
+
+        profile = resumes.set_default(authed_user(request), document_id)
+        return Response(s.ProfileSerializer(profile).data)
+
+
+class ResumeDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(operation_id="candidate_resumes_destroy", responses={204: None})
+    def delete(self, request: Request, document_id: str) -> Response:
+        from apps.candidates import resumes
+
+        resumes.remove(authed_user(request), document_id)
+        return Response(status=204)

@@ -1,11 +1,19 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
-export default async function DashboardPage() {
-  const t = await getTranslations("areas");
+import { PageSkeleton } from "@/components/states/page-skeleton";
+import { CandidateDashboard } from "@/features/candidates/components/dashboard";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("candidate");
+  return { title: t("dashboard.title"), robots: { index: false } };
+}
+
+export default function Page() {
   return (
-    <main id="main-content" className="flex-1 p-6">
-      <h1 className="text-2xl font-semibold">{t("candidateTitle")}</h1>
-      <p className="text-muted-foreground mt-2">{t("comingSoon")}</p>
-    </main>
+    <Suspense fallback={<PageSkeleton />}>
+      <CandidateDashboard />
+    </Suspense>
   );
 }

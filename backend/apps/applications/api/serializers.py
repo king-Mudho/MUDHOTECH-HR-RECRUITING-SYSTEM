@@ -152,3 +152,31 @@ class SubmitResultSerializer(serializers.Serializer):
 
 class WithdrawSerializer(StrictSerializer):
     reason = serializers.CharField(max_length=2000, required=False, allow_blank=True)
+
+
+class TimelineEntrySerializer(serializers.Serializer):
+    status = serializers.CharField()
+    at = serializers.DateTimeField()
+    note = serializers.CharField(allow_blank=True)
+
+
+# Internal steps candidates don't need to see separately (they stay "submitted / under review").
+CANDIDATE_STATUS = {
+    "processing": "submitted",
+    "processing_error": "submitted",
+    "on_hold": "under_review",
+}
+
+
+def candidate_timeline(app: Any) -> list[dict[str, Any]]:
+    """Status history as the candidate sees it: no staff names, no internal reasons."""
+    from apps.applications.models import ApplicationStatusEvent
+
+    out: list[dict[str, Any]] = []
+    for e in ApplicationStatusEvent.objects.for_org(app.organisation_id).filter(application=app):
+        shown = CANDIDATE_STATUS.get(e.to_status, e.to_status)
+        if out and out[-1]["status"] == shown:
+            continue
+        note = e.reason_text if e.to_status == "withdrawn" else ""
+        out.append({"status": shown, "at": e.at, "note": note})
+    return out

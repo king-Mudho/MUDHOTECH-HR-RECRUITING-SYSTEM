@@ -173,3 +173,14 @@ class ApplicationWithdrawView(APIView):
         user = authed_user(request)
         app = lifecycle.withdraw(user, application_id, ser.validated_data.get("reason", ""))
         return Response(s.ApplicationSerializer(services.get_own(user, app.pk)).data)
+
+
+class ApplicationTimelineView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="applications_timeline", responses=s.TimelineEntrySerializer(many=True)
+    )
+    def get(self, request: Request, application_id: str) -> Response:
+        app = services.get_own(authed_user(request), application_id)
+        return Response(s.TimelineEntrySerializer(s.candidate_timeline(app), many=True).data)

@@ -7,6 +7,7 @@ from .views import (
     ApplicationListView,
     ApplicationReviewView,
     ApplicationSubmitView,
+    ApplicationTimelineView,
     ApplicationWithdrawView,
 )
 
@@ -39,5 +40,10 @@ urlpatterns = [
         "applications/<uuid:application_id>/withdraw/",
         ApplicationWithdrawView.as_view(),
         name="application-withdraw",
+    ),
+    path(
+        "applications/<uuid:application_id>/timeline/",
+        ApplicationTimelineView.as_view(),
+        name="application-timeline",
     ),
 ]

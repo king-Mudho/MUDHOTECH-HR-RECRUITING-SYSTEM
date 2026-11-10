@@ -120,6 +120,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/{application_id}/timeline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_timeline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/applications/{application_id}/withdraw/": {
         parameters: {
             query?: never;
@@ -335,6 +351,54 @@ export interface paths {
         head?: never;
         /** @description CRUD for one profile section; the profile always comes from the signed-in user. */
         patch: operations["candidate_skills_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/candidate/resumes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_resumes_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/resumes/{document_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["candidate_resumes_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/resumes/{document_id}/set-default/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_resumes_set_default"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/companies/{slug}/": {
@@ -2844,6 +2908,18 @@ export interface components {
         RequiredReasonRequest: {
             reason: string;
         };
+        Resume: {
+            /** Format: uuid */
+            id: string;
+            original_filename: string;
+            size_bytes: number;
+            page_count: number | null;
+            scan_status: string;
+            rejected_reason: string;
+            /** Format: date-time */
+            created_at: string;
+            is_default: boolean;
+        };
         Review: {
             application: components["schemas"]["Application"];
             ready: boolean;
@@ -3012,6 +3088,12 @@ export interface components {
             questions: {
                 [key: string]: unknown;
             }[];
+        };
+        TimelineEntry: {
+            status: string;
+            /** Format: date-time */
+            at: string;
+            note: string;
         };
         /**
          * @description * `skill` - Skill
@@ -3333,6 +3415,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubmitResult"];
+                };
+            };
+        };
+    };
+    applications_timeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelineEntry"][];
                 };
             };
         };
@@ -4004,6 +4107,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CandidateSkill"];
+                };
+            };
+        };
+    };
+    candidate_resumes_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Resume"][];
+                };
+            };
+        };
+    };
+    candidate_resumes_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    candidate_resumes_set_default: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
         };
