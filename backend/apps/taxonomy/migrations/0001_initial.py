@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('core', '0002_postgres_extensions'),  # vector + pg_trgm must exist before these tables
         ('organisations', '0002_org_structure_memberships_invitations'),
     ]
 
