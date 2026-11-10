@@ -309,6 +309,21 @@ def _user(email: str, password: str, first: str, last: str, **extra: Any) -> Use
     return user
 
 
+def _link_skills(criteria: list[dict[str, Any]], org: Organisation) -> list[dict[str, Any]]:
+    """Attach taxonomy skills where the title matches a skill or alias (free text otherwise)."""
+    from apps.taxonomy.selectors import resolve_skill
+
+    linked = []
+    for c in criteria:
+        c = dict(c)
+        if c["type"] in {"skill", "certification"} and not c.get("skill_id"):
+            skill = resolve_skill(c["title"], org=org)
+            if skill is not None:
+                c["skill_id"] = skill.pk
+        linked.append(c)
+    return linked
+
+
 @dataclass
 class SeedResult:
     users: list[str] = field(default_factory=list)
@@ -319,6 +334,10 @@ class SeedResult:
 @transaction.atomic
 def seed(password: str) -> SeedResult:
     result = SeedResult()
+    from apps.taxonomy.services import current_version, load_taxonomy
+
+    if not current_version():
+        load_taxonomy()  # skills/qualifications so criteria can link to the taxonomy
     admin = _user(
         "admin@mhrs-demo.test",
         password,
@@ -390,7 +409,7 @@ def seed(password: str) -> SeedResult:
         JobAssignment.objects.for_org(org).get_or_create(
             organisation=org, job=job, membership=hiring, role_on_job="hiring_manager"
         )
-        jobs.set_criteria(job, actor=recruiter, criteria=js.criteria)
+        jobs.set_criteria(job, actor=recruiter, criteria=_link_skills(js.criteria, org))
         jobs.set_questionnaire(job, actor=recruiter, questions=js.questions)
         jobs.submit_for_approval(job, actor=recruiter, note="Initial version")
         jobs.approve(job, actor=hr, comment="Approved for the demo")

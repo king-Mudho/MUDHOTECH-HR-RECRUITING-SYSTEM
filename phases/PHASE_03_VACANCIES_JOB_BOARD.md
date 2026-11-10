@@ -21,7 +21,7 @@ pause/close; candidates can discover jobs on a fast, SEO-friendly, accessible pu
 - [x] **P03-T11** — HR APIs per `docs/04` Jobs section with OpenAPI; register all in cross-tenant and permission matrix tests.
 - [x] **P03-T12** — Frontend HR: `/hr/jobs` table (status filters, search), 5-step job wizard (Details → Requirements (criteria builder with taxonomy autocomplete, essential/preferred, justification, equivalents) → Questionnaire builder (types, options, branching UI, scoring, linter warnings inline, insert from question bank) → Rubric (weights sliders with running total = 100, band descriptors) → Preview (public-page preview + readiness checklist)); autosave with lock conflict handling; job overview page with status actions & version history; approval UI for HR managers.
 - [x] **P03-T13** — Frontend public: `/` home with search, `/jobs` (SSR, URL filters, pagination), `/jobs/[slug]` (deadline in job TZ + viewer local TZ, essential vs preferred, required documents, Apply CTA, share buttons incl. WhatsApp, JSON-LD JobPosting, OG tags), `/companies/[slug]`; ISR/revalidate 60 s; closed banner + noindex.
-- [ ] **P03-T14** — Seed: `seed_demo` extended with 2 orgs and 3 published jobs (Software Developer per Blueprint Appendix A, Accountant, Registered Nurse) with full criteria/rubrics/questionnaires.
+- [x] **P03-T14** — Seed: `seed_demo` extended with 2 orgs and 3 published jobs (Software Developer per Blueprint Appendix A, Accountant, Registered Nurse) with full criteria/rubrics/questionnaires.
 
 ## Edge cases
 EC-JOB-01..19 (EC-JOB-20 deferred to v1.1: implement `unlisted` visibility only).
