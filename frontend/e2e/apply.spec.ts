@@ -132,7 +132,18 @@ test("candidate applies with CV and answers, gets a receipt, cannot apply twice,
 
   // Step 2 — profile summary.
   await expect(page.getByText("Step 2 of 5 — Your profile")).toBeVisible();
-  await next(page);
+  // Keyboard only: focus starts on the step heading; Tab to "Save and continue" and press Enter.
+  await expect(page.getByRole("heading", { name: "Your profile" })).toBeFocused();
+  const continueButton = page.getByRole("button", { name: "Save and continue" });
+  for (
+    let i = 0;
+    i < 10 && !(await continueButton.evaluate((el) => el === document.activeElement));
+    i++
+  ) {
+    await page.keyboard.press("Tab");
+  }
+  await expect(continueButton).toBeFocused();
+  await page.keyboard.press("Enter");
 
   // Step 3 — CV upload (checked for safety before anyone opens it).
   await expect(page.getByText("Step 3 of 5 — Documents")).toBeVisible();

@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-EXIT
+- **Current phase:** 05 — ATS Workflow, Notifications & Messaging
+- **Current task:** P05-T01
 - **Last updated:** 2026-11-10
-- **Overall:** 61 / 193 tasks · 3 / 16 phases
+- **Overall:** 62 / 193 tasks · 4 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -16,8 +16,8 @@
 | 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | ✅ Done | 2026-11-08 |
 | 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ✅ Done | 2026-11-09 |
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ✅ Done | 2026-11-10 |
-| 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | 🟦 In progress | |
-| 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ⬜ Not started | |
+| 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ✅ Done | 2026-11-10 |
+| 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | 🟦 In progress | |
 | 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ⬜ Not started | |
 | 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ⬜ Not started | |
 | 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ⬜ Not started | |
@@ -120,7 +120,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T14 — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions …
 - [x] P04-T15 — HR minimal list: `/hr/jobs/[id]/applications` basic table (status, submitted at, candidate name) + application …
 - [x] P04-T16 — E2E: candidate registers → verifies (Mailpit API) → applies with CV + answers → receives receipt
-- [ ] P04-EXIT — All exit criteria verified with evidence
+- [x] P04-EXIT — All exit criteria verified with evidence
 
 ### Phase 05 — ATS Workflow, Notifications & Messaging  (`phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md`)
 - [ ] P05-T01 — `apps.notifications` models: NotificationTemplate (platform defaults + org overrides, versioned), Notification …
@@ -351,6 +351,31 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   `/privacy`, `/terms`, `/accessibility`, `/how-we-use-ai` pages still 404 (console errors in Lighthouse best-practices 96);
   backend dev Docker image is stale (no pgvector) - rebuild before the next compose-based E2E.
 
+### Phase 04 — Candidate Portal, Documents, Applications & Questionnaires (closed 2026-11-10)
+- **Built:** candidate profile (sections, completeness, phone E.164, frozen snapshot on submit) and CV library; documents
+  (upload sessions with presigned PUT + direct-upload fallback, filename sanitising, per-purpose limits, magic-byte + DOCX/PDF
+  checks, image re-encoding, ClamAV INSTREAM, quarantine → documents promotion, per-owner dedupe, generic rejection email,
+  orphan cleanup, staff access through visible applications, 503 `storage_unavailable` on S3 outages); applications
+  (state machine for every SRS §3.3 transition, append-only status events with DB trigger, duplicate policies, drafts with
+  lock_version autosave, documents by role, answers with branching, review checklist, idempotent atomic submit with
+  gap-free references, receipts, withdraw/abandon/reactivate lifecycle, consent + AI-notice records with objection flag,
+  staff-assisted applications); frontend FileUploader, candidate dashboard/profile/documents/applications/settings,
+  `/how-we-use-ai`, the 5-step apply wizard, and a read-only HR applications list/detail.
+- **Evidence:** 1,552 backend tests (incl. 100 concurrent double-clicked submits → 100 applications, refs 1..100, 100
+  receipts; EICAR/spoofed/corrupt rejection; infected-after-submit keeps the application; exhaustive state machine);
+  102 Vitest; Playwright apply journey at 360 px (keyboard-only step, axe on every wizard step, no page errors, Mailpit
+  verification + receipt, duplicate, withdraw, no-JS) on mobile + desktop, plus jobs/auth/smoke suites 10/10; Lighthouse
+  mobile medians /jobs 91/100/100 and /jobs/[slug] 90/100/100; EC coverage 31/31; schema/migrations no drift.
+- **Deviations:** application reference org code = 6-char slug prefix + 4 chars of the org id (two orgs sharing a slug
+  prefix collided); `source` keeps known utm/referrer keys only and records `direct` when absent; `/jobs` now renders as
+  one blocking response (readable without JavaScript, EC-APP-21); the apply page is blocking with a server-rendered no-JS
+  notice and reads `jobId` through a Suspense + `useParams` route wrapper.
+- **Found in exit verification and fixed:** hydration error and hang on full load of `/apply` (client `<noscript>`, async
+  params page); wizard step saves hit 409 after attaching documents/answers (lock_version now synced); stale "Candidate
+  dashboard" E2E assertion; axe sampling buttons mid-transition (E2E helpers freeze transitions); missing EC tests.
+- **Known limitations / follow-ups:** EC-APP-15/16 HR flags are computed in Phase 06; the HR review workspace (scores,
+  shortlist) arrives in Phase 08; Locust load test against the full stack in Phase 10; real-clamd EICAR runs nightly only.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -363,6 +388,8 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | P03-T05 | Job approval dual control uses the existing `OrganisationPolicy.rubric_dual_control` flag | No separate job flag in the schema; approving a job approves its rubric | — |
 | 2026-11-10 | P03-T11 | Auditors can read every vacancy of their organisation (read-only) | Governance role needs visibility; RBAC denies all writes | — |
 | 2026-11-10 | P03-T13 | `/jobs/[slug]` and `/companies/[slug]` render as one blocking response (`instant = false`) | Metadata must be in `<head>` for link previews/SEO; streaming gained nothing (data cached 60 s) | — |
+| 2026-11-10 | P04-T15 | Application reference org code = 6-char slug prefix + 4 chars of org id (format MHRS-<ORG>-<YYYY>-<NNNNNN> unchanged) | Orgs whose slugs share an 8-char prefix produced identical references | - |
+| 2026-11-10 | P04-EXIT | `/jobs` and `/apply/[jobId]` render as one blocking response | Readable without JavaScript (EC-APP-21); streamed content is hidden without JS | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -433,3 +460,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T14 | Apply wizard /apply/[jobId]: 5 steps + confirmation, resume from last_step, autosave indicator, conditional questions (client mirror of branching), word counters, required-doc picker/uploader, review with blocking list and go-to-step links, privacy consent + AI objection, idempotent submit, specific messages for deadline/paused/closed/suspended/unverified/duplicate, 401 -> sign-in and back (EC-APP-06); 7 Vitest tests | 360px/keyboard/axe verified in P04-T16 Playwright |
 | 2026-11-10 | Impl | P04-T15 | HR minimal applications: GET /hr/jobs/{id}/applications (status/search/paging, drafts hidden, assignment-scoped) + GET /hr/applications/{id} (snapshot, documents, answers, status history; access logged); staff document access checker (submitted + visible apps only); cross-tenant + role matrix entries; HR list/detail pages + 'View applications' on vacancy; fixed reference collisions for orgs sharing a slug prefix (org code = 6-char slug prefix + 4 chars of org id); backend 1545 passed, Vitest 101 | Full review workspace in Phase 08 |
 | 2026-11-10 | Impl | P04-T16 | E2E e2e/apply.spec.ts: register -> verify via Mailpit -> apply to seeded Software Developer with synthetic PDF CV + answers (keyboard checkbox) at 360px -> receipt email with reference -> duplicate attempt points to existing app -> withdraw; signed-out apply -> login?next; axe on each wizard step; no uncaught page errors. Passed mobile x3 + chromium x2. Fixed: hydration error (noscript) and hang on full load (async params page) -> Suspense + useParams route wrapper; lock_version sync after documents/answers saves; opaque sticky header. Host runner gained celery mode (worker -P solo + separate beat on Windows) and S3 rewrite |  |
+| 2026-11-10 | Close | P04-EXIT | Phase 04 closed: exit criteria verified (1552 backend tests incl. 100 concurrent submits, EICAR/spoofed + infected-after-submit, exhaustive state machine; Playwright apply journey 360px keyboard + axe + no-JS on mobile/desktop, jobs/auth/smoke 10/10; Lighthouse /jobs 91/100/100, /jobs/[slug] 90/100/100; EC 31/31; 102 Vitest). Fixed during close: missing EC tests, storage_unavailable 503, source=direct, /jobs no-JS, axe transition flake, stale auth E2E heading | Phase 05 started |

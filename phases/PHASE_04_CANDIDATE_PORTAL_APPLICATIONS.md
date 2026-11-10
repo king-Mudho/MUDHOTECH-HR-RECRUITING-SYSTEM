@@ -29,7 +29,7 @@ and submit exactly once — with an immediate reference number — regardless of
 EC-APP-01..23 (EC-APP-15/16 flags computed in Phase 6), EC-DOC-04..08, EC-DOC-25, EC-ACC-03, EC-OPS-02.
 
 ## Exit criteria
-- [ ] 100 concurrent submissions (Locust/pytest-xdist script) → 100 applications, 0 duplicates, all receipts queued.
-- [ ] Infected (EICAR) and spoofed files rejected; application retained when a document fails.
-- [ ] Wizard usable on 360 px wide mobile viewport and with keyboard only; axe: no serious violations.
-- [ ] State machine exhaustive tests pass.
+- [x] 100 concurrent submissions (Locust/pytest-xdist script) → 100 applications, 0 duplicates, all receipts queued.
+- [x] Infected (EICAR) and spoofed files rejected; application retained when a document fails.
+- [x] Wizard usable on 360 px wide mobile viewport and with keyboard only; axe: no serious violations.
+- [x] State machine exhaustive tests pass.

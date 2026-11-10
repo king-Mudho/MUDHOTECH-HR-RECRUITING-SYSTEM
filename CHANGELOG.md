@@ -12,3 +12,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   questionnaires with a protected-topic linter; approval and publish lifecycle with readiness checklist, scheduling and
   auto-close; HR job wizard and overview; public job board (search, job pages with JSON-LD/Open Graph, company pages,
   sitemap, RSS/JSON feeds); `seed_demo` demo data.
+- Phase 04 candidate portal & applications: candidate profile and CV library; secure document uploads (presigned
+  upload, type and content checks, antivirus, quarantine); application drafts, idempotent submission with references and
+  receipts, withdrawal and lifecycle; consent and AI-notice records; staff-assisted applications; the 5-step apply
+  wizard; read-only HR application list and detail.
