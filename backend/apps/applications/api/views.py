@@ -146,6 +146,7 @@ class ApplicationSubmitView(APIView):
             application_id,
             accept_privacy=ser.validated_data["accept_privacy"],
             objects_to_automated_processing=ser.validated_data["objects_to_automated_processing"],
+            ip=request.META.get("REMOTE_ADDR"),
         )
         body = {
             "id": app.pk,

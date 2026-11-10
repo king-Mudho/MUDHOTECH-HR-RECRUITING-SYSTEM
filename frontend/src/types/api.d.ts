@@ -1483,6 +1483,8 @@ export interface components {
             readonly submitted_at: string | null;
             /** Format: date-time */
             readonly withdrawn_at: string | null;
+            readonly objects_to_automated_processing: boolean;
+            readonly notices: components["schemas"]["Notices"];
             readonly lock_version: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -2136,6 +2138,12 @@ export interface components {
             step: string;
             code: string;
             key: string;
+        };
+        Notices: {
+            privacy_notice: string;
+            privacy_notice_version: string;
+            ai_notice_version: string;
+            ai_notice_url: string;
         };
         Organisation: {
             /** Format: uuid */

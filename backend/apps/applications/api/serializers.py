@@ -18,8 +18,16 @@ class JobBriefSerializer(serializers.Serializer):
     timezone = serializers.CharField()
 
 
+class NoticesSerializer(serializers.Serializer):
+    privacy_notice = serializers.CharField()
+    privacy_notice_version = serializers.CharField()
+    ai_notice_version = serializers.CharField()
+    ai_notice_url = serializers.CharField()
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
     job = serializers.SerializerMethodField()
+    notices = serializers.SerializerMethodField()
 
     class Meta:
         model = Application
@@ -32,11 +40,25 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "last_step",
             "submitted_at",
             "withdrawn_at",
+            "objects_to_automated_processing",
+            "notices",
             "lock_version",
             "created_at",
             "updated_at",
         ]
         read_only_fields = fields
+
+    @extend_schema_field(NoticesSerializer)
+    def get_notices(self, obj: Application) -> dict[str, str]:
+        from apps.privacy import services as privacy
+
+        version, text = privacy.privacy_notice_version(obj.organisation_id)
+        return {
+            "privacy_notice": text,
+            "privacy_notice_version": version,
+            "ai_notice_version": privacy.ai_notice_version(),
+            "ai_notice_url": "/how-we-use-ai",
+        }
 
     @extend_schema_field(JobBriefSerializer)
     def get_job(self, obj: Application) -> dict[str, Any]:

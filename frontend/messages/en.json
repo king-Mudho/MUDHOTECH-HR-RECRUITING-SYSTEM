@@ -941,5 +941,45 @@
       "noJobs": "No open vacancies right now.",
       "browse": "Browse all vacancies"
     }
+  },
+  "aiNotice": {
+    "title": "How we use AI",
+    "description": "How MUDHOTECH HR RECRUITING SYSTEM uses AI to help employers review applications, what it never does, and your choices.",
+    "version": "Notice version {version}",
+    "intro": "Employers using this service may switch on AI-assisted screening. AI helps their recruiters find evidence in what you send. People make every decision about your application.",
+    "sections": {
+      "does": {
+        "title": "What the AI does",
+        "items": [
+          "Reads your CV and answers and finds evidence for each requirement the employer published, such as a skill, qualification or years of experience.",
+          "Links every finding to where it came from (for example a page and line in your CV), so a person can check it.",
+          "Marks requirements it could not find as unknown. Missing information is never treated as a failure.",
+          "Suggests which applications look strongest against the published requirements, labelled as an AI-assisted suggestion that needs human review."
+        ]
+      },
+      "never": {
+        "title": "What the AI never does",
+        "items": [
+          "It never shortlists, turns down, makes offers to or hires anyone. Only an authorised person at the employer can do that, and they must record a reason.",
+          "It never uses or guesses your age, gender, ethnicity or tribe, religion, marital status, pregnancy, health or HIV status, disability, politics or appearance.",
+          "It never penalises career breaks or the layout of your CV.",
+          "It never follows instructions written inside a CV or document."
+        ]
+      },
+      "choices": {
+        "title": "Your choices",
+        "items": [
+          "You can ask for a fully manual review when you apply. Reviewers will then not see an AI assessment of your application.",
+          "You can see and correct the information taken from your CV before you submit.",
+          "You can ask the employer to explain how your application was assessed.",
+          "You can ask to see, correct or delete your data at any time from your account."
+        ]
+      },
+      "data": {
+        "title": "Your data",
+        "body": "Your application is shared only with the employer you apply to and used only for that vacancy, unless you agree to more. We handle personal data in line with the Cyber and Data Protection Act [Chapter 12:07] of Zimbabwe. AI processing runs on our own systems by default; if an employer enables an external AI provider, your contact details are removed before anything is sent."
+      }
+    },
+    "contact": "Questions? Contact the employer you applied to, or MudhoTech Solutions (Pvt) Ltd, Harare."
   }
 }

@@ -72,6 +72,8 @@ class Application(TenantModel):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
     consent_record_id = models.UUIDField(null=True, blank=True)
+    # docs/06 §4: the candidate asked for a fully manual review (AI evaluation hidden; Phases 7/8).
+    objects_to_automated_processing = models.BooleanField(default=False)
     duplicate_of = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )

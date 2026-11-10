@@ -580,6 +580,7 @@ def submit(
     accept_privacy: bool,
     objects_to_automated_processing: bool = False,
     actor: Any = None,
+    ip: str | None = None,
 ) -> Application:
     """Submit exactly once (FR-M07-03). The request does no heavy work: screening starts from the
     ``application.submitted`` outbox event, so later failures never lose the application."""
@@ -607,11 +608,42 @@ def submit(
                 .order_by("-submitted_at")
                 .first()
             )
+        from apps.privacy import services as privacy
+
+        notice_version, _ = privacy.privacy_notice_version(app.organisation_id)
+        context = {"application_id": str(app.pk), "job_id": str(app.job_id)}
+        consent = privacy.record(
+            user,
+            "application_processing",
+            granted=True,
+            notice_version=notice_version,
+            organisation=app.organisation_id,
+            ip=ip,
+            context=context,
+        )
+        privacy.record(  # notice acknowledged; granted=False records the objection
+            user,
+            "ai_assisted_screening",
+            granted=not objects_to_automated_processing,
+            notice_version=privacy.ai_notice_version(),
+            organisation=app.organisation_id,
+            ip=ip,
+            context=context,
+        )
+        app.consent_record_id = consent.pk
+        app.objects_to_automated_processing = objects_to_automated_processing
         app.candidate_profile_snapshot = profile_snapshot(user, app.contact)
         app.reference = next_reference(app.organisation)
         app.submitted_at = now()
         app.save(
-            update_fields=["candidate_profile_snapshot", "reference", "submitted_at", "updated_at"]
+            update_fields=[
+                "candidate_profile_snapshot",
+                "reference",
+                "submitted_at",
+                "consent_record_id",
+                "objects_to_automated_processing",
+                "updated_at",
+            ]
         )
         if previous is not None:  # allow_resubmit_replace: the new one replaces the old one
             transition(

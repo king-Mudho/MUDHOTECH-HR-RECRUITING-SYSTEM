@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.candidates",
     "apps.documents",
     "apps.applications",
+    "apps.privacy",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -306,6 +307,8 @@ CLAMAV_TIMEOUT = env.int("CLAMAV_TIMEOUT", default=30)
 DOCUMENT_SCANNER = env("DOCUMENT_SCANNER", default="clamd")
 # EC-APP-05: seconds after closes_at still accepted (server time is authoritative).
 APPLICATION_DEADLINE_GRACE_SECONDS = env.int("APPLICATION_DEADLINE_GRACE_SECONDS", default=0)
+# Version of the public "How we use AI" notice (frontend /how-we-use-ai); bump when it changes.
+AI_NOTICE_VERSION = "2026-11-10"
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")

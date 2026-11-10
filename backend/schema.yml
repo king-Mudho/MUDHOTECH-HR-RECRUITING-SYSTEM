@@ -3718,6 +3718,13 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        objects_to_automated_processing:
+          type: boolean
+          readOnly: true
+        notices:
+          allOf:
+          - $ref: '#/components/schemas/Notices'
+          readOnly: true
         lock_version:
           type: integer
           readOnly: true
@@ -3736,6 +3743,8 @@ components:
       - job
       - last_step
       - lock_version
+      - notices
+      - objects_to_automated_processing
       - reference
       - status
       - submitted_at
@@ -5516,6 +5525,22 @@ components:
       - code
       - key
       - step
+    Notices:
+      type: object
+      properties:
+        privacy_notice:
+          type: string
+        privacy_notice_version:
+          type: string
+        ai_notice_version:
+          type: string
+        ai_notice_url:
+          type: string
+      required:
+      - ai_notice_url
+      - ai_notice_version
+      - privacy_notice
+      - privacy_notice_version
     Organisation:
       type: object
       properties:
