@@ -100,7 +100,7 @@ class Application(TenantModel):
                 name="uniq_active_application",
             ),
             models.CheckConstraint(
-                condition=Q(status="draft") | Q(reference__isnull=False),
+                condition=Q(status__in=["draft", "abandoned"]) | Q(reference__isnull=False),
                 name="application_reference_after_submit",
             ),
         ]
