@@ -236,6 +236,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=1),
         "options": {"expires": 50},
     },
+    "applications-sweep-stale-drafts": {
+        "task": "apps.applications.tasks.sweep_stale_drafts",
+        "schedule": timedelta(hours=1),
+        "options": {"expires": 3000},
+    },
     "documents-cleanup-uploads": {
         "task": "apps.documents.tasks.cleanup_uploads",
         "schedule": timedelta(hours=1),

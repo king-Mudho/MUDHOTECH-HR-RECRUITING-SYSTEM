@@ -154,3 +154,21 @@ class ApplicationSubmitView(APIView):
             "status": app.status,
         }
         return Response(s.SubmitResultSerializer(body).data, status=status.HTTP_201_CREATED)
+
+
+class ApplicationWithdrawView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="applications_withdraw",
+        request=s.WithdrawSerializer,
+        responses=s.ApplicationSerializer,
+    )
+    def post(self, request: Request, application_id: str) -> Response:
+        from apps.applications import lifecycle
+
+        ser = s.WithdrawSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        user = authed_user(request)
+        app = lifecycle.withdraw(user, application_id, ser.validated_data.get("reason", ""))
+        return Response(s.ApplicationSerializer(services.get_own(user, app.pk)).data)

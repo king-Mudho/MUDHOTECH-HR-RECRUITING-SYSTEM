@@ -126,3 +126,7 @@ class SubmitResultSerializer(serializers.Serializer):
     reference = serializers.CharField()
     submitted_at = serializers.DateTimeField()
     status = serializers.CharField()
+
+
+class WithdrawSerializer(StrictSerializer):
+    reason = serializers.CharField(max_length=2000, required=False, allow_blank=True)

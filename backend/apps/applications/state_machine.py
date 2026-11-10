@@ -67,6 +67,9 @@ TRANSITIONS: dict[tuple[str, str], Rule] = {
     (S.OFFER, S.OFFER_DECLINED): _r(CANDIDATE, STAFF),
     (S.OFFER, S.WITHDRAWN): _r(CANDIDATE),
 }
+# EC-JOB-09: when a vacancy's deadline is extended, drafts abandoned *because of the deadline*
+# return to draft automatically (system only; the candidate is told).
+TRANSITIONS[(S.ABANDONED, S.DRAFT)] = _r(SYSTEM)
 # Authorised reopen of any terminal outcome (with reason) back into review.
 for _terminal in TERMINAL_STATUSES:
     TRANSITIONS[(_terminal, S.UNDER_REVIEW)] = HUMAN_DECISION

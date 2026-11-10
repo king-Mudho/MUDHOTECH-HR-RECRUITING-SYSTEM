@@ -244,6 +244,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmitResult'
           description: ''
+  /api/v1/applications/{application_id}/withdraw/:
+    post:
+      operationId: applications_withdraw
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WithdrawRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WithdrawRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          description: ''
   /api/v1/candidate/profile/:
     get:
       operationId: candidate_profile_retrieve
@@ -7699,6 +7731,12 @@ components:
       description: |-
         * `public` - Public (listed)
         * `unlisted` - Unlisted (link only)
+    WithdrawRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 2000
     WorkplaceTypeEnum:
       enum:
       - on_site

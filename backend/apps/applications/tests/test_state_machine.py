@@ -40,7 +40,7 @@ EXPECTED = {
     "not_selected": {"under_review"},
     "withdrawn": {"under_review"},
     "offer_declined": {"under_review"},
-    "abandoned": {"under_review"},
+    "abandoned": {"under_review", "draft"},  # draft: EC-JOB-09 reactivation (system only)
 }
 
 
