@@ -215,7 +215,8 @@
     "gate": {
       "forbiddenBody": "Your account doesn't have access to this area.",
       "goHome": "Go to home page",
-      "mfaBanner": "Your role requires two-factor authentication. Please <link>set it up</link> before {date}."
+      "mfaBanner": "Your role requires two-factor authentication. Please <link>set it up</link> before {date}.",
+      "emailProblem": "We couldn't deliver email to {email}, so you may miss updates. Please <link>update your email address</link>."
     }
   },
   "account": {

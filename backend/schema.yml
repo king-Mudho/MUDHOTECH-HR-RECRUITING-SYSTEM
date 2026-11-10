@@ -6080,11 +6080,17 @@ components:
           format: uuid
           nullable: true
           readOnly: true
+        email_delivery_problem:
+          type: boolean
+          description: 'EC-NOT-01: emails to this address bounced - the UI asks the
+            person to update it.'
+          readOnly: true
       required:
       - active_organisation_id
       - candidate_profile_id
       - display_name
       - email
+      - email_delivery_problem
       - email_verified
       - id
       - memberships

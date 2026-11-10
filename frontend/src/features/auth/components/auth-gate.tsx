@@ -52,6 +52,20 @@ export function AuthGate({ area, children }: { area: Area; children: ReactNode }
   }
   return (
     <>
+      {me.email_delivery_problem ? (
+        <Alert role="status" className="rounded-none border-x-0 border-t-0">
+          <AlertDescription>
+            {t.rich("emailProblem", {
+              email: me.email,
+              link: (chunks) => (
+                <Link href="/account/security" className="font-medium underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {me.mfa.in_grace && area !== "account" ? (
         <Alert className="rounded-none border-x-0 border-t-0">
           <AlertDescription>

@@ -46,6 +46,7 @@ class MeSerializer(StrictModelSerializer):
     active_organisation_id = serializers.SerializerMethodField()
     mfa = serializers.SerializerMethodField()
     candidate_profile_id = serializers.SerializerMethodField()
+    email_delivery_problem = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -65,8 +66,15 @@ class MeSerializer(StrictModelSerializer):
             "active_organisation_id",
             "mfa",
             "candidate_profile_id",
+            "email_delivery_problem",
         ]
         read_only_fields = ["id", "email", "platform_role"]
+
+    def get_email_delivery_problem(self, obj: User) -> bool:
+        """EC-NOT-01: emails to this address bounced - the UI asks the person to update it."""
+        from apps.notifications.bounces import has_delivery_problem
+
+        return has_delivery_problem(obj)
 
     @extend_schema_field(MeMembershipSerializer(many=True))
     def get_memberships(self, obj: User) -> list[dict[str, Any]]:

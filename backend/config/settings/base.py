@@ -306,6 +306,8 @@ DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL", default="MUDHOTECH HR RECRUITING SYSTEM <no-reply@mhrs.local>"
 )
 SUPPORT_EMAIL = env("SUPPORT_EMAIL", default="support@mhrs.local")
+# SNS topics allowed to post SES bounce/complaint feedback to /api/v1/webhooks/ses/ (empty = off).
+SES_SNS_TOPIC_ARNS = env.list("SES_SNS_TOPIC_ARNS", default=[])
 
 # --- ClamAV ---
 CLAMAV_HOST = env("CLAMAV_HOST", default="localhost")

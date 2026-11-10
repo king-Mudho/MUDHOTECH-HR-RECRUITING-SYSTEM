@@ -2408,6 +2408,8 @@ export interface components {
             readonly mfa: components["schemas"]["MfaStatus"];
             /** Format: uuid */
             readonly candidate_profile_id: string | null;
+            /** @description EC-NOT-01: emails to this address bounced - the UI asks the person to update it. */
+            readonly email_delivery_problem: boolean;
         };
         MeMembership: {
             /** Format: uuid */
