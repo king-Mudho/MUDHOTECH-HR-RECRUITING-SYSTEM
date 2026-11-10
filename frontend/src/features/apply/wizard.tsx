@@ -826,7 +826,7 @@ export function ApplyWizard({ jobId }: { jobId: string }) {
       const source: Record<string, string> = {};
       for (const k of ["utm_source", "utm_medium", "utm_campaign"])
         if (params.get(k)) source[k] = params.get(k)!.slice(0, 100);
-      return candidateApi.start(jobId, Object.keys(source).length ? source : { channel: "direct" }); // EC-APP-23
+      return candidateApi.start(jobId, Object.keys(source).length ? source : undefined); // server: direct (EC-APP-23)
     },
     retry: false,
     staleTime: Infinity,

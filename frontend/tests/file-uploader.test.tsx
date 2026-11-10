@@ -107,7 +107,7 @@ describe("FileUploader", () => {
     expect(fetchMock.mock.calls.some(([u]) => String(u).includes("direct-upload"))).toBe(false);
   });
 
-  it("falls back to the direct upload when storage is unreachable", async () => {
+  it("EC-OPS-02: falls back to the direct upload when storage is unreachable", async () => {
     xhrMode = "network";
     respond({
       "POST /api/v1/documents/upload-sessions/": SESSION,
@@ -161,7 +161,7 @@ describe("FileUploader", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("offers retry after a network failure", async () => {
+  it("EC-APP-07: offers retry after a network failure", async () => {
     fetchMock.mockRejectedValueOnce(new TypeError("offline"));
     renderUploader();
     await userEvent.upload(screen.getByLabelText("Your CV"), pdf());

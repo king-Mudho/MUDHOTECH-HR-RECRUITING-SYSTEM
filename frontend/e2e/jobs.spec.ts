@@ -9,6 +9,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
+import { settleForAxe } from "./a11y";
+
 const PASSWORD = process.env.DEMO_PASSWORD ?? "";
 
 async function signIn(page: Page, email: string) {
@@ -21,6 +23,7 @@ async function signIn(page: Page, email: string) {
 }
 
 async function expectNoSeriousA11yViolations(page: Page) {
+  await settleForAxe(page);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag22aa"])
     .analyze();

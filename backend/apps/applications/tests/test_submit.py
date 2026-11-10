@@ -103,6 +103,7 @@ def test_submit_freezes_snapshot_assigns_reference_and_queues_receipt(job: Any) 
 
 
 def test_scan_pending_documents_are_allowed(job: Any) -> None:
+    """EC-APP-09: a CV still being checked does not block submit (see test_edge_cases)."""
     app = ready_draft(job, scan=ScanStatus.PENDING)
     assert submit(login(app.candidate_user), app).status_code == 201
 
@@ -128,6 +129,7 @@ def test_idempotency_key_required(job: Any) -> None:
 
 
 def test_incomplete_application_lists_missing(job: Any) -> None:
+    """EC-APP-10: missing required documents/answers block submit, item by item."""
     app, _ = start_or_resume_draft(job, UserFactory())
     res = submit(login(app.candidate_user), app)
     assert res.status_code == 422 and res.json()["error"]["code"] == "submit_blocked"
@@ -150,7 +152,8 @@ def test_privacy_acceptance_required(job: Any) -> None:
 
 
 def test_deadline_is_server_time_and_inclusive(job: Any) -> None:
-    """EC-APP-05: <= closes_at is accepted; one second later is refused."""
+    """EC-APP-05 / EC-APP-14: <= closes_at is accepted; one second later is refused with
+    ``deadline_passed`` and the draft is kept."""
     closes = now() + timedelta(hours=1)
     Job.objects.unscoped().filter(pk=job.pk).update(closes_at=closes)
     on_time, late = ready_draft(job), ready_draft(job)

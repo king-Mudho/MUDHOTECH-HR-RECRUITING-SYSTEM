@@ -6,6 +6,7 @@
  */
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { settleForAxe } from "./a11y";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 const PASSWORD = "lantern-orchard-velvet-27";
@@ -66,6 +67,7 @@ test("auth pages have no serious accessibility violations", async ({ page }) => 
   for (const path of ["/login", "/register", "/forgot-password", "/employers"]) {
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await settleForAxe(page);
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     const serious = results.violations.filter((v) =>
       ["serious", "critical"].includes(v.impact ?? ""),
@@ -87,7 +89,7 @@ test("candidate: register -> verify email -> candidate dashboard -> sign out -> 
   await register(page, email);
   await verify(page, request, email);
   await expect(page).toHaveURL(/\/candidate\/dashboard/);
-  await expect(page.getByRole("heading", { name: "Candidate dashboard" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your dashboard" })).toBeVisible();
 
   await page.getByRole("button", { name: "Sign out" }).first().click();
   await expect(page).toHaveURL(/\/$/);

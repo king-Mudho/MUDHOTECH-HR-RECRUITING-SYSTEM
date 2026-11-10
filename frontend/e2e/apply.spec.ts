@@ -8,6 +8,7 @@
  */
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { settleForAxe } from "./a11y";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 const PASSWORD = "lantern-orchard-velvet-27";
@@ -81,11 +82,21 @@ async function registerAndVerify(page: Page, request: APIRequestContext, email: 
 }
 
 async function expectNoSeriousA11y(page: Page, label: string) {
+  await settleForAxe(page);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   const serious = results.violations.filter((v) =>
     ["serious", "critical"].includes(v.impact ?? ""),
   );
-  expect(serious, `${label}: ${serious.map((v) => v.id).join(", ")}`).toEqual([]);
+  const detail = serious
+    .map(
+      (v) =>
+        `${v.id}: ${v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary}`).join(" | ")}`,
+    )
+    .join(" || ");
+  expect(
+    serious.map((v) => v.id),
+    `${label}: ${detail}`,
+  ).toEqual([]);
 }
 
 const next = (page: Page) => page.getByRole("button", { name: "Save and continue" }).click();
@@ -157,6 +168,8 @@ test("candidate applies with CV and answers, gets a receipt, cannot apply twice,
   const submit = page.getByRole("button", { name: "Submit application" });
   await expect(submit).toBeDisabled();
   await page.getByRole("checkbox", { name: /agree to it being used/ }).check();
+  await expect(submit).toBeEnabled();
+  await expect(submit).toHaveCSS("opacity", "1"); // let the enable transition finish before axe
   await expectNoSeriousA11y(page, "review step");
   await submit.click();
   const confirmation = page.getByText(/Your reference is (MHRS-[A-Z0-9]+-\d{4}-\d{6})/);
@@ -186,4 +199,23 @@ test("signed-out visitors are asked to sign in before applying", async ({ page }
   await page.getByRole("link", { name: "Software Developer" }).first().click();
   await page.getByRole("link", { name: "Apply now" }).first().click();
   await expect(page).toHaveURL(/\/login\?next=%2Fapply%2F/);
+});
+
+test.describe("without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("EC-APP-21: job pages stay readable and the wizard explains it needs JavaScript", async ({
+    page,
+  }) => {
+    await page.goto("/jobs?q=Software%20Developer");
+    const job = page.getByRole("link", { name: "Software Developer" }).first();
+    await expect(job).toBeVisible();
+    await page.goto((await job.getAttribute("href"))!);
+    await expect(page.getByRole("heading", { level: 1, name: "Software Developer" })).toBeVisible();
+    const apply = await page.getByRole("link", { name: "Apply now" }).first().getAttribute("href");
+    await page.goto(apply!);
+    // Playwright's text APIs skip <noscript> content, so check the served markup.
+    expect(await page.content()).toMatch(/<noscript>[\s\S]*This form needs JavaScript\./);
+    await expect(page.getByRole("banner")).toBeVisible();
+  });
 });

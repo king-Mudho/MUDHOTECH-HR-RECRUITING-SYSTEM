@@ -8,18 +8,53 @@ receive short-lived presigned URLs; objects are never public.
 from __future__ import annotations
 
 import functools
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Literal
 
 import boto3
 from botocore.client import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 from django.conf import settings
+
+from apps.core.exceptions import DomainError
 
 Purpose = Literal["quarantine", "documents", "exports", "public"]
 
 PUT_TTL_SECONDS = 600
 GET_TTL_SECONDS = 60
+
+
+class StorageUnavailableError(DomainError):
+    """EC-OPS-02: object storage is down or failing. Callers fail gracefully with a retry message;
+    nothing already submitted depends on it (documents stay pending and are retried)."""
+
+    code = "storage_unavailable"
+    status_code = 503
+    default_message = "We couldn't store your file right now. Please try again in a few minutes."
+
+
+@contextmanager
+def _unavailable_on_failure() -> Iterator[None]:
+    try:
+        yield
+    except ClientError as exc:
+        status = exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode", 0)
+        if status >= 500 or status == 0:
+            raise StorageUnavailableError() from exc
+        raise
+    except BotoCoreError as exc:  # connection refused, timeouts, DNS ...
+        raise StorageUnavailableError() from exc
+
+
+def _guard[T](fn: Callable[..., T]) -> Callable[..., T]:
+    @functools.wraps(fn)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        with _unavailable_on_failure():
+            return fn(*args, **kwargs)
+
+    return wrapper
 
 
 @dataclass(frozen=True)
@@ -105,6 +140,7 @@ def presign_get(
     return presign_client().generate_presigned_url("get_object", Params=params, ExpiresIn=ttl)
 
 
+@_guard
 def head_object(purpose: Purpose, key: str) -> ObjectInfo | None:
     try:
         resp = client().head_object(Bucket=bucket_for(purpose), Key=key)
@@ -121,10 +157,12 @@ def head_object(purpose: Purpose, key: str) -> ObjectInfo | None:
     )
 
 
+@_guard
 def put_bytes(purpose: Purpose, key: str, data: bytes, content_type: str) -> None:
     client().put_object(Bucket=bucket_for(purpose), Key=key, Body=data, ContentType=content_type)
 
 
+@_guard
 def get_bytes(purpose: Purpose, key: str, max_bytes: int | None = None) -> bytes:
     params: dict[str, Any] = {"Bucket": bucket_for(purpose), "Key": key}
     if max_bytes is not None:
@@ -132,6 +170,7 @@ def get_bytes(purpose: Purpose, key: str, max_bytes: int | None = None) -> bytes
     return client().get_object(**params)["Body"].read()
 
 
+@_guard
 def move_object(
     src_purpose: Purpose, src_key: str, dst_purpose: Purpose, dst_key: str | None = None
 ) -> str:
@@ -147,6 +186,7 @@ def move_object(
     return dst_key
 
 
+@_guard
 def delete_object(purpose: Purpose, key: str) -> None:
     client().delete_object(Bucket=bucket_for(purpose), Key=key)
 

@@ -140,7 +140,7 @@ describe("visibility helpers", () => {
 });
 
 describe("ApplyWizard", () => {
-  it("resumes at review, needs consent, submits with an idempotency key and shows the reference", async () => {
+  it("EC-APP-06: resumes at the saved step, needs consent, submits with an idempotency key and shows the reference", async () => {
     routes(
       ...base,
       (u, i) =>
@@ -211,7 +211,7 @@ describe("ApplyWizard", () => {
     expect(await screen.findByText("Step 3 of 5 — Documents")).toBeInTheDocument();
   });
 
-  it("shows a deadline message when submission is too late", async () => {
+  it("EC-APP-14: shows a deadline message when submission is too late", async () => {
     routes(
       ...base,
       (u, i) =>
@@ -258,6 +258,39 @@ describe("ApplyWizard", () => {
     );
   });
 
+  it("EC-APP-20: autosaves answers once after typing stops (debounced, small payload)", async () => {
+    routes(
+      ...base,
+      (u, i) =>
+        u === "/api/v1/applications/" && i?.method === "POST"
+          ? { status: 201, body: app({ last_step: 4 }) }
+          : undefined,
+      (u) =>
+        u === "/api/v1/applications/a1/review/" ? { body: review({ answers: {} }) } : undefined,
+      (u, i) =>
+        u === "/api/v1/applications/a1/answers/" && i?.method === "PUT"
+          ? { body: review() }
+          : undefined,
+    );
+    wrap(<ApplyWizard jobId="j1" />);
+    await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
+    await userEvent.type(await screen.findByLabelText("Which degree?"), "BSc Computing");
+    await waitFor(
+      () => expect(screen.getByRole("status").textContent).toContain("All changes saved"),
+      { timeout: 3000 },
+    );
+    const puts = fetchMock.mock.calls.filter(
+      ([u, i]) => String(u).endsWith("/answers/") && (i as RequestInit)?.method === "PUT",
+    );
+    expect(puts.length).toBeLessThanOrEqual(2); // not one request per keystroke
+    expect(JSON.parse(String((puts.at(-1)![1] as RequestInit).body))).toEqual({
+      answers: [
+        { key: "has_degree", value: "yes" },
+        { key: "degree_name", value: "BSc Computing" },
+      ],
+    });
+  });
+
   it("reveals a conditional question when the answer matches", async () => {
     routes(
       ...base,
@@ -279,7 +312,7 @@ describe("ApplyWizard", () => {
     expect(await screen.findByLabelText("Which degree?")).toBeInTheDocument();
   });
 
-  it("sends a signed-out candidate to sign in and back to the wizard", async () => {
+  it("EC-APP-06: sends a signed-out candidate to sign in and back to the wizard", async () => {
     routes(
       ...base,
       (u, i) =>

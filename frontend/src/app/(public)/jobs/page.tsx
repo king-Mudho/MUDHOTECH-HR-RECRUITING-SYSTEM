@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 
-import { PageSkeleton } from "@/components/states/page-skeleton";
 import { JobCard, JobSearchForm } from "@/features/jobs/public/components";
 import { searchJobs, type JobSearchParams } from "@/features/jobs/public-api";
 
@@ -103,6 +101,12 @@ async function Results({ searchParams }: { searchParams: PageProps<"/jobs">["sea
   );
 }
 
+/**
+ * One blocking response (no Suspense around the results; search data is cached for 60 s) so the
+ * vacancy list is in the visible HTML for no-JS and old browsers (EC-APP-21) and for crawlers.
+ */
+export const instant = false;
+
 export default async function JobsPage(props: PageProps<"/jobs">) {
   const t = await getTranslations("publicJobs.list");
   return (
@@ -114,9 +118,7 @@ export default async function JobsPage(props: PageProps<"/jobs">) {
         <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground mt-2">{t("description")}</p>
       </div>
-      <Suspense fallback={<PageSkeleton rows={4} />}>
-        <Results searchParams={props.searchParams} />
-      </Suspense>
+      <Results searchParams={props.searchParams} />
     </main>
   );
 }

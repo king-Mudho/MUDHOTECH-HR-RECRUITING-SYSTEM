@@ -250,6 +250,7 @@ def test_unverified_email_is_listed(job: Any) -> None:
 
 
 def test_submitted_applications_cannot_be_edited(client: APIClient, job: Any) -> None:
+    """EC-APP-11: contact, documents and answers are frozen once submitted."""
     app = start(client, job)
     Application.objects.unscoped().filter(pk=app["id"]).update(
         status=Status.SUBMITTED, reference=next_reference(job.organisation)
@@ -260,6 +261,16 @@ def test_submitted_applications_cannot_be_edited(client: APIClient, job: Any) ->
         format="json",
     )
     assert res.status_code == 409 and res.json()["error"]["code"] == "conflict.not_draft"
+    patched = client.patch(
+        f"/api/v1/applications/{app['id']}/",
+        {"lock_version": app["lock_version"], "contact": {"first_name": "Changed"}},
+        format="json",
+    )
+    assert patched.status_code == 409
+    docs = client.put(
+        f"/api/v1/applications/{app['id']}/documents/", {"documents": []}, format="json"
+    )
+    assert docs.status_code == 409
 
 
 @pytest.mark.parametrize(

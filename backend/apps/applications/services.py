@@ -51,6 +51,18 @@ def next_reference(org: Organisation, year: int | None = None) -> str:
         return f"MHRS-{org_code(org)}-{year}-{counter.last_value:06d}"
 
 
+SOURCE_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer")
+
+
+def normalise_source(source: dict[str, Any] | None) -> dict[str, str]:
+    """Keep known attribution keys only; ``source`` is the utm source or ``direct`` (EC-APP-23)."""
+    clean = {
+        k: str(v)[:200] for k, v in (source or {}).items() if k in SOURCE_KEYS and str(v).strip()
+    }
+    clean["source"] = clean.get("utm_source") or "direct"
+    return clean
+
+
 def duplicate_policy(org: Any) -> str:
     policy = OrganisationPolicy.objects.filter(organisation=org).first()
     return policy.duplicate_policy if policy else DuplicatePolicy.ONE_ACTIVE
@@ -110,7 +122,7 @@ def start_or_resume_draft(
         job=job,
         job_version_id=job.published_version_id,
         candidate_user=user,
-        source=source or {},
+        source=normalise_source(source),
     )
     # allow_resubmit_replace keeps the submitted one active until the new draft is submitted.
     has_active_submitted = existing is not None and existing.status != Status.DRAFT
