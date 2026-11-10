@@ -171,9 +171,10 @@ def test_api_list_save_preview_history_revert() -> None:
     team = make_org_with_team()
     default = default_receipt()
     c = hr(team.hr_manager, team.org)
-    rows = c.get("/api/v1/hr/notification-templates/").json()
-    assert [r["id"] for r in rows] == [str(default.pk)] and rows[0]["is_default"] is True
-    assert "application_url" in rows[0]["allowed_variables"]
+    rows = {r["key"]: r for r in c.get("/api/v1/hr/notification-templates/").json()}
+    assert rows["application_received"]["id"] == str(default.pk)
+    assert rows["application_received"]["is_default"] is True
+    assert "application_url" in rows["application_received"]["allowed_variables"]
     bad = c.post(
         "/api/v1/hr/notification-templates/",
         {"key": "application_received", "subject": "{{ score }}", "body_md": "x"},
@@ -197,7 +198,9 @@ def test_api_list_save_preview_history_revert() -> None:
         format="json",
     ).json()
     assert preview["subject"] == "Got it: Accountant" and "MHRS-" in preview["text"]
-    assert len(c.get(f"/api/v1/hr/notification-templates/{tid}/history/").json()) == 2
+    assert (
+        len(c.get(f"/api/v1/hr/notification-templates/{tid}/history/").json()) == 3
+    )  # shipped default v1, test default v2, own v1
     assert (
         c.post(
             "/api/v1/hr/notification-templates/revert/",
@@ -206,7 +209,8 @@ def test_api_list_save_preview_history_revert() -> None:
         ).status_code
         == 204
     )
-    assert c.get("/api/v1/hr/notification-templates/").json()[0]["id"] == str(default.pk)
+    after = {r["key"]: r["id"] for r in c.get("/api/v1/hr/notification-templates/").json()}
+    assert after["application_received"] == str(default.pk)
 
 
 def test_api_permissions_and_isolation() -> None:

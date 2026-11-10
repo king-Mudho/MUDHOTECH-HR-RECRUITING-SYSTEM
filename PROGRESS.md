@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 05 — ATS Workflow, Notifications & Messaging
-- **Current task:** P05-T02
+- **Current task:** P05-T03
 - **Last updated:** 2026-11-10
-- **Overall:** 62 / 193 tasks · 4 / 16 phases
+- **Overall:** 63 / 193 tasks · 4 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -124,7 +124,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 05 — ATS Workflow, Notifications & Messaging  (`phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md`)
 - [x] P05-T01 — `apps.notifications` models: NotificationTemplate (platform defaults + org overrides, versioned), Notification …
-- [ ] P05-T02 — Default templates (en): application_received, document_rejected_reupload, clarification_requested, …
+- [x] P05-T02 — Default templates (en): application_received, document_rejected_reupload, clarification_requested, …
 - [ ] P05-T03 — Delivery pipeline: outbox consumers → `send_notification` task (notifications queue) → provider backend (SMTP/SES …
 - [ ] P05-T04 — SES/SMTP bounce & complaint webhook endpoint (SNS signature verification) → suppression + in-app banner to update …
 - [ ] P05-T05 — In-app notifications API (list, unread count, mark read/all) + `NotificationBell` component with polling (30 s) or SSE
@@ -462,3 +462,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T16 | E2E e2e/apply.spec.ts: register -> verify via Mailpit -> apply to seeded Software Developer with synthetic PDF CV + answers (keyboard checkbox) at 360px -> receipt email with reference -> duplicate attempt points to existing app -> withdraw; signed-out apply -> login?next; axe on each wizard step; no uncaught page errors. Passed mobile x3 + chromium x2. Fixed: hydration error (noscript) and hang on full load (async params page) -> Suspense + useParams route wrapper; lock_version sync after documents/answers saves; opaque sticky header. Host runner gained celery mode (worker -P solo + separate beat on Windows) and S3 rewrite |  |
 | 2026-11-10 | Close | P04-EXIT | Phase 04 closed: exit criteria verified (1552 backend tests incl. 100 concurrent submits, EICAR/spoofed + infected-after-submit, exhaustive state machine; Playwright apply journey 360px keyboard + axe + no-JS on mobile/desktop, jobs/auth/smoke 10/10; Lighthouse /jobs 91/100/100, /jobs/[slug] 90/100/100; EC 31/31; 102 Vitest). Fixed during close: missing EC tests, storage_unavailable 503, source=direct, /jobs no-JS, axe transition flake, stale auth E2E heading | Phase 05 started |
 | 2026-11-10 | Impl | P05-T01 | apps.notifications: NotificationTemplate (platform defaults + org overrides, versioned, one active per key/channel/locale), Notification (dedupe_key unique, status, scheduling, read_at), EmailSuppression; registry of 14 notification keys with allowed variables + preview samples (no scores/evaluations); safe renderer ({{ var }} only, strict variables, escaped values, markdown via Python-Markdown + nh3, branded HTML layout + plain-text alternative with no-reply footer); services save (new version, audit), revert, render_for with fallback to default (EC-NOT-05), preview; HR API /hr/notification-templates list/create/retrieve/preview/history/revert (notifications.manage = org_admin/hr_manager); 10 tests + 42 tenancy/matrix cases | Delivery pipeline + default template content in T02/T03 |
+| 2026-11-10 | Impl | P05-T02 | Platform default templates (en) for all 14 notification keys, email + one-line in-app text: receipt with reference, re-upload request, clarification request/reminder (question shown only in the portal), withdrawal confirmation, draft deadline reminder, draft abandoned, shortlisted, respectful not_selected (human decision, no reasons/scores), recruitment paused, staff invitation, rights request update, recruiter digest (AI suggestions need human review), note mention; synced idempotently on post_migrate (new version only when text changes, no audit noise) + sync_notification_templates command; tests: render with samples, no score/rank/rejected/percent wording, idempotent versioning |  |

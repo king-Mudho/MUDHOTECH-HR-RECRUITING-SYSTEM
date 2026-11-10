@@ -68,8 +68,10 @@ def save_template(
     body_md: str,
     channel: str = Channel.EMAIL,
     locale: str = "en",
+    record_audit: bool = True,
 ) -> NotificationTemplate:
-    """Create the next version of an organisation's template (``org`` None = platform default)."""
+    """Create the next version of an organisation's template (``org`` None = platform default).
+    ``record_audit=False`` only for shipping platform defaults on ``migrate`` (no human action)."""
     try:
         kind = registry.get(key)
     except KeyError:
@@ -108,14 +110,15 @@ def save_template(
         active=True,
         created_by=actor,
     )
-    audit.record(
-        actor=actor,
-        action="notification_template.saved",
-        target=template,
-        organisation=org_id,
-        before={"version": before.version} if before else None,
-        after={"key": key, "channel": channel, "version": template.version},
-    )
+    if record_audit:
+        audit.record(
+            actor=actor,
+            action="notification_template.saved",
+            target=template,
+            organisation=org_id,
+            before={"version": before.version} if before else None,
+            after={"key": key, "channel": channel, "version": template.version},
+        )
     return template
 
 
@@ -168,3 +171,31 @@ def preview(template: NotificationTemplate, overrides: dict[str, Any] | None = N
         return render_template(template, context)
     except TemplateRenderError as exc:  # pragma: no cover - samples cover every allowed variable
         raise DomainError("validation_error", str(exc), status_code=400) from None
+
+
+def sync_platform_defaults() -> dict[str, int]:
+    """Create/refresh the platform default templates from ``defaults.DEFAULTS`` (idempotent: a
+    new version is written only when the text changed). Runs after every ``migrate``."""
+    from .defaults import DEFAULTS
+
+    created = unchanged = 0
+    for key, default in DEFAULTS.items():
+        for channel, subject, body in (
+            (Channel.EMAIL, default.subject, default.body_md),
+            (Channel.INAPP, "", default.inapp),
+        ):
+            current = platform_default(key, channel)
+            if current is not None and current.subject == subject and current.body_md == body:
+                unchanged += 1
+                continue
+            save_template(
+                None,
+                actor=None,
+                key=key,
+                subject=subject,
+                body_md=body,
+                channel=channel,
+                record_audit=False,
+            )
+            created += 1
+    return {"created": created, "unchanged": unchanged}
