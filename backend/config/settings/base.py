@@ -289,6 +289,9 @@ DEFAULT_FROM_EMAIL = env(
 # --- ClamAV ---
 CLAMAV_HOST = env("CLAMAV_HOST", default="localhost")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
+CLAMAV_TIMEOUT = env.int("CLAMAV_TIMEOUT", default=30)
+# clamd (default) | fake (tests: EICAR only) | skip (DEBUG only: no clamav container locally)
+DOCUMENT_SCANNER = env("DOCUMENT_SCANNER", default="clamd")
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")

@@ -2663,11 +2663,12 @@ export interface components {
          * @description * `pending` - Being checked
          *     * `clean` - Accepted
          *     * `infected` - Rejected (security)
+         *     * `rejected` - Rejected (file type, size or content)
          *     * `error` - Could not be checked
          *     * `skipped` - Not scanned
          * @enum {string}
          */
-        ScanStatusEnum: "pending" | "clean" | "infected" | "error" | "skipped";
+        ScanStatusEnum: "pending" | "clean" | "infected" | "rejected" | "error" | "skipped";
         ScheduleRequest: {
             /** Format: date-time */
             publish_at: string;

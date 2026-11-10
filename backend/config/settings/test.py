@@ -11,6 +11,7 @@ CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_BROKER_URL = "memory://"
 OUTBOX_EAGER_PUBLISH = True
+DOCUMENT_SCANNER = "fake"
 # allauth rate limits use the cache; keep them generous unless a test overrides them.
 # Deterministic Fernet keys used ONLY by the test-suite.
 FIELD_ENCRYPTION_KEYS = (

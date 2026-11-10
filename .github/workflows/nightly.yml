@@ -70,6 +70,33 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
+  clamd:
+    name: Antivirus integration (real ClamAV, EICAR)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      clamav:
+        image: clamav/clamav:stable
+        ports: ["3310:3310"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+      - name: Wait for clamd (signature download can take minutes)
+        run: |
+          for i in $(seq 1 60); do (printf 'zPING\0' | nc -w 2 localhost 3310 | grep -q PONG) && break; sleep 10; done
+      - name: EICAR test
+        working-directory: backend
+        env:
+          CLAMD_INTEGRATION: "1"
+          CLAMAV_HOST: localhost
+          CLAMAV_PORT: "3310"
+        run: |
+          uv sync --frozen
+          uv run pytest -q apps/documents/tests/test_scan_pipeline.py -k real_clamd -p no:cacheprovider
+
   ai-benchmark:
     name: AI benchmarks (enabled from Phase 06)
     runs-on: ubuntu-24.04

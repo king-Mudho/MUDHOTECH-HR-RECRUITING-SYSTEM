@@ -6,3 +6,6 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
     "rest_framework.renderers.JSONRenderer",
     "rest_framework.renderers.BrowsableAPIRenderer",
 ]
+
+# The clamav container is optional locally (compose profile "clamav"); without it scans are skipped.
+DOCUMENT_SCANNER = env("DOCUMENT_SCANNER", default="skip")

@@ -6824,6 +6824,7 @@ components:
       - pending
       - clean
       - infected
+      - rejected
       - error
       - skipped
       type: string
@@ -6831,6 +6832,7 @@ components:
         * `pending` - Being checked
         * `clean` - Accepted
         * `infected` - Rejected (security)
+        * `rejected` - Rejected (file type, size or content)
         * `error` - Could not be checked
         * `skipped` - Not scanned
     ScheduleRequest:

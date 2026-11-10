@@ -65,6 +65,7 @@ class ScanStatus(models.TextChoices):
     PENDING = "pending", "Being checked"
     CLEAN = "clean", "Accepted"
     INFECTED = "infected", "Rejected (security)"
+    REJECTED = "rejected", "Rejected (file type, size or content)"
     ERROR = "error", "Could not be checked"
     SKIPPED = "skipped", "Not scanned"
 

@@ -30,6 +30,8 @@ dependencies = [
   "argon2-cffi>=23",
   "pillow>=11",
   "pgvector>=0.4",
+  "pymupdf~=1.28.2",
+  "python-magic==0.4.27 ; sys_platform != 'win32'",
 ]
 
 [dependency-groups]
