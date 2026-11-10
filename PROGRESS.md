@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T12
+- **Current task:** P04-T13
 - **Last updated:** 2026-11-10
-- **Overall:** 56 / 193 tasks · 3 / 16 phases
+- **Overall:** 57 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -115,7 +115,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T09 — Withdraw service (any non-terminal state
 - [x] P04-T10 — Consent records: application processing consent + AI-assisted screening notice version stored on submit
 - [x] P04-T11 — Assisted application (staff creates on behalf
-- [ ] P04-T12 — Frontend `FileUploader` (presign → PUT with progress → complete → poll scan status
+- [x] P04-T12 — Frontend `FileUploader` (presign → PUT with progress → complete → poll scan status
 - [ ] P04-T13 — Frontend candidate: `/candidate/dashboard`, `/candidate/profile` (sections + completeness), `/candidate/documents` …
 - [ ] P04-T14 — Frontend `/apply/[jobId]` wizard per `docs/08 §3.1`: autosave indicator, resume at last step, conditional questions …
 - [ ] P04-T15 — HR minimal list: `/hr/jobs/[id]/applications` basic table (status, submitted at, candidate name) + application …
@@ -428,3 +428,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T09 | applications.lifecycle: POST /applications/{id}/withdraw (non-terminal -> withdrawn with reason, draft -> abandoned; 409 when closed) + email to assigned recruiters (EC-APP-12/13); is_processable() guard for processing tasks; job.closed consumer abandons drafts with notice, submitted untouched (EC-JOB-10); pause keeps drafts (EC-JOB-08); job.deadline_extended consumer reactivates drafts abandoned by the close within 30 days unless the candidate has a newer active one + email (EC-JOB-09; new system-only abandoned->draft transition added to the state machine and SRS table test); hourly sweep_stale_drafts beat safety net; 8 tests; 1502 backend tests |  |
 | 2026-11-10 | Impl | P04-T10 | apps.privacy ConsentRecord (purpose, notice_version, granted, granted_at, withdrawn_at, ip_trunc /24 or /48, context) + services; submit records application_processing consent (employer privacy notice version = policy version + sha256 of text) and ai_assisted_screening notice acknowledgement (AI_NOTICE_VERSION; granted=False = objection), sets Application.consent_record_id + new objects_to_automated_processing flag (Phases 7/8 hide AI evaluation); application API exposes notices (privacy text/version, AI notice version/url) for the wizard; public /how-we-use-ai page (what AI does / never does / choices / data, versioned); 5 tests |  |
 | 2026-11-10 | Impl | P04-T11 | assisted applications: POST /hr/jobs/{id}/assisted-applications (multipart or JSON; recruiting staff who are admin/HR or assigned): email required (EC-APP-18), consent confirmation + method (in_person|phone|written); finds or creates the candidate account (unusable password), runs the normal draft/document/answer/submit services with the staff member as actor (only the email-verification gate is skipped), flags is_assisted/assisted_by/channel, consent context names the method and staff member, audit application.assisted_created, invite email with set-password link for new/passwordless accounts (EC-APP-17); duplicate policy still applies; registered in cross-tenant + permission matrix (open_job fixture stage); 7 tests; 1521 backend tests |  |
+| 2026-11-10 | Impl | P04-T12 | frontend FileUploader (features/documents): upload session -> XHR PUT to presigned URL with progress -> complete -> poll scan status (2 s, ~2 min, then 'still checking' and carry on); falls back to multipart direct upload when storage is unreachable (status 0 / upload_failed); cancel (AbortController), retry only for transfer failures, client-side size check, purpose-specific accept list, friendly per-reason rejection messages, labelled file input + progressbar + aria-live status/alert; documentsApi client; 6 Vitest tests (happy path, fallback, polling, rejection, oversize, retry); 85 frontend tests |  |

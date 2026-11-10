@@ -981,5 +981,30 @@
       }
     },
     "contact": "Questions? Contact the employer you applied to, or MudhoTech Solutions (Pvt) Ltd, Harare."
+  },
+  "documents": {
+    "uploader": {
+      "hint": "PDF or Word (.docx), up to {mb} MB.",
+      "tooLarge": "This file is larger than {mb} MB. Please choose a smaller file.",
+      "uploading": "Uploading {name}: {percent}%",
+      "progressLabel": "Upload progress for {name}",
+      "checking": "Checking {name} for security...",
+      "done": "{name} is ready.",
+      "stillChecking": "{name} is uploaded. We are still checking it; you can carry on.",
+      "failed": "The upload didn't finish. Please try again.",
+      "cancel": "Cancel",
+      "retry": "Try again",
+      "reasons": {
+        "malware": "This file didn't pass our security check. Please upload a different file.",
+        "type_mismatch": "This file's content doesn't match its type. Save it as PDF or Word (.docx) and try again.",
+        "encrypted": "This file is password-protected. Please upload a version without a password.",
+        "too_many_pages": "This file has too many pages. Please upload a shorter version.",
+        "macros": "This file contains macros. Save it as a normal .docx or PDF and try again.",
+        "archive_limits": "This file couldn't be opened safely. Save it again as PDF and try again.",
+        "corrupt": "This file couldn't be opened. Please check it and try again.",
+        "size": "This file is too large.",
+        "other": "This file couldn't be accepted. Please try a different file."
+      }
+    }
   }
 }
