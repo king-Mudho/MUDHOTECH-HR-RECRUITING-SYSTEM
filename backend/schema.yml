@@ -2771,6 +2771,99 @@ paths:
               schema:
                 $ref: '#/components/schemas/RevokedSessions'
           description: ''
+  /api/v1/notifications/:
+    get:
+      operationId: notifications_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: unread
+        schema:
+          type: boolean
+        description: Only unread
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInboxItemList'
+          description: ''
+  /api/v1/notifications/{notification_id}/read/:
+    post:
+      operationId: notifications_read
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InboxItem'
+          description: ''
+  /api/v1/notifications/read-all/:
+    post:
+      operationId: notifications_read_all
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+          description: ''
+  /api/v1/notifications/unread-count/:
+    get:
+      operationId: notifications_unread_count
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+          description: ''
   /api/v1/organisations/:
     post:
       operationId: organisations_create
@@ -5548,6 +5641,44 @@ components:
       description: |-
         * `essential` - Essential
         * `preferred` - Preferred
+    InboxItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        key:
+          type: string
+          readOnly: true
+        text:
+          type: string
+          readOnly: true
+        link:
+          type: string
+          readOnly: true
+        organisation:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - key
+      - link
+      - organisation
+      - read_at
+      - text
     Invitation:
       type: object
       properties:
@@ -6484,6 +6615,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/HRJobList'
+    PaginatedInboxItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InboxItem'
     PaginatedInvitationList:
       type: object
       required:
@@ -8482,6 +8636,13 @@ components:
         * `language` - Language
         * `licence` - Licence
         * `eligibility` - Eligibility
+    UnreadCount:
+      type: object
+      properties:
+        count:
+          type: integer
+      required:
+      - count
     UploadSession:
       type: object
       properties:

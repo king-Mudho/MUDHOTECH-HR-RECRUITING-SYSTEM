@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { isActive } from "@/components/layout/sidebar-nav";
-import { NotificationBell } from "@/components/layout/top-bar-actions";
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { EmptyState, ErrorState, ForbiddenState } from "@/components/states/states";
 import { STATUS_TONES, StatusBadge } from "@/components/states/status-badge";
@@ -77,15 +76,5 @@ describe("shell pieces", () => {
     expect(isActive("/hr/jobs", "/hr/jobs")).toBe(true);
     expect(isActive("/hr/jobs/123", "/hr/jobs")).toBe(true);
     expect(isActive("/hr/jobsx", "/hr/jobs")).toBe(false);
-  });
-
-  it("top bar controls have accessible names", () => {
-    wrap(
-      <>
-        <NotificationBell unread={150} />
-      </>,
-    );
-    const bell = screen.getByRole("button", { name: "Notifications" });
-    expect(bell).toHaveTextContent("99+");
   });
 });

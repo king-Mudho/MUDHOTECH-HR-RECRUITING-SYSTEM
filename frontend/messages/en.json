@@ -1366,5 +1366,17 @@
         "system": "automatically"
       }
     }
+  },
+  "notifications": {
+    "bell": "Notifications",
+    "bellUnread": "Notifications, {count} unread",
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "markRead": "Mark as read",
+    "open": "Open",
+    "empty": "You have no notifications yet.",
+    "loading": "Loading…",
+    "failed": "We couldn't load your notifications. Please try again.",
+    "unreadPrefix": "Unread:"
   }
 }

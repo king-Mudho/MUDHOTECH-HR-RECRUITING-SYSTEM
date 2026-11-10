@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 05 — ATS Workflow, Notifications & Messaging
-- **Current task:** P05-T05
+- **Current task:** P05-T06
 - **Last updated:** 2026-11-10
-- **Overall:** 65 / 193 tasks · 4 / 16 phases
+- **Overall:** 66 / 193 tasks · 4 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -127,7 +127,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P05-T02 — Default templates (en): application_received, document_rejected_reupload, clarification_requested, …
 - [x] P05-T03 — Delivery pipeline: outbox consumers → `send_notification` task (notifications queue) → provider backend (SMTP/SES …
 - [x] P05-T04 — SES/SMTP bounce & complaint webhook endpoint (SNS signature verification) → suppression + in-app banner to update …
-- [ ] P05-T05 — In-app notifications API (list, unread count, mark read/all) + `NotificationBell` component with polling (30 s) or SSE
+- [x] P05-T05 — In-app notifications API (list, unread count, mark read/all) + `NotificationBell` component with polling (30 s) or SSE
 - [ ] P05-T06 — `apps.messaging`: ClarificationRequest (templates + free text + optional upload, due_at), candidate answer endpoint …
 - [ ] P05-T07 — ATS features: notes (@mentions → in-app notification), tags, assign recruiter, reopen with reason, holds
 - [ ] P05-T08 — Frontend HR: pipeline kanban view per vacancy (columns = statuses
@@ -465,3 +465,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P05-T02 | Platform default templates (en) for all 14 notification keys, email + one-line in-app text: receipt with reference, re-upload request, clarification request/reminder (question shown only in the portal), withdrawal confirmation, draft deadline reminder, draft abandoned, shortlisted, respectful not_selected (human decision, no reasons/scores), recruitment paused, staff invitation, rights request update, recruiter digest (AI suggestions need human review), note mention; synced idempotently on post_migrate (new version only when text changes, no audit noise) + sync_notification_templates command; tests: render with samples, no score/rank/rejected/percent wording, idempotent versioning |  |
 | 2026-11-10 | Impl | P05-T03 | Delivery pipeline: notify() writes one Notification per channel inside the business transaction (dedupe_key unique) + outbox notification.queued; send_notification task claims queued->sending, checks recipient active + verified email (EC-ACC-07), suppression list (EC-NOT-01), withdrawn application (EC-NOT-04), quiet hours 20:00-07:00 recipient TZ for non-urgent candidate mail (EC-NOT-09), renders org override with fallback, sends with deterministic Message-ID, marks sent; provider errors requeue and retry with backoff ~24 h (13 retries, 4 h cap) then dead letter + failed (EC-NOT-02); send_due beat task (deferred mail, stale sending rows); receipt, withdrawal confirmation, draft-abandoned and document re-upload emails now go through templates; 12 delivery tests incl. replay and killed-worker; backend 1633 passed | Internal status 'sending' added to Notification; auth/security and recruiter emails still use queue_email |
 | 2026-11-10 | Impl | P05-T04 | POST /api/v1/webhooks/ses/ for SNS bounce/complaint feedback: topic allowlist (SES_SNS_TOPIC_ARNS, empty = refuse all), signing cert only from https sns.<region>.amazonaws.com, RSA signature over the canonical string (v1/v2), subscription confirmation only to Amazon; hard bounce/complaint -> EmailSuppression (audited without the address), bounced notification marked failed, soft bounces logged; /me exposes email_delivery_problem and signed-in areas show an 'update your email' banner (EC-NOT-01); 9 backend + 2 Vitest tests | Set SES_SNS_TOPIC_ARNS at go-live (Phase 11); dev uses Mailpit (no bounces) |
+| 2026-11-10 | Impl | P05-T05 | In-app notifications: GET /notifications (own, paged, ?unread=1, rendered one-line text, site-relative link only), GET /notifications/unread-count, POST /notifications/{id}/read and /notifications/read-all (other users' items 404); NotificationBell in candidate/HR/admin top bars polling every 30 s while visible, unread count in the accessible name, panel with open / mark read / mark all, closes on Escape or outside click; 3 backend + 2 Vitest tests; checked in the running app |  |
