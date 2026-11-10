@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import uuid
-
 import pytest
 from django.db import IntegrityError, transaction
 
@@ -41,12 +39,12 @@ def test_one_response_per_question_per_application() -> None:
     q = Question.objects.create(
         organisation=qn.organisation, questionnaire=qn, key="a", type="yes_no", prompt="?"
     )
-    app_id = uuid.uuid4()
-    QuestionResponse.objects.create(organisation=qn.organisation, application_id=app_id, question=q)
+    from apps.applications.tests.factories import make_application
+
+    app = make_application()
+    QuestionResponse.objects.create(organisation=qn.organisation, application=app, question=q)
     with pytest.raises(IntegrityError), transaction.atomic():
-        QuestionResponse.objects.create(
-            organisation=qn.organisation, application_id=app_id, question=q
-        )
+        QuestionResponse.objects.create(organisation=qn.organisation, application=app, question=q)
 
 
 def test_flagged_question_blocks_publishing_until_exception_reason() -> None:

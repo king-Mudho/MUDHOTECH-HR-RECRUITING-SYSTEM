@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T05
+- **Current task:** P04-T06
 - **Last updated:** 2026-11-10
-- **Overall:** 49 / 193 tasks · 3 / 16 phases
+- **Overall:** 50 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -108,7 +108,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P04-T02 — `apps.documents`: UploadSession + Document models
 - [x] P04-T03 — Scan pipeline (documents queue): magic-byte detection (`python-magic` + custom DOCX/PDF checks), DOCX zip-bomb …
 - [x] P04-T04 — Orphan cleanup beat task (upload sessions expired, objects in quarantine > 24 h) (EC-APP-08)
-- [ ] P04-T05 — `apps.applications` models: Application (+ reference counter table), ApplicationDocument, ApplicationStatusEvent, …
+- [x] P04-T05 — `apps.applications` models: Application (+ reference counter table), ApplicationDocument, ApplicationStatusEvent, …
 - [ ] P04-T06 — Application state machine module `applications/state_machine.py` implementing all transitions from SRS §3.3 with …
 - [ ] P04-T07 — Draft APIs: create/resume draft, autosave PATCH with lock_version, attach documents by role, bulk upsert answers …
 - [ ] P04-T08 — Submit service: `@idempotent`, `atomic`, checks (email verified, job published & before deadline in job TZ, org …
@@ -421,3 +421,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P04-T02 | apps.documents: UploadSession + Document (user-owned, quarantine->documents buckets, scan_status, sha256 index, duplicate_of); per-purpose allow-lists (CV pdf/docx, supporting/messages pdf/docx/jpg/png, offer pdf) with ext+declared MIME match, EC-DOC-04 conversion guidance (415), size limits from settings narrowed by OrganisationPolicy.upload_limits_mb (413); filename sanitisation (UUID storage keys); presign PUT (10 min) -> complete (HEAD, real size check, idempotent, rejection committed) -> outbox document.uploaded; multipart direct-upload fallback; GET /documents/{id} + /download (owner or registered access checker, clean only, 302 to 60 s presigned attachment URL, no-store, access log); uploads throttle; CandidateProfile.default_resume FK; shared s3 (moto) fixture; 22 tests; 896 backend tests | staff document access checker registered by applications (P04-T15); upload_limits_mb not yet editable in the policy API |
 | 2026-11-10 | Impl | P04-T03 | documents queue scan pipeline (outbox document.uploaded -> on_commit scan_document task, autoretry on scanner outage): sha256, own magic-byte signatures (+ python-magic second opinion on Linux) reject spoofed types before any parser (EC-DOC-05), ClamAV INSTREAM client (fake/skip modes; skip DEBUG-only) - infected never parsed, audited, generic candidate email (EC-DOC-06), DOCX guards (entries/size/ratio, macros, unsafe paths; EC-DOC-07), PDF via PyMuPDF (encrypted, page limits 30 CV/50 other; EC-DOC-08), images re-encoded (metadata/polyglot stripped), promote quarantine->documents, outbox document.accepted|rejected; new scan_status 'rejected' for non-malware rejections; deps pymupdf~=1.28.2 + python-magic (non-Windows), libmagic1 in image; nightly real-clamd EICAR job; 17 pipeline tests; 913 backend tests | found+fixed: rejection email shared the outbox dedupe key with document.rejected and was dropped |
 | 2026-11-10 | Impl | P04-T04 | documents.cleanup + hourly beat cleanup_uploads: expire pending sessions past expires_at, delete unconfirmed/orphan quarantine objects older than 24 h unless referenced by a live session or pending document (EC-APP-08), purge rejected/infected files after 24 h keeping rows (deleted_at); scan pipeline de-duplicates identical bytes per user+purpose (EC-DOC-25): alias to the original's stored file and verdict, quarantine copy removed, stored once; pipeline refactored (_find_original/_alias/_scan_and_promote); 5 tests |  |
+| 2026-11-10 | Impl | P04-T05 | apps.applications: Application (all SRS 3.3 statuses, snapshot, reference, contact/last_step for the wizard, scoring fields, flags/tags arrays, lock_version, indexes) with active_key partial unique constraint + reference-after-submit check; ReferenceCounter (per org+year, row-locked MHRS-<ORG>-<YYYY>-<NNNNNN>); ApplicationDocument; append-only ApplicationStatusEvent (model guard + DB trigger reusing mhrs_audit_append_only); QuestionResponse.application now a FK; services: duplicate policy (one_active / allow_resubmit_replace / allow_multiple), start_or_resume_draft (resume draft, 409 duplicate_application with link, re-apply after withdrawal, concurrent-create safe, closed/paused/deadline 422); 12 tests |  |

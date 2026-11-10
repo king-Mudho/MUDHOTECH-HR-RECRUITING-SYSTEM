@@ -113,9 +113,11 @@ class QuestionOption(TenantModel):
 
 
 class QuestionResponse(TenantModel):
-    """Candidate answers (used from Phase 04). ``application_id`` becomes a FK in Phase 04."""
+    """Candidate answers to a job version's questions (one row per question per application)."""
 
-    application_id = models.UUIDField(db_index=True)
+    application = models.ForeignKey(
+        "applications.Application", on_delete=models.CASCADE, related_name="responses"
+    )
     question = models.ForeignKey(Question, on_delete=models.PROTECT, related_name="responses")
     value = models.JSONField(null=True, blank=True)
     document_id = models.UUIDField(null=True, blank=True)
@@ -125,7 +127,7 @@ class QuestionResponse(TenantModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["application_id", "question"], name="uniq_response_per_question"
+                fields=["application", "question"], name="uniq_response_per_question"
             )
         ]
 
