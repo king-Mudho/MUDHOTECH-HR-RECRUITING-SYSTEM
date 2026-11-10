@@ -42,12 +42,21 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
    for candidates (a unit test enforces this for `messages/en.json`).
 9. Accessibility: keyboard, focus management, 24 px targets, contrast, aria-live for dynamic changes; axe in Playwright.
 10. All user-visible strings via next-intl.
+11. Client messages: the root layout ships only `PUBLIC_NAMESPACES` (`src/i18n/client-messages.tsx`); signed-in
+    areas wrap their tree in `<AreaMessages>`. A public client component needing a new namespace must add it there.
+12. Public data: server-side `"use cache"` helpers in `src/features/jobs/public-api.ts` (60 s `cacheLife`), never fetched at
+    build time (CI has no backend). Detail pages render blocking (`export const instant = false`, no Suspense) so
+    metadata is in `<head>`; do NOT set `htmlLimitedBots: /.*/` (it makes browser prefetches hang).
+13. Area layouts wrap `AuthGate` in `<Suspense>`; client hooks reading the URL (`usePathname`, `useSearchParams`) in
+    shared layouts must sit under Suspense or dynamic routes fail to build.
 
 ## Commands
 
 ```
 npm run dev | build | lint | typecheck (next typegen + tsc) | test | format | format:check | gen:api
 npx playwright test  |  npx playwright test e2e/apply.spec.ts --project=mobile
+DEMO_PASSWORD=... npx playwright test e2e/jobs.spec.ts   # needs `manage.py seed_demo`
+../scripts/lighthouse.sh 3 <urls>   # mobile Lighthouse medians (production build)
 ```
 
 Docker: the `frontend` service runs `next dev` with `API_INTERNAL_URL=http://backend:8000`.
