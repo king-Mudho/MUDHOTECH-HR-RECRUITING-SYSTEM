@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
-- **Current task:** P04-T02
+- **Current task:** P04-T03
 - **Last updated:** 2026-11-10
-- **Overall:** 46 / 193 tasks · 3 / 16 phases
+- **Overall:** 47 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -105,7 +105,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 04 — Candidate Portal, Documents, Applications & Questionnaires  (`phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md`)
 - [x] P04-T01 — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs
-- [ ] P04-T02 — `apps.documents`: UploadSession + Document models
+- [x] P04-T02 — `apps.documents`: UploadSession + Document models
 - [ ] P04-T03 — Scan pipeline (documents queue): magic-byte detection (`python-magic` + custom DOCX/PDF checks), DOCX zip-bomb …
 - [ ] P04-T04 — Orphan cleanup beat task (upload sessions expired, objects in quarantine > 24 h) (EC-APP-08)
 - [ ] P04-T05 — `apps.applications` models: Application (+ reference counter table), ApplicationDocument, ApplicationStatusEvent, …
@@ -418,3 +418,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P03-T14 | seed_demo (DEMO_PASSWORD env, refuses when DEBUG off unless --allow-non-debug): platform admin, MudhoTech Demo Ltd + Acme Mining Zimbabwe (verified, privacy notice, departments, locations, one user per role), 3 published jobs via the real services (Software Developer per Blueprint Appendix A, Accountant, Registered Nurse) with justified criteria linked to the taxonomy where skills exist (taxonomy auto-loaded), rubrics and valid questionnaires (branching, knock-out, salary never scored); idempotent; 5 tests; 866 backend tests pass |  |
 | 2026-11-10 | Close | P03-EXIT | Phase 03 closed: exit criteria verified (E2E 8/8, Lighthouse /jobs 89/100/100 and /jobs/[slug] 88/100/100, EC-JOB 20/20, 868 backend + 79 frontend tests, tenancy/matrix 360). Fixed during close: EC-JOB-17/19/20 tests, frontend Dockerfile public/ | Phase 04 started |
 | 2026-11-10 | Impl | P04-T01 | apps.candidates: CandidateProfile (user-owned, lock_version, E.164 phone, validated links, availability/notice) + Experience/Education/Certification/CandidateSkill/Language (source manual|cv_import read-only, date checks, case-insensitive uniqueness); /candidate/profile GET (auto-create)/PATCH + section CRUD scoped to request.user (404 for others); completeness 0-100 + missing list; test asserts no protected field names on any candidate model; schema + api.d.ts regenerated | default_resume FK added with documents in P04-T02 |
+| 2026-11-10 | Impl | P04-T02 | apps.documents: UploadSession + Document (user-owned, quarantine->documents buckets, scan_status, sha256 index, duplicate_of); per-purpose allow-lists (CV pdf/docx, supporting/messages pdf/docx/jpg/png, offer pdf) with ext+declared MIME match, EC-DOC-04 conversion guidance (415), size limits from settings narrowed by OrganisationPolicy.upload_limits_mb (413); filename sanitisation (UUID storage keys); presign PUT (10 min) -> complete (HEAD, real size check, idempotent, rejection committed) -> outbox document.uploaded; multipart direct-upload fallback; GET /documents/{id} + /download (owner or registered access checker, clean only, 302 to 60 s presigned attachment URL, no-store, access log); uploads throttle; CandidateProfile.default_resume FK; shared s3 (moto) fixture; 22 tests; 896 backend tests | staff document access checker registered by applications (P04-T15); upload_limits_mb not yet editable in the policy API |

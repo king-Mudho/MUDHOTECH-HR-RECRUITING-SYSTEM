@@ -23,6 +23,7 @@ api_v1_patterns = [
     path("", include("apps.taxonomy.api.urls")),
     path("", include("apps.jobs.api.urls")),
     path("", include("apps.candidates.api.urls")),
+    path("", include("apps.documents.api.urls")),
 ]
 
 urlpatterns = [

@@ -773,6 +773,111 @@ paths:
               schema:
                 $ref: '#/components/schemas/CsrfToken'
           description: ''
+  /api/v1/documents/{document_id}/:
+    get:
+      operationId: documents_retrieve
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+  /api/v1/documents/{document_id}/download/:
+    get:
+      operationId: documents_download
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - cookieAuth: []
+      responses:
+        '302':
+          description: Redirect to a 60-second presigned URL
+  /api/v1/documents/direct-upload/:
+    post:
+      operationId: documents_direct_upload
+      tags:
+      - documents
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DirectUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+  /api/v1/documents/upload-sessions/:
+    post:
+      operationId: documents_upload_session_create
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadSessionCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UploadSessionCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadSessionCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSession'
+          description: ''
+  /api/v1/documents/upload-sessions/{session_id}/complete/:
+    post:
+      operationId: documents_upload_session_complete
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
   /api/v1/hr/jobs/:
     get:
       operationId: hr_jobs_list
@@ -3729,6 +3834,68 @@ components:
           maxLength: 150
       required:
       - name
+    DirectUploadRequest:
+      type: object
+      properties:
+        purpose:
+          $ref: '#/components/schemas/PurposeEnum'
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+      - purpose
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        purpose:
+          allOf:
+          - $ref: '#/components/schemas/PurposeEnum'
+          readOnly: true
+        original_filename:
+          type: string
+          readOnly: true
+        mime_detected:
+          type: string
+          readOnly: true
+        size_bytes:
+          type: integer
+          readOnly: true
+        page_count:
+          type: integer
+          readOnly: true
+          nullable: true
+        scan_status:
+          allOf:
+          - $ref: '#/components/schemas/ScanStatusEnum'
+          readOnly: true
+        rejected_reason:
+          type: string
+          readOnly: true
+        scanned_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - mime_detected
+      - original_filename
+      - page_count
+      - purpose
+      - rejected_reason
+      - scan_status
+      - scanned_at
+      - size_bytes
     DuplicatePolicyEnum:
       enum:
       - one_active
@@ -6205,6 +6372,18 @@ components:
       - required
       - section
       - type
+    PurposeEnum:
+      enum:
+      - cv
+      - supporting
+      - message_attachment
+      - offer_letter
+      type: string
+      description: |-
+        * `cv` - CV / résumé
+        * `supporting` - Supporting document
+        * `message_attachment` - Message attachment
+        * `offer_letter` - Offer letter
     QualificationLevel:
       type: object
       properties:
@@ -6640,6 +6819,20 @@ components:
         * `day` - per day
         * `month` - per month
         * `year` - per year
+    ScanStatusEnum:
+      enum:
+      - pending
+      - clean
+      - infected
+      - error
+      - skipped
+      type: string
+      description: |-
+        * `pending` - Being checked
+        * `clean` - Accepted
+        * `infected` - Rejected (security)
+        * `error` - Could not be checked
+        * `skipped` - Not scanned
     ScheduleRequest:
       type: object
       properties:
@@ -6763,6 +6956,53 @@ components:
         * `language` - Language
         * `licence` - Licence
         * `eligibility` - Eligibility
+    UploadSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        method:
+          type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+        filename:
+          type: string
+      required:
+      - expires_at
+      - filename
+      - headers
+      - id
+      - method
+      - url
+    UploadSessionCreateRequest:
+      type: object
+      properties:
+        purpose:
+          $ref: '#/components/schemas/PurposeEnum'
+        filename:
+          type: string
+          minLength: 1
+          maxLength: 255
+        mime:
+          type: string
+          minLength: 1
+          maxLength: 120
+        size:
+          type: integer
+          minimum: 1
+      required:
+      - filename
+      - mime
+      - purpose
+      - size
     UserSession:
       type: object
       properties:

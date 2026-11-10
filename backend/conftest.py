@@ -53,3 +53,22 @@ def _clear_cache() -> Iterator[None]:
     cache.clear()
     yield
     cache.clear()
+
+
+@pytest.fixture
+def s3(settings: Any) -> Iterator[Any]:
+    """In-memory S3 (moto) with every configured bucket created."""
+    import boto3
+    from moto import mock_aws
+
+    from apps.core import storage
+
+    settings.S3_ENDPOINT_URL = None
+    settings.S3_PUBLIC_ENDPOINT_URL = None
+    with mock_aws():
+        storage.reset_clients()
+        raw = boto3.client("s3", region_name="us-east-1")
+        for bucket in settings.S3_BUCKETS.values():
+            raw.create_bucket(Bucket=bucket)
+        yield raw
+    storage.reset_clients()

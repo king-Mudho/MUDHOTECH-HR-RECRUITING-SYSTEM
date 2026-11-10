@@ -95,6 +95,9 @@ class OrganisationPolicy(BaseModel):
     notification_delay_minutes = models.PositiveSmallIntegerField(default=15)  # ADR-014
     hide_ai_from_panelists = models.BooleanField(default=True)  # ADR-019
     rights_request_sla_days = models.PositiveSmallIntegerField(default=30)
+    upload_limits_mb = models.JSONField(
+        default=dict, blank=True, help_text='Per-purpose upload limit in MB, e.g. {"cv": 5}.'
+    )
     version = models.PositiveIntegerField(default=1, help_text="Optimistic lock (lock_version).")
 
     def __str__(self) -> str:

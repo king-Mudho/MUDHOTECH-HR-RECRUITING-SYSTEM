@@ -46,7 +46,9 @@ class CandidateProfile(BaseModel):
     notice_period_days = models.PositiveSmallIntegerField(null=True, blank=True)
     open_to_relocation = models.BooleanField(default=False)
     profile_completeness = models.PositiveSmallIntegerField(default=0)
-    # default_resume (FK to documents.Document) is added with the documents app in P04-T02.
+    default_resume = models.ForeignKey(
+        "documents.Document", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
     lock_version = models.PositiveIntegerField(default=1)
 
     class Meta:

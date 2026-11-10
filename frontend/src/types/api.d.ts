@@ -262,6 +262,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/{document_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["documents_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/download/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["documents_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/direct-upload/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["documents_direct_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/upload-sessions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["documents_upload_session_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/upload-sessions/{session_id}/complete/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["documents_upload_session_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/": {
         parameters: {
             query?: never;
@@ -1434,6 +1514,26 @@ export interface components {
         DepartmentRequest: {
             name: string;
         };
+        DirectUploadRequest: {
+            purpose: components["schemas"]["PurposeEnum"];
+            /** Format: binary */
+            file: string;
+        };
+        Document: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly purpose: components["schemas"]["PurposeEnum"];
+            readonly original_filename: string;
+            readonly mime_detected: string;
+            readonly size_bytes: number;
+            readonly page_count: number | null;
+            readonly scan_status: components["schemas"]["ScanStatusEnum"];
+            readonly rejected_reason: string;
+            /** Format: date-time */
+            readonly scanned_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         /**
          * @description * `one_active` - One active application per vacancy
          *     * `allow_resubmit_replace` - Resubmit replaces previous
@@ -2369,6 +2469,14 @@ export interface components {
             };
             options: components["schemas"]["PublicOption"][];
         };
+        /**
+         * @description * `cv` - CV / résumé
+         *     * `supporting` - Supporting document
+         *     * `message_attachment` - Message attachment
+         *     * `offer_letter` - Offer letter
+         * @enum {string}
+         */
+        PurposeEnum: "cv" | "supporting" | "message_attachment" | "offer_letter";
         QualificationLevel: {
             /** Format: uuid */
             readonly id: string;
@@ -2551,6 +2659,15 @@ export interface components {
          * @enum {string}
          */
         SalaryPeriodEnum: "hour" | "day" | "month" | "year";
+        /**
+         * @description * `pending` - Being checked
+         *     * `clean` - Accepted
+         *     * `infected` - Rejected (security)
+         *     * `error` - Could not be checked
+         *     * `skipped` - Not scanned
+         * @enum {string}
+         */
+        ScanStatusEnum: "pending" | "clean" | "infected" | "error" | "skipped";
         ScheduleRequest: {
             /** Format: date-time */
             publish_at: string;
@@ -2612,6 +2729,24 @@ export interface components {
          * @enum {string}
          */
         TypeEnum: "skill" | "experience" | "qualification" | "certification" | "competency" | "language" | "licence" | "eligibility";
+        UploadSession: {
+            /** Format: uuid */
+            id: string;
+            url: string;
+            method: string;
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expires_at: string;
+            filename: string;
+        };
+        UploadSessionCreateRequest: {
+            purpose: components["schemas"]["PurposeEnum"];
+            filename: string;
+            mime: string;
+            size: number;
+        };
         UserSession: {
             readonly id: number;
             /** Format: date-time */
@@ -3378,6 +3513,116 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CsrfToken"];
+                };
+            };
+        };
+    };
+    documents_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+        };
+    };
+    documents_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to a 60-second presigned URL */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    documents_direct_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["DirectUploadRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+        };
+    };
+    documents_upload_session_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadSessionCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UploadSessionCreateRequest"];
+                "multipart/form-data": components["schemas"]["UploadSessionCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadSession"];
+                };
+            };
+        };
+    };
+    documents_upload_session_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
                 };
             };
         };
