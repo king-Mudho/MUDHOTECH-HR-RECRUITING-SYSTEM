@@ -27,7 +27,7 @@ pause/close; candidates can discover jobs on a fast, SEO-friendly, accessible pu
 EC-JOB-01..19 (EC-JOB-20 deferred to v1.1: implement `unlisted` visibility only).
 
 ## Exit criteria
-- [ ] A recruiter creates the Software Developer vacancy, HR manager approves, it appears publicly and is searchable.
-- [ ] Publishing blocked with clear checklist when invalid; criteria immutable after approval (new version flow works).
-- [ ] Lighthouse (mobile) on `/jobs` and `/jobs/[slug]`: Performance ≥ 85, Accessibility ≥ 95, SEO ≥ 95.
-- [ ] Tests for listed EC ids; cross-tenant suite includes all new endpoints.
+- [x] A recruiter creates the Software Developer vacancy, HR manager approves, it appears publicly and is searchable.
+- [x] Publishing blocked with clear checklist when invalid; criteria immutable after approval (new version flow works).
+- [x] Lighthouse (mobile) on `/jobs` and `/jobs/[slug]`: Performance ≥ 85, Accessibility ≥ 95, SEO ≥ 95.
+- [x] Tests for listed EC ids; cross-tenant suite includes all new endpoints.

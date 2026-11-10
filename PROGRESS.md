@@ -5,18 +5,18 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 03 — Vacancy Management, Taxonomy & Public Job Board
-- **Current task:** P03-EXIT
+- **Current phase:** 04 — Candidate Portal, Documents, Applications & Questionnaires
+- **Current task:** P04-T01
 - **Last updated:** 2026-11-10
-- **Overall:** 45 / 193 tasks · 2 / 16 phases
+- **Overall:** 45 / 193 tasks · 3 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
 |---|---|---|---|---|---|
 | 01 | [Foundation & Development Environment](phases/PHASE_01_FOUNDATION.md) | MVP | 17 | ✅ Done | 2026-11-08 |
 | 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ✅ Done | 2026-11-09 |
-| 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | 🟦 In progress | |
-| 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ⬜ Not started | |
+| 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ✅ Done | 2026-11-10 |
+| 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | 🟦 In progress | |
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ⬜ Not started | |
 | 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ⬜ Not started | |
 | 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ⬜ Not started | |
@@ -101,7 +101,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P03-T12 — Frontend HR: `/hr/jobs` table (status filters, search), 5-step job wizard (Details → Requirements (criteria builder …
 - [x] P03-T13 — Frontend public: `/` home with search, `/jobs` (SSR, URL filters, pagination), `/jobs/[slug]` (deadline in job TZ + …
 - [x] P03-T14 — Seed: `seed_demo` extended with 2 orgs and 3 published jobs (Software Developer per Blueprint Appendix A, …
-- [ ] P03-EXIT — All exit criteria verified with evidence
+- [x] P03-EXIT — All exit criteria verified with evidence
 
 ### Phase 04 — Candidate Portal, Documents, Applications & Questionnaires  (`phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md`)
 - [ ] P04-T01 — `apps.candidates`: profile + experiences/educations/certifications/skills/languages models & CRUD APIs
@@ -325,6 +325,32 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 - **Follow-ups:** EC-ORG-09 reassignment list filled by jobs (Phase 03); `IsAssignedToJob` checker registered in P03-T07;
   `assert_can_publish` to be called by the job publish service; dev host memory pressure (use RUNSERVER_ARGS=--noreload).
 
+### Phase 03 — Vacancy Management, Taxonomy & Public Job Board (closed 2026-11-10)
+- **Built:** skills & qualification taxonomy (700 skills, aliases, relations, 14 levels, 20 bodies; versioned loader;
+  trigram autocomplete; org custom skills); jobs model (versions, criteria, rubric, approvals, assignments, events, slug
+  redirects, FTS); questionnaires (types, options, earlier-only branching, scoring per type, knock-out, protected-topic
+  linter + audited HR exception); job services (lock_version, readiness checklist, submit/approve/reject with dual control,
+  publish/schedule/pause/resume/close/archive/extend/duplicate/new-version, JobEvent + audit + outbox); beat tasks
+  (scheduled publish, auto-close, catch-up); assignments + assigned-only visibility + reassignment provider; flag-gated
+  heuristic AI suggestions; nh3 sanitisation + XSS suite; public APIs (FTS list, detail, questions, company, sitemap,
+  RSS/JSON feeds, 90-day closed then 410, slug redirects); HR API (31 endpoints in tenancy/matrix suites); HR UI (job table,
+  5-step wizard with TipTap, autosave + 409 conflict reload, readiness sidebar, overview with lifecycle actions, team,
+  versions, activity); public pages (home search, /jobs, /jobs/[slug] with JSON-LD/OG/share/viewer-local deadline,
+  /companies/[slug], robots); `seed_demo`; `scripts/run_backend_host.py`, `scripts/lighthouse.sh`.
+- **Evidence:** 868 backend tests, 79 Vitest, Playwright jobs journey 8/8 (desktop + mobile, axe), Lighthouse mobile
+  median /jobs 89/100/100 and /jobs/[slug] 88/100/100 (perf/a11y/SEO), EC-JOB 20/20, schema + types no drift.
+- **Deviations:** job approval dual control reuses `policy.rubric_dual_control`; auditors get read-only access to all org
+  vacancies; tenant guard treats related managers of loaded tenant objects as scoped; job/company detail pages render
+  as one blocking response (`instant = false`) so metadata is in `<head>` for every user agent.
+- **Found in exit verification and fixed:** status badge text contrast (axe); `htmlLimitedBots: /.*/` made browser
+  prefetch requests hang (removed); frontend image build failed on empty `public/` (Dockerfile creates it); EC-JOB-17/19/20
+  lacked tagged tests.
+- **Known limitations / follow-ups:** public pages cache 60 s per URL (closed/edited vacancies can be stale up to a minute;
+  on-demand revalidation via outbox later); question bank is built-in templates (org template bank UI later); shortlist
+  sizing by openings (EC-JOB-19) in Phase 07, offers limit in Phase 10; application-scale paging (EC-JOB-17) from Phase 04;
+  `/privacy`, `/terms`, `/accessibility`, `/how-we-use-ai` pages still 404 (console errors in Lighthouse best-practices 96);
+  backend dev Docker image is stale (no pgvector) - rebuild before the next compose-based E2E.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -334,6 +360,9 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-08 | P01-T03 | Django admin served at `/django-admin/` | `/admin` belongs to the Next.js platform-admin UI | — |
 | 2026-11-09 | P02-T01 | Bundled breached-password list = Django common-password corpus (19,640 SHA-1 hashes), not top-100k | No vetted 100k list bundled offline; `build_breached_passwords --source` + `BREACHED_PASSWORDS_FILE` let ops swap in a larger list | — |
 | 2026-11-09 | P02-T01/T04 | Session metadata via `allauth.usersessions.UserSession` instead of a custom `UserSessionMeta` model | Same fields (ip, user_agent, created, last_seen), maintained by allauth; `/me/sessions` API built on top; IP truncation added in Phase 09 retention | — |
+| 2026-11-10 | P03-T05 | Job approval dual control uses the existing `OrganisationPolicy.rubric_dual_control` flag | No separate job flag in the schema; approving a job approves its rubric | — |
+| 2026-11-10 | P03-T11 | Auditors can read every vacancy of their organisation (read-only) | Governance role needs visibility; RBAC denies all writes | — |
+| 2026-11-10 | P03-T13 | `/jobs/[slug]` and `/companies/[slug]` render as one blocking response (`instant = false`) | Metadata must be in `<head>` for link previews/SEO; streaming gained nothing (data cached 60 s) | — |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -387,3 +416,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-09 | Impl | P03-T12 | frontend HR vacancies: /hr/jobs table (status filters, debounced search, paging, empty/error/permission states), 5-step wizard /hr/jobs/new + /hr/jobs/[id]/edit (Details w/ TipTap rich text + deadline in vacancy TZ; Requirements criteria builder w/ taxonomy combobox, essential justification, equivalents, AI suggestions panel (flagged, accept-only); Questions builder w/ options, scoring per type, knock-out, earlier-question branching, protected-topic notices + HR exception, question bank; Rubric sliders w/ live total=100 + bands; Preview + readiness checklist + submit), debounced autosave with lock_version and 409 conflict reload, locked-version state; /hr/jobs/[id] overview (status actions w/ reason/date dialogs, 422 checklist, assignments editor, versions, activity); AuthGate + sidebar active state under Suspense (dynamic routes PPR); status badge contrast fix (axe); seed_demo command (2 orgs, users per role, 3 published jobs) + scripts/run_backend_host.py; 16 vitest + Playwright journey (desktop+mobile, axe) green | seed_demo also covers P03-T14 (tick after skill linking + tests) |
 | 2026-11-10 | Impl | P03-T13 | public pages: / (search), /jobs (SSR GET form filters, pagination, empty/unavailable states), /jobs/[slug] (deadline in vacancy TZ + viewer local TZ, essential vs preferred, documents, Apply CTA, WhatsApp/LinkedIn/email/copy share, JSON-LD JobPosting with safe escaping, OG/canonical, closed banner + noindex, unlisted noindex, 410 gone page, old-slug permanent redirect), /companies/[slug]; 'use cache' data with 60 s cacheLife; robots.ts + /sitemap.xml and /jobs/feed.rss|json rewrites; root ships only public i18n namespaces (areas get full catalogue). Lighthouse mobile median of 3 (scripts/lighthouse.sh): /jobs perf 89 a11y 100 SEO 100; /jobs/[slug] perf 88 a11y 100 SEO 100. Playwright jobs journey 8/8 (desktop+mobile, axe). Found + fixed: htmlLimitedBots=/.*/ made browser prefetch requests hang -> removed; blocking render of detail pages keeps metadata in head instead | public pages are cached 60 s per URL, so a closed/edited vacancy can show stale for up to a minute (on-demand revalidation via outbox later) |
 | 2026-11-10 | Impl | P03-T14 | seed_demo (DEMO_PASSWORD env, refuses when DEBUG off unless --allow-non-debug): platform admin, MudhoTech Demo Ltd + Acme Mining Zimbabwe (verified, privacy notice, departments, locations, one user per role), 3 published jobs via the real services (Software Developer per Blueprint Appendix A, Accountant, Registered Nurse) with justified criteria linked to the taxonomy where skills exist (taxonomy auto-loaded), rubrics and valid questionnaires (branching, knock-out, salary never scored); idempotent; 5 tests; 866 backend tests pass |  |
+| 2026-11-10 | Close | P03-EXIT | Phase 03 closed: exit criteria verified (E2E 8/8, Lighthouse /jobs 89/100/100 and /jobs/[slug] 88/100/100, EC-JOB 20/20, 868 backend + 79 frontend tests, tenancy/matrix 360). Fixed during close: EC-JOB-17/19/20 tests, frontend Dockerfile public/ | Phase 04 started |
