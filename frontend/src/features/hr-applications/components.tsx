@@ -19,6 +19,7 @@ import { useJob, useJobsContext } from "@/features/jobs/hooks";
 import { ApiError } from "@/lib/api-client";
 
 import { APPLICATION_VIEWERS, useHRApplication, useJobApplications } from "./api";
+import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 
 const FILTERS = [
   { key: "active", status: "submitted,processing,processing_error,under_review,on_hold" },
@@ -77,7 +78,12 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
             <span className="text-muted-foreground font-normal"> · {job.data.title}</span>
           ) : null}
         </h1>
-        <p className="text-muted-foreground text-sm">{t("phaseNote")}</p>
+        <p className="text-muted-foreground text-sm">
+          {t("phaseNote")}{" "}
+          <Link href={`/hr/jobs/${jobId}/pipeline`} className="underline">
+            {t("openPipeline")}
+          </Link>
+        </p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -267,6 +273,8 @@ export function HRApplicationView({ id }: { id: string }) {
         </div>
       </div>
 
+      <ActionsPanel app={a} />
+
       <section aria-labelledby="hr-contact" className="rounded-lg border p-4">
         <h2 id="hr-contact" className="text-lg font-semibold">
           {t("detail.contact")}
@@ -355,6 +363,9 @@ export function HRApplicationView({ id }: { id: string }) {
           ))}
         </ol>
       </section>
+      <NotesPanel app={a} />
+      <ClarificationsPanel app={a} />
+      <MessagesPanel app={a} />
     </div>
   );
 }

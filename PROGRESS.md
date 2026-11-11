@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 05 — ATS Workflow, Notifications & Messaging
-- **Current task:** P05-T08
+- **Current task:** P05-T09
 - **Last updated:** 2026-11-11
-- **Overall:** 68 / 193 tasks · 4 / 16 phases
+- **Overall:** 69 / 193 tasks · 4 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -130,7 +130,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P05-T05 — In-app notifications API (list, unread count, mark read/all) + `NotificationBell` component with polling (30 s) or SSE
 - [x] P05-T06 — `apps.messaging`: ClarificationRequest (templates + free text + optional upload, due_at), candidate answer endpoint …
 - [x] P05-T07 — ATS features: notes (@mentions → in-app notification), tags, assign recruiter, reopen with reason, holds
-- [ ] P05-T08 — Frontend HR: pipeline kanban view per vacancy (columns = statuses
+- [x] P05-T08 — Frontend HR: pipeline kanban view per vacancy (columns = statuses
 - [ ] P05-T09 — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per …
 - [ ] P05-T10 — HR settings: template editor (markdown with variable picker, preview with sample data, version history, revert to …
 - [ ] P05-T11 — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages
@@ -468,3 +468,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | Impl | P05-T05 | In-app notifications: GET /notifications (own, paged, ?unread=1, rendered one-line text, site-relative link only), GET /notifications/unread-count, POST /notifications/{id}/read and /notifications/read-all (other users' items 404); NotificationBell in candidate/HR/admin top bars polling every 30 s while visible, unread count in the accessible name, panel with open / mark read / mark all, closes on Escape or outside click; 3 backend + 2 Vitest tests; checked in the running app |  |
 | 2026-11-11 | Impl | P05-T06 | apps.messaging: ClarificationRequest (one open per application, questions/answers JSON, due_at, statuses open/answered/expired/cancelled), MessageThread (one per application), Message (plain-text sanitised body, attachment ids). HR asks (1-5 questions, due 1 h-30 d, from under_review/processing) -> needs_information + candidate email/in-app (question text only in the portal); candidate answers (plain text, own clean uploads) -> processing -> back to under_review via clarification.answered consumer until Phase 06/07 re-evaluation, recruiters notified; HR cancel; beat task: reminder 24 h before due, expiry -> expired + recruiter notified, no automatic decision, candidate can still message (EC-NOT-07); messages both ways with new_message notifications (no bodies in email, staff names hidden from candidates), attachments must be own message files that passed the scan (EC-NOT-08), participants may download them; question templates endpoint; all audited (never message bodies); 3 new notification kinds; 7 tests + 42 tenancy/matrix cases; backend 1697 passed | Screening re-evaluation on clarification.answered arrives with Phases 06/07 |
 | 2026-11-11 | Impl | P05-T07 | ATS: POST /hr/applications/{id}/transition (state machine; reason codes required for shortlist / not_selected / hold / reopen from seeded decision_reasons, 'other' needs text; outcomes need new applications.decide = org_admin/hr_manager; reopen HR-manager only; optional lock_version; candidate outcome email + in-app held for the org's notification delay); notes with team/private visibility and @mentions (only colleagues who can see the application, in-app note_mention, bodies never audited); PUT tags (normalised, max 10); POST assign (applications.assign = org_admin/hr_manager, assignee must work on the vacancy); GET /hr/decision-reasons; HR detail now returns tags, assignee, lock_version, allowed_transitions; scheduled in-app notifications stay hidden until due; 6 tests + 56 tenancy/matrix cases; backend 1745 passed | Undo within the delay and batching arrive with the Phase 08 shortlist workflow |
+| 2026-11-11 | Impl | P05-T08 | HR UI: /hr/jobs/[id]/pipeline kanban (status columns, HTML5 drag onto a column + keyboard Move button per card, move dialog loads allowed moves, asks for the reason code list the move needs, 'other' needs text, notification-delay notice for outcomes, explains illegal moves and server 409s with allowed targets, stale-version reload); application detail panels: actions (change status, assign recruiter for HR managers, tags), notes (team/private, mention colleagues on the vacancy), clarification composer (templates, up to 5 questions, upload toggle, due date; list with answers and withdraw), message thread (30 s refresh); status history kept; vacancy team endpoint now returns user_id; decision reasons re-seeded on post_migrate (survive test flushes); 6 Vitest tests; checked in the running app (move to on hold, note, tag, clarification) | Mobile kanban is a horizontal scroll; attachments in HR messages arrive with T09 |

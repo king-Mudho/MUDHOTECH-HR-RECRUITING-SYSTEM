@@ -4765,6 +4765,10 @@ components:
           type: string
           format: uuid
           readOnly: true
+        user_id:
+          type: string
+          format: uuid
+          readOnly: true
         role_on_job:
           allOf:
           - $ref: '#/components/schemas/RoleOnJobEnum'
@@ -4785,6 +4789,7 @@ components:
       - membership
       - org_role
       - role_on_job
+      - user_id
       - user_name
     AssignmentInputRequest:
       type: object

@@ -128,6 +128,10 @@ describe("HR applications", () => {
                 ...row,
                 withdrawn_at: null,
                 withdraw_reason: "",
+                tags: [],
+                assigned_recruiter: null,
+                lock_version: 1,
+                allowed_transitions: [],
                 job: { id: "j1", title: "Software Developer", version: 2 },
                 candidate: { email: "rudo@example.test", headline: "Developer", city: "Harare" },
                 documents: [

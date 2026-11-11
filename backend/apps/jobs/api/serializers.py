@@ -415,10 +415,19 @@ class JobEventSerializer(serializers.ModelSerializer):
 class AssignmentSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     org_role = serializers.CharField(source="membership.role", read_only=True)
+    user_id = serializers.UUIDField(source="membership.user_id", read_only=True)
 
     class Meta:
         model = JobAssignment
-        fields = ["id", "membership", "role_on_job", "user_name", "org_role", "created_at"]
+        fields = [
+            "id",
+            "membership",
+            "user_id",
+            "role_on_job",
+            "user_name",
+            "org_role",
+            "created_at",
+        ]
         read_only_fields = fields
 
     def get_user_name(self, obj: JobAssignment) -> str:

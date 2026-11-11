@@ -1997,6 +1997,8 @@ export interface components {
             readonly id: string;
             /** Format: uuid */
             readonly membership: string;
+            /** Format: uuid */
+            readonly user_id: string;
             readonly role_on_job: components["schemas"]["RoleOnJobEnum"];
             readonly user_name: string;
             readonly org_role: string;
