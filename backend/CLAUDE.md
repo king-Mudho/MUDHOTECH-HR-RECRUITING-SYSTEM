@@ -53,6 +53,12 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
 9. OpenAPI: annotate with `@extend_schema`; after API changes run
    `python manage.py spectacular --file schema.yml --validate --fail-on-warn` and commit; then `npm run gen:api`.
 10. Migrations: backward compatible; data migrations idempotent; run `makemigrations --check` before committing.
+11. User-facing messages go through `apps.notifications.delivery.notify(user, key, context, dedupe_key=...)`
+    inside the business transaction (never `queue_email` for candidate/staff notifications; that is for
+    auth/security mail). New kinds: add to `notifications/registry.py` + `defaults.py` (no scores/reasons).
+12. Seed data that tests rely on (templates, decision reasons) is (re)created on `post_migrate`, because
+    transactional tests flush the DB; a data migration alone is not enough.
+13. Migrations that use pgvector/trigram/unaccent depend on `core.0002_postgres_extensions` (fresh CI DBs).
 
 ## Commands
 Inside the container (`docker compose exec backend …`):

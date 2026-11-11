@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 05 — ATS Workflow, Notifications & Messaging
-- **Current task:** P05-EXIT
+- **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
+- **Current task:** P06-T01
 - **Last updated:** 2026-11-11
-- **Overall:** 72 / 193 tasks · 4 / 16 phases
+- **Overall:** 73 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -17,8 +17,8 @@
 | 02 | [Identity, Tenancy & Access Control](phases/PHASE_02_IDENTITY_TENANCY_ACCESS.md) | MVP | 14 | ✅ Done | 2026-11-09 |
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ✅ Done | 2026-11-10 |
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ✅ Done | 2026-11-10 |
-| 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | 🟦 In progress | |
-| 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ⬜ Not started | |
+| 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ✅ Done | 2026-11-11 |
+| 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | 🟦 In progress | |
 | 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ⬜ Not started | |
 | 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ⬜ Not started | |
 | 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ⬜ Not started | |
@@ -134,7 +134,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P05-T09 — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per …
 - [x] P05-T10 — HR settings: template editor (markdown with variable picker, preview with sample data, version history, revert to …
 - [x] P05-T11 — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages
-- [ ] P05-EXIT — All exit criteria verified with evidence
+- [x] P05-EXIT — All exit criteria verified with evidence
 
 ### Phase 06 — Document Ingestion & CV Extraction (AI Part 1)  (`phases/PHASE_06_CV_EXTRACTION.md`)
 - [ ] P06-T01 — Synthetic CV corpus generator `scripts/generate_synthetic_cvs.py` (python-docx + reportlab + Pillow for scanned …
@@ -376,6 +376,36 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 - **Known limitations / follow-ups:** EC-APP-15/16 HR flags are computed in Phase 06; the HR review workspace (scores,
   shortlist) arrives in Phase 08; Locust load test against the full stack in Phase 10; real-clamd EICAR runs nightly only.
 
+### Phase 05 — ATS Workflow, Notifications & Messaging (closed 2026-11-11)
+- **Built:** `apps.notifications` (versioned platform/org templates with a `{{ variable }}`-only renderer,
+  Markdown + nh3, branded HTML + plain text; 17 notification kinds with respectful defaults re-synced on
+  migrate; outbox-driven delivery with per-recipient dedupe, claim-before-send, deterministic Message-ID,
+  suppression for inactive/unverified/bounced/withdrawn recipients, candidate quiet hours, ~24 h retry then
+  dead letter, scheduled in-app items; SNS-signed SES bounce/complaint webhook; in-app inbox API; no-reply
+  headers and portal-link footer); `apps.messaging` (clarification requests with 1-5 questions, due dates,
+  reminder, expiry, cancel, candidate answers with scanned uploads; one message thread per application with
+  scanned attachments; candidate actions list); ATS (HR transitions validated by the state machine with
+  seeded decision-reason codes, HR-manager-only outcomes with the notification delay, notes with
+  @mentions, tags, recruiter assignment); HR UI (pipeline kanban with drag + keyboard moves, reason
+  dialog, actions/notes/clarification/message panels, notification template editor with draft preview,
+  history and revert); candidate UI (to-do list, clarification answers, messages, notification centre,
+  bell with polling).
+- **Evidence:** 1,749 backend tests (incl. replay and killed-worker delivery tests, clarification
+  round-trip, invalid-move rejection with audit), 123 Vitest, EC 11/11, tenancy/role matrix for every new
+  HR endpoint, schema/migrations no drift, Bandit/Semgrep/pip-audit clean; checked in the running app as HR
+  (moves, note, tag, clarification, template edit/preview/save/revert) and as a candidate (to-dos,
+  answered a real clarification -> HR and recruiter notified, notification centre).
+- **Deviations:** internal notification status `sending` (claim before send); new RBAC actions
+  `applications.decide` (outcomes) and `applications.assign` (org_admin/hr_manager); answered
+  clarifications return the application to `under_review` via a consumer until the Phase 06/07 pipeline
+  re-evaluates; scheduled outcome notifications stay hidden in-app until due; nightly CI made runnable and
+  Actions pinned to SHAs; uv 7-day dependency cooldown.
+- **Known limitations / follow-ups:** a fresh application stays `submitted` until the Phase 06 processing
+  pipeline exists, so HR can only ask clarifications once screening moves it to processing/review; undo
+  of an outcome inside the delay window and batched "not selected" messages arrive with the Phase 08
+  shortlist workflow; HR message attachments are not in the UI yet; SES topic ARNs and the no-reply
+  receipt rule are go-live configuration (Phase 11); first green nightly still to be confirmed.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -390,6 +420,8 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-10 | P03-T13 | `/jobs/[slug]` and `/companies/[slug]` render as one blocking response (`instant = false`) | Metadata must be in `<head>` for link previews/SEO; streaming gained nothing (data cached 60 s) | — |
 | 2026-11-10 | P04-T15 | Application reference org code = 6-char slug prefix + 4 chars of org id (format MHRS-<ORG>-<YYYY>-<NNNNNN> unchanged) | Orgs whose slugs share an 8-char prefix produced identical references | - |
 | 2026-11-10 | P04-EXIT | `/jobs` and `/apply/[jobId]` render as one blocking response | Readable without JavaScript (EC-APP-21); streamed content is hidden without JS | - |
+| 2026-11-11 | P05-T03 | Internal notification status `sending` (claim before send) | Exactly-once delivery under worker crashes | - |
+| 2026-11-11 | P05-T07 | RBAC actions `applications.decide` and `applications.assign` (org_admin/hr_manager) | Outcomes and assignment are HR-manager decisions | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -473,3 +505,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-11 | Impl | P05-T09 | Candidate side: GET /candidate/actions (open clarifications with due date, files to re-upload, unread employer messages); dashboard 'Things to do' shows them with direct links; application page gains 'Questions from the employer' (one field per question, optional file where allowed, all-or-nothing send, answered/expired views) and a message thread (30 s refresh, up to 3 scanned attachments, read-only when closed, reading clears the to-do); notification centre at /account/notifications for every signed-in user (all/unread, mark read / all, paging) plus 'See all' in the bell; inbox links keep only the path so a stored host can't redirect and old links survive a domain change, and message links now resolve; 1 backend + 6 Vitest tests; checked in the running app as a demo candidate (dashboard to-dos, answered a real clarification -> HR and recruiter notified, notification centre links) |  |
 | 2026-11-11 | Impl | P05-T10 | HR settings > Notifications (org admins / HR managers): email and in-app templates for every notification, Markdown editor with variable picker (inserts at the cursor), live unknown-variable guard, preview of the unsaved draft with sample data in a sandboxed iframe (backend preview now accepts draft subject/body, validated like a save), save as a new version, version history with 'load into editor' and an accurate 'in use' marker, revert to platform default with confirmation; template list accepts ?channel=inapp; 2 backend + 5 Vitest tests; checked in the running app (edit subject, preview, save v1, revert) | Login form shows a generic error when a session is already active (409) - fix in P05-T11 pass |
 | 2026-11-11 | Impl | P05-T11 | ADR-024 no-reply email: no Reply-To, Auto-Submitted + X-Auto-Response-Suppress headers, footer says replies are not read and links to the portal (plain + HTML); docs/10 runbook for the production no-reply mailbox (SES receipt rule, one fixed auto-response per sender per day, never answers auto-replies, keeps nothing); EC-NOT-06 test; EC-REV-07 suppression part tagged on the withdrawn-suppression test; sign-in while another session is active now ends that session and signs in (was a generic error on 409); Phase 05 EC 11/11 | Configure the SES receipt rule at go-live (Phase 11) |
+| 2026-11-11 | Close | P05-EXIT | Phase 05 closed: exit criteria verified (delivery replay + killed-worker tests, clarification round-trip test + in-app HR->candidate->HR check, invalid moves rejected with allowed targets + audited; 1749 backend / 123 Vitest, EC 11/11, security scans clean) | Phase 06 started |

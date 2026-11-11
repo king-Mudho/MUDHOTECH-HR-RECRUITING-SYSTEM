@@ -24,6 +24,6 @@ message threads, plus a full applicant-tracking pipeline UI over the state machi
 EC-NOT-01..09, EC-REV-07 (suppression part), EC-ACC-07 (notify verified email only).
 
 ## Exit criteria
-- [ ] Killing the worker mid-send and replaying events never sends duplicates (test).
-- [ ] Clarification round-trip works end to end (HR → candidate → answer → HR notified).
-- [ ] Kanban rejects invalid transitions; every move audited.
+- [x] Killing the worker mid-send and replaying events never sends duplicates (test).
+- [x] Clarification round-trip works end to end (HR → candidate → answer → HR notified).
+- [x] Kanban rejects invalid transitions; every move audited.

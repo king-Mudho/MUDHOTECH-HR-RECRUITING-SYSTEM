@@ -16,3 +16,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   upload, type and content checks, antivirus, quarantine); application drafts, idempotent submission with references and
   receipts, withdrawal and lifecycle; consent and AI-notice records; staff-assisted applications; the 5-step apply
   wizard; read-only HR application list and detail.
+- Phase 05 ATS, notifications & messaging: versioned notification templates with an HR editor; reliable
+  deduplicated email and in-app delivery (suppression, quiet hours, retries, bounce handling); notification
+  bell and centre; clarification requests and per-application message threads; HR pipeline board with
+  validated, reason-coded status changes, notes, tags and assignment; candidate to-do list.
