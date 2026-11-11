@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 import { ErrorState } from "@/components/states/states";
 import { PageSkeleton } from "@/components/states/page-skeleton";
@@ -14,14 +14,23 @@ import type { components } from "@/types/api";
 import { candidateApi } from "../api";
 import { useApplications, useProfile } from "../hooks";
 import { shownStatus } from "./applications";
+import { conversationKeys } from "./conversation";
+
+type CandidateAction = components["schemas"]["CandidateAction"];
 
 type PublicJobs = components["schemas"]["PaginatedPublicJobListList"];
 
 export function CandidateDashboard() {
   const t = useTranslations("candidate.dashboard");
   const ts = useTranslations("status");
+  const format = useFormatter();
   const apps = useApplications();
   const profile = useProfile();
+  const actions = useQuery({
+    queryKey: conversationKeys.actions,
+    queryFn: () => api.get<CandidateAction[]>("/candidate/actions/"),
+  });
+  const todo = actions.data ?? [];
   const skills = useQuery({
     queryKey: ["candidate", "profile", "skills"],
     queryFn: () => candidateApi.list<{ raw_name: string }>("skills"),
@@ -60,10 +69,49 @@ export function CandidateDashboard() {
         <h2 id="actions" className="text-lg font-semibold">
           {t("actionsTitle")}
         </h2>
-        {drafts.length === 0 && completeness >= 60 ? (
+        {todo.length === 0 && drafts.length === 0 && completeness >= 60 ? (
           <p className="text-muted-foreground text-sm">{t("noActions")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
+            {todo.map((a) => (
+              <li
+                key={`${a.kind}-${a.application_id}-${a.document_name ?? ""}`}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3"
+              >
+                <span>
+                  {a.kind === "clarification"
+                    ? t("answerClarification", {
+                        company: a.organisation_name,
+                        title: a.job_title,
+                        date: a.due_at
+                          ? format.dateTime(new Date(a.due_at), { dateStyle: "medium" })
+                          : "",
+                      })
+                    : a.kind === "reupload"
+                      ? t("reupload", { name: a.document_name ?? "", title: a.job_title })
+                      : t("unreadMessages", {
+                          count: a.count ?? 1,
+                          company: a.organisation_name,
+                          title: a.job_title,
+                        })}
+                </span>
+                <Button asChild size="sm" variant={a.kind === "message" ? "outline" : "default"}>
+                  <Link
+                    href={
+                      a.kind === "reupload"
+                        ? "/candidate/documents"
+                        : `/candidate/applications/${a.application_id}#${a.kind === "clarification" ? "clarifications" : "messages"}`
+                    }
+                  >
+                    {a.kind === "clarification"
+                      ? t("answerNow")
+                      : a.kind === "reupload"
+                        ? t("uploadAgain")
+                        : t("readMessages")}
+                  </Link>
+                </Button>
+              </li>
+            ))}
             {drafts.map((d) => (
               <li
                 key={d.id}

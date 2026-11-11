@@ -261,3 +261,32 @@ def test_isolation_and_state_rules(world: Any) -> None:
         f"/api/v1/hr/applications/{app.pk}/messages/", {"body": "hello"}, format="json"
     )
     assert res.status_code == 409
+
+
+def test_candidate_actions_list(world: Any) -> None:
+    """P05-T09: open clarification, a file to re-upload and unread employer messages."""
+    from apps.applications.models import ApplicationDocument
+
+    team, app = world
+    candidate = me(app.candidate_user)
+    assert candidate.get("/api/v1/candidate/actions/").json() == []
+    ask(team, app)
+    bad = doc(app.candidate_user, "cv", ScanStatus.INFECTED)
+    ApplicationDocument.objects.create(
+        organisation=team.org, application=app, document=bad, role="cv", required_doc_key="cv"
+    )
+    for text in ("First", "Second"):
+        hr(team.recruiter, team.org).post(
+            f"/api/v1/hr/applications/{app.pk}/messages/", {"body": text}, format="json"
+        )
+    rows = candidate.get("/api/v1/candidate/actions/").json()
+    kinds = {r["kind"]: r for r in rows}
+    assert set(kinds) == {"clarification", "reupload", "message"}
+    assert (
+        kinds["clarification"]["due_at"] and kinds["reupload"]["document_name"] == "certificate.pdf"
+    )
+    assert kinds["message"]["count"] == 2 and kinds["message"]["application_id"] == str(app.pk)
+    candidate.get(f"/api/v1/applications/{app.pk}/messages/")  # reading clears the message item
+    kinds = {r["kind"] for r in candidate.get("/api/v1/candidate/actions/").json()}
+    assert "message" not in kinds
+    assert me(UserFactory()).get("/api/v1/candidate/actions/").json() == []

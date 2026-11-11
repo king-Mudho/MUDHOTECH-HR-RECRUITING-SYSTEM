@@ -160,6 +160,15 @@ export function NotificationBell() {
               </ul>
             )}
           </div>
+          <div className="border-t px-3 py-2 text-sm">
+            <Link
+              href="/account/notifications"
+              className="underline"
+              onClick={() => setOpen(false)}
+            >
+              {t("seeAll")}
+            </Link>
+          </div>
         </section>
       ) : null}
     </div>

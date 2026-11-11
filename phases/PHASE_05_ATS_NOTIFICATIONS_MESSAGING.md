@@ -16,7 +16,7 @@ message threads, plus a full applicant-tracking pipeline UI over the state machi
 - [x] **P05-T06** — `apps.messaging`: ClarificationRequest (templates + free text + optional upload, due_at), candidate answer endpoint (answers stored as candidate-reported evidence → outbox `clarification.answered`), expiry task (EC-NOT-07); MessageThread/Message with sanitised bodies, attachments via documents scan (EC-NOT-08), read tracking; all tenant-scoped & audited; status transitions `needs_information` ↔ `processing/under_review` wired to state machine.
 - [x] **P05-T07** — ATS features: notes (@mentions → in-app notification), tags, assign recruiter, reopen with reason, holds; HR transition endpoint with reason codes (`decision_reasons` seed list).
 - [x] **P05-T08** — Frontend HR: pipeline kanban view per vacancy (columns = statuses; drag triggers reason modal + server validation; illegal moves rejected with message), application timeline component, notes/tags/assign UI, clarification request composer (templates), message thread panel.
-- [ ] **P05-T09** — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per application, notification centre.
+- [x] **P05-T09** — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per application, notification centre.
 - [ ] **P05-T10** — HR settings: template editor (markdown with variable picker, preview with sample data, version history, revert to default).
 - [ ] **P05-T11** — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages.
 

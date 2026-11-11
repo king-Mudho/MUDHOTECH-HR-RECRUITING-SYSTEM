@@ -7,6 +7,8 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/forms/confirm-dialog";
+
+import { CandidateClarifications, CandidateMessages } from "./conversation";
 import { EmptyState, ErrorState } from "@/components/states/states";
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { StatusBadge } from "@/components/states/status-badge";
@@ -208,6 +210,16 @@ export function CandidateApplicationDetail({ id }: { id: string }) {
             ) : null}
           </CardContent>
         </Card>
+      ) : null}
+
+      {a.status !== "draft" ? (
+        <>
+          <CandidateClarifications applicationId={id} />
+          <CandidateMessages
+            applicationId={id}
+            canWrite={!["withdrawn", "abandoned"].includes(a.status)}
+          />
+        </>
       ) : null}
 
       {withdrawing ? (

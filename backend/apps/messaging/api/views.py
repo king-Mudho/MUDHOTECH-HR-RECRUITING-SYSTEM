@@ -287,3 +287,24 @@ class HRMessagesView(_HRView):
             MessageSerializer(message, context={"viewer": "staff"}).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class CandidateActionSerializer(serializers.Serializer):
+    kind = serializers.ChoiceField(choices=["clarification", "reupload", "message"])
+    application_id = serializers.UUIDField()
+    job_title = serializers.CharField()
+    organisation_name = serializers.CharField()
+    due_at = serializers.DateTimeField(required=False)
+    document_name = serializers.CharField(required=False)
+    count = serializers.IntegerField(required=False)
+
+
+class CandidateActionsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="candidate_actions_list", responses=CandidateActionSerializer(many=True)
+    )
+    def get(self, request: Request) -> Response:
+        rows = services.candidate_actions(authed_user(request))
+        return Response(CandidateActionSerializer(rows, many=True).data)

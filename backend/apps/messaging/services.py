@@ -539,3 +539,71 @@ def participant_can_access_document(user: Any, document: Any) -> bool:
         if membership and applications_visible_to(membership).filter(pk=app.pk).exists():
             return True
     return False
+
+
+# ----------------------------------------------------------------------- candidate actions
+ACTIVE_FOR_CANDIDATE = (
+    Status.SUBMITTED,
+    Status.PROCESSING,
+    Status.PROCESSING_ERROR,
+    Status.NEEDS_INFORMATION,
+    Status.UNDER_REVIEW,
+    Status.ON_HOLD,
+    Status.SHORTLISTED,
+    Status.INTERVIEW,
+    Status.OFFER,
+)
+
+
+def candidate_actions(user: Any) -> list[dict[str, Any]]:
+    """What the candidate should do next (P05-T09): answer open clarifications, re-upload files
+    that could not be accepted, read new messages from employers. Newest/most urgent first."""
+    from apps.applications.models import ApplicationDocument
+
+    items: list[dict[str, Any]] = []
+    apps = {
+        a.pk: a
+        for a in Application.objects.unscoped()
+        .filter(candidate_user=user, status__in=ACTIVE_FOR_CANDIDATE)
+        .select_related("job", "organisation")
+    }
+    if not apps:
+        return items
+
+    def base(app: Application) -> dict[str, Any]:
+        return {
+            "application_id": str(app.pk),
+            "job_title": app.job.title,
+            "organisation_name": app.organisation.name,
+        }
+
+    for req in (
+        ClarificationRequest.objects.unscoped()
+        .filter(application_id__in=apps, status=ClarificationStatus.OPEN)
+        .order_by("due_at")
+    ):
+        items.append(
+            {"kind": "clarification", "due_at": req.due_at, **base(apps[req.application_id])}
+        )
+    for link in (
+        ApplicationDocument.objects.unscoped()
+        .filter(application_id__in=apps, document__scan_status__in=BAD_SCANS)
+        .select_related("document")
+    ):
+        items.append(
+            {
+                "kind": "reupload",
+                "document_name": link.document.original_filename,
+                **base(apps[link.application_id]),
+            }
+        )
+    unread: dict[Any, int] = {}
+    for app_id in (
+        Message.objects.unscoped()
+        .filter(thread__application_id__in=apps, sender_role=SenderRole.STAFF, read_at__isnull=True)
+        .values_list("thread__application_id", flat=True)
+    ):
+        unread[app_id] = unread.get(app_id, 0) + 1
+    for app_id, count in unread.items():
+        items.append({"kind": "message", "count": count, **base(apps[app_id])})
+    return items

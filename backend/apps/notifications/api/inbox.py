@@ -9,7 +9,6 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.db.models import QuerySet
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics, serializers
@@ -27,6 +26,7 @@ from apps.notifications.models import Channel, Notification, NotificationStatus
 
 LINK_KEYS = (
     "clarification_url",
+    "message_url",
     "application_url",
     "apply_url",
     "note_url",
@@ -42,15 +42,18 @@ def own_inbox(user: Any) -> QuerySet[Notification]:
 
 
 def relative_link(payload: dict[str, Any]) -> str:
-    """First known link variable, reduced to a path on our own site (else empty)."""
-    site = urlparse(settings.FRONTEND_URL)
+    """First known link variable, reduced to a path on our own site (else empty).
+
+    Only the path (and fragment) is ever returned, so a stored host - ours from when the
+    notification was created, or anything else - can never send the reader off-site, and old
+    notifications keep working if the site's domain changes."""
     for key in LINK_KEYS:
         value = str(payload.get(key) or "")
         if not value:
             continue
         parsed = urlparse(value)
-        if parsed.netloc and parsed.netloc != site.netloc:
-            continue
+        if parsed.scheme not in ("", "http", "https"):
+            continue  # e.g. javascript:
         path = parsed.path or "/"
         if not path.startswith("/") or path.startswith("//"):
             continue

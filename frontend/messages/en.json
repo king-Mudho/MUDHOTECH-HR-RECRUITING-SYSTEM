@@ -1032,7 +1032,13 @@
       "recommendedTitle": "Jobs matching your skills",
       "addSkills": "Add a few skills to your profile to see matching jobs.",
       "noRecommended": "No matching vacancies right now.",
-      "browse": "Browse all vacancies"
+      "browse": "Browse all vacancies",
+      "answerClarification": "{company} asked you a question about {title}. Please reply by {date}.",
+      "reupload": "Please upload {name} again for {title}.",
+      "unreadMessages": "{count, plural, one {# new message} other {# new messages}} from {company} about {title}.",
+      "answerNow": "Answer",
+      "uploadAgain": "Upload again",
+      "readMessages": "Read"
     },
     "profile": {
       "title": "Your profile",
@@ -1181,6 +1187,36 @@
       "privacy": "Privacy",
       "privacyBody": "You can ask to see, correct or delete your data at any time.",
       "howWeUseAi": "How we use AI"
+    },
+    "clarifications": {
+      "title": "Questions from the employer",
+      "intro": "The employer would like a little more information.",
+      "question": "Question {n}",
+      "answerLabel": "Your answer to question {n}",
+      "upload": "Add a file (optional)",
+      "attached": "Attached: {name}",
+      "removeFile": "Remove",
+      "send": "Send my answers",
+      "sending": "Sending…",
+      "failed": "Your answers could not be sent. Please try again.",
+      "due": "Reply by {date}",
+      "fileSent": "File sent",
+      "expired": "The reply date has passed. You can still send the employer a message below."
+    },
+    "messages": {
+      "title": "Messages",
+      "privacy": "Only you and the people handling this vacancy can see these messages.",
+      "loading": "Loading…",
+      "empty": "No messages yet. You can write to the employer here.",
+      "you": "You",
+      "attachment": "Download attachment",
+      "write": "Write to the employer",
+      "attach": "Attach a file (optional)",
+      "attached": "Attached: {name}",
+      "removeFile": "Remove",
+      "send": "Send message",
+      "failed": "Your message could not be sent. Please try again.",
+      "closed": "This application is closed, so new messages can't be sent."
     }
   },
   "apply": {
@@ -1476,6 +1512,16 @@
     "empty": "You have no notifications yet.",
     "loading": "Loading…",
     "failed": "We couldn't load your notifications. Please try again.",
-    "unreadPrefix": "Unread:"
+    "unreadPrefix": "Unread:",
+    "seeAll": "See all notifications",
+    "filterLabel": "Show",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "emptyTitle": "Nothing here",
+    "emptyUnread": "You have read everything.",
+    "pagination": "Notification pages",
+    "pageOf": "Page {page} of {total}",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

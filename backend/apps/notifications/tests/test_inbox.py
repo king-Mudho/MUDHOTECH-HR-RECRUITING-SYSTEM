@@ -66,7 +66,11 @@ def test_links_are_only_paths_on_our_site() -> None:
     assert relative_link(
         {"application_url": "http://localhost:3000/candidate/applications/1#x"}
     ) == ("/candidate/applications/1#x")
-    assert relative_link({"application_url": "https://evil.example/phish"}) == ""
-    assert relative_link({"application_url": "//evil.example/phish"}) == ""
+    # only the path is kept, so a foreign host can't send anyone off-site
+    assert relative_link({"application_url": "https://evil.example/phish"}) == "/phish"
+    assert relative_link(
+        {"message_url": "https://old-domain.example/candidate/applications/2#messages"}
+    ) == ("/candidate/applications/2#messages")
+    assert relative_link({"application_url": "//evil.example/phish"}) == "/phish"
     assert relative_link({"application_url": "javascript:alert(1)"}) == ""
     assert relative_link({}) == ""

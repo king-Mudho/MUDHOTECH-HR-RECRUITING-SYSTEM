@@ -200,6 +200,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/candidate/actions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_actions_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/profile/": {
         parameters: {
             query?: never;
@@ -2061,6 +2077,17 @@ export interface components {
         AvailabilityEnum: "immediate" | "notice" | "not_looking";
         /** @enum {unknown} */
         BlankEnum: "";
+        CandidateAction: {
+            kind: components["schemas"]["KindEnum"];
+            /** Format: uuid */
+            application_id: string;
+            job_title: string;
+            organisation_name: string;
+            /** Format: date-time */
+            due_at?: string;
+            document_name?: string;
+            count?: number;
+        };
         CandidateSkill: {
             /** Format: uuid */
             readonly id: string;
@@ -2703,6 +2730,13 @@ export interface components {
          * @enum {string}
          */
         KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_update" | "shortlisted";
+        /**
+         * @description * `clarification` - clarification
+         *     * `reupload` - reupload
+         *     * `message` - message
+         * @enum {string}
+         */
+        KindEnum: "clarification" | "reupload" | "message";
         Language: {
             /** Format: uuid */
             readonly id: string;
@@ -4298,6 +4332,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    candidate_actions_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateAction"][];
                 };
             };
         };
