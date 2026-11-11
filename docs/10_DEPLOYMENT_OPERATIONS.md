@@ -39,6 +39,23 @@ Env vars (see `.env.example`): `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `ALLOWED_
 - `restore-database.md` — RDS PITR / pg_restore steps; verification queries.
 - `incident-data-leak.md`, `credential-compromise.md`, `malware-detected.md`, `disable-ai.md` (feature flag), `email-deliverability.md`, `certificate-renewal.md`, `disk-full.md`, `rotate-keys.md` (field encryption key rotation with re-encrypt task).
 
+### No-reply mailbox (ADR-024, EC-NOT-06)
+Candidates sometimes reply to notification emails. The application never reads that mailbox; instead:
+
+1. Verify the sending domain in SES and use `DEFAULT_FROM_EMAIL="<Org platform name> <no-reply@<domain>>"`.
+2. Create an SES **receipt rule** for `no-reply@<domain>`: action 1 = Lambda (or SES "bounce"-style
+   template reply) that sends the fixed auto-response below **once per sender per day** and only when
+   the incoming mail has no `Auto-Submitted` header (never answer auto-replies); action 2 = **stop**
+   (do not store the message - it may contain personal data meant for the employer).
+3. Auto-response text (plain text, no personal data, no quoting of the original):
+
+   > Thank you for your message. This address does not accept replies, and your email has not been
+   > read or kept. To contact the employer about your application, sign in at <portal URL> and use the
+   > **Messages** section of the application. If you cannot sign in, use "Forgot password" on the
+   > sign-in page.
+
+4. Monitoring: alert if the rule's invocation count spikes (likely a mail loop or a campaign).
+
 ## 7. Scheduled jobs (Celery Beat)
 | Job | Schedule |
 |---|---|

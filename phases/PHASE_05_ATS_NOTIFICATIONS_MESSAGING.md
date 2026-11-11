@@ -18,7 +18,7 @@ message threads, plus a full applicant-tracking pipeline UI over the state machi
 - [x] **P05-T08** — Frontend HR: pipeline kanban view per vacancy (columns = statuses; drag triggers reason modal + server validation; illegal moves rejected with message), application timeline component, notes/tags/assign UI, clarification request composer (templates), message thread panel.
 - [x] **P05-T09** — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per application, notification centre.
 - [x] **P05-T10** — HR settings: template editor (markdown with variable picker, preview with sample data, version history, revert to default).
-- [ ] **P05-T11** — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages.
+- [x] **P05-T11** — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages.
 
 ## Edge cases
 EC-NOT-01..09, EC-REV-07 (suppression part), EC-ACC-07 (notify verified email only).

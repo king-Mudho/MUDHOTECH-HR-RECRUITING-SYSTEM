@@ -53,6 +53,30 @@ describe("LoginForm", () => {
     expect(screen.getByLabelText(/Email address/)).toHaveAttribute("aria-invalid", "true");
   });
 
+  it("ends an existing session and signs in again when already signed in (409)", async () => {
+    fetchMock
+      .mockResolvedValueOnce(json({ status: 409, errors: [{ code: "conflict" }] }, 409))
+      .mockResolvedValueOnce(json({ status: 401, data: { flows: [] }, meta: {} }, 401))
+      .mockResolvedValueOnce(json({ status: 200, meta: { is_authenticated: true } }))
+      .mockResolvedValueOnce(
+        json({ id: "u2", memberships: [{ role: "hr_manager" }], platform_role: "none" }),
+      );
+    wrap(<LoginForm />);
+    await userEvent.type(screen.getByLabelText(/Email address/), "hr@example.test");
+    await userEvent.type(screen.getByLabelText(/^Password/), "a long passphrase");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() => expect(replace).toHaveBeenCalled());
+    const methods = fetchMock.mock.calls.map(
+      ([u, i]) => `${(i as RequestInit)?.method ?? "GET"} ${String(u)}`,
+    );
+    expect(methods.slice(0, 3)).toEqual([
+      "POST /api/v1/auth/browser/v1/auth/login",
+      "DELETE /api/v1/auth/browser/v1/auth/session",
+      "POST /api/v1/auth/browser/v1/auth/login",
+    ]);
+    expect(screen.queryByText("Please fix the following:")).not.toBeInTheDocument();
+  });
+
   it("walks through the MFA step and redirects to next", async () => {
     fetchMock
       .mockResolvedValueOnce(

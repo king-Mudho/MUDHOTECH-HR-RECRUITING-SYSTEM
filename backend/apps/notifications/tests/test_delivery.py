@@ -119,7 +119,8 @@ def test_worker_killed_mid_send_is_recovered_with_the_same_message_id(user: Any)
 
 @pytest.mark.parametrize("case", ["inactive", "unverified", "suppressed", "withdrawn"])
 def test_suppression_rules(case: str) -> None:
-    """EC-NOT-01 / EC-NOT-04 / EC-ACC-07."""
+    """EC-NOT-01 / EC-NOT-04 / EC-ACC-07; "withdrawn" also covers the notification part of
+    EC-REV-07 (withdrawn after the decision, before the message goes out -> suppressed)."""
     user = UserFactory(verified=case != "unverified")
     context: dict[str, Any] = {}
     key = "shortlisted"
@@ -238,3 +239,18 @@ def test_org_override_is_used_and_unrenderable_override_falls_back() -> None:
         )
     with mock.patch.object(delivery, "now", return_value=DAYTIME):
         assert delivery.deliver(email_of(rows).pk) == NotificationStatus.SENT
+
+
+def test_ec_not_06_emails_do_not_invite_replies_and_point_to_portal_messages(user: Any) -> None:
+    """EC-NOT-06: sent from the no-reply address with no Reply-To; auto-responders are told not
+    to answer; the footer says replies are not read and links to the portal messages."""
+    n = email_of(queue(user))
+    assert delivery.deliver(n.pk) == NotificationStatus.SENT
+    msg = mail.outbox[0]
+    assert msg.reply_to == [] and "Reply-To" not in msg.extra_headers
+    assert "no-reply@" in msg.from_email
+    assert msg.extra_headers["Auto-Submitted"] == "auto-generated"
+    assert msg.extra_headers["X-Auto-Response-Suppress"] == "All"
+    assert "Replies to this address are not read" in msg.body
+    assert "Sign in to read and send messages: http://localhost:3000" in msg.body
+    assert 'href="http://localhost:3000"' in msg.alternatives[0][0]

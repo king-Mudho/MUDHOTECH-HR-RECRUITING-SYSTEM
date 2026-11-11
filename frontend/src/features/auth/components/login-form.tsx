@@ -12,7 +12,7 @@ import { ErrorSummary, TextField } from "@/components/forms/form-field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
-import { authApi, isAuthenticated, pendingFlow } from "../allauth";
+import { AllauthError, authApi, isAuthenticated, pendingFlow } from "../allauth";
 import { applyServerErrors } from "../form-errors";
 import { codeSchema, loginSchema, type CodeValues, type LoginValues } from "../schemas";
 import { homeFor, reloadMe, safeNext } from "../session";
@@ -47,7 +47,17 @@ export function LoginForm() {
   const onCredentials = credentials.handleSubmit(async (values) => {
     setFormError(null);
     try {
-      const resp = await authApi.login(values.email, values.password);
+      let resp;
+      try {
+        resp = await authApi.login(values.email, values.password);
+      } catch (err) {
+        // 409: this browser already has a session (e.g. another account). The person typed new
+        // credentials, so end the old session and sign in once more.
+        if (!(err instanceof AllauthError) || err.status !== 409) throw err;
+        await authApi.logout().catch(() => undefined);
+        queryClient.clear();
+        resp = await authApi.login(values.email, values.password);
+      }
       if (isAuthenticated(resp)) return finish();
       const flow = pendingFlow(resp);
       if (flow === "mfa_authenticate") setStep("mfa");

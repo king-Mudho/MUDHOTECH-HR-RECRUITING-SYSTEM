@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 05 — ATS Workflow, Notifications & Messaging
-- **Current task:** P05-T11
+- **Current task:** P05-EXIT
 - **Last updated:** 2026-11-11
-- **Overall:** 71 / 193 tasks · 4 / 16 phases
+- **Overall:** 72 / 193 tasks · 4 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -133,7 +133,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P05-T08 — Frontend HR: pipeline kanban view per vacancy (columns = statuses
 - [x] P05-T09 — Frontend candidate: actions-needed panel (clarifications, re-uploads), clarification answer form, messages inbox per …
 - [x] P05-T10 — HR settings: template editor (markdown with variable picker, preview with sample data, version history, revert to …
-- [ ] P05-T11 — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages
+- [x] P05-T11 — No-reply auto-response doc + `Reply-To` handling decision (EC-NOT-06): emails link to portal messages
 - [ ] P05-EXIT — All exit criteria verified with evidence
 
 ### Phase 06 — Document Ingestion & CV Extraction (AI Part 1)  (`phases/PHASE_06_CV_EXTRACTION.md`)
@@ -472,3 +472,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-11 | Fix | CI-NIGHTLY | Nightly workflow had never passed. E2E job now starts beat + documents worker, seeds demo data and runs a production frontend build; ClamAV job gets Postgres/Redis and a case-insensitive EICAR check; security job: Bandit clean at all severities (asserts replaced by explicit checks, reasoned nosec), Semgrep p/default with metrics off clean (all GitHub Actions pinned to commit SHAs, health-check SQL parameterised, protocol-mandated SHA-1/SNS cases annotated), uv 7-day dependency cooldown with dated exceptions for celery/types-markdown; pip-audit clean | Confirm the next scheduled nightly run is green |
 | 2026-11-11 | Impl | P05-T09 | Candidate side: GET /candidate/actions (open clarifications with due date, files to re-upload, unread employer messages); dashboard 'Things to do' shows them with direct links; application page gains 'Questions from the employer' (one field per question, optional file where allowed, all-or-nothing send, answered/expired views) and a message thread (30 s refresh, up to 3 scanned attachments, read-only when closed, reading clears the to-do); notification centre at /account/notifications for every signed-in user (all/unread, mark read / all, paging) plus 'See all' in the bell; inbox links keep only the path so a stored host can't redirect and old links survive a domain change, and message links now resolve; 1 backend + 6 Vitest tests; checked in the running app as a demo candidate (dashboard to-dos, answered a real clarification -> HR and recruiter notified, notification centre links) |  |
 | 2026-11-11 | Impl | P05-T10 | HR settings > Notifications (org admins / HR managers): email and in-app templates for every notification, Markdown editor with variable picker (inserts at the cursor), live unknown-variable guard, preview of the unsaved draft with sample data in a sandboxed iframe (backend preview now accepts draft subject/body, validated like a save), save as a new version, version history with 'load into editor' and an accurate 'in use' marker, revert to platform default with confirmation; template list accepts ?channel=inapp; 2 backend + 5 Vitest tests; checked in the running app (edit subject, preview, save v1, revert) | Login form shows a generic error when a session is already active (409) - fix in P05-T11 pass |
+| 2026-11-11 | Impl | P05-T11 | ADR-024 no-reply email: no Reply-To, Auto-Submitted + X-Auto-Response-Suppress headers, footer says replies are not read and links to the portal (plain + HTML); docs/10 runbook for the production no-reply mailbox (SES receipt rule, one fixed auto-response per sender per day, never answers auto-replies, keeps nothing); EC-NOT-06 test; EC-REV-07 suppression part tagged on the withdrawn-suppression test; sign-in while another session is active now ends that session and signs in (was a generic error on 409); Phase 05 EC 11/11 | Configure the SES receipt rule at go-live (Phase 11) |

@@ -121,14 +121,26 @@ FOOTER = (
 )
 
 
+def _footer(context: dict[str, Any]) -> tuple[str, str]:
+    """Plain and HTML footer. EC-NOT-06: replies are not read, so point to the portal messages."""
+    portal = str(context.get("portal_url") or "")
+    if not portal.startswith(("https://", "http://")):
+        return FOOTER, html.escape(FOOTER)
+    text = f"{FOOTER} Sign in to read and send messages: {portal}"
+    href = html.escape(portal, quote=True)
+    link = f'<a href="{href}" style="color:#1f4e94">{html.escape(portal)}</a>'
+    return text, f"{html.escape(FOOTER)} Sign in to read and send messages: {link}"
+
+
 def render(subject: str, body_md: str, context: dict[str, Any], *, brand: str) -> Rendered:
     subject_out = _substitute(subject, context, escape=False).replace("\n", " ").strip()
-    text = _plain(_substitute(body_md, context, escape=False)) + "\n--\n" + FOOTER + "\n"
+    footer_text, footer_html = _footer(context)
+    text = _plain(_substitute(body_md, context, escape=False)) + "\n--\n" + footer_text + "\n"
     body_html = _html_body(_substitute(body_md, context, escape=True))
     page = LAYOUT.format(
         title=html.escape(subject_out),
         brand=html.escape(brand),
         body=body_html,
-        footer=html.escape(FOOTER),
+        footer=footer_html,
     )
     return Rendered(subject=subject_out, text=text, html=page)

@@ -213,7 +213,8 @@ def deliver(notification_id: Any) -> str:
         to=[n.recipient_user.email],
         headers={
             "Message-ID": message_id(n),
-            "Auto-Submitted": "auto-generated",
+            "Auto-Submitted": "auto-generated",  # RFC 3834: auto-responders must not reply
+            "X-Auto-Response-Suppress": "All",  # Exchange/Outlook: no out-of-office replies
             "X-MHRS-Notification": n.key,
         },
     )
