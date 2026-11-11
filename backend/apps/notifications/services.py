@@ -164,11 +164,26 @@ def render_for(
         return render_template(default, context), default
 
 
-def preview(template: NotificationTemplate, overrides: dict[str, Any] | None = None) -> Rendered:
+def preview(
+    template: NotificationTemplate,
+    overrides: dict[str, Any] | None = None,
+    *,
+    subject: str | None = None,
+    body_md: str | None = None,
+) -> Rendered:
+    """Render with sample data. ``subject``/``body_md`` preview an unsaved draft of this template
+    (validated exactly as saving would be)."""
     context = registry.sample_context(template.key)
     context.update({k: str(v)[:500] for k, v in (overrides or {}).items() if k in context})
+    draft_subject = template.subject if subject is None else subject
+    draft_body = template.body_md if body_md is None else body_md
+    if subject is not None or body_md is not None:
+        try:
+            validate(draft_subject, draft_body, registry.get(template.key).allowed)
+        except TemplateValidationError as exc:
+            raise _validation_error(exc) from None
     try:
-        return render_template(template, context)
+        return render(draft_subject, draft_body, context, brand=BRAND)
     except TemplateRenderError as exc:  # pragma: no cover - samples cover every allowed variable
         raise DomainError("validation_error", str(exc), status_code=400) from None
 

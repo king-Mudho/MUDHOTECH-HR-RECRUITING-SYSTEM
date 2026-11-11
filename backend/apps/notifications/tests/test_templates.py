@@ -228,3 +228,30 @@ def test_api_permissions_and_isolation() -> None:
         ).status_code
         == 404
     )
+
+
+def test_api_lists_inapp_templates_on_request() -> None:
+    team = make_org_with_team()
+    c = hr(team.hr_manager, team.org)
+    rows = c.get("/api/v1/hr/notification-templates/?channel=inapp").json()
+    assert rows and {r["channel"] for r in rows} == {"inapp"}
+    assert {r["channel"] for r in c.get("/api/v1/hr/notification-templates/").json()} == {"email"}
+
+
+def test_preview_renders_an_unsaved_draft_and_validates_it() -> None:
+    team = make_org_with_team()
+    template = services.effective_template(team.org, "shortlisted")
+    assert template is not None
+    c = hr(team.hr_manager, team.org)
+    url = f"/api/v1/hr/notification-templates/{template.pk}/preview/"
+    ok = c.post(
+        url,
+        {"subject": "Good news, {{ recipient_name }}", "body_md": "**{{ job_title }}**"},
+        format="json",
+    )
+    assert ok.status_code == 200 and ok.json()["subject"] == "Good news, Tendai"
+    assert "<strong>Software Developer</strong>" in ok.json()["html"]
+    bad = c.post(url, {"body_md": "Your score: {{ score }}"}, format="json")
+    assert bad.status_code == 400 and "body_md" in bad.json()["error"]["details"]
+    template.refresh_from_db()
+    assert "score" not in template.body_md  # nothing saved by a preview

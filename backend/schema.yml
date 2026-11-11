@@ -2746,6 +2746,13 @@ paths:
       description: The template in force for every notification (override if any,
         else default).
       parameters:
+      - in: query
+        name: channel
+        schema:
+          type: string
+          enum:
+          - email
+          - inapp
       - name: ordering
         required: false
         in: query
@@ -8258,6 +8265,13 @@ components:
             type: string
             minLength: 1
             maxLength: 500
+        subject:
+          type: string
+          maxLength: 300
+        body_md:
+          type: string
+          minLength: 1
+          maxLength: 25000
     Profile:
       type: object
       properties:

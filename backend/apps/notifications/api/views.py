@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Any, ClassVar
 
 from django.db.models import QuerySet
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -70,6 +70,8 @@ class PreviewSerializer(StrictSerializer):
     context = serializers.DictField(  # type: ignore[assignment]
         child=serializers.CharField(max_length=500), required=False
     )
+    subject = serializers.CharField(max_length=300, allow_blank=True, required=False)
+    body_md = serializers.CharField(max_length=25_000, required=False)
 
 
 class RevertSerializer(StrictSerializer):
@@ -85,7 +87,10 @@ class RenderedSerializer(serializers.Serializer):
 
 
 @extend_schema_view(
-    list=extend_schema(operation_id="hr_notification_templates_list"),
+    list=extend_schema(
+        operation_id="hr_notification_templates_list",
+        parameters=[OpenApiParameter("channel", str, enum=["email", "inapp"])],
+    ),
     retrieve=extend_schema(operation_id="hr_notification_templates_retrieve"),
     create=extend_schema(
         operation_id="hr_notification_templates_create",
@@ -112,9 +117,12 @@ class NotificationTemplateViewSet(RbacActionMixin, viewsets.GenericViewSet):
     def list(self, request: Request) -> Response:
         """The template in force for every notification (override if any, else default)."""
         org = request.organisation  # type: ignore[attr-defined]
+        channel = request.query_params.get("channel") or Channel.EMAIL
+        if channel not in Channel.values:
+            channel = Channel.EMAIL
         rows = []
         for key in sorted(registry.KINDS):
-            template = services.effective_template(org, key)
+            template = services.effective_template(org, key, channel)
             if template is not None:
                 rows.append(template)
         return Response(TemplateSerializer(rows, many=True).data)
@@ -141,7 +149,13 @@ class NotificationTemplateViewSet(RbacActionMixin, viewsets.GenericViewSet):
     def preview(self, request: Request, pk: str | None = None) -> Response:
         ser = PreviewSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
-        rendered = services.preview(self.get_object(), ser.validated_data.get("context"))
+        data = ser.validated_data
+        rendered = services.preview(
+            self.get_object(),
+            data.get("context"),
+            subject=data.get("subject"),
+            body_md=data.get("body_md"),
+        )
         return Response(RenderedSerializer(rendered).data)
 
     @extend_schema(

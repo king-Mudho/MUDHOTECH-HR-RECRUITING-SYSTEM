@@ -324,7 +324,8 @@
         "organisation": "Organisation",
         "structure": "Departments & locations",
         "team": "Team",
-        "policies": "Policies"
+        "policies": "Policies",
+        "notifications": "Notifications"
       },
       "pendingVerification": "Your organisation is awaiting verification. You can prepare vacancies, but publishing is enabled after verification.",
       "suspended": "This organisation is suspended. Recruitment data is read-only.",
@@ -1522,6 +1523,49 @@
     "pagination": "Notification pages",
     "pageOf": "Page {page} of {total}",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "templates": {
+      "title": "Notification templates",
+      "intro": "Change the wording of the messages your organisation sends. Saving creates a new version; you can go back to any earlier version or to the platform default.",
+      "forbidden": "Only organisation admins and HR managers can change notification templates.",
+      "emptyTitle": "No templates",
+      "empty": "Templates will appear here once the platform defaults are installed.",
+      "channel": "Channel",
+      "channels": {
+        "email": "Email",
+        "inapp": "In-app"
+      },
+      "pick": "Notification",
+      "customShort": "customised",
+      "default": "Platform default",
+      "custom": "Customised · version {version}",
+      "subject": "Subject",
+      "body": "Message (Markdown)",
+      "inappBody": "Short in-app text",
+      "markdownHelp": "Use **bold**, lists and [link text](url). Raw HTML is removed.",
+      "inappHelp": "One short sentence, shown in the notification bell.",
+      "variables": "Insert a variable",
+      "insert": "Insert {name}",
+      "noSensitive": "Messages must not include scores, rankings or screening reasons - point people to their account instead.",
+      "unknown": "Not available in this message: {names}. Remove them or pick from the list.",
+      "save": "Save new version",
+      "saving": "Saving…",
+      "saved": "Saved. New messages use this version.",
+      "preview": "Preview",
+      "previewTitle": "Preview with sample data",
+      "previewHelp": "Sample names and dates - not a real person.",
+      "previewFrame": "Email preview",
+      "revert": "Revert to platform default",
+      "revertTitle": "Revert to the platform default?",
+      "revertBody": "Your customised versions are kept in the history, but new messages will use the platform wording.",
+      "history": "Version history",
+      "loading": "Loading…",
+      "defaultVersion": "Platform default v{version}",
+      "customVersion": "Your version {version}",
+      "inUse": "in use",
+      "loadVersion": "Load into editor",
+      "failed": "That didn't work. Please try again.",
+      "reverted": "Reverted. New messages use the platform default."
+    }
   }
 }

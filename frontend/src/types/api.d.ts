@@ -3378,6 +3378,8 @@ export interface components {
             context?: {
                 [key: string]: string;
             };
+            subject?: string;
+            body_md?: string;
         };
         Profile: {
             /** Format: uuid */
@@ -6297,6 +6299,7 @@ export interface operations {
     hr_notification_templates_list: {
         parameters: {
             query?: {
+                channel?: "email" | "inapp";
                 /** @description Which field to use when ordering the results. */
                 ordering?: string;
                 /** @description A page number within the paginated result set. */
