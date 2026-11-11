@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.applications",
     "apps.privacy",
     "apps.notifications",
+    "apps.messaging",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -219,6 +220,7 @@ CELERY_TASK_ROUTES = {
     "apps.resumes.*": {"queue": "documents"},
     "apps.screening.*": {"queue": "ai"},
     "apps.notifications.*": {"queue": "notifications"},
+    "apps.messaging.*": {"queue": "notifications"},
     "apps.analytics.*": {"queue": "reports"},
 }
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
@@ -243,6 +245,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.applications.tasks.sweep_stale_drafts",
         "schedule": timedelta(hours=1),
         "options": {"expires": 3000},
+    },
+    "messaging-clarifications-due": {
+        "task": "apps.messaging.tasks.clarifications_due",
+        "schedule": timedelta(minutes=15),
+        "options": {"expires": 800},
     },
     "notifications-send-due": {
         "task": "apps.notifications.tasks.send_due",

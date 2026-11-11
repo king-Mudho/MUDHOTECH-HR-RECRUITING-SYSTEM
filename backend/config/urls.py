@@ -26,6 +26,7 @@ api_v1_patterns = [
     path("", include("apps.documents.api.urls")),
     path("", include("apps.applications.api.urls")),
     path("", include("apps.notifications.api.urls")),
+    path("", include("apps.messaging.api.urls")),
 ]
 
 urlpatterns = [

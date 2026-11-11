@@ -173,4 +173,35 @@ AI-assisted suggestions require human review before any decision.
 [Open the note]({{ note_url }})""",
         "{{ mention_author }} mentioned you on {{ job_title }}.",
     ),
+    "clarification_answered": DefaultTemplate(
+        "{{ candidate_name }} answered your question ({{ job_title }})",
+        """Hello {{ recipient_name }},
+
+{{ candidate_name }} has answered the clarification request on application
+**{{ reference }}** for **{{ job_title }}**.
+
+[Open the application]({{ application_url }})""",
+        "{{ candidate_name }} answered your question on {{ job_title }}.",
+    ),
+    "clarification_expired": DefaultTemplate(
+        "No answer yet from {{ candidate_name }} ({{ job_title }})",
+        """Hello {{ recipient_name }},
+
+The clarification request on application **{{ reference }}** for **{{ job_title }}** passed its
+due date without an answer. Please decide how to proceed; the candidate can still send you a
+message.
+
+[Open the application]({{ application_url }})""",
+        "The clarification for {{ candidate_name }} on {{ job_title }} is overdue.",
+    ),
+    "new_message": DefaultTemplate(
+        "New message about {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+You have a new message from {{ sender_name }} about **{{ job_title }}**. For your privacy the
+message is only shown in your account.
+
+[Read the message]({{ message_url }})""",
+        "New message from {{ sender_name }} about {{ job_title }}.",
+    ),
 }

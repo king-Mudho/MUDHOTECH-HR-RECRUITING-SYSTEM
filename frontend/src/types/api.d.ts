@@ -72,6 +72,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/{application_id}/clarifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_clarifications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/clarifications/{clarification_id}/answer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["applications_clarifications_answer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/applications/{application_id}/documents/": {
         parameters: {
             query?: never;
@@ -82,6 +114,22 @@ export interface paths {
         get?: never;
         put: operations["applications_documents_set"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/messages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["applications_messages_list"];
+        put?: never;
+        post: operations["applications_messages_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -526,6 +574,75 @@ export interface paths {
             cookie?: never;
         };
         get: operations["hr_applications_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/clarifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET needs ``applications.view``; writes need the action named by ``write_action``. */
+        get: operations["hr_applications_clarifications_list"];
+        put?: never;
+        /** @description GET needs ``applications.view``; writes need the action named by ``write_action``. */
+        post: operations["hr_applications_clarifications_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/clarifications/{clarification_id}/cancel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description GET needs ``applications.view``; writes need the action named by ``write_action``. */
+        post: operations["hr_applications_clarifications_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/messages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET needs ``applications.view``; writes need the action named by ``write_action``. */
+        get: operations["hr_applications_messages_list"];
+        put?: never;
+        /** @description GET needs ``applications.view``; writes need the action named by ``write_action``. */
+        post: operations["hr_applications_messages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/clarification-templates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_clarification_templates_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1930,6 +2047,63 @@ export interface components {
          * @enum {string}
          */
         ChannelEnum: "email" | "inapp" | "sms" | "whatsapp";
+        Clarification: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly status: components["schemas"]["ClarificationStatusEnum"];
+            readonly message: string;
+            questions: components["schemas"]["ClarificationQuestion"][];
+            answers: components["schemas"]["ClarificationAnswerItem"][];
+            /** Format: date-time */
+            readonly due_at: string;
+            /** Format: date-time */
+            readonly answered_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        ClarificationAnswerInputRequest: {
+            id: string;
+            /** @default  */
+            text: string;
+            /** Format: uuid */
+            document_id?: string | null;
+        };
+        ClarificationAnswerItem: {
+            id: string;
+            text: string;
+            /** Format: uuid */
+            document_id: string | null;
+        };
+        ClarificationAnswerRequest: {
+            answers: components["schemas"]["ClarificationAnswerInputRequest"][];
+        };
+        ClarificationCreateRequest: {
+            questions: components["schemas"]["ClarificationQuestionInputRequest"][];
+            /** Format: date-time */
+            due_at: string;
+            /** @default  */
+            message: string;
+            /** Format: uuid */
+            criterion_id?: string | null;
+        };
+        ClarificationQuestion: {
+            id: string;
+            prompt: string;
+            allow_upload: boolean;
+        };
+        ClarificationQuestionInputRequest: {
+            prompt: string;
+            /** @default false */
+            allow_upload: boolean;
+        };
+        /**
+         * @description * `open` - Waiting for the candidate
+         *     * `answered` - Answered
+         *     * `expired` - Expired
+         *     * `cancelled` - Cancelled
+         * @enum {string}
+         */
+        ClarificationStatusEnum: "open" | "answered" | "expired" | "cancelled";
         CommentRequest: {
             comment?: string;
         };
@@ -2397,12 +2571,15 @@ export interface components {
         /**
          * @description * `application_received` - application_received
          *     * `application_withdrawn_confirmation` - application_withdrawn_confirmation
+         *     * `clarification_answered` - clarification_answered
+         *     * `clarification_expired` - clarification_expired
          *     * `clarification_reminder` - clarification_reminder
          *     * `clarification_requested` - clarification_requested
          *     * `document_rejected_reupload` - document_rejected_reupload
          *     * `draft_abandoned` - draft_abandoned
          *     * `draft_deadline_reminder` - draft_deadline_reminder
          *     * `invitation_staff` - invitation_staff
+         *     * `new_message` - new_message
          *     * `not_selected` - not_selected
          *     * `note_mention` - note_mention
          *     * `recruiter_digest` - recruiter_digest
@@ -2411,7 +2588,7 @@ export interface components {
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_update" | "shortlisted";
         Language: {
             /** Format: uuid */
             readonly id: string;
@@ -2527,6 +2704,27 @@ export interface components {
          * @enum {string}
          */
         MembershipStatusEnum: "active" | "deactivated";
+        Message: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly sender_role: components["schemas"]["SenderRoleEnum"];
+            readonly sender_name: string;
+            readonly mine: boolean;
+            /** @description Plain text (sanitised) */
+            readonly body: string;
+            attachment_document_ids: string[];
+            /** Format: date-time */
+            readonly created_at: string;
+            /**
+             * Format: date-time
+             * @description Read by the other side
+             */
+            readonly read_at: string | null;
+        };
+        MessageCreateRequest: {
+            body: string;
+            attachment_ids?: string[];
+        };
         MfaStatus: {
             required: boolean;
             enabled: boolean;
@@ -3223,6 +3421,11 @@ export interface components {
             protected_exception_reason: string;
             options: components["schemas"]["QuestionOptionInput"][];
         };
+        QuestionTemplate: {
+            key: string;
+            prompt: string;
+            allow_upload: boolean;
+        };
         QuestionnaireInputRequest: {
             lock_version?: number;
             questions: components["schemas"]["QuestionInputRequest"][];
@@ -3378,6 +3581,13 @@ export interface components {
             /** Format: date-time */
             publish_at: string;
         };
+        /**
+         * @description * `staff` - Employer
+         *     * `candidate` - Candidate
+         *     * `system` - System
+         * @enum {string}
+         */
+        SenderRoleEnum: "staff" | "candidate" | "system";
         /**
          * @description * `entry` - Entry level
          *     * `junior` - Junior
@@ -3726,6 +3936,55 @@ export interface operations {
             };
         };
     };
+    applications_clarifications_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"][];
+                };
+            };
+        };
+    };
+    applications_clarifications_answer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+                clarification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClarificationAnswerRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationAnswerRequest"];
+                "multipart/form-data": components["schemas"]["ClarificationAnswerRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
     applications_documents_set: {
         parameters: {
             query?: never;
@@ -3749,6 +4008,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    applications_messages_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"][];
+                };
+            };
+        };
+    };
+    applications_messages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MessageCreateRequest"];
+                "multipart/form-data": components["schemas"]["MessageCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
                 };
             };
         };
@@ -4723,6 +5030,143 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HRApplicationDetail"];
+                };
+            };
+        };
+    };
+    hr_applications_clarifications_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"][];
+                };
+            };
+        };
+    };
+    hr_applications_clarifications_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClarificationCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClarificationCreateRequest"];
+                "multipart/form-data": components["schemas"]["ClarificationCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    hr_applications_clarifications_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+                clarification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Clarification"];
+                };
+            };
+        };
+    };
+    hr_applications_messages_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"][];
+                };
+            };
+        };
+    };
+    hr_applications_messages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MessageCreateRequest"];
+                "multipart/form-data": components["schemas"]["MessageCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    hr_clarification_templates_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionTemplate"][];
                 };
             };
         };

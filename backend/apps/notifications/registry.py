@@ -51,6 +51,9 @@ SAMPLES: dict[str, str] = {
     "dashboard_url": "https://mhrs.example/hr/dashboard",
     "mention_author": "Rudo Moyo",
     "note_url": "https://mhrs.example/hr/applications/42#notes",
+    "candidate_name": "Tendai Moyo",
+    "sender_name": "MudhoTech Demo Ltd",
+    "message_url": "https://mhrs.example/candidate/applications/42#messages",
 }
 
 _KINDS = [
@@ -142,6 +145,27 @@ _KINDS = [
         "A colleague mentioned you in a note",
         "staff",
         ("mention_author", "job_title", "note_url"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "clarification_answered",
+        "A candidate answered a clarification request",
+        "staff",
+        ("candidate_name", "job_title", "reference", "application_url"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "clarification_expired",
+        "A clarification request passed its due date without an answer",
+        "staff",
+        ("candidate_name", "job_title", "reference", "application_url"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "new_message",
+        "A new message in an application's conversation",
+        "candidate",
+        ("sender_name", "job_title", "message_url"),
         urgent=True,
     ),
 ]
