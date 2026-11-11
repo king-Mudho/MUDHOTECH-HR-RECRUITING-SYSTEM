@@ -14,42 +14,61 @@ jobs:
     name: E2E (Playwright + axe) on docker compose stack
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      E2E_BASE_URL: http://127.0.0.1:3000
+      MAILPIT_URL: http://127.0.0.1:8025
     steps:
-      - uses: actions/checkout@v7
-      - name: Start stack
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Start backend stack
+        # beat relays the outbox (emails), workers run the queues; the frontend runs as a
+        # production build on the runner below (dev-mode compiles are too slow for E2E).
         run: |
           cp .env.example .env
-          docker compose up -d --build --wait postgres redis s3 s3-init mailpit backend worker-default frontend
-      - name: Wait for readiness
+          docker compose up -d --build --wait postgres redis s3 s3-init mailpit backend worker-default worker-documents beat
+      - name: Wait for readiness and seed demo data
         run: |
           for i in $(seq 1 60); do curl -fsS http://localhost:8000/readyz && break; sleep 5; done
           curl -fsS http://localhost:8000/readyz
-      - uses: actions/setup-node@v4
+          docker compose exec -T backend python manage.py seed_demo
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - name: Build and start the frontend
+        working-directory: frontend
+        env:
+          API_INTERNAL_URL: http://127.0.0.1:8000
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          nohup npm run start > /tmp/frontend.log 2>&1 &
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:3000/ > /dev/null && break; sleep 2; done
+          curl -fsS http://127.0.0.1:3000/ > /dev/null
       - name: Playwright
         working-directory: frontend
         run: |
-          npm ci --no-audit --no-fund
+          export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' ../.env | cut -d= -f2-)"
           npx playwright install --with-deps chromium
           npx playwright test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
           name: playwright-report
           path: frontend/playwright-report
       - name: Stack logs on failure
         if: failure()
-        run: docker compose logs --no-color > compose.log && tail -n 300 compose.log
+        run: |
+          docker compose logs --no-color > compose.log && tail -n 300 compose.log
+          tail -n 100 /tmp/frontend.log || true
 
   security:
     name: Security scans
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           version: "0.13.7"
           python-version: "3.12"
@@ -61,7 +80,7 @@ jobs:
           uv export --frozen --no-hashes --no-dev > /tmp/requirements.txt
           uv run pip-audit -r /tmp/requirements.txt
       - name: Semgrep
-        run: pipx run semgrep scan --config auto --error --exclude frontend/node_modules
+        run: pipx run semgrep scan --config p/default --metrics=off --error --exclude frontend/node_modules --exclude "*.txt"
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -78,9 +97,22 @@ jobs:
       clamav:
         image: clamav/clamav:stable
         ports: ["3310:3310"]
+      # the scan-pipeline test module uses the database (pytest-django), like the CI job
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: mhrs
+          POSTGRES_USER: mhrs
+          POSTGRES_PASSWORD: mhrs
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mhrs -d mhrs" --health-interval 5s --health-timeout 5s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           version: "0.13.7"
           python-version: "3.12"
@@ -93,9 +125,13 @@ jobs:
           CLAMD_INTEGRATION: "1"
           CLAMAV_HOST: localhost
           CLAMAV_PORT: "3310"
+          DATABASE_URL: postgres://mhrs:mhrs@localhost:5432/mhrs
+          REDIS_URL: redis://localhost:6379/0
+          CELERY_BROKER_URL: redis://localhost:6379/0
+          DJANGO_SETTINGS_MODULE: config.settings.test
         run: |
           uv sync --frozen
-          uv run pytest -q apps/documents/tests/test_scan_pipeline.py -k real_clamd -p no:cacheprovider
+          uv run pytest -q --create-db apps/documents/tests/test_scan_pipeline.py -k real_clamd -p no:cacheprovider -rs
 
   ai-benchmark:
     name: AI benchmarks (enabled from Phase 06)

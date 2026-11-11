@@ -20,7 +20,7 @@ def check_database() -> None:
     timeout_ms = int(settings.HEALTHCHECK_TIMEOUT_SECONDS * 1000)
     try:
         with connection.cursor() as cursor:
-            cursor.execute(f"SET statement_timeout = {timeout_ms}")
+            cursor.execute("SELECT set_config('statement_timeout', %s, false)", [str(timeout_ms)])
             cursor.execute("SELECT 1")
             cursor.fetchone()
     finally:

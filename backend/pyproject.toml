@@ -57,6 +57,10 @@ dev = [
 
 [tool.uv]
 package = false
+# Supply-chain cooldown: never resolve a release younger than a week.
+exclude-newer = "7 days"
+# Exceptions: versions already reviewed and locked before the cooldown was added (2026-11-11).
+exclude-newer-package = { types-markdown = "2026-11-11T00:00:00Z", celery = "2026-11-11T00:00:00Z" }
 
 [tool.ruff]
 line-length = 100

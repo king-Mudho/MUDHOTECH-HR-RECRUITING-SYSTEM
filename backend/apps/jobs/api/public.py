@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape  # nosec B406 - only escapes text we write; nothing is parsed
 
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse

@@ -448,7 +448,8 @@ def _post(
     docs = [_owned_document(sender, d, {Purpose.MESSAGE_ATTACHMENT}) for d in attachment_ids]
     with transaction.atomic():
         thread = _thread(app, create=True)
-        assert thread is not None
+        if thread is None:  # pragma: no cover - create=True always returns one
+            raise RuntimeError("message thread could not be created")
         message = Message.objects.create(
             organisation_id=app.organisation_id,
             thread=thread,

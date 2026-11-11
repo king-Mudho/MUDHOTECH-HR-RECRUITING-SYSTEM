@@ -320,4 +320,5 @@ def test_real_clamd_detects_eicar(settings: Any) -> None:
     settings.CLAMAV_TIMEOUT = 60
     assert antivirus.scan(b"%PDF-1.4 clean synthetic file").clean
     verdict = antivirus.scan(antivirus.EICAR)
-    assert not verdict.clean and "Eicar" in verdict.signature
+    # ClamAV names it e.g. "Win.Test.EICAR_HDB-1" (older releases: "Eicar-Signature")
+    assert not verdict.clean and "eicar" in verdict.signature.lower()

@@ -7,9 +7,11 @@ COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 
 FROM deps AS dev
+# Dev-compose only (bind mounts + named node_modules volume); the runtime stage runs as `app`.
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY . .
 EXPOSE 3000
+# nosemgrep: dockerfile.security.missing-user.missing-user
 CMD ["sh", "-c", "npm ci --prefer-offline --no-audit --no-fund >/dev/null && npm run dev -- --hostname 0.0.0.0 --port 3000"]
 
 FROM deps AS build

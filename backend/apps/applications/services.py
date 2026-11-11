@@ -116,7 +116,8 @@ def start_or_resume_draft(
             raise DuplicateApplicationError(
                 details={"application_id": str(existing.pk), "reference": existing.reference}
             )
-    assert job.published_version_id is not None  # guaranteed by _open_for_applications
+    if job.published_version_id is None:  # pragma: no cover - _open_for_applications checks
+        raise DomainError("job_not_accepting", "This vacancy is closed.", status_code=422)
     app = Application(
         organisation_id=job.organisation_id,
         job=job,

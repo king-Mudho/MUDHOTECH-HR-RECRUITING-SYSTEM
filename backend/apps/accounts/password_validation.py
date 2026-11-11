@@ -22,7 +22,9 @@ DEFAULT_FILE = Path(__file__).resolve().parent / "data" / "breached_passwords.sh
 
 
 def sha1_hex(password: str) -> str:
-    return hashlib.sha1(password.encode("utf-8"), usedforsecurity=False).hexdigest()
+    # The breached-password list is published as SHA-1 hashes; this is a lookup key, not storage.
+    digest = hashlib.sha1(password.encode("utf-8"), usedforsecurity=False)  # nosemgrep
+    return digest.hexdigest()
 
 
 @functools.cache

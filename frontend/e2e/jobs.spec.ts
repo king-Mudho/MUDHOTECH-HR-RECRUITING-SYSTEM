@@ -79,6 +79,7 @@ test("recruiter creates a vacancy with the wizard and submits it", async ({ page
   await expect(page.getByText("Everything required is in place.").first()).toBeVisible();
   await expectNoSeriousA11yViolations(page);
   await page.getByRole("button", { name: "Submit for approval" }).click();
+  // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp - the URL is escaped
   await expect(page).toHaveURL(new RegExp(`${jobUrl.replace(/[/.]/g, "\\$&")}$`), {
     timeout: 15_000,
   });

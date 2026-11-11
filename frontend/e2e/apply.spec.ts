@@ -188,7 +188,7 @@ test("candidate applies with CV and answers, gets a receipt, cannot apply twice,
   const reference = (await confirmation.textContent())!.match(/MHRS-[A-Z0-9]+-\d{4}-\d{6}/)![0];
 
   // Receipt email quotes the reference.
-  await mailText(request, email, new RegExp(reference));
+  await mailText(request, email, new RegExp(reference)); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp - reference is [A-Z0-9-]
 
   // A second attempt points to the existing application instead of creating a duplicate.
   await open(page, applyUrl);

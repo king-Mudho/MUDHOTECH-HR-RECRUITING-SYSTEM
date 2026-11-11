@@ -3,7 +3,7 @@ from .base import *
 DEBUG = False
 INSTALLED_APPS = [*INSTALLED_APPS, "tests.core_testapp"]
 TENANT_STRICT_MODE = True
-SECRET_KEY = "test-secret-key-not-for-production"
+SECRET_KEY = "test-secret-key-not-for-production"  # nosec B105 - test settings only
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
@@ -20,6 +20,6 @@ FIELD_ENCRYPTION_KEYS = (
 )
 S3_ENDPOINT_URL = None
 S3_ACCESS_KEY = "testing"
-S3_SECRET_KEY = "testing"
+S3_SECRET_KEY = "testing"  # nosec B105 - moto (in-memory S3) in tests
 S3_REGION = "us-east-1"
 LOGGING["root"]["level"] = "WARNING"  # type: ignore[index]

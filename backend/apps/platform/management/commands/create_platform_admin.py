@@ -44,7 +44,8 @@ class Command(BaseCommand):
                 except ValidationError as exc:
                     raise CommandError("; ".join(exc.messages)) from exc
                 user = User.objects.create_user(email=email, password=password)
-            assert user is not None
+            if user is None:  # pragma: no cover - both branches above set it
+                raise CommandError("Could not create the user.")
             user.platform_role = PlatformRole.PLATFORM_ADMIN
             user.is_staff = True
             user.email_verified_at = user.email_verified_at or time.now()

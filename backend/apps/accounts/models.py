@@ -38,7 +38,8 @@ class UserManager(BaseUserManager["User"]):
         if not email:
             raise ValueError("An email address is required.")
         user = self.model(email=normalize_email_address(email), **extra)
-        user.set_password(password)
+        # Callers validate first (allauth forms, invitation accept, create_platform_admin).
+        user.set_password(password)  # nosemgrep
         user.save(using=self._db)
         return user
 

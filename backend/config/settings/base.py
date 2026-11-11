@@ -394,10 +394,10 @@ ACCOUNT_PASSWORD_MIN_LENGTH = 10
 ACCOUNT_RATE_LIMITS = {
     "login": "30/m/ip",
     "login_failed": "10/m/ip,10/5m/key",
-    "signup": "20/m/ip",
+    "signup": "20/m/ip",  # nosec B105 - rate limits, not passwords
     "confirm_email": "1/3m/key",
-    "reset_password": "20/m/ip,5/m/key",
-    "reset_password_from_key": "20/m/ip",
+    "reset_password": "20/m/ip,5/m/key",  # nosec B105 - rate limit
+    "reset_password_from_key": "20/m/ip",  # nosec B105 - rate limit
     "change_password": "5/m/user",
     "manage_email": "10/m/user",
 }

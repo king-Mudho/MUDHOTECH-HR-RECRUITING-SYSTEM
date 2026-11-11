@@ -65,7 +65,8 @@ def _is_sns_url(url: str) -> bool:
 
 @functools.lru_cache(maxsize=8)
 def fetch_certificate(url: str) -> bytes:
-    with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310  # nosec B310
+    # Only ever called with URLs that passed _is_sns_url (https + Amazon SNS host).
+    with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310  # nosec B310  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
         return bytes(resp.read(64 * 1024))
 
 
@@ -90,7 +91,8 @@ def verify(message: dict[str, Any]) -> None:
     if not _is_sns_url(cert_url):
         raise InvalidSnsMessageError()
     algorithm: hashes.HashAlgorithm = (
-        hashes.SHA256() if str(message.get("SignatureVersion")) == "2" else hashes.SHA1()  # noqa: S303  # nosec B303
+        # SignatureVersion 1 is defined by Amazon SNS as SHA1withRSA; we cannot choose otherwise.
+        hashes.SHA256() if str(message.get("SignatureVersion")) == "2" else hashes.SHA1()  # noqa: S303  # nosec B303  # nosemgrep: python.cryptography.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1
     )
     try:
         certificate = x509.load_pem_x509_certificate(fetch_certificate(cert_url))
@@ -113,7 +115,8 @@ def confirm_subscription(message: dict[str, Any]) -> None:
     url = str(message.get("SubscribeURL") or "")
     if not _is_sns_url(url):
         raise InvalidSnsMessageError()
-    with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310  # nosec B310
+    # Only ever called with URLs that passed _is_sns_url (https + Amazon SNS host).
+    with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310  # nosec B310  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
         resp.read(1024)
     logger.info("sns_subscription_confirmed", extra={"topic": message.get("TopicArn")})
 

@@ -1264,7 +1264,8 @@ def duplicate(job: Job, *, actor: Any, title: str | None = None) -> Job:
     copy.save(update_fields=["department"])
     copy.locations.set(job.locations.all())
     draft = copy.current_version
-    assert draft is not None
+    if draft is None:  # pragma: no cover - create_job always makes a draft version
+        raise RuntimeError("duplicated job has no draft version")
     # Replace the default rubric/questionnaire with copies of the source version.
     Rubric.objects.for_org(job.organisation_id).filter(job_version=draft).delete()
     Questionnaire.objects.for_org(job.organisation_id).filter(job_version=draft).delete()
