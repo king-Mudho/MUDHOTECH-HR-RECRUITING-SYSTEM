@@ -198,6 +198,8 @@ SPECTACULAR_SETTINGS = {
         "JobVersionStatusEnum": "apps.jobs.models.VersionStatus",
         "ApplicationDocumentRoleEnum": "apps.applications.models.DocumentRole",
         "ApplicationStatusEnum": "apps.applications.models.Status",
+        "JobVisibilityEnum": "apps.jobs.models.Visibility",
+        "NoteVisibilityEnum": "apps.applications.models.ApplicationNote.Visibility",
     },
 }
 

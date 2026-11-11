@@ -1350,6 +1350,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/HRApplicationDetail'
           description: ''
+  /api/v1/hr/applications/{application_id}/assign/:
+    post:
+      operationId: hr_applications_assign
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRApplicationDetail'
+          description: ''
   /api/v1/hr/applications/{application_id}/clarifications/:
     get:
       operationId: hr_applications_clarifications_list
@@ -1497,6 +1530,127 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
           description: ''
+  /api/v1/hr/applications/{application_id}/notes/:
+    get:
+      operationId: hr_applications_notes_list
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Note'
+          description: ''
+    post:
+      operationId: hr_applications_notes_create
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoteCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
+  /api/v1/hr/applications/{application_id}/tags/:
+    put:
+      operationId: hr_applications_tags_update
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TagsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TagsRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRApplicationDetail'
+          description: ''
+  /api/v1/hr/applications/{application_id}/transition/:
+    post:
+      operationId: hr_applications_transition
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransitionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransitionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRApplicationDetail'
+          description: ''
   /api/v1/hr/clarification-templates/:
     get:
       operationId: hr_clarification_templates_list
@@ -1512,6 +1666,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/QuestionTemplate'
+          description: ''
+  /api/v1/hr/decision-reasons/:
+    get:
+      operationId: hr_decision_reasons_list
+      parameters:
+      - in: query
+        name: applies_to
+        schema:
+          type: string
+          enum:
+          - hold
+          - not_selected
+          - override
+          - shortlist
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecisionReason'
           description: ''
   /api/v1/hr/jobs/:
     get:
@@ -4553,6 +4733,27 @@ components:
         * `withdrawn` - Withdrawn
         * `offer_declined` - Offer declined
         * `abandoned` - Abandoned
+    AppliesToEnum:
+      enum:
+      - shortlist
+      - not_selected
+      - hold
+      - override
+      type: string
+      description: |-
+        * `shortlist` - Shortlist
+        * `not_selected` - Not selected
+        * `hold` - On hold
+        * `override` - Reopen / override
+    AssignRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - user_id
     Assignment:
       type: object
       properties:
@@ -5244,6 +5445,24 @@ components:
       required:
       - canonical_name
       - category
+    DecisionReason:
+      type: object
+      properties:
+        code:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        label:
+          type: string
+          readOnly: true
+        applies_to:
+          allOf:
+          - $ref: '#/components/schemas/AppliesToEnum'
+          readOnly: true
+      required:
+      - applies_to
+      - code
+      - label
     Department:
       type: object
       properties:
@@ -5609,6 +5828,20 @@ components:
         objects_to_automated_processing:
           type: boolean
           readOnly: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          readOnly: true
+        assigned_recruiter:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lock_version:
+          type: integer
+          readOnly: true
         withdrawn_at:
           type: string
           format: date-time
@@ -5640,8 +5873,15 @@ components:
           items:
             $ref: '#/components/schemas/HRStatusEvent'
           readOnly: true
+        allowed_transitions:
+          type: array
+          items:
+            type: string
+          readOnly: true
       required:
+      - allowed_transitions
       - answers
+      - assigned_recruiter
       - candidate
       - candidate_email
       - candidate_name
@@ -5650,10 +5890,12 @@ components:
       - id
       - is_assisted
       - job
+      - lock_version
       - objects_to_automated_processing
       - reference
       - status
       - submitted_at
+      - tags
       - timeline
       - withdraw_reason
       - withdrawn_at
@@ -5692,16 +5934,33 @@ components:
         objects_to_automated_processing:
           type: boolean
           readOnly: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          readOnly: true
+        assigned_recruiter:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lock_version:
+          type: integer
+          readOnly: true
       required:
+      - assigned_recruiter
       - candidate_email
       - candidate_name
       - channel
       - id
       - is_assisted
+      - lock_version
       - objects_to_automated_processing
       - reference
       - status
       - submitted_at
+      - tags
     HRDocument:
       type: object
       properties:
@@ -5751,7 +6010,7 @@ components:
           readOnly: true
         visibility:
           allOf:
-          - $ref: '#/components/schemas/VisibilityEnum'
+          - $ref: '#/components/schemas/JobVisibilityEnum'
           readOnly: true
         department:
           type: string
@@ -5930,7 +6189,7 @@ components:
           readOnly: true
         visibility:
           allOf:
-          - $ref: '#/components/schemas/VisibilityEnum'
+          - $ref: '#/components/schemas/JobVisibilityEnum'
           readOnly: true
         department:
           type: string
@@ -6291,6 +6550,14 @@ components:
         * `in_review` - In review
         * `approved` - Approved
         * `superseded` - Superseded
+    JobVisibilityEnum:
+      enum:
+      - public
+      - unlisted
+      type: string
+      description: |-
+        * `public` - Public (listed)
+        * `unlisted` - Unlisted (link only)
     JobWriteRequest:
       type: object
       properties:
@@ -6302,7 +6569,7 @@ components:
           type: string
           maxLength: 50
         visibility:
-          $ref: '#/components/schemas/VisibilityEnum'
+          $ref: '#/components/schemas/JobVisibilityEnum'
         workplace_type:
           $ref: '#/components/schemas/WorkplaceTypeEnum'
         employment_type:
@@ -6850,6 +7117,71 @@ components:
       - code
       - key
       - step
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/NoteVisibilityEnum'
+          readOnly: true
+        mentions:
+          type: array
+          items:
+            type: string
+            format: uuid
+          readOnly: true
+          description: User ids
+        author_name:
+          type: string
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author_name
+      - body
+      - created_at
+      - id
+      - mentions
+      - mine
+      - visibility
+    NoteCreateRequest:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        mentions:
+          type: array
+          items:
+            type: string
+            format: uuid
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/NoteVisibilityEnum'
+          default: team
+      required:
+      - body
+    NoteVisibilityEnum:
+      enum:
+      - team
+      - private
+      type: string
+      description: |-
+        * `team` - Team
+        * `private` - Only me
     Notices:
       type: object
       properties:
@@ -7481,7 +7813,7 @@ components:
           type: string
           maxLength: 50
         visibility:
-          $ref: '#/components/schemas/VisibilityEnum'
+          $ref: '#/components/schemas/JobVisibilityEnum'
         workplace_type:
           $ref: '#/components/schemas/WorkplaceTypeEnum'
         employment_type:
@@ -9028,6 +9360,17 @@ components:
       - engine
       - questions
       - requires_acceptance
+    TagsRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 60
+          maxItems: 20
+      required:
+      - tags
     Template:
       type: object
       properties:
@@ -9128,6 +9471,24 @@ components:
       - at
       - note
       - status
+    TransitionRequest:
+      type: object
+      properties:
+        to_status:
+          $ref: '#/components/schemas/ApplicationStatusEnum'
+        reason_code:
+          type: string
+          default: ''
+          maxLength: 40
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 2000
+        lock_version:
+          type: integer
+          nullable: true
+      required:
+      - to_status
     TypeEnum:
       enum:
       - skill
@@ -9341,14 +9702,6 @@ components:
       - number
       - status
       - submitted_at
-    VisibilityEnum:
-      enum:
-      - public
-      - unlisted
-      type: string
-      description: |-
-        * `public` - Public (listed)
-        * `unlisted` - Unlisted (link only)
     WithdrawRequest:
       type: object
       properties:

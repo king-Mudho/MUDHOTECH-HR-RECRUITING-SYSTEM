@@ -178,3 +178,63 @@ class ApplicationStatusEvent(TenantModel):
 
     def delete(self, *args: Any, **kwargs: Any) -> Any:
         raise AppendOnlyError("Application status events are append-only.")
+
+
+class ApplicationNote(TenantModel):
+    """Internal HR note (never shown to the candidate). ``private`` notes are author-only."""
+
+    class Visibility(models.TextChoices):
+        TEAM = "team", "Team"
+        PRIVATE = "private", "Only me"
+
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="notes")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    body = models.TextField()
+    mentions = ArrayField(models.UUIDField(), default=list, blank=True, help_text="User ids")
+    visibility = models.CharField(max_length=8, choices=Visibility.choices, default=Visibility.TEAM)
+
+    class Meta:
+        ordering = ("-created_at",)
+        indexes = [models.Index(fields=["application", "created_at"], name="app_note_idx")]
+
+    def __str__(self) -> str:
+        return f"note {self.pk} on {self.application_id}"
+
+
+class DecisionReason(models.Model):
+    """Structured reason codes for human decisions (docs/03 decision_reasons). ``organisation``
+    NULL = platform default; organisations may add their own (Phase 08 settings UI)."""
+
+    class AppliesTo(models.TextChoices):
+        SHORTLIST = "shortlist", "Shortlist"
+        NOT_SELECTED = "not_selected", "Not selected"
+        HOLD = "hold", "On hold"
+        OVERRIDE = "override", "Reopen / override"
+
+    id = models.BigAutoField(primary_key=True)
+    organisation = models.ForeignKey(
+        "organisations.Organisation",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="+",
+    )
+    code = models.SlugField(max_length=40)
+    label = models.CharField(max_length=120)
+    applies_to = models.CharField(max_length=16, choices=AppliesTo.choices)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ("applies_to", "label")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organisation", "applies_to", "code"],
+                name="uniq_decision_reason",
+                nulls_distinct=False,
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.applies_to}:{self.code}"

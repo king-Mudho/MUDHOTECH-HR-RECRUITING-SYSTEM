@@ -40,6 +40,8 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "questions.protected_exception": ADMIN_HR,
     "applications.view": RECRUITING | {Role.HIRING_MANAGER},
     "applications.transition": RECRUITING,
+    "applications.decide": ADMIN_HR,  # consequential outcomes (shortlisted / not selected)
+    "applications.assign": ADMIN_HR,
     "shortlist.propose": RECRUITING,
     "shortlist.approve": ADMIN_HR,
     # notifications (Phase 05)

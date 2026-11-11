@@ -74,6 +74,9 @@ def notify(
         k: str(v) for k, v in (context or {}).items() if k in kind.allowed or k.endswith("_id")
     }
     org_id = getattr(organisation, "pk", organisation)
+    later = (
+        scheduled_for is not None and scheduled_for > now()
+    )  # in-app also waits (e.g. outcome delay)
     created: list[Notification] = []
     for channel in channels:
         full_key = f"{dedupe_key}:{channel}"[:200]
@@ -91,10 +94,10 @@ def notify(
                     scheduled_for=scheduled_for,
                     status=(
                         NotificationStatus.DELIVERED
-                        if channel == Channel.INAPP
+                        if channel == Channel.INAPP and not later
                         else NotificationStatus.QUEUED
                     ),
-                    sent_at=now() if channel == Channel.INAPP else None,
+                    sent_at=now() if channel == Channel.INAPP and not later else None,
                 )
         except IntegrityError:  # a concurrent transaction queued the same message
             continue
@@ -238,8 +241,14 @@ def mark_failed(notification_id: Any, error: str) -> None:
 
 
 def due_ids(limit: int = 200) -> list[str]:
-    """Deferred emails whose time has come, plus rows a crashed worker left in ``sending``."""
+    """Deferred emails whose time has come, plus rows a crashed worker left in ``sending``.
+    Scheduled in-app notifications that are due are published here as well."""
     moment = now()
+    Notification.objects.filter(
+        channel=Channel.INAPP,
+        status=NotificationStatus.QUEUED,
+        scheduled_for__lte=moment,
+    ).update(status=NotificationStatus.DELIVERED, sent_at=moment)
     Notification.objects.filter(
         status=NotificationStatus.SENDING, updated_at__lt=moment - STALE_SENDING
     ).update(status=NotificationStatus.QUEUED)

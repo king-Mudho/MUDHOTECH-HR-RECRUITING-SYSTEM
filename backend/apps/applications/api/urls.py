@@ -1,5 +1,6 @@
 from django.urls import path
 
+from . import ats as ats_views
 from .hr import HRApplicationDetailView, HRJobApplicationsView
 from .views import (
     ApplicationAnswersView,
@@ -56,5 +57,30 @@ urlpatterns = [
         "hr/applications/<uuid:application_id>/",
         HRApplicationDetailView.as_view(),
         name="hr-application",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/transition/",
+        ats_views.HRTransitionView.as_view(),
+        name="hr-application-transition",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/notes/",
+        ats_views.HRNotesView.as_view(),
+        name="hr-application-notes",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/tags/",
+        ats_views.HRTagsView.as_view(),
+        name="hr-application-tags",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/assign/",
+        ats_views.HRAssignView.as_view(),
+        name="hr-application-assign",
+    ),
+    path(
+        "hr/decision-reasons/",
+        ats_views.HRDecisionReasonsView.as_view(),
+        name="hr-decision-reasons",
     ),
 ]

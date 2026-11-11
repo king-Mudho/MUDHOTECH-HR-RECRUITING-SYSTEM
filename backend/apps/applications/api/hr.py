@@ -38,6 +38,9 @@ class HRApplicationListSerializer(serializers.ModelSerializer):
             "channel",
             "is_assisted",
             "objects_to_automated_processing",
+            "tags",
+            "assigned_recruiter",
+            "lock_version",
         ]
         read_only_fields = fields
 
@@ -89,6 +92,7 @@ class HRApplicationDetailSerializer(HRApplicationListSerializer):
     documents = serializers.SerializerMethodField()
     answers = serializers.SerializerMethodField()
     timeline = serializers.SerializerMethodField()
+    allowed_transitions = serializers.SerializerMethodField()
 
     class Meta(HRApplicationListSerializer.Meta):
         fields = [
@@ -100,8 +104,16 @@ class HRApplicationDetailSerializer(HRApplicationListSerializer):
             "documents",
             "answers",
             "timeline",
+            "allowed_transitions",
         ]
         read_only_fields = fields
+
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
+    def get_allowed_transitions(self, obj: Application) -> list[str]:
+        from apps.applications.ats import allowed_targets
+
+        membership = self.context.get("membership")
+        return allowed_targets(membership, obj) if membership is not None else []
 
     @extend_schema_field(HRJobRefSerializer)
     def get_job(self, obj: Application) -> dict[str, Any]:
@@ -161,5 +173,8 @@ class HRApplicationDetailView(APIView):
             application_id,
         )
         return Response(
-            HRApplicationDetailSerializer(data["application"], context={"extra": data}).data
+            HRApplicationDetailSerializer(
+                data["application"],
+                context={"extra": data, "membership": request.membership},  # type: ignore[attr-defined]
+            ).data
         )

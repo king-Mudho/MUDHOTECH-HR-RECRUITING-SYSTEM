@@ -582,6 +582,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/assign/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_applications_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/clarifications/": {
         parameters: {
             query?: never;
@@ -635,6 +651,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/notes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_applications_notes_list"];
+        put?: never;
+        post: operations["hr_applications_notes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/tags/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["hr_applications_tags_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_applications_transition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/clarification-templates/": {
         parameters: {
             query?: never;
@@ -643,6 +707,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["hr_clarification_templates_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/decision-reasons/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_decision_reasons_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1900,6 +1980,18 @@ export interface components {
          * @enum {string}
          */
         ApplicationStatusEnum: "draft" | "submitted" | "processing" | "processing_error" | "needs_information" | "under_review" | "on_hold" | "shortlisted" | "interview" | "offer" | "hired" | "not_selected" | "withdrawn" | "offer_declined" | "abandoned";
+        /**
+         * @description * `shortlist` - Shortlist
+         *     * `not_selected` - Not selected
+         *     * `hold` - On hold
+         *     * `override` - Reopen / override
+         * @enum {string}
+         */
+        AppliesToEnum: "shortlist" | "not_selected" | "hold" | "override";
+        AssignRequest: {
+            /** Format: uuid */
+            user_id: string | null;
+        };
         Assignment: {
             /** Format: uuid */
             readonly id: string;
@@ -2171,6 +2263,11 @@ export interface components {
             category: components["schemas"]["CategoryEnum"];
             aliases?: string[];
         };
+        DecisionReason: {
+            readonly code: string;
+            readonly label: string;
+            readonly applies_to: components["schemas"]["AppliesToEnum"];
+        };
         Department: {
             /** Format: uuid */
             readonly id: string;
@@ -2313,6 +2410,10 @@ export interface components {
             readonly channel: string;
             readonly is_assisted: boolean;
             readonly objects_to_automated_processing: boolean;
+            readonly tags: string[];
+            /** Format: uuid */
+            readonly assigned_recruiter: string | null;
+            readonly lock_version: number;
             /** Format: date-time */
             readonly withdrawn_at: string | null;
             readonly withdraw_reason: string;
@@ -2323,6 +2424,7 @@ export interface components {
             readonly documents: components["schemas"]["HRDocument"][];
             readonly answers: components["schemas"]["HRAnswer"][];
             readonly timeline: components["schemas"]["HRStatusEvent"][];
+            readonly allowed_transitions: string[];
         };
         HRApplicationList: {
             /** Format: uuid */
@@ -2336,6 +2438,10 @@ export interface components {
             readonly channel: string;
             readonly is_assisted: boolean;
             readonly objects_to_automated_processing: boolean;
+            readonly tags: string[];
+            /** Format: uuid */
+            readonly assigned_recruiter: string | null;
+            readonly lock_version: number;
         };
         HRDocument: {
             /** Format: uuid */
@@ -2354,7 +2460,7 @@ export interface components {
             readonly title: string;
             readonly reference_code: string;
             readonly status: components["schemas"]["JobStatusEnum"];
-            readonly visibility: components["schemas"]["VisibilityEnum"];
+            readonly visibility: components["schemas"]["JobVisibilityEnum"];
             /** Format: uuid */
             readonly department: string | null;
             readonly locations: string[];
@@ -2400,7 +2506,7 @@ export interface components {
             readonly title: string;
             readonly reference_code: string;
             readonly status: components["schemas"]["JobStatusEnum"];
-            readonly visibility: components["schemas"]["VisibilityEnum"];
+            readonly visibility: components["schemas"]["JobVisibilityEnum"];
             /** Format: uuid */
             readonly department: string | null;
             readonly locations: string[];
@@ -2538,10 +2644,16 @@ export interface components {
          * @enum {string}
          */
         JobVersionStatusEnum: "draft" | "in_review" | "approved" | "superseded";
+        /**
+         * @description * `public` - Public (listed)
+         *     * `unlisted` - Unlisted (link only)
+         * @enum {string}
+         */
+        JobVisibilityEnum: "public" | "unlisted";
         JobWriteRequest: {
             title: string;
             reference_code?: string;
-            visibility?: components["schemas"]["VisibilityEnum"];
+            visibility?: components["schemas"]["JobVisibilityEnum"];
             workplace_type?: components["schemas"]["WorkplaceTypeEnum"];
             employment_type?: components["schemas"]["EmploymentTypeEnum"];
             seniority?: components["schemas"]["SeniorityEnum"] | components["schemas"]["BlankEnum"];
@@ -2738,6 +2850,30 @@ export interface components {
             code: string;
             key: string;
         };
+        Note: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly body: string;
+            readonly visibility: components["schemas"]["NoteVisibilityEnum"];
+            /** @description User ids */
+            readonly mentions: string[];
+            readonly author_name: string;
+            readonly mine: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        NoteCreateRequest: {
+            body: string;
+            mentions?: string[];
+            /** @default team */
+            visibility: components["schemas"]["NoteVisibilityEnum"];
+        };
+        /**
+         * @description * `team` - Team
+         *     * `private` - Only me
+         * @enum {string}
+         */
+        NoteVisibilityEnum: "team" | "private";
         Notices: {
             privacy_notice: string;
             privacy_notice_version: string;
@@ -3061,7 +3197,7 @@ export interface components {
         PatchedJobPatchRequest: {
             title?: string;
             reference_code?: string;
-            visibility?: components["schemas"]["VisibilityEnum"];
+            visibility?: components["schemas"]["JobVisibilityEnum"];
             workplace_type?: components["schemas"]["WorkplaceTypeEnum"];
             employment_type?: components["schemas"]["EmploymentTypeEnum"];
             seniority?: components["schemas"]["SeniorityEnum"] | components["schemas"]["BlankEnum"];
@@ -3653,6 +3789,9 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        TagsRequest: {
+            tags: string[];
+        };
         Template: {
             /** Format: uuid */
             readonly id: string;
@@ -3686,6 +3825,14 @@ export interface components {
             /** Format: date-time */
             at: string;
             note: string;
+        };
+        TransitionRequest: {
+            to_status: components["schemas"]["ApplicationStatusEnum"];
+            /** @default  */
+            reason_code: string;
+            /** @default  */
+            reason_text: string;
+            lock_version?: number | null;
         };
         /**
          * @description * `skill` - Skill
@@ -3765,12 +3912,6 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
-        /**
-         * @description * `public` - Public (listed)
-         *     * `unlisted` - Unlisted (link only)
-         * @enum {string}
-         */
-        VisibilityEnum: "public" | "unlisted";
         WithdrawRequest: {
             reason?: string;
         };
@@ -5034,6 +5175,33 @@ export interface operations {
             };
         };
     };
+    hr_applications_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AssignRequest"];
+                "multipart/form-data": components["schemas"]["AssignRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRApplicationDetail"];
+                };
+            };
+        };
+    };
     hr_applications_clarifications_list: {
         parameters: {
             query?: never;
@@ -5152,6 +5320,108 @@ export interface operations {
             };
         };
     };
+    hr_applications_notes_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Note"][];
+                };
+            };
+        };
+    };
+    hr_applications_notes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NoteCreateRequest"];
+                "multipart/form-data": components["schemas"]["NoteCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Note"];
+                };
+            };
+        };
+    };
+    hr_applications_tags_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TagsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TagsRequest"];
+                "multipart/form-data": components["schemas"]["TagsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRApplicationDetail"];
+                };
+            };
+        };
+    };
+    hr_applications_transition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransitionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TransitionRequest"];
+                "multipart/form-data": components["schemas"]["TransitionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRApplicationDetail"];
+                };
+            };
+        };
+    };
     hr_clarification_templates_list: {
         parameters: {
             query?: never;
@@ -5167,6 +5437,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuestionTemplate"][];
+                };
+            };
+        };
+    };
+    hr_decision_reasons_list: {
+        parameters: {
+            query?: {
+                applies_to?: "hold" | "not_selected" | "override" | "shortlist";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionReason"][];
                 };
             };
         };

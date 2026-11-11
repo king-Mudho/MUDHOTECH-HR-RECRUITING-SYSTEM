@@ -270,6 +270,10 @@ from tests.tenancy.messaging_endpoints import MESSAGING_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(MESSAGING_ENDPOINTS)
 
+from tests.tenancy.ats_endpoints import ATS_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(ATS_ENDPOINTS)
+
 
 def register(endpoint: Endpoint) -> Endpoint:
     REGISTRY.append(endpoint)

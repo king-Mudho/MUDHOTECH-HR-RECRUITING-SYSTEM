@@ -23,7 +23,7 @@ from apps.core.exceptions import NotFoundError
 from apps.core.pagination import StandardPagination
 from apps.core.time import now
 from apps.notifications import delivery
-from apps.notifications.models import Channel, Notification
+from apps.notifications.models import Channel, Notification, NotificationStatus
 
 LINK_KEYS = (
     "clarification_url",
@@ -36,7 +36,9 @@ LINK_KEYS = (
 
 
 def own_inbox(user: Any) -> QuerySet[Notification]:
-    return Notification.objects.filter(recipient_user=user, channel=Channel.INAPP)
+    return Notification.objects.filter(
+        recipient_user=user, channel=Channel.INAPP, status=NotificationStatus.DELIVERED
+    )
 
 
 def relative_link(payload: dict[str, Any]) -> str:
