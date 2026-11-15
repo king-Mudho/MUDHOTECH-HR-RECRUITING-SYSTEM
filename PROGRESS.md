@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T15
+- **Current task:** P06-EXIT
 - **Last updated:** 2026-11-15
-- **Overall:** 86 / 193 tasks · 5 / 16 phases
+- **Overall:** 87 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -151,7 +151,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T12 — Cross-application flags: same sha256 across different accounts (EC-APP-15), CV name vs account name mismatch …
 - [x] P06-T13 — Candidate features: view "What we extracted from your CV" (wizard review step + documents page), submit corrections …
 - [x] P06-T14 — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action
-- [ ] P06-T15 — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in …
+- [x] P06-T15 — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in …
 - [ ] P06-EXIT — All exit criteria verified with evidence
 
 ### Phase 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)  (`phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md`)
@@ -521,3 +521,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T12 | apps/resumes/crosscheck.py: duplicate_document_across_accounts (same sha256 uploaded by another account, deleted files ignored; nothing about the other account revealed) and identity_mismatch_possible (top-of-CV name line, Unicode/accent-aware, titles/headings excluded, compared with account/snapshot names); flags added to Application.flags + evidence_ready payload + audit (flag names only, no PII); no status/score change. Corpus: 0 false alarms, 126/126 mismatches caught. 13 tests |  |
 | 2026-11-15 | Impl | P06-T13 | ResumeParse (candidate-owned preview, encrypted, on request, platform taxonomy) + API: GET candidate/resumes/{id}/extraction (202 while reading), POST import-to-profile (explicit confirm, chosen items, duplicates skipped, source=cv_import, audit), GET candidate/applications/{id}/extraction, POST candidate/claims/{id}/corrections (EC-DOC-27: original kept, ClaimCorrection, outbox application.evidence_corrected, audit; protected/contact not correctable; owner-only 404s). Frontend features/resumes: grouped extraction view (snippet + page, ignored personal details explained, flags in plain words, polling), import dialog with confirmation, correction dialog (RHF + zod); wired into wizard review step, documents page ('What we read') and candidate application page. Backend 1990 passed; frontend 127 tests, lint, typecheck, build |  |
 | 2026-11-15 | Impl | P06-T14 | GET hr/applications/{id}/extraction (applications.view; visibility per HR rules): runs with grouped claims, snippet + page, confidence label (clear/likely/uncertain), inferred marker, candidate corrections with notes, application + run flags; protected/contact/hidden/injected items only counted as 'set aside' (not even their kinds shown). POST hr/applications/{id}/retry-processing (applications.transition; 409 conflict.nothing_to_retry otherwise) -> new attempt via services.retry + audit. Both in the cross-tenant registry and role matrix. Frontend ExtractionPanel on the HR application page: AI-assisted label, flags banner in plain words (never counted against the candidate), retry button for editors, polling while reading. Tests: 2 API + 14 tenancy/matrix + 3 UI |  |
+| 2026-11-15 | Impl | P06-T15 | ai_engine/tests/benchmark/run_extraction_benchmark.py: full pure pipeline over the 150-CV corpus vs labels -> parse success (text/all), experience P/R/F1, employment kind, total months, education level accuracy, foreign flagging, certifications, languages, skill precision (skills section) / recall, equivalent-wording recall, protected recall/false positives/leaks, injection + hidden text P/R, grounding rate, determinism, per-CV latency, throughput of 100 sandboxed CVs with N workers; --check fails on docs/09 targets; JSON + markdown report in docs/reports/extraction_benchmark_2026-11-15.{json,md} (worker image: all targets pass, 100 CVs in 129 s with 2 workers). Nightly ai-benchmark job enabled (builds the worker image, uploads the report). Fixed: sandbox output now UTF-8 bytes (French CVs crashed on Windows) + regression test | equivalent-wording recall 0.76 and PDF tables without ruling lines are the known gaps (Phase 10 calibration / table reconstruction) |

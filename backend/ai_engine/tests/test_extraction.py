@@ -357,3 +357,13 @@ def test_synthetic_corpus_parse_outcomes() -> None:
         if cv.get("hidden_text") and cv["hidden_text"]["text"][:20] in visible_text(result):
             problems.append((cv["file"], "hidden text visible"))
     assert problems == []
+
+
+def test_sandbox_keeps_non_ascii_text() -> None:
+    """The child writes UTF-8 whatever the console codepage (French CVs crashed on Windows)."""
+    data = make_pdf(
+        lambda d: d[0].insert_text((60, 80), "Expérience: Développeur à Gweru", fontsize=11)
+    )
+    result = sandbox.run_extraction(data, document_id="fr", ocr=False)
+    assert result.status == ExtractionStatus.SUCCEEDED
+    assert "Expérience: Développeur à Gweru" in result.document.pages[0].text

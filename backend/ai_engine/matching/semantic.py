@@ -90,7 +90,10 @@ class SentenceTransformerEncoder:
                 from sentence_transformers import SentenceTransformer
 
                 self._model = SentenceTransformer(self.name, device="cpu")
-                self.dimensions = int(self._model.get_sentence_embedding_dimension())
+                dimension = getattr(self._model, "get_embedding_dimension", None) or (
+                    self._model.get_sentence_embedding_dimension
+                )
+                self.dimensions = int(dimension())
         return self._model
 
     def encode(self, texts: Sequence[str]) -> list[Vector]:

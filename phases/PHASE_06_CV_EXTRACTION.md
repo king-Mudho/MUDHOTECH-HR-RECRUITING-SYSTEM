@@ -22,7 +22,7 @@ scans and adversarial content, with protected data excluded — without ever inv
 - [x] **P06-T12** — Cross-application flags: same sha256 across different accounts (EC-APP-15), CV name vs account name mismatch (EC-APP-16) — low severity flags only.
 - [x] **P06-T13** — Candidate features: view "What we extracted from your CV" (wizard review step + documents page), submit corrections (EC-DOC-27), import to profile with confirmation.
 - [x] **P06-T14** — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action.
-- [ ] **P06-T15** — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in `docs/reports/extraction_benchmark_<date>.md`; nightly CI job.
+- [x] **P06-T15** — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in `docs/reports/extraction_benchmark_<date>.md`; nightly CI job.
 
 ## Edge cases
 EC-DOC-01..28, EC-AI-06 (extraction part), EC-AI-10/11 (idempotency), EC-OPS-04.

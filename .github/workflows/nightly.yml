@@ -137,8 +137,19 @@ jobs:
           uv run pytest -q --create-db apps/documents/tests/test_scan_pipeline.py -k real_clamd -p no:cacheprovider -rs
 
   ai-benchmark:
-    name: AI benchmarks (enabled from Phase 06)
+    name: AI benchmarks (extraction, docs/09 §5)
     runs-on: ubuntu-24.04
-    if: ${{ false }}
+    timeout-minutes: 40
     steps:
-      - run: echo "Benchmark harness added in P06-T15"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build the worker image (Tesseract + local embedding model)
+        run: docker build -f backend/Dockerfile.worker -t mhrs-worker:bench backend
+      - name: Extraction benchmark (fails when a target is missed)
+        run: |
+          mkdir -p reports && chmod 777 reports  # the image runs as a non-root user
+          docker run --rm -v "$PWD/backend:/app" -v "$PWD/reports:/reports" mhrs-worker:bench             python -m ai_engine.tests.benchmark.run_extraction_benchmark               --out-dir /reports --workers 2 --semantic --check
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: extraction-benchmark
+          path: reports/

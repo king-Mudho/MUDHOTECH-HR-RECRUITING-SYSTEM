@@ -85,7 +85,7 @@ def _main() -> int:  # pragma: no cover - exercised through run_extraction
         limits=Limits(max_pages=max_pages, max_bytes=max_bytes),
         ocr=ocr,
     )
-    sys.stdout.write(result.model_dump_json())
+    sys.stdout.buffer.write(result.model_dump_json().encode("utf-8"))  # not the console codepage
     return 0
 
 
