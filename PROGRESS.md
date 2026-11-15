@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T04
+- **Current task:** P06-T05
 - **Last updated:** 2026-11-15
-- **Overall:** 75 / 193 tasks · 5 / 16 phases
+- **Overall:** 76 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -140,7 +140,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T01 — Synthetic CV corpus generator `scripts/generate_synthetic_cvs.py` (python-docx + reportlab + Pillow for scanned …
 - [x] P06-T02 — `ai_engine/contracts.py` pydantic models (DocumentText, Page, Block, ExtractedClaim, CandidateEvidence…) + …
 - [x] P06-T03 — `extraction/pdf.py` (PyMuPDF dict extraction, column-aware reading order, hidden-text detection: colour ≈ …
-- [ ] P06-T04 — `extraction/ocr.py` (trigger rules, 300 DPI render, Tesseract, per-page confidence) + `extraction/quality.py` …
+- [x] P06-T04 — `extraction/ocr.py` (trigger rules, 300 DPI render, Tesseract, per-page confidence) + `extraction/quality.py` …
 - [ ] P06-T05 — `extraction/sections.py` heading detection (typography + lexicon incl
 - [ ] P06-T06 — `extraction/dates.py` all formats in `docs/05 §6.1`, precision flags, anomalies
 - [ ] P06-T07 — `extraction/parser.py` claim extraction for experience, education, certifications/licences, skills (Aho–Corasick …
@@ -510,3 +510,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T01 | scripts/generate_synthetic_cvs.py: deterministic synthetic corpus (seed 2026) of 150 CVs in backend/fixtures/synthetic_cvs (5.1 MB): 5 roles x strong/partial/weak, PDF (PyMuPDF Story, subset fonts) / DOCX (python-docx) / scanned (rasterised + Pillow noise); 16 variations each >= 5x (two-column, tables, scanned, French, encrypted, corrupted, hidden text white/tiny/off-page, prompt injection, gaps, overlaps, attachment-only, ZW and foreign qualifications, equivalent wording, protected personal details, DOCX header/footer); labels.json gold data (parse outcome, OCR need, experience with ISO months + kind, overlap-aware total months, education levels, certs, skills + exact phrases, languages, protected fields, hidden/injected text, per-criterion expected evidence met/partial/missing/needs_verification/not_assessable, HR reference suitability); byte-reproducible except encrypted PDFs; only example.test e-mails and +263 77 000 numbers; README; 6 tests (labels == generator, coverage, documents contain what labels say, reproducibility, fairness of gold labels) | P06-T03 extractor must NFKC-normalise (PDF ligatures) and collapse line wraps; off-page hidden text is only visible with clip=INFINITE_RECT |
 | 2026-11-15 | Impl | P06-T02 | ai_engine/contracts.py: strict frozen pydantic contracts (DocumentText/Page/Block/Section, discriminated claim data, ClaimSource with mandatory snippet+location, ExtractionResult, CandidateEvidence that rejects excluded/contact/protected claims, stable input_hash); ENGINE_VERSION 0.2.0; 12 tests incl. no-Django import guard | P06-T03 extractor fills DocumentText (NFKC, line-wrap collapse, hidden/off-page blocks) |
 | 2026-11-15 | Impl | P06-T03 | ai_engine/extraction: magic-byte sniffing + size/page/zip-bomb/macro guards; PyMuPDF dict reader (no media-box clip; near-white, <4pt and off-page spans split into hidden blocks; gutter-based two-column reading order; bold/size kept), pdfplumber fallback (status partial); DOCX reader (body order, tables row-wise, text boxes without VML duplicate, headers/footers, vanish/white/tiny runs hidden); NFKC/ligature/bullet/hyphen normalisation; subprocess sandbox with RLIMIT_CPU/AS + wall timeout; 19 tests incl. all 150 corpus CVs parse as labelled | OCR for image-only pages and garbled-text detection in P06-T04; backend image needs a rebuild for pdfplumber |
+| 2026-11-15 | Impl | P06-T04 | extraction/ocr.py (trigger: <200 visible chars/page, >=50% image-only pages or garbled text; 300 DPI grey render; Tesseract CLI psm 3 TSV -> lines + mean word confidence; low_ocr_confidence <70; ocr_unavailable flag when no engine) + extraction/quality.py (garbled CID/replacement/non-word detection, langdetect with fixed seed + heading-language signal, possibly_not_cv rules, 0-1 quality score); wired into extract_document (ocr switch, timings); CI installs tesseract; 11 tests incl. a real Tesseract scan (verified in the worker image, Tesseract 5.5.0) | worker image must be rebuilt for pdfplumber/langdetect |

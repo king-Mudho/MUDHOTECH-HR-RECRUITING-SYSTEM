@@ -53,6 +53,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
+      - name: Install OCR engine (P06-T04 tests)
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends tesseract-ocr tesseract-ocr-eng
       - name: Install dependencies
         run: uv sync --frozen
       - name: Ruff (lint + format)

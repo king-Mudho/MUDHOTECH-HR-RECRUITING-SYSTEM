@@ -76,6 +76,7 @@ class Flag(StrEnum):
     UNSUPPORTED_FORMAT = "unsupported_format"
     OCR_USED = "ocr_used"
     LOW_OCR_CONFIDENCE = "low_ocr_confidence"
+    OCR_UNAVAILABLE = "ocr_unavailable"  # OCR needed but no engine installed
     GARBLED_TEXT = "garbled_text"
     HIDDEN_TEXT = "hidden_text"
     INJECTION_SUSPECTED = "injection_suspected"

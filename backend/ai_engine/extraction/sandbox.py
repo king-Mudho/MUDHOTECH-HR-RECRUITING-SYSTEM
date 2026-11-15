@@ -35,7 +35,7 @@ def _posix_limits(limits: Limits) -> Callable[[], None]:
 
 
 def run_extraction(
-    data: bytes, *, document_id: str, limits: Limits | None = None
+    data: bytes, *, document_id: str, limits: Limits | None = None, ocr: bool = True
 ) -> ExtractionResult:
     limits = limits or Limits()
     argv = [
@@ -45,6 +45,7 @@ def run_extraction(
         document_id,
         str(limits.max_pages),
         str(limits.max_bytes),
+        "ocr" if ocr else "no-ocr",
     ]
     env = {
         k: v for k, v in os.environ.items() if k in ("PATH", "SYSTEMROOT", "TEMP", "TMP", "LANG")
@@ -76,9 +77,13 @@ def run_extraction(
 
 def _main() -> int:  # pragma: no cover - exercised through run_extraction
     document_id, max_pages, max_bytes = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+    ocr = sys.argv[4] == "ocr"
     data = sys.stdin.buffer.read()
     result = extract_document(
-        data, document_id=document_id, limits=Limits(max_pages=max_pages, max_bytes=max_bytes)
+        data,
+        document_id=document_id,
+        limits=Limits(max_pages=max_pages, max_bytes=max_bytes),
+        ocr=ocr,
     )
     sys.stdout.write(result.model_dump_json())
     return 0
