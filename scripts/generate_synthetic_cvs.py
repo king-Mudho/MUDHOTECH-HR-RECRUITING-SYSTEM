@@ -485,16 +485,22 @@ def iso(d: tuple[int, int] | None) -> str | None:
 
 
 def union_months(jobs: list[Job]) -> int:
-    """Total experience with overlaps counted once (what P06-T06 must compute)."""
+    """Total experience as docs/05 §6.1 defines it (what P06-T06 must compute).
+
+    Overlaps count once, nothing runs past the reference month, attachments/internships/
+    volunteer work are excluded, and part-time months not covered by another role count half.
+    """
+    now = REFERENCE_DATE[0] * 12 + REFERENCE_DATE[1]
     months: set[int] = set()
+    part_time: set[int] = set()
     for j in jobs:
         if j.kind in ("attachment", "internship", "volunteer"):
             continue
         end = j.end or REFERENCE_DATE
         start_idx = j.start[0] * 12 + j.start[1]
-        end_idx = end[0] * 12 + end[1]
-        months.update(range(start_idx, end_idx))
-    return len(months)
+        end_idx = min(end[0] * 12 + end[1], now)
+        (part_time if j.kind == "part_time" else months).update(range(start_idx, end_idx))
+    return len(months) + len(part_time - months) // 2
 
 
 # ----------------------------------------------------------------------------- builder
