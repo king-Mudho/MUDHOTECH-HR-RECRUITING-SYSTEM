@@ -256,6 +256,8 @@ class ExperienceData(Contract):
     dates: DateRange = DateRange()
     employment_kind: EmploymentKind = EmploymentKind.UNKNOWN
     responsibilities: tuple[str, ...] = ()
+    title_normalised: str = ""  # normalisation/titles.py
+    seniority: str | None = None  # intern | trainee | junior | mid | senior | lead | head
 
 
 class EducationData(Contract):

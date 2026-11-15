@@ -1,5 +1,5 @@
 {
- "version": "2026.11.1",
+ "version": "2026.11.2",
  "levels": [
   {
    "code": "ZW_GRADE7",
@@ -91,7 +91,10 @@
    "aliases": [
     "ND",
     "National Diploma",
-    "Diploma"
+    "Diploma",
+    "RGN",
+    "Registered General Nurse",
+    "Diploma in General Nursing"
    ]
   },
   {

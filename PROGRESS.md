@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T08
+- **Current task:** P06-T09
 - **Last updated:** 2026-11-15
-- **Overall:** 79 / 193 tasks · 5 / 16 phases
+- **Overall:** 80 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -144,7 +144,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T05 — `extraction/sections.py` heading detection (typography + lexicon incl
 - [x] P06-T06 — `extraction/dates.py` all formats in `docs/05 §6.1`, precision flags, anomalies
 - [x] P06-T07 — `extraction/parser.py` claim extraction for experience, education, certifications/licences, skills (Aho–Corasick …
-- [ ] P06-T08 — `normalisation/qualifications.py` map to qualification levels (ZIMSEC, NC/ND/HND, degrees, professional bodies, …
+- [x] P06-T08 — `normalisation/qualifications.py` map to qualification levels (ZIMSEC, NC/ND/HND, degrees, professional bodies, …
 - [ ] P06-T09 — `extraction/pii.py` protected/irrelevant data detection (DOB/age, ZW national ID regex, passport, gender, marital, …
 - [ ] P06-T10 — Embedding service (`matching/semantic.py` base): load model once per worker, batch encode, cache by hash (Redis), …
 - [ ] P06-T11 — Django adapter `apps.resumes`: ExtractionRun, DocumentText (encrypted), ExtractedClaim, ClaimCorrection
@@ -514,3 +514,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T05 | extraction/sections.py: heading lexicon (English incl. Industrial Attachment, Work-Related Learning, Referees, Personal Details, Bio Data; French/Portuguese headings), accent/numbering-insensitive matching, exact line match or prefix + typography (bold/caps/larger/colon; no prefix before a connector word), header/footer regions, page continuation, hidden text skipped; sections attached to ExtractionResult; quality checks share the lexicon; 35 tests incl. every parseable corpus CV |  |
 | 2026-11-15 | Impl | P06-T06 | extraction/dates.py: month names (en/fr), Jan '20, MM/YYYY, YYYY-MM, day-first DD/MM/YYYY, year-only (precision=year), 2019-21, Since/From, current markers, dash/to/till/until/a separators; reversed/future/impossible ranges returned with an anomaly and no usable range. normalisation/experience.py: employment-kind classifier (attachment/WRL, internship, volunteer, part-time, self-employed, contract, full-time default with explicit=False), end-exclusive month union capped at today, part-time weighted 0.5 when uncovered (configurable), attachments/internships/volunteer totalled separately, gaps computed but never scored. Generator gold total fixed to the docs rule (one label changed: cv_147 9 -> 1). 44 tests; every parseable corpus CV's date ranges match the labels exactly |  |
 | 2026-11-15 | Impl | P06-T07 | extraction/skills.py (Aho-Corasick over taxonomy names+aliases; case-sensitive ambiguous names, list-context for 1-2 letter skills, contained matches dropped) + extraction/parser.py (experience entries anchored on date lines incl. date-only lines, title/employer/location split, explicit kind cues; education with institution/grade/year; certifications with body + licence class; languages with level; projects with technologies; profile summary; contact (excluded in personal section); skills with section-based confidence (listed 0.6 < used 0.85), stated years, raw list items, optional semantic callback; hidden-text skills stored as excluded). Taxonomy 2026.11.2 (+6 skills, +5 aliases). Generator writes contract/volunteer cues. Corpus: experience 239/248, kind 235/239, education 343/343, certifications 79/80, languages 275/275, skills 563/564; every claim located with snippet <= 300. ENGINE_VERSION 0.3.0 | PDF tables without ruling lines lose row structure (2 table CVs) - revisit in P06-T15 benchmark; dev DB needs load_taxonomy for 2026.11.2 |
+| 2026-11-15 | Impl | P06-T08 | normalisation/qualifications.py: QualificationIndex from taxonomy levels + professional bodies; word-boundary aliases (<=3 letters must be capitals), highest rank wins then longest alias; foreign institutions/countries keep the mapped level but need verification; unmapped text needs verification (never negative); field + body extraction; normalise_education fills level/foreign/needs_verification/field. normalisation/titles.py: abbreviation expansion, seniority split (intern..head), synonym map to common titles; ExperienceData gains title_normalised + seniority. Qualifications 2026.11.2 (+RGN aliases). Corpus: 338/338 levels exact, 5/5 foreign flagged; 38 tests |  |
