@@ -23,6 +23,7 @@ from ai_engine.contracts import (
     CriterionSpec,
     CriterionType,
     EducationData,
+    EmploymentKind,
     EvidenceRef,
     EvidenceStatus,
     ExperienceData,
@@ -97,7 +98,11 @@ def months_score(months: int, required: int) -> int:
 
 
 def experience_months(
-    evidence: CandidateEvidence, today: YearMonth, *, roles: Iterable[ExtractedClaim] | None = None
+    evidence: CandidateEvidence,
+    today: YearMonth,
+    *,
+    roles: Iterable[ExtractedClaim] | None = None,
+    counted: frozenset[EmploymentKind] = DEFAULT_COUNTED,
 ) -> tuple[int, list[ExtractedClaim], int]:
     """(counted months, dated role claims, undated roles) over the given (or all) roles."""
     claims = list(roles) if roles is not None else list(evidence.of_type("experience"))
@@ -109,7 +114,7 @@ def experience_months(
             role_list.append(Role(data.dates, data.employment_kind))
             if data.dates.start is not None:
                 dated.append(claim)
-    summary = summarise(role_list, today, counted=DEFAULT_COUNTED)
+    summary = summarise(role_list, today, counted=counted)
     return summary.total_months, dated, summary.undated_roles
 
 
@@ -287,10 +292,13 @@ def check_min_experience(
     *,
     roles: Iterable[ExtractedClaim] | None = None,
     method: str = "rule",
+    counted: frozenset[EmploymentKind] = DEFAULT_COUNTED,
 ) -> CriterionResult:
     """Months of (relevant) experience against ``min_months``. P07-T03 passes relevant roles."""
     role_claims = list(roles) if roles is not None else list(evidence.of_type("experience"))
-    months, dated, undated = experience_months(evidence, ctx.today, roles=role_claims)
+    months, dated, undated = experience_months(
+        evidence, ctx.today, roles=role_claims, counted=counted
+    )
     if not dated:
         if undated:
             claims = role_claims
