@@ -23,7 +23,15 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
   completed in Phase 02.
 - `apps/<domain>/` (later phases) — `models.py`, `services.py`, `selectors.py`, `permissions.py`, `tasks.py`,
   `events.py`, `api/{serializers,views,urls,filters}.py`, `admin.py`, `tests/` (+ `tests/factories.py`)
-- `ai_engine/` — pure Python (no Django imports). Django adapters live in `apps/resumes` and `apps/screening`.
+- `ai_engine/` — pure Python (no Django imports; a test enforces it). Django adapters live in `apps/resumes` and
+  `apps/screening`. Phase 06 built: `contracts.py` (pydantic, frozen, `extra=forbid`), `extraction/` (guards, pdf,
+  docx, sandbox, ocr, quality, sections, dates, skills, parser, pii), `normalisation/` (experience, qualifications,
+  titles), `security/injection.py`, `matching/semantic.py`, `tests/benchmark/run_extraction_benchmark.py`.
+  Bump `ENGINE_VERSION` when extraction output changes (runs are versioned by it).
+- `apps/resumes` — `ExtractionRun`/`DocumentText`/`ExtractedClaim` (encrypted payloads; plain columns only for
+  querying), `ClaimCorrection`, candidate-owned `ResumeParse`; `services.py` orchestration (consumers of
+  `application.submitted`, `document.accepted`, `document.rejected`; emits `application.evidence_ready`),
+  `engine.py` (taxonomy indexes cached per process), `crosscheck.py`, `candidate.py`, `hr.py`.
 - `tests/core_testapp/` — test-only models (`Widget` tenant model, `SecretNote` encrypted field); installed
   only by `config.settings.test`.
 - `fixtures/` — taxonomy seeds, synthetic CVs (never real data). `schema.yml` — committed OpenAPI schema.
@@ -59,6 +67,11 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
 12. Seed data that tests rely on (templates, decision reasons) is (re)created on `post_migrate`, because
     transactional tests flush the DB; a data migration alone is not enough.
 13. Migrations that use pgvector/trigram/unaccent depend on `core.0002_postgres_extensions` (fresh CI DBs).
+14. Untrusted files are parsed via `ai_engine.extraction.sandbox.run_extraction` (subprocess + limits) unless
+    `EXTRACTION_SANDBOX=False` (tests). Extraction starts from outbox consumers only when `RESUMES_AUTOSTART`
+    (off in `config.settings.test`; resumes tests switch it on in their conftest).
+15. Embeddings: the `ml` extra (sentence-transformers, CPU torch) exists only in the worker image (ADR-025);
+    tests use `EMBEDDING_MODEL="hashing-384"`. After `load_taxonomy`, run `embed_skills` in a worker.
 
 ## Commands
 Inside the container (`docker compose exec backend …`):
@@ -67,7 +80,10 @@ python manage.py migrate | makemigrations --check --dry-run | send_test_email | 
 pytest -q  |  pytest apps/<app> -q  |  pytest -m "not slow"  |  pytest --cov=apps --cov=ai_engine
 ruff format . && ruff check . && mypy apps ai_engine
 celery -A config worker -Q documents -c 2 -l info
+python manage.py load_taxonomy && python manage.py embed_skills          # worker container (model)
+python -m ai_engine.tests.benchmark.run_extraction_benchmark --workers 2 --semantic --check  # worker image
 ```
+In Git Bash, prefix docker commands that pass container paths with `MSYS_NO_PATHCONV=1`.
 On the host (Windows, `backend/`): `python -m uv sync` creates `.venv` (Python 3.12), then
 `.venv/Scripts/python -m pytest -q` — host runs use `localhost:15432` (Postgres) and `localhost:6380` (Redis)
 from the dev stack; `.env` is NOT auto-loaded (set `DJANGO_READ_DOT_ENV=true` to opt in).

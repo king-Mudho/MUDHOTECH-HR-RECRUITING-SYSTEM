@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-EXIT
+- **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
+- **Current task:** P07-T01
 - **Last updated:** 2026-11-15
-- **Overall:** 87 / 193 tasks · 5 / 16 phases
+- **Overall:** 88 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -18,8 +18,8 @@
 | 03 | [Vacancy Management, Taxonomy & Public Job Board](phases/PHASE_03_VACANCIES_JOB_BOARD.md) | MVP | 14 | ✅ Done | 2026-11-10 |
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ✅ Done | 2026-11-10 |
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ✅ Done | 2026-11-11 |
-| 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | 🟦 In progress | |
-| 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ⬜ Not started | |
+| 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ✅ Done | 2026-11-15 |
+| 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | 🟦 In progress | |
 | 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ⬜ Not started | |
 | 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ⬜ Not started | |
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | ⬜ Not started | |
@@ -152,7 +152,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T13 — Candidate features: view "What we extracted from your CV" (wizard review step + documents page), submit corrections …
 - [x] P06-T14 — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action
 - [x] P06-T15 — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in …
-- [ ] P06-EXIT — All exit criteria verified with evidence
+- [x] P06-EXIT — All exit criteria verified with evidence
 
 ### Phase 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)  (`phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md`)
 - [ ] P07-T01 — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), …
@@ -406,6 +406,32 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   shortlist workflow; HR message attachments are not in the UI yet; SES topic ARNs and the no-reply
   receipt rule are go-live configuration (Phase 11); first green nightly still to be confirmed.
 
+### Phase 06 — Document Ingestion & CV Extraction (closed 2026-11-15)
+- **Built:** deterministic synthetic corpus (150 CVs, 5 roles, 16 variations, gold labels); pure `ai_engine`
+  pipeline: strict pydantic contracts (no claim without snippet + location; protected/personal claims must be
+  excluded), PDF/DOCX readers (column order, tables, text boxes, headers/footers, hidden white/tiny/off-page
+  text set aside), pdfplumber fallback, subprocess sandbox with limits, OCR fallback (Tesseract TSV with
+  per-page confidence), garbled/language/not-a-CV checks, sectioning (incl. Zimbabwean and French headings),
+  dates + experience interval union, rule/taxonomy claim extraction (Aho-Corasick skills), qualification
+  levels and title normalisation, protected-attribute exclusion with masked snippets, prompt-injection
+  detection, local embeddings (all-MiniLM-L6-v2, CPU, cached) with a semantic skill matcher. Django
+  `apps.resumes`: versioned extraction runs with encrypted text/claims, outbox-driven orchestration
+  (`application.submitted` -> processing -> `application.evidence_ready`; failures -> `processing_error`
+  + re-upload request), duplicate-file reuse, objection to automated processing honoured, cross-application
+  flags (shared file, name mismatch), candidate preview/import/corrections, HR extraction panel with retry;
+  benchmark harness + nightly job.
+- **Evidence:** see `phases/PHASE_06_CV_EXTRACTION.md` "Exit evidence" and
+  `docs/reports/extraction_benchmark_2026-11-15.md` (all docs/09 targets met; 100 CVs in 129 s with 2 workers).
+- **Deviations:** taxonomy 2026.11.2 (+6 skills, +8 aliases incl. RGN); worker image installs the `ml`
+  extra with CPU-only torch and bakes the model (ADR-025); `RESUMES_AUTOSTART` setting (off in other apps'
+  tests); candidate CV preview is candidate-owned `ResumeParse`, corrections apply to submitted
+  application claims; generator gold labels corrected (part-time weighting, kind cues).
+- **Known limitations / follow-ups:** equivalent-wording skill recall 0.76 (threshold calibration in
+  Phase 10); PDF tables without ruling lines lose row structure (2 corpus CVs); applications stay in
+  `processing` until Phase 07 screening moves them to review; the new candidate/HR screens were verified by
+  component and API tests, not yet in a live browser session (ports 3000/8000 were held by another
+  project and RAM was low) - check them in the Phase 07 smoke test; worker image is 3.3 GB.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -423,6 +449,10 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-11 | P05-T03 | Internal notification status `sending` (claim before send) | Exactly-once delivery under worker crashes | - |
 | 2026-11-11 | P05-T07 | RBAC actions `applications.decide` and `applications.assign` (org_admin/hr_manager) | Outcomes and assignment are HR-manager decisions | - |
 | 2026-11-15 | P06-T01 | Synthetic PDFs built with PyMuPDF (Story) instead of reportlab | PyMuPDF is already a dependency; avoids a new PDF library, subsetting keeps files small | - |
+| 2026-11-15 | P06-T07/T08 | Taxonomy 2026.11.2: +6 skills (HRIS, A/B testing, Sage Evolution, HIV counselling, NSSA compliance, Disciplinary procedures), +8 aliases (CI/CD, RGN, ...) | Corpus skills and common Zimbabwean CV terms were missing | - |
+| 2026-11-15 | P06-T10 | `ml` extra (sentence-transformers + CPU-only torch) only in the worker image, model baked in, HF offline at runtime | Keep web image/CI small; no outbound model calls | ADR-025 |
+| 2026-11-15 | P06-T11 | `RESUMES_AUTOSTART` setting; off in test settings, on in resumes tests | Other apps' tests submit applications without S3 fixtures | - |
+| 2026-11-15 | P06-T13 | Candidate preview = candidate-owned `ResumeParse`; corrections only on submitted application claims; import-to-profile is the pre-submit correction path | Extraction runs are tenant data tied to an application | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -522,3 +552,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T13 | ResumeParse (candidate-owned preview, encrypted, on request, platform taxonomy) + API: GET candidate/resumes/{id}/extraction (202 while reading), POST import-to-profile (explicit confirm, chosen items, duplicates skipped, source=cv_import, audit), GET candidate/applications/{id}/extraction, POST candidate/claims/{id}/corrections (EC-DOC-27: original kept, ClaimCorrection, outbox application.evidence_corrected, audit; protected/contact not correctable; owner-only 404s). Frontend features/resumes: grouped extraction view (snippet + page, ignored personal details explained, flags in plain words, polling), import dialog with confirmation, correction dialog (RHF + zod); wired into wizard review step, documents page ('What we read') and candidate application page. Backend 1990 passed; frontend 127 tests, lint, typecheck, build |  |
 | 2026-11-15 | Impl | P06-T14 | GET hr/applications/{id}/extraction (applications.view; visibility per HR rules): runs with grouped claims, snippet + page, confidence label (clear/likely/uncertain), inferred marker, candidate corrections with notes, application + run flags; protected/contact/hidden/injected items only counted as 'set aside' (not even their kinds shown). POST hr/applications/{id}/retry-processing (applications.transition; 409 conflict.nothing_to_retry otherwise) -> new attempt via services.retry + audit. Both in the cross-tenant registry and role matrix. Frontend ExtractionPanel on the HR application page: AI-assisted label, flags banner in plain words (never counted against the candidate), retry button for editors, polling while reading. Tests: 2 API + 14 tenancy/matrix + 3 UI |  |
 | 2026-11-15 | Impl | P06-T15 | ai_engine/tests/benchmark/run_extraction_benchmark.py: full pure pipeline over the 150-CV corpus vs labels -> parse success (text/all), experience P/R/F1, employment kind, total months, education level accuracy, foreign flagging, certifications, languages, skill precision (skills section) / recall, equivalent-wording recall, protected recall/false positives/leaks, injection + hidden text P/R, grounding rate, determinism, per-CV latency, throughput of 100 sandboxed CVs with N workers; --check fails on docs/09 targets; JSON + markdown report in docs/reports/extraction_benchmark_2026-11-15.{json,md} (worker image: all targets pass, 100 CVs in 129 s with 2 workers). Nightly ai-benchmark job enabled (builds the worker image, uploads the report). Fixed: sandbox output now UTF-8 bytes (French CVs crashed on Windows) + regression test | equivalent-wording recall 0.76 and PDF tables without ruling lines are the known gaps (Phase 10 calibration / table reconstruction) |
+| 2026-11-15 | Close | P06-EXIT | Phase 06 closed: exit criteria verified (benchmark all docs/09 targets met in the worker image with OCR + embeddings; 100 CVs in 129 s with 2 workers; grounding 1.0, protected leaks 0; failure/redelivery flows tested; backend 1,990+ / 130 Vitest, EC 31/31, CI green). Fixed during close: EC-OPS-04 redelivery test | Phase 07 started |

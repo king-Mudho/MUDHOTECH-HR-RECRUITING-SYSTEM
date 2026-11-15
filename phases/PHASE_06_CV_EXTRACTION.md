@@ -28,7 +28,22 @@ scans and adversarial content, with protected data excluded — without ever inv
 EC-DOC-01..28, EC-AI-06 (extraction part), EC-AI-10/11 (idempotency), EC-OPS-04.
 
 ## Exit criteria
-- [ ] Benchmark meets `docs/09 §5` extraction targets (parse success, experience F1, education mapping, skills P/R) or deviations are documented with an improvement plan approved in PROGRESS notes.
-- [ ] 100 CVs extracted in ≤ 10 min on dev machine with 2 document workers (record timing).
-- [ ] No claim without source snippet; protected data never present in evaluation inputs (test).
-- [ ] Failures always visible to HR and candidate; no application lost.
+- [x] Benchmark meets `docs/09 §5` extraction targets (parse success, experience F1, education mapping, skills P/R) or deviations are documented with an improvement plan approved in PROGRESS notes.
+- [x] 100 CVs extracted in ≤ 10 min on dev machine with 2 document workers (record timing).
+- [x] No claim without source snippet; protected data never present in evaluation inputs (test).
+- [x] Failures always visible to HR and candidate; no application lost.
+
+## Exit evidence (2026-11-15)
+- Benchmark `docs/reports/extraction_benchmark_2026-11-15.md` (worker image, Tesseract + all-MiniLM-L6-v2):
+  parse success 100 % (text) / 100 % (incl. scans), experience F1 0.948, education level accuracy 1.0,
+  skill precision 0.983 / recall 0.993, grounding 1.0, determinism 1.0, protected leaks 0, injection and
+  hidden-text P/R 1.0. Nightly `ai-benchmark` job fails on any missed target.
+- Throughput: 100 CVs through the sandboxed extractor with 2 parallel workers in 129 s on the dev machine
+  (target <= 600 s).
+- No claim without a snippet: contract validation (`ClaimSource` requires snippet + location), corpus tests in
+  `test_parser.py` (every claim located) and grounding rate 1.0; protected data never in
+  `CandidateEvidence`: `test_pii_injection.py` (corpus + adversarial) and `protected_leaks = 0`.
+- Failures visible, nothing lost: `apps/resumes/tests/test_extraction_flow.py` (unreadable CV ->
+  `processing_error` + candidate re-upload notification, re-upload restarts, storage outage, redelivery after
+  worker loss EC-OPS-04), HR panel + retry (`test_hr_api.py`, `hr-extraction.test.tsx`).
+- Suites: backend 1,990+ passed, frontend 130 Vitest, EC coverage 31/31, CI green on `ef20dbc`.

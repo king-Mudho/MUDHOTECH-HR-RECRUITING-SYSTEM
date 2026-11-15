@@ -20,3 +20,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   deduplicated email and in-app delivery (suppression, quiet hours, retries, bounce handling); notification
   bell and centre; clarification requests and per-application message threads; HR pipeline board with
   validated, reason-coded status changes, notes, tags and assignment; candidate to-do list.
+- Phase 06 CV extraction (AI part 1): synthetic CV corpus with gold labels; sandboxed PDF/DOCX text
+  extraction with hidden-text detection, OCR fallback and quality/language checks; sections, dates and
+  experience totals; evidence-linked claims (experience, education, certifications, skills, languages,
+  projects) with qualification levels and job titles normalised; protected details excluded and masked;
+  prompt-injection detection; local embeddings for semantic skill matching; encrypted extraction runs
+  with outbox orchestration and safe failure handling; duplicate-file and name-mismatch flags; candidate
+  "What we extracted" view, import to profile and corrections; HR extraction panel with retry;
+  extraction benchmark with a nightly job.
