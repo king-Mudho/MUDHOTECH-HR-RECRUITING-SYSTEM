@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T05
+- **Current task:** P06-T06
 - **Last updated:** 2026-11-15
-- **Overall:** 76 / 193 tasks · 5 / 16 phases
+- **Overall:** 77 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -141,7 +141,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T02 — `ai_engine/contracts.py` pydantic models (DocumentText, Page, Block, ExtractedClaim, CandidateEvidence…) + …
 - [x] P06-T03 — `extraction/pdf.py` (PyMuPDF dict extraction, column-aware reading order, hidden-text detection: colour ≈ …
 - [x] P06-T04 — `extraction/ocr.py` (trigger rules, 300 DPI render, Tesseract, per-page confidence) + `extraction/quality.py` …
-- [ ] P06-T05 — `extraction/sections.py` heading detection (typography + lexicon incl
+- [x] P06-T05 — `extraction/sections.py` heading detection (typography + lexicon incl
 - [ ] P06-T06 — `extraction/dates.py` all formats in `docs/05 §6.1`, precision flags, anomalies
 - [ ] P06-T07 — `extraction/parser.py` claim extraction for experience, education, certifications/licences, skills (Aho–Corasick …
 - [ ] P06-T08 — `normalisation/qualifications.py` map to qualification levels (ZIMSEC, NC/ND/HND, degrees, professional bodies, …
@@ -511,3 +511,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T02 | ai_engine/contracts.py: strict frozen pydantic contracts (DocumentText/Page/Block/Section, discriminated claim data, ClaimSource with mandatory snippet+location, ExtractionResult, CandidateEvidence that rejects excluded/contact/protected claims, stable input_hash); ENGINE_VERSION 0.2.0; 12 tests incl. no-Django import guard | P06-T03 extractor fills DocumentText (NFKC, line-wrap collapse, hidden/off-page blocks) |
 | 2026-11-15 | Impl | P06-T03 | ai_engine/extraction: magic-byte sniffing + size/page/zip-bomb/macro guards; PyMuPDF dict reader (no media-box clip; near-white, <4pt and off-page spans split into hidden blocks; gutter-based two-column reading order; bold/size kept), pdfplumber fallback (status partial); DOCX reader (body order, tables row-wise, text boxes without VML duplicate, headers/footers, vanish/white/tiny runs hidden); NFKC/ligature/bullet/hyphen normalisation; subprocess sandbox with RLIMIT_CPU/AS + wall timeout; 19 tests incl. all 150 corpus CVs parse as labelled | OCR for image-only pages and garbled-text detection in P06-T04; backend image needs a rebuild for pdfplumber |
 | 2026-11-15 | Impl | P06-T04 | extraction/ocr.py (trigger: <200 visible chars/page, >=50% image-only pages or garbled text; 300 DPI grey render; Tesseract CLI psm 3 TSV -> lines + mean word confidence; low_ocr_confidence <70; ocr_unavailable flag when no engine) + extraction/quality.py (garbled CID/replacement/non-word detection, langdetect with fixed seed + heading-language signal, possibly_not_cv rules, 0-1 quality score); wired into extract_document (ocr switch, timings); CI installs tesseract; 11 tests incl. a real Tesseract scan (verified in the worker image, Tesseract 5.5.0) | worker image must be rebuilt for pdfplumber/langdetect |
+| 2026-11-15 | Impl | P06-T05 | extraction/sections.py: heading lexicon (English incl. Industrial Attachment, Work-Related Learning, Referees, Personal Details, Bio Data; French/Portuguese headings), accent/numbering-insensitive matching, exact line match or prefix + typography (bold/caps/larger/colon; no prefix before a connector word), header/footer regions, page continuation, hidden text skipped; sections attached to ExtractionResult; quality checks share the lexicon; 35 tests incl. every parseable corpus CV |  |

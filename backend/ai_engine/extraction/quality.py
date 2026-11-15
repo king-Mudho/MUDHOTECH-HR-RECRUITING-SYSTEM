@@ -10,6 +10,7 @@ import re
 from dataclasses import dataclass
 
 from ai_engine.contracts import Flag, Page
+from ai_engine.extraction.sections import HeadingMatch, match_heading
 
 GARBLED_SHARE = 0.05  # replacement / private-use / CID artefacts
 MIN_WORDLIKE_SHARE = 0.5
@@ -20,28 +21,6 @@ _CID = re.compile(r"\(cid:\d+\)")
 _TOKEN = re.compile(r"\S+")
 _WORDLIKE = re.compile(r"^[(\"'\[]?[A-Za-zÀ-ÿ][a-zà-ÿ'-]*[A-Za-zà-ÿ]?[.,;:!?)\]\"']*$")
 
-ENGLISH_HEADINGS = (
-    "experience",
-    "employment",
-    "work history",
-    "career history",
-    "education",
-    "qualifications",
-    "academic",
-    "skills",
-    "competencies",
-    "profile",
-    "summary",
-    "objective",
-    "referees",
-    "references",
-    "industrial attachment",
-    "internship",
-    "certifications",
-    "projects",
-    "languages",
-    "personal details",
-)
 NOT_CV_PATTERNS = re.compile(
     r"this is to certify|certificate of (completion|achievement|attendance|competence)|"
     r"has (successfully )?completed|is hereby awarded|national registration|identity card|"
@@ -93,36 +72,17 @@ def detect_language(text: str) -> str | None:
     return str(best.lang) if best.prob >= 0.7 else None
 
 
-HEADINGS_BY_LANGUAGE = {
-    "fr": (
-        "profil",
-        "expérience",
-        "experience professionnelle",
-        "formation",
-        "compétences",
-        "langues",
-        "informations personnelles",
-        "références",
-        "centres d'intérêt",
-    ),
-    "pt": ("experiência", "formação", "competências", "idiomas", "referências"),
-}
-
-# non-English headings still mark a CV (a French CV is "unsupported language", not "not a CV")
-CV_HEADINGS = ENGLISH_HEADINGS + tuple(h for hs in HEADINGS_BY_LANGUAGE.values() for h in hs)
-
-
-def _heading_lines(text: str) -> list[str]:
-    out = []
-    for line in text.lower().splitlines():
-        line = line.strip(" :-#*").strip()
-        if 0 < len(line) <= 40:
-            out.append(line)
-    return out
+def _headings(text: str) -> list[HeadingMatch]:
+    found = []
+    for line in text.splitlines():
+        match = match_heading(line)
+        if match is not None:
+            found.append(match)
+    return found
 
 
 def heading_hits(text: str) -> int:
-    return sum(1 for line in _heading_lines(text) if any(line.startswith(h) for h in CV_HEADINGS))
+    return len(_headings(text))
 
 
 def heading_language(text: str) -> str | None:
@@ -131,14 +91,14 @@ def heading_language(text: str) -> str | None:
     A CV whose headings and profile are French but whose duties keep English technical terms
     reads as English to a character model; the headings say what language it was written in.
     """
-    lines = _heading_lines(text)
-    english = sum(1 for line in lines if any(line.startswith(h) for h in ENGLISH_HEADINGS))
-    best, best_hits = None, 0
-    for language, headings in HEADINGS_BY_LANGUAGE.items():
-        hits = sum(1 for line in lines if any(line.startswith(h) for h in headings))
-        if hits > best_hits:
-            best, best_hits = language, hits
-    return best if best_hits >= 2 and best_hits > english else None
+    counts: dict[str, int] = {}
+    for match in _headings(text):
+        counts[match.language] = counts.get(match.language, 0) + 1
+    english = counts.pop("en", 0)
+    if not counts:
+        return None
+    language, hits = max(counts.items(), key=lambda kv: kv[1])
+    return language if hits >= 2 and hits > english else None
 
 
 def possibly_not_cv(text: str, words: int, headings: int) -> bool:

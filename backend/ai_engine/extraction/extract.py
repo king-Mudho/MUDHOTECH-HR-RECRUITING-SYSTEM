@@ -16,6 +16,7 @@ from ai_engine.extraction.guards import (
 )
 from ai_engine.extraction.ocr import needs_ocr, ocr_pdf, tesseract_path
 from ai_engine.extraction.quality import assess
+from ai_engine.extraction.sections import detect_sections
 
 
 def failed(code: str, flag: Flag, started: float | None = None) -> ExtractionResult:
@@ -99,6 +100,7 @@ def extract_document(
     return ExtractionResult(
         status=ExtractionStatus.PARTIAL if degraded else ExtractionStatus.SUCCEEDED,
         document=document,
+        sections=tuple(detect_sections(pages)),
         flags=frozenset(flags),
         timings_ms=timings,
     )
