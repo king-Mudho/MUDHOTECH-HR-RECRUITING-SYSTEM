@@ -29,7 +29,7 @@ Env vars (see `.env.example`): `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `ALLOWED_
 | CI/CD | GitHub Actions: build images → push to GHCR/ECR → SSH (or SSM Run Command) deploy → `docker compose pull && up -d` → migrate → smoke test → rollback on failure (previous tag) |
 
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
-1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
+1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 
 ## 5. Nginx
 `/` → frontend:3000; `/api/` → backend:8000; `/healthz`; gzip/brotli; `client_max_body_size 30m`; rate limit zones `auth` (10r/m) & `search` (60r/m); security headers; HTTP/2; deny dotfiles; access logs JSON.

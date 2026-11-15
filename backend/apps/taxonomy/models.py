@@ -54,6 +54,9 @@ class Skill(BaseModel):
     category = models.CharField(max_length=32, choices=SkillCategory.choices)
     description = models.TextField(blank=True, default="")
     embedding = VectorField(dimensions=EMBEDDING_DIMENSIONS, null=True, blank=True)
+    embedding_model = models.CharField(
+        max_length=120, blank=True, default="", help_text="Model that produced the embedding."
+    )
     is_active = models.BooleanField(default=True)
     organisation = models.ForeignKey(
         "organisations.Organisation",

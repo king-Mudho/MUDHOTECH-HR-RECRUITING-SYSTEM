@@ -332,6 +332,10 @@ AI_NOTICE_VERSION = "2026-11-10"
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")
 EMBEDDING_MODEL = env("EMBEDDING_MODEL", default="sentence-transformers/all-MiniLM-L6-v2")
+SEMANTIC_SKILL_MATCHING = env.bool("SEMANTIC_SKILL_MATCHING", default=True)
+SEMANTIC_SKILL_THRESHOLD = env.float(
+    "SEMANTIC_SKILL_THRESHOLD", default=0.75
+)  # Phase 10 calibrates
 
 # --- Health checks ---
 HEALTHCHECK_TIMEOUT_SECONDS = env.float("HEALTHCHECK_TIMEOUT_SECONDS", default=2.0)

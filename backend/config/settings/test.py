@@ -12,6 +12,8 @@ CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_BROKER_URL = "memory://"
 OUTBOX_EAGER_PUBLISH = True
 DOCUMENT_SCANNER = "fake"
+EMBEDDING_MODEL = "hashing-384"  # deterministic, no model download in tests
+EXTRACTION_SANDBOX = False  # in-process parsing keeps the suite fast
 # allauth rate limits use the cache; keep them generous unless a test overrides them.
 # Deterministic Fernet keys used ONLY by the test-suite.
 FIELD_ENCRYPTION_KEYS = (

@@ -38,6 +38,10 @@ dependencies = [
   "langdetect~=1.0.9",
 ]
 
+[project.optional-dependencies]
+# Local embeddings (ADR-010) - installed in the worker image only (`uv sync --extra ml`).
+ml = ["sentence-transformers>=3.4", "torch>=2.4"]
+
 [dependency-groups]
 dev = [
   "pytest>=8.3",
@@ -119,3 +123,12 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+# CPU-only PyTorch on Linux (the default wheels pull in several GB of CUDA libraries).
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
