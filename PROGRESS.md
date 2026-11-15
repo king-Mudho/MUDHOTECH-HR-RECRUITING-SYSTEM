@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T02
+- **Current task:** P07-T03
 - **Last updated:** 2026-11-15
-- **Overall:** 88 / 193 tasks · 6 / 16 phases
+- **Overall:** 89 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -156,7 +156,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)  (`phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md`)
 - [x] P07-T01 — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), …
-- [ ] P07-T02 — `matching/skills_match.py` cascade exact → alias → relations (`implies`, `narrower`) → semantic (threshold from …
+- [x] P07-T02 — `matching/skills_match.py` cascade exact → alias → relations (`implies`, `narrower`) → semantic (threshold from …
 - [ ] P07-T03 — `matching/experience_match.py` role relevance (title/responsibility similarity, HR equivalent titles) + months via …
 - [ ] P07-T04 — `matching/answers.py` question scoring per rubric mode (exact/options/range/rubric_text keyword-criteria/human) 
 - [ ] P07-T05 — `evaluation/scoring.py` criterion bands, category aggregation over assessable criteria, total with re-normalisation, …
@@ -555,3 +555,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T15 | ai_engine/tests/benchmark/run_extraction_benchmark.py: full pure pipeline over the 150-CV corpus vs labels -> parse success (text/all), experience P/R/F1, employment kind, total months, education level accuracy, foreign flagging, certifications, languages, skill precision (skills section) / recall, equivalent-wording recall, protected recall/false positives/leaks, injection + hidden text P/R, grounding rate, determinism, per-CV latency, throughput of 100 sandboxed CVs with N workers; --check fails on docs/09 targets; JSON + markdown report in docs/reports/extraction_benchmark_2026-11-15.{json,md} (worker image: all targets pass, 100 CVs in 129 s with 2 workers). Nightly ai-benchmark job enabled (builds the worker image, uploads the report). Fixed: sandbox output now UTF-8 bytes (French CVs crashed on Windows) + regression test | equivalent-wording recall 0.76 and PDF tables without ruling lines are the known gaps (Phase 10 calibration / table reconstruction) |
 | 2026-11-15 | Close | P06-EXIT | Phase 06 closed: exit criteria verified (benchmark all docs/09 targets met in the worker image with OCR + embeddings; 100 CVs in 129 s with 2 workers; grounding 1.0, protected leaks 0; failure/redelivery flows tested; backend 1,990+ / 130 Vitest, EC 31/31, CI green). Fixed during close: EC-OPS-04 redelivery test | Phase 07 started |
 | 2026-11-15 | Impl | P07-T01 | contracts: EvidenceStatus per docs/05 §8.2 (human_verified > explicit > candidate_reported > inferred; needs_verification, conflicting, missing), CriterionType/Importance/CriterionSpec, EvidenceRef (claim index or answer), CriterionResult (score bands 0/25/50/75/100, missing = no score, scored needs evidence). matching/rules.py: qualification rank vs required (field via equivalents, foreign -> needs_verification 75, unknown level -> 50, one level below 50, lower 25, or-equivalent-experience route via min_months -> inferred 75), certification/licence (core-term match, expiry -> needs_verification 50, licence class), min experience months via interval union (bands, undated roles -> needs_verification), language (level-aware). 19 tests incl. corpus agreement >= 95% with gold labels |  |
+| 2026-11-15 | Impl | P07-T02 | matching/config.py EngineConfig (versioned thresholds: semantic 0.78, role relevance 0.6, listed 50 / mentioned 75 / used 100, relation cap 75, related 25, semantic cap 50). matching/skills_match.py: cascade exact -> alias (other spelling or criterion equivalents) -> relation (implies/narrower chains up to 3 hops, inferred, capped; related = weak 25; broader never counts) -> semantic (embedding similarity >= threshold, inferred, capped, only when nothing stronger); usage decides the band (EC-DOC-24); best evidence cited (max 3); missing = unknown. 7 tests incl. corpus: 173/173 gold-met skill criteria found, no skills-list credit where gold says not listed |  |
