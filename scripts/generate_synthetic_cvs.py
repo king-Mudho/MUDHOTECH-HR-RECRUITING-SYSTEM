@@ -469,6 +469,7 @@ FRENCH = {
     "Referees": "Références",
 }
 HEADINGS = {k: k for k in FRENCH}
+KIND_CUES = {"contract": "Contract", "volunteer": "Volunteer"}
 
 
 def months_between(a: tuple[int, int], b: tuple[int, int]) -> int:
@@ -899,7 +900,10 @@ def sections(cv: CV) -> list[tuple[str, list[str]]]:
     out: list[tuple[str, list[str]]] = [(h["Profile"], [cv.summary])]
     exp_lines: list[str] = []
     for j in cv.jobs:
-        exp_lines.append(f"{j.title} | {j.employer}, {j.city} | {style(j.start)} - {style(j.end)}")
+        line = f"{j.title} | {j.employer}, {j.city} | {style(j.start)} - {style(j.end)}"
+        if j.kind in KIND_CUES:  # the CV says so; otherwise a parser could not know
+            line += f" ({KIND_CUES[j.kind]})"  # in the dates cell: tables keep 3 columns
+        exp_lines.append(line)
         exp_lines += [f"- {b}" for b in j.bullets]
     out.append((h["Experience"], exp_lines))
     out.append(
@@ -1082,7 +1086,7 @@ def write_docx(cv: CV, path: Path) -> None:
         doc.add_heading(heading, level=1)
         if "tables" in cv.variations and heading in ("Experience", FRENCH["Experience"]):
             rows = [ln for ln in lines if not ln.startswith("- ")]
-            table = doc.add_table(rows=0, cols=3)
+            table = doc.add_table(rows=0, cols=max(len(r.split("|")) for r in rows))
             table.style = "Table Grid"
             for r in rows:
                 cells = table.add_row().cells

@@ -63,8 +63,8 @@ def reading_order(blocks: list[RawBlock], width: float | None) -> list[RawBlock]
     boxed = [b for b in blocks if b.bbox is not None]
 
     def top(b: RawBlock) -> tuple[float, float]:
-        assert b.bbox is not None
-        return (round(b.bbox[1], 1), b.bbox[0])
+        bb = b.bbox or (0.0, 0.0, 0.0, 0.0)
+        return (round(bb[1], 1), bb[0])
 
     boxed.sort(key=top)
     gutter = find_gutter(boxed, width) if width else None
@@ -81,8 +81,7 @@ def reading_order(blocks: list[RawBlock], width: float | None) -> list[RawBlock]
         right.clear()
 
     for b in boxed:
-        bb = b.bbox
-        assert bb is not None
+        bb = b.bbox or (0.0, 0.0, 0.0, 0.0)
         if bb[2] <= gutter:
             left.append(b)
         elif bb[0] >= gutter:

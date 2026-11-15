@@ -1,5 +1,5 @@
 {
- "version": "2026.11.1",
+ "version": "2026.11.2",
  "skills": [
   {
    "name": "Python",
@@ -595,7 +595,8 @@
    "name": "Continuous integration",
    "category": "software_it",
    "aliases": [
-    "CI"
+    "CI",
+    "CI/CD"
    ]
   },
   {
@@ -1511,7 +1512,8 @@
    "name": "ZIMRA compliance",
    "category": "finance",
    "aliases": [
-    "zimra"
+    "zimra",
+    "ZIMRA tax returns"
    ]
   },
   {
@@ -1728,7 +1730,8 @@
    "name": "Pivot tables",
    "category": "finance",
    "aliases": [
-    "pivot table"
+    "pivot table",
+    "Excel pivot tables"
    ]
   },
   {
@@ -2271,7 +2274,8 @@
    "name": "Maternal and child health",
    "category": "health",
    "aliases": [
-    "MCH"
+    "MCH",
+    "maternal health"
    ]
   },
   {
@@ -2383,7 +2387,8 @@
    "name": "Medical records management",
    "category": "health",
    "aliases": [
-    "health records"
+    "health records",
+    "patient records"
    ]
   },
   {
@@ -4463,6 +4468,53 @@
    "aliases": [
     "self motivated"
    ]
+  },
+  {
+   "name": "HRIS",
+   "category": "business",
+   "aliases": [
+    "HR information systems",
+    "human resources information system"
+   ]
+  },
+  {
+   "name": "A/B testing",
+   "category": "software_it",
+   "aliases": [
+    "split testing"
+   ]
+  },
+  {
+   "name": "Sage Evolution",
+   "category": "finance",
+   "aliases": [
+    "Sage 300 Evolution",
+    "Sage Evolution ERP"
+   ]
+  },
+  {
+   "name": "HIV counselling",
+   "category": "health",
+   "aliases": [
+    "HIV testing and counselling",
+    "HTS"
+   ]
+  },
+  {
+   "name": "NSSA compliance",
+   "category": "business",
+   "aliases": [
+    "NSSA returns",
+    "NSSA"
+   ]
+  },
+  {
+   "name": "Disciplinary procedures",
+   "category": "business",
+   "aliases": [
+    "disciplinary hearings",
+    "disciplinary process"
+   ]
   }
  ],
  "relations": [
@@ -5025,6 +5077,16 @@
    "from": "Performance management",
    "to": "Human resource management",
    "relation": "narrower"
+  },
+  {
+   "from": "Sage Evolution",
+   "to": "Sage",
+   "relation": "implies"
+  },
+  {
+   "from": "HIV counselling",
+   "to": "Counselling",
+   "relation": "implies"
   }
  ]
 }

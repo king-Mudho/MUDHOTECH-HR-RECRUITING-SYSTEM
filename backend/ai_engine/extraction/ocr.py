@@ -12,7 +12,7 @@ from __future__ import annotations
 import csv
 import io
 import shutil
-import subprocess  # nosec B404 - fixed argv, no shell
+import subprocess  # nosec B404
 from dataclasses import dataclass
 
 import pymupdf
@@ -76,7 +76,7 @@ def parse_tsv(tsv: str) -> OcrPage:
 
 
 def ocr_png(png: bytes, binary: str, language: str = "eng") -> OcrPage:
-    proc = subprocess.run(  # noqa: S603  # nosec B603 - fixed argv
+    proc = subprocess.run(  # noqa: S603  # nosec B603
         [binary, "stdin", "stdout", "-l", language, "--psm", "3", "--dpi", str(DPI), "tsv"],
         input=png,
         capture_output=True,

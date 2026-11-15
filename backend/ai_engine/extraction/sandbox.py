@@ -10,7 +10,7 @@ seconds) and ``RLIMIT_AS``; everywhere the parent enforces a wall-clock timeout 
 from __future__ import annotations
 
 import os
-import subprocess  # nosec B404 - fixed argv, no shell
+import subprocess  # nosec B404
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -53,7 +53,7 @@ def run_extraction(
     env["PYTHONPATH"] = str(_PACKAGE_ROOT)
     env["PYTHONHASHSEED"] = "0"
     try:
-        proc = subprocess.run(  # noqa: S603  # nosec B603 - fixed argv
+        proc = subprocess.run(  # noqa: S603  # nosec B603
             argv,
             input=data,
             capture_output=True,
