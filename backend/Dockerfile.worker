@@ -22,8 +22,9 @@ RUN groupadd --system app && useradd --system --gid app --create-home --home-dir
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
-ARG UV_SYNC_ARGS="--frozen --no-install-project --extra ml"
-RUN --mount=type=cache,target=/root/.cache/uv uv sync ${UV_SYNC_ARGS}
+ARG UV_SYNC_ARGS="--frozen --no-install-project"
+# the ml extra (embeddings) is always part of the worker image, whatever UV_SYNC_ARGS says
+RUN --mount=type=cache,target=/root/.cache/uv uv sync ${UV_SYNC_ARGS} --extra ml
 
 # Local embedding model (ADR-010) baked into the image; workers never call out at runtime.
 ARG EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
