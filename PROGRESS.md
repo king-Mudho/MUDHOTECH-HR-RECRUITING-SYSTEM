@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T05
+- **Current task:** P07-T06
 - **Last updated:** 2026-11-15
-- **Overall:** 91 / 193 tasks · 6 / 16 phases
+- **Overall:** 92 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -159,7 +159,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P07-T02 — `matching/skills_match.py` cascade exact → alias → relations (`implies`, `narrower`) → semantic (threshold from …
 - [x] P07-T03 — `matching/experience_match.py` role relevance (title/responsibility similarity, HR equivalent titles) + months via …
 - [x] P07-T04 — `matching/answers.py` question scoring per rubric mode (exact/options/range/rubric_text keyword-criteria/human) 
-- [ ] P07-T05 — `evaluation/scoring.py` criterion bands, category aggregation over assessable criteria, total with re-normalisation, …
+- [x] P07-T05 — `evaluation/scoring.py` criterion bands, category aggregation over assessable criteria, total with re-normalisation, …
 - [ ] P07-T06 — `explanations/templates.py` deterministic strengths/gaps/conflicts sentences with citations
 - [ ] P07-T07 — `ai_engine/llm/` provider interface + `null_adapter` (default) + `anthropic_adapter` + `openai_adapter` (behind …
 - [ ] P07-T08 — `versioning.py` input_hash; determinism test (EC-AI-08)
@@ -558,3 +558,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P07-T02 | matching/config.py EngineConfig (versioned thresholds: semantic 0.78, role relevance 0.6, listed 50 / mentioned 75 / used 100, relation cap 75, related 25, semantic cap 50). matching/skills_match.py: cascade exact -> alias (other spelling or criterion equivalents) -> relation (implies/narrower chains up to 3 hops, inferred, capped; related = weak 25; broader never counts) -> semantic (embedding similarity >= threshold, inferred, capped, only when nothing stronger); usage decides the band (EC-DOC-24); best evidence cited (max 3); missing = unknown. 7 tests incl. corpus: 173/173 gold-met skill criteria found, no skills-list credit where gold says not listed |  |
 | 2026-11-15 | Impl | P07-T03 | matching/experience_match.py: role relevance = normalised title vs vacancy title / HR equivalent titles -> title; light-stemmed key words in title or >=3 shared duty words -> keywords; semantic similarity >= role_relevance_threshold when the model is loaded -> semantic; months of relevant roles via interval union (rules.check_min_experience now takes counted kinds); attachments/internships/volunteer counted only via include_kinds (else 25 flagged not_counted_by_rubric); no relevant role -> weak 25 flagged relevance_uncertain (never a fail); some_roles_not_relevant flag. 7 tests incl. corpus 133/135 agreement with gold | HR equivalent titles (e.g. Recruitment Assistant for HR Officer) improve relevance; semantic relevance calibrated in Phase 10 |
 | 2026-11-15 | Impl | P07-T04 | matching/answers.py: QuestionSpec/AnswerInput/AnswerResult; modes exact (expected -> 100/0), options (points share, multi-choice ceiling), range (min/max or bands), rubric_text (key-phrase share, confidence 0.5), human (needs_verification), none; snap to bands; unanswered = missing; knock-out sets eligibility_unmet only on a differing answer (no answer = unknown). matching/conflicts.py: experience years (answer vs relevant CV months, tolerance 1y + 1.5x ratio), skill stated years, qualification level answered above CV level -> Conflict with CV evidence; no CV evidence never conflicts. 10 tests |  |
+| 2026-11-15 | Impl | P07-T05 | ai_engine/evaluation: scoring.py (combine CV + linked answers + conflicts per criterion - CV evidence first, answers as candidate_reported, conflicts keep the CV score and mark conflicting; category weighted means over assessable criteria; unlinked scored answers form the answers category; total re-normalised by assessable weight; coverage; essentials met/partial/not_evidenced/unknown; confidence high/medium/low). bands.py (BandPolicy defaults 70 / 0.6; manual_review_requested > eligibility_review > review_needed > recommended_for_review > lower_match with reason codes; no reject band). engine.py evaluate(EvaluationInput) -> EvaluationResult incl. competency (keyword overlap, low confidence) and eligibility (knock-out answers only) types, input_hash. Tests: blueprint 30/35+20/25+17/20+8/10+9/10 = 84/100 recommended; 300-case property test (missing never behaves as 0); band precedence; end-to-end knock-out + objection |  |
