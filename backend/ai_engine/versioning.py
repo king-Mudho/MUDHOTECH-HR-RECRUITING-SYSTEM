@@ -6,7 +6,7 @@ import hashlib
 import json
 from typing import Any
 
-ENGINE_VERSION = "0.1.0"
+ENGINE_VERSION = "0.2.0"  # P06-T02: extraction contracts
 
 
 def input_hash(payload: Any) -> str:

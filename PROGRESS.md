@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T02
+- **Current task:** P06-T03
 - **Last updated:** 2026-11-15
-- **Overall:** 73 / 193 tasks · 5 / 16 phases
+- **Overall:** 74 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -138,7 +138,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 06 — Document Ingestion & CV Extraction (AI Part 1)  (`phases/PHASE_06_CV_EXTRACTION.md`)
 - [x] P06-T01 — Synthetic CV corpus generator `scripts/generate_synthetic_cvs.py` (python-docx + reportlab + Pillow for scanned …
-- [ ] P06-T02 — `ai_engine/contracts.py` pydantic models (DocumentText, Page, Block, ExtractedClaim, CandidateEvidence…) + …
+- [x] P06-T02 — `ai_engine/contracts.py` pydantic models (DocumentText, Page, Block, ExtractedClaim, CandidateEvidence…) + …
 - [ ] P06-T03 — `extraction/pdf.py` (PyMuPDF dict extraction, column-aware reading order, hidden-text detection: colour ≈ …
 - [ ] P06-T04 — `extraction/ocr.py` (trigger rules, 300 DPI render, Tesseract, per-page confidence) + `extraction/quality.py` …
 - [ ] P06-T05 — `extraction/sections.py` heading detection (typography + lexicon incl
@@ -508,3 +508,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-11 | Impl | P05-T11 | ADR-024 no-reply email: no Reply-To, Auto-Submitted + X-Auto-Response-Suppress headers, footer says replies are not read and links to the portal (plain + HTML); docs/10 runbook for the production no-reply mailbox (SES receipt rule, one fixed auto-response per sender per day, never answers auto-replies, keeps nothing); EC-NOT-06 test; EC-REV-07 suppression part tagged on the withdrawn-suppression test; sign-in while another session is active now ends that session and signs in (was a generic error on 409); Phase 05 EC 11/11 | Configure the SES receipt rule at go-live (Phase 11) |
 | 2026-11-11 | Close | P05-EXIT | Phase 05 closed: exit criteria verified (delivery replay + killed-worker tests, clarification round-trip test + in-app HR->candidate->HR check, invalid moves rejected with allowed targets + audited; 1749 backend / 123 Vitest, EC 11/11, security scans clean) | Phase 06 started |
 | 2026-11-15 | Impl | P06-T01 | scripts/generate_synthetic_cvs.py: deterministic synthetic corpus (seed 2026) of 150 CVs in backend/fixtures/synthetic_cvs (5.1 MB): 5 roles x strong/partial/weak, PDF (PyMuPDF Story, subset fonts) / DOCX (python-docx) / scanned (rasterised + Pillow noise); 16 variations each >= 5x (two-column, tables, scanned, French, encrypted, corrupted, hidden text white/tiny/off-page, prompt injection, gaps, overlaps, attachment-only, ZW and foreign qualifications, equivalent wording, protected personal details, DOCX header/footer); labels.json gold data (parse outcome, OCR need, experience with ISO months + kind, overlap-aware total months, education levels, certs, skills + exact phrases, languages, protected fields, hidden/injected text, per-criterion expected evidence met/partial/missing/needs_verification/not_assessable, HR reference suitability); byte-reproducible except encrypted PDFs; only example.test e-mails and +263 77 000 numbers; README; 6 tests (labels == generator, coverage, documents contain what labels say, reproducibility, fairness of gold labels) | P06-T03 extractor must NFKC-normalise (PDF ligatures) and collapse line wraps; off-page hidden text is only visible with clip=INFINITE_RECT |
+| 2026-11-15 | Impl | P06-T02 | ai_engine/contracts.py: strict frozen pydantic contracts (DocumentText/Page/Block/Section, discriminated claim data, ClaimSource with mandatory snippet+location, ExtractionResult, CandidateEvidence that rejects excluded/contact/protected claims, stable input_hash); ENGINE_VERSION 0.2.0; 12 tests incl. no-Django import guard | P06-T03 extractor fills DocumentText (NFKC, line-wrap collapse, hidden/off-page blocks) |
