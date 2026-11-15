@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T11
+- **Current task:** P06-T12
 - **Last updated:** 2026-11-15
-- **Overall:** 82 / 193 tasks · 5 / 16 phases
+- **Overall:** 83 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -147,7 +147,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T08 — `normalisation/qualifications.py` map to qualification levels (ZIMSEC, NC/ND/HND, degrees, professional bodies, …
 - [x] P06-T09 — `extraction/pii.py` protected/irrelevant data detection (DOB/age, ZW national ID regex, passport, gender, marital, …
 - [x] P06-T10 — Embedding service (`matching/semantic.py` base): load model once per worker, batch encode, cache by hash (Redis), …
-- [ ] P06-T11 — Django adapter `apps.resumes`: ExtractionRun, DocumentText (encrypted), ExtractedClaim, ClaimCorrection
+- [x] P06-T11 — Django adapter `apps.resumes`: ExtractionRun, DocumentText (encrypted), ExtractedClaim, ClaimCorrection
 - [ ] P06-T12 — Cross-application flags: same sha256 across different accounts (EC-APP-15), CV name vs account name mismatch …
 - [ ] P06-T13 — Candidate features: view "What we extracted from your CV" (wizard review step + documents page), submit corrections …
 - [ ] P06-T14 — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action
@@ -517,3 +517,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T08 | normalisation/qualifications.py: QualificationIndex from taxonomy levels + professional bodies; word-boundary aliases (<=3 letters must be capitals), highest rank wins then longest alias; foreign institutions/countries keep the mapped level but need verification; unmapped text needs verification (never negative); field + body extraction; normalise_education fills level/foreign/needs_verification/field. normalisation/titles.py: abbreviation expansion, seniority split (intern..head), synonym map to common titles; ExperienceData gains title_normalised + seniority. Qualifications 2026.11.2 (+RGN aliases). Corpus: 338/338 levels exact, 5/5 foreign flagged; 38 tests |  |
 | 2026-11-15 | Impl | P06-T09 | extraction/pii.py: DOB/age, ZW national ID shape, passport, gender, marital status, children, religion/church, tribe/totem/ethnicity, nationality, health/disability/HIV, political affiliation, home address -> protected claims (excluded_reason=protected_attribute) with masked snippets; profile text redacted; redact_for_llm (names/emails/phones/protected values). security/injection.py: override/role-marker/addresses-AI (strong) and dictates-outcome/system-prompt (weak) rules -> injection_suspected flag; claims inside injected sentences excluded (no penalty). protect() pass. Corpus: 6/6 attributes on every personal-details CV, 0 false positives; injection 5/5, 0 false alarms; no protected value or injected text in CandidateEvidence. 40 tests (adversarial + ordinary-text negatives) |  |
 | 2026-11-15 | Impl | P06-T10 | ai_engine/matching/semantic.py: SentenceTransformerEncoder (all-MiniLM-L6-v2, CPU, loaded once per process, batches of 32), EmbeddingService with cache by (model, sha256(normalised text)) as packed float32 in Redis, SemanticSkillMatcher (nearest skill above threshold 0.75; the parser's semantic callback), HashingEncoder for tests. apps.taxonomy: Skill.embedding_model + embed_skills command/service writing the pgvector column (only missing/other-model), per-process semantic_matcher (platform + own-org custom skills; None when the model is unavailable). ml extra with CPU-only torch; worker image bakes the model (HF offline at runtime); ADR-025; deploy step documented. Verified in the worker image: real model maps corpus synonyms (>=4/6 in top 3) | worker image is 3.3 GB with torch CPU |
+| 2026-11-15 | Impl | P06-T11 | apps.resumes: ExtractionRun (versioned by engine, attempts, flags, reused_from), DocumentText + ExtractedClaim payloads encrypted (plain columns only for type/section/method/confidence/location/skill_id), ClaimCorrection; engine adapter (taxonomy indexes cached per process, sandboxed parse, claims, normalisation, protect); consumers application.submitted -> processing + schedule, document.accepted (incl. re-upload after processing_error), document.rejected -> processing_error; task extract_resume (idempotent, storage retries with backoff, last attempt fails safely); duplicate file reuse (EC-DOC-25); objection to automated processing skips extraction (EC-AI-12); unreadable/not-a-CV -> candidate re-upload notification; application.evidence_ready outbox event; HR retry service; RESUMES_AUTOSTART gate; 12 flow tests incl. encryption at rest and tenant scoping; full suite 1971 passed | API + UI for retry/extraction view in P06-T13/T14 |

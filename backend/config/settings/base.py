@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.candidates",
     "apps.documents",
     "apps.applications",
+    "apps.resumes",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -336,6 +337,11 @@ SEMANTIC_SKILL_MATCHING = env.bool("SEMANTIC_SKILL_MATCHING", default=True)
 SEMANTIC_SKILL_THRESHOLD = env.float(
     "SEMANTIC_SKILL_THRESHOLD", default=0.75
 )  # Phase 10 calibrates
+# Parse untrusted CVs in a subprocess with CPU/memory limits (docs/05 §2, EC-DOC-26)
+EXTRACTION_SANDBOX = env.bool("EXTRACTION_SANDBOX", default=True)
+EXTRACTION_MAX_PAGES = env.int("EXTRACTION_MAX_PAGES", default=30)
+# Start CV extraction when applications are submitted / documents accepted (P06-T11)
+RESUMES_AUTOSTART = env.bool("RESUMES_AUTOSTART", default=True)
 
 # --- Health checks ---
 HEALTHCHECK_TIMEOUT_SECONDS = env.float("HEALTHCHECK_TIMEOUT_SECONDS", default=2.0)

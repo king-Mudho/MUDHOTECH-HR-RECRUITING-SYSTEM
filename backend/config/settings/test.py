@@ -14,6 +14,7 @@ OUTBOX_EAGER_PUBLISH = True
 DOCUMENT_SCANNER = "fake"
 EMBEDDING_MODEL = "hashing-384"  # deterministic, no model download in tests
 EXTRACTION_SANDBOX = False  # in-process parsing keeps the suite fast
+RESUMES_AUTOSTART = False  # other apps' tests don't run the extraction pipeline; resumes tests opt in
 # allauth rate limits use the cache; keep them generous unless a test overrides them.
 # Deterministic Fernet keys used ONLY by the test-suite.
 FIELD_ENCRYPTION_KEYS = (
