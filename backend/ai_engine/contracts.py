@@ -33,13 +33,15 @@ class Contract(BaseModel):
 
 # ------------------------------------------------------------------------- vocabularies
 class EvidenceStatus(StrEnum):
-    """Criterion-level evidence (principle 2 evidence-first, principle 3 missing != negative)."""
+    """Criterion evidence, strongest first (docs/05 §8.2; principle 3: missing != negative)."""
 
-    FOUND = "found"
-    MISSING = "missing"
-    INFERRED = "inferred"
-    CONFLICTING = "conflicting"
     HUMAN_VERIFIED = "human_verified"
+    EXPLICIT = "explicit"  # stated in a CV/document
+    CANDIDATE_REPORTED = "candidate_reported"  # screening answers / profile
+    INFERRED = "inferred"  # derived (relation, semantic, equivalent experience)
+    NEEDS_VERIFICATION = "needs_verification"  # e.g. foreign qualification, expired licence
+    CONFLICTING = "conflicting"  # sources disagree: clarification suggested
+    MISSING = "missing"  # no evidence: unknown, never a fail
 
 
 class ClaimEvidence(StrEnum):
@@ -477,3 +479,90 @@ class SourceRef(Contract):
     page: int | None = None
     snippet: str | None = None
     question_response_id: str | None = None
+
+
+# ----------------------------------------------------------------------------- matching
+class CriterionType(StrEnum):
+    SKILL = "skill"
+    EXPERIENCE = "experience"
+    QUALIFICATION = "qualification"
+    CERTIFICATION = "certification"
+    COMPETENCY = "competency"
+    LANGUAGE = "language"
+    LICENCE = "licence"
+    ELIGIBILITY = "eligibility"
+
+
+class Importance(StrEnum):
+    ESSENTIAL = "essential"
+    PREFERRED = "preferred"
+
+
+SCORE_BANDS = (0, 25, 50, 75, 100)  # none, weak/indirect, partial, good, strong (docs/05 §10)
+
+
+class CriterionSpec(Contract):
+    """One rubric criterion as the engine sees it (built from ``JobCriterion`` by the adapter).
+
+    For qualification criteria ``min_months`` is the "or equivalent experience" alternative;
+    ``equivalents`` lists accepted fields/names/titles (free text, matched case-insensitively).
+    """
+
+    id: str
+    type: CriterionType
+    importance: Importance = Importance.PREFERRED
+    title: str
+    description: str = ""
+    category: str = "technical"
+    weight: float = Field(default=1.0, gt=0)
+    skill_id: str | None = None
+    qualification_level: str | None = None
+    qualification_rank: int | None = Field(default=None, ge=0)
+    min_months: int | None = Field(default=None, ge=0)
+    equivalents: tuple[str, ...] = ()
+
+    @property
+    def essential(self) -> bool:
+        return self.importance == Importance.ESSENTIAL
+
+
+class EvidenceRef(Contract):
+    """A citation: an index into ``CandidateEvidence.claims`` (or a questionnaire answer)."""
+
+    claim_index: int | None = Field(default=None, ge=0)
+    question_key: str | None = None
+    source: ClaimSource
+
+    @model_validator(mode="after")
+    def _points_somewhere(self) -> EvidenceRef:
+        if self.claim_index is None and self.question_key is None:
+            raise ValueError("evidence must cite a claim or an answer")
+        return self
+
+
+class CriterionResult(Contract):
+    """The engine's view of one criterion. ``score`` is None when not assessable - missing
+    evidence is unknown, never 0 (docs/05 §10)."""
+
+    criterion_id: str
+    status: EvidenceStatus
+    score: int | None = None
+    method: str = "rule"  # rule | exact | alias | relation | semantic | equivalent_experience | ...
+    confidence: float = Field(default=0.0, ge=0, le=1)
+    evidence: tuple[EvidenceRef, ...] = ()
+    flags: tuple[str, ...] = ()
+    reason: str = ""  # internal reason code, e.g. "rank_below_required", "expired"
+
+    @model_validator(mode="after")
+    def _consistent(self) -> CriterionResult:
+        if self.score is not None and self.score not in SCORE_BANDS:
+            raise ValueError(f"score must be one of {SCORE_BANDS}")
+        if self.status == EvidenceStatus.MISSING and self.score is not None:
+            raise ValueError("missing evidence is not assessable (no score)")
+        if self.score is not None and not self.evidence:
+            raise ValueError("a scored criterion needs at least one piece of evidence")
+        return self
+
+    @property
+    def assessable(self) -> bool:
+        return self.score is not None

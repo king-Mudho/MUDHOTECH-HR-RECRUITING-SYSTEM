@@ -6,7 +6,7 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T01
+- **Current task:** P07-T02
 - **Last updated:** 2026-11-15
 - **Overall:** 88 / 193 tasks · 6 / 16 phases
 
@@ -155,7 +155,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-EXIT — All exit criteria verified with evidence
 
 ### Phase 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)  (`phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md`)
-- [ ] P07-T01 — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), …
+- [x] P07-T01 — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), …
 - [ ] P07-T02 — `matching/skills_match.py` cascade exact → alias → relations (`implies`, `narrower`) → semantic (threshold from …
 - [ ] P07-T03 — `matching/experience_match.py` role relevance (title/responsibility similarity, HR equivalent titles) + months via …
 - [ ] P07-T04 — `matching/answers.py` question scoring per rubric mode (exact/options/range/rubric_text keyword-criteria/human) 
@@ -453,6 +453,7 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | P06-T10 | `ml` extra (sentence-transformers + CPU-only torch) only in the worker image, model baked in, HF offline at runtime | Keep web image/CI small; no outbound model calls | ADR-025 |
 | 2026-11-15 | P06-T11 | `RESUMES_AUTOSTART` setting; off in test settings, on in resumes tests | Other apps' tests submit applications without S3 fixtures | - |
 | 2026-11-15 | P06-T13 | Candidate preview = candidate-owned `ResumeParse`; corrections only on submitted application claims; import-to-profile is the pre-submit correction path | Extraction runs are tenant data tied to an application | - |
+| 2026-11-15 | P07-T01 | A qualification criterion's `min_months` is the "or equivalent experience" alternative (docs/05 §8.1 `equivalent_experience_months`) and `equivalents` lists accepted fields | No separate column in `job_criteria`; avoids a schema change for one optional rule | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -553,3 +554,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T14 | GET hr/applications/{id}/extraction (applications.view; visibility per HR rules): runs with grouped claims, snippet + page, confidence label (clear/likely/uncertain), inferred marker, candidate corrections with notes, application + run flags; protected/contact/hidden/injected items only counted as 'set aside' (not even their kinds shown). POST hr/applications/{id}/retry-processing (applications.transition; 409 conflict.nothing_to_retry otherwise) -> new attempt via services.retry + audit. Both in the cross-tenant registry and role matrix. Frontend ExtractionPanel on the HR application page: AI-assisted label, flags banner in plain words (never counted against the candidate), retry button for editors, polling while reading. Tests: 2 API + 14 tenancy/matrix + 3 UI |  |
 | 2026-11-15 | Impl | P06-T15 | ai_engine/tests/benchmark/run_extraction_benchmark.py: full pure pipeline over the 150-CV corpus vs labels -> parse success (text/all), experience P/R/F1, employment kind, total months, education level accuracy, foreign flagging, certifications, languages, skill precision (skills section) / recall, equivalent-wording recall, protected recall/false positives/leaks, injection + hidden text P/R, grounding rate, determinism, per-CV latency, throughput of 100 sandboxed CVs with N workers; --check fails on docs/09 targets; JSON + markdown report in docs/reports/extraction_benchmark_2026-11-15.{json,md} (worker image: all targets pass, 100 CVs in 129 s with 2 workers). Nightly ai-benchmark job enabled (builds the worker image, uploads the report). Fixed: sandbox output now UTF-8 bytes (French CVs crashed on Windows) + regression test | equivalent-wording recall 0.76 and PDF tables without ruling lines are the known gaps (Phase 10 calibration / table reconstruction) |
 | 2026-11-15 | Close | P06-EXIT | Phase 06 closed: exit criteria verified (benchmark all docs/09 targets met in the worker image with OCR + embeddings; 100 CVs in 129 s with 2 workers; grounding 1.0, protected leaks 0; failure/redelivery flows tested; backend 1,990+ / 130 Vitest, EC 31/31, CI green). Fixed during close: EC-OPS-04 redelivery test | Phase 07 started |
+| 2026-11-15 | Impl | P07-T01 | contracts: EvidenceStatus per docs/05 §8.2 (human_verified > explicit > candidate_reported > inferred; needs_verification, conflicting, missing), CriterionType/Importance/CriterionSpec, EvidenceRef (claim index or answer), CriterionResult (score bands 0/25/50/75/100, missing = no score, scored needs evidence). matching/rules.py: qualification rank vs required (field via equivalents, foreign -> needs_verification 75, unknown level -> 50, one level below 50, lower 25, or-equivalent-experience route via min_months -> inferred 75), certification/licence (core-term match, expiry -> needs_verification 50, licence class), min experience months via interval union (bands, undated roles -> needs_verification), language (level-aware). 19 tests incl. corpus agreement >= 95% with gold labels |  |

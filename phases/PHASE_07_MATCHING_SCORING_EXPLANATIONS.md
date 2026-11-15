@@ -8,7 +8,7 @@ Each application receives a deterministic, versioned, evidence-cited evaluation 
 rubric, with coverage, confidence, a non-rejecting band, grounded explanations and clarification suggestions.
 
 ## Tasks
-- [ ] **P07-T01** — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), certifications/licences (expiry → flag), min experience months, language.
+- [x] **P07-T01** — `matching/rules.py` deterministic checks: qualification rank vs required (equivalence + "or equivalent experience"), certifications/licences (expiry → flag), min experience months, language.
 - [ ] **P07-T02** — `matching/skills_match.py` cascade exact → alias → relations (`implies`, `narrower`) → semantic (threshold from engine config); output method + confidence + evidence ids; distinguish skill listed-only vs used-in-role/project (band 50 vs 75/100) (EC-DOC-24).
 - [ ] **P07-T03** — `matching/experience_match.py` role relevance (title/responsibility similarity, HR equivalent titles) + months via interval union; internships/attachments per rubric config.
 - [ ] **P07-T04** — `matching/answers.py` question scoring per rubric mode (exact/options/range/rubric_text keyword-criteria/human) ; knock-out → `eligibility_unmet`; `matching/conflicts.py` CV vs answers conflicts (years, skills claimed, qualifications) (EC-AI-03).
