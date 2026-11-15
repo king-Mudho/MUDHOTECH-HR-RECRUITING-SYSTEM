@@ -26,33 +26,13 @@ from apps.core.time import now
 from apps.documents.models import Document, Purpose, ScanStatus
 from apps.notifications.models import Notification
 from apps.organisations.tests.factories import make_org_with_team
-from apps.resumes import engine, services
+from apps.resumes import services
 from apps.resumes.models import ExtractedClaim, ExtractionRun, RunStatus
-from apps.taxonomy.models import Skill, SkillAlias
+from apps.taxonomy.models import Skill
 
 pytestmark = pytest.mark.django_db
 CORPUS = Path(__file__).resolve().parents[3] / "fixtures" / "synthetic_cvs"
 GOOD_CV = "cv_001_software_developer_strong.docx"  # Takudzwa Chari, Granite Labs, Python, Django
-
-
-@pytest.fixture(autouse=True)
-def _setup(s3: Any) -> None:
-    engine.clear_cache()
-    for name, aliases in [("Python", ["python3"]), ("Django", []), ("PostgreSQL", ["postgres"])]:
-        skill = Skill.objects.create(canonical_name=name, slug=name.lower(), category="software_it")
-        for alias in aliases:
-            SkillAlias.objects.create(skill=skill, alias=alias)
-
-
-@pytest.fixture
-def act(django_capture_on_commit_callbacks: Any) -> Any:
-    """Run a service call and then its on-commit callbacks (queued tasks), like a real commit."""
-
-    def run(fn: Any, *args: Any, **kwargs: Any) -> Any:
-        with django_capture_on_commit_callbacks(execute=True):
-            return fn(*args, **kwargs)
-
-    return run
 
 
 def submitted_app(*, objection: bool = False, org: Any = None, user: Any = None) -> Application:

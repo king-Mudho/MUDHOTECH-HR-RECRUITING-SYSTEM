@@ -344,6 +344,7 @@ def finish(app: Application) -> str:
     for run in usable:
         if Flag.POSSIBLY_NOT_CV.value in run.flags:
             _ask_reupload(app, run.document, "possibly_not_cv", key=f"not_cv:{run.pk}")
+    _apply_cross_checks(app, usable)
     _evidence_ready(app, usable)
     return "ready"
 
@@ -352,9 +353,27 @@ def _settled(run: ExtractionRun) -> bool:
     return run.status in (RunStatus.SUCCEEDED, RunStatus.PARTIAL, RunStatus.FAILED)
 
 
+def _apply_cross_checks(app: Application, runs: list[ExtractionRun]) -> None:
+    """P06-T12: low-severity HR flags (EC-APP-15/16). Never changes status or scores."""
+    from .crosscheck import check
+
+    found = [f for f in check(app, runs) if f not in (app.flags or [])]
+    if not found:
+        return
+    app.flags = sorted({*(app.flags or []), *found})
+    Application.objects.unscoped().filter(pk=app.pk).update(flags=app.flags)
+    audit.record(
+        action="resumes.flags_raised",
+        target=app,
+        organisation=app.organisation_id,
+        actor_type="system",
+        after={"flags": found},
+    )
+
+
 def _evidence_ready(app: Application, runs: list[ExtractionRun], *, manual: bool = False) -> None:
     run_ids = sorted(str(r.pk) for r in runs)
-    flags = sorted({f for r in runs for f in r.flags})
+    flags = sorted({f for r in runs for f in r.flags} | set(app.flags or []))
     outbox.emit(
         "application.evidence_ready",
         app,
