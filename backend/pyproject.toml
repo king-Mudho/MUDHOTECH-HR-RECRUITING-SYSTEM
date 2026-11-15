@@ -33,6 +33,7 @@ dependencies = [
   "pymupdf~=1.28.2",
   "python-magic==0.4.27 ; sys_platform != 'win32'",
   "markdown~=3.9",
+  "python-docx~=1.2",
 ]
 
 [dependency-groups]
@@ -59,8 +60,9 @@ dev = [
 package = false
 # Supply-chain cooldown: never resolve a release younger than a week.
 exclude-newer = "7 days"
-# Exceptions: versions already reviewed and locked before the cooldown was added (2026-11-11).
-exclude-newer-package = { types-markdown = "2026-11-11T00:00:00Z", celery = "2026-11-11T00:00:00Z" }
+# Exceptions: versions reviewed before the cooldown was added (2026-11-11) and security fixes
+# that cannot wait (tornado 6.6.1 for CVE-2026-126347, 2026-11-15).
+exclude-newer-package = { tornado = "2026-11-15T23:59:59Z", types-markdown = "2026-11-11T00:00:00Z", celery = "2026-11-11T00:00:00Z" }
 
 [tool.ruff]
 line-length = 100
