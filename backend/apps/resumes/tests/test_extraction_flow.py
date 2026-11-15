@@ -330,3 +330,31 @@ def test_outbox_consumers_drive_the_flow(act: Any, settings: Any) -> None:
     run = ExtractionRun.objects.for_org(app.organisation_id).get()
     assert run.status == RunStatus.SUCCEEDED
     assert len(events("application.evidence_ready")) == 1
+
+
+def test_redelivered_task_after_worker_loss_finishes_the_run(act: Any) -> None:
+    """EC-OPS-04: a deploy/crash mid-extraction leaves the run 'running'; acks_late redelivers the
+    task, which finishes the run without duplicating claims or events."""
+    from apps.resumes.tasks import extract_resume, parse_resume_preview
+
+    assert extract_resume.acks_late and extract_resume.reject_on_worker_lost
+    assert parse_resume_preview.acks_late
+    app = submitted_app()
+    doc = attach(app, scan=ScanStatus.PENDING)
+    act(services.start, app.pk)
+    Document.objects.filter(pk=doc.pk).update(scan_status=ScanStatus.CLEAN)
+    run = ExtractionRun.objects.create(
+        organisation_id=app.organisation_id,
+        application=app,
+        document=doc,
+        engine_version=ENGINE_VERSION,
+        status=RunStatus.RUNNING,  # the worker died here
+        attempts=1,
+    )
+    assert act(extract_resume.apply, args=(str(doc.pk), str(app.pk))).get() == "ready"
+    run.refresh_from_db()
+    assert run.status == RunStatus.SUCCEEDED and run.attempts == 2
+    assert run.claims.count() == run.claim_count > 0
+    assert len(events("application.evidence_ready")) == 1
+    assert extract_resume.apply(args=(str(doc.pk), str(app.pk))).get() == RunStatus.SUCCEEDED
+    assert run.claims.count() == run.claim_count  # a second redelivery is a no-op
