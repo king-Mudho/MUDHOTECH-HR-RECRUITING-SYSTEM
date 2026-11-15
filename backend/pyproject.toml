@@ -41,6 +41,9 @@ dependencies = [
 [project.optional-dependencies]
 # Local embeddings (ADR-010) - installed in the worker image only (`uv sync --extra ml`).
 ml = ["sentence-transformers>=3.4", "torch>=2.4"]
+llm = [
+    "anthropic>=1",
+]
 
 [dependency-groups]
 dev = [

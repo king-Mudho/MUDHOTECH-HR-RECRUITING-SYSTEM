@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T07
+- **Current task:** P07-T08
 - **Last updated:** 2026-11-15
-- **Overall:** 93 / 193 tasks · 6 / 16 phases
+- **Overall:** 94 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -161,7 +161,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P07-T04 — `matching/answers.py` question scoring per rubric mode (exact/options/range/rubric_text keyword-criteria/human) 
 - [x] P07-T05 — `evaluation/scoring.py` criterion bands, category aggregation over assessable criteria, total with re-normalisation, …
 - [x] P07-T06 — `explanations/templates.py` deterministic strengths/gaps/conflicts sentences with citations
-- [ ] P07-T07 — `ai_engine/llm/` provider interface + `null_adapter` (default) + `anthropic_adapter` + `openai_adapter` (behind …
+- [x] P07-T07 — `ai_engine/llm/` provider interface + `null_adapter` (default) + `anthropic_adapter` + `openai_adapter` (behind …
 - [ ] P07-T08 — `versioning.py` input_hash; determinism test (EC-AI-08)
 - [ ] P07-T09 — Django `apps.screening`: ScreeningRun, Evaluation, CriterionResult, EvaluationEvidence, HumanVerification models
 - [ ] P07-T10 — Screening runs API: start/retry for scope (all/pending/failed/selected) with chunking (50) and progress counts
@@ -560,3 +560,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P07-T04 | matching/answers.py: QuestionSpec/AnswerInput/AnswerResult; modes exact (expected -> 100/0), options (points share, multi-choice ceiling), range (min/max or bands), rubric_text (key-phrase share, confidence 0.5), human (needs_verification), none; snap to bands; unanswered = missing; knock-out sets eligibility_unmet only on a differing answer (no answer = unknown). matching/conflicts.py: experience years (answer vs relevant CV months, tolerance 1y + 1.5x ratio), skill stated years, qualification level answered above CV level -> Conflict with CV evidence; no CV evidence never conflicts. 10 tests |  |
 | 2026-11-15 | Impl | P07-T05 | ai_engine/evaluation: scoring.py (combine CV + linked answers + conflicts per criterion - CV evidence first, answers as candidate_reported, conflicts keep the CV score and mark conflicting; category weighted means over assessable criteria; unlinked scored answers form the answers category; total re-normalised by assessable weight; coverage; essentials met/partial/not_evidenced/unknown; confidence high/medium/low). bands.py (BandPolicy defaults 70 / 0.6; manual_review_requested > eligibility_review > review_needed > recommended_for_review > lower_match with reason codes; no reject band). engine.py evaluate(EvaluationInput) -> EvaluationResult incl. competency (keyword overlap, low confidence) and eligibility (knock-out answers only) types, input_hash. Tests: blueprint 30/35+20/25+17/20+8/10+9/10 = 84/100 recommended; 300-case property test (missing never behaves as 0); band precedence; end-to-end knock-out + objection |  |
 | 2026-11-15 | Impl | P07-T06 | ai_engine/explanations: templates.py (Sentence/Explanation; strength/partial/verify/conflict/gap sentences quoting the cited snippet with CV page or 'screening answer'; gaps say 'unknown, not a confirmed gap'), grounding.py (every evidence sentence needs resolvable citations whose snippet matches the source and contains any quoted text; gap sentences only when the criterion truly has no evidence; ungrounded sentences dropped and counted; explain()), clarifications.py (neutral suggested questions for unknown essentials, needs-verification reasons and CV/answer conflicts; never sent automatically). Shared corpus rubric helper ai_engine/tests/benchmark/corpus.py. Tests incl. corpus grounding 100 % |  |
+| 2026-11-15 | Impl | P07-T07 | ai_engine/llm: base.py (Provider protocol, NullProvider default, LLMError/LLMUnavailableError/LLMRefusedError), anthropic_adapter.py (official SDK, claude-opus-5-5, effort low, no sampling params, refusal -> error, SDK retries off), openai_adapter.py (lazy optional SDK), versioned prompts prompts/summary_v1.md + section_assist_v1.md (hash-identified), service.py (enabled only by flag, skipped on injection, redaction, <data> separation, strict pydantic JSON with extra keys rejected, 2 retries then deterministic fallback, circuit breaker, cache by (prompt hash, input hash, model), summary sentences must cite existing evidence ids sharing words with it and pass a safety filter, section assist keeps verbatim skills only). ADR-026; anthropic SDK in optional llm extra. 13 tests with mocked providers incl. malicious/malformed/refusal/injection (EC-AI-07) | Django gate (platform flag AND org llm_enabled) wired in P07-T09 |
