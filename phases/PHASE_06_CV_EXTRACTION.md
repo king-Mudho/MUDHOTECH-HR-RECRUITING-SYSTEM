@@ -8,7 +8,7 @@ Every accepted CV becomes structured, evidence-linked claims (with page/snippet/
 scans and adversarial content, with protected data excluded — without ever inventing facts.
 
 ## Tasks
-- [ ] **P06-T01** — Synthetic CV corpus generator `scripts/generate_synthetic_cvs.py` (python-docx + reportlab + Pillow for scanned rasterisation) producing ≥ 150 CVs per `docs/09 §3` with `labels.json` gold data. Commit generator + generated fixtures (small) — **no real CVs**.
+- [x] **P06-T01** — Synthetic CV corpus generator `scripts/generate_synthetic_cvs.py` (python-docx + reportlab + Pillow for scanned rasterisation) producing ≥ 150 CVs per `docs/09 §3` with `labels.json` gold data. Commit generator + generated fixtures (small) — **no real CVs**.
 - [ ] **P06-T02** — `ai_engine/contracts.py` pydantic models (DocumentText, Page, Block, ExtractedClaim, CandidateEvidence…) + `ENGINE_VERSION`.
 - [ ] **P06-T03** — `extraction/pdf.py` (PyMuPDF dict extraction, column-aware reading order, hidden-text detection: colour ≈ background, size < 4 pt, out-of-bounds), pdfplumber fallback; `extraction/docx.py` (paragraphs, tables, headers/footers, text boxes); guards (pages, encryption, zip bomb) — run in subprocess with rlimits/timeouts (`extraction/sandbox.py`).
 - [ ] **P06-T04** — `extraction/ocr.py` (trigger rules, 300 DPI render, Tesseract, per-page confidence) + `extraction/quality.py` (quality score, language detection, garbled CID detection → OCR fallback, possibly_not_cv classifier).

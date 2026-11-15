@@ -3,3 +3,5 @@ extend = "../backend/pyproject.toml"
 [lint.per-file-ignores]
 # CLI scripts report to stdout.
 "*.py" = ["T201"]
+# Reproducible synthetic test data, not security: the stdlib PRNG is the right tool.
+"generate_synthetic_cvs.py" = ["T201", "S311"]
