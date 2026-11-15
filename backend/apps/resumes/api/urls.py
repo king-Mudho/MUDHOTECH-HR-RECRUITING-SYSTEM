@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import hr, views
 
 urlpatterns = [
     path(
@@ -22,5 +22,15 @@ urlpatterns = [
         "candidate/claims/<uuid:claim_id>/corrections/",
         views.ClaimCorrectionView.as_view(),
         name="candidate-claim-corrections",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/extraction/",
+        hr.HRExtractionView.as_view(),
+        name="hr-application-extraction",
+    ),
+    path(
+        "hr/applications/<uuid:application_id>/retry-processing/",
+        hr.HRRetryProcessingView.as_view(),
+        name="hr-application-retry-processing",
     ),
 ]

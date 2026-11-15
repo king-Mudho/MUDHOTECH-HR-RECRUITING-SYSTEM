@@ -714,6 +714,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/extraction/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_extraction"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/messages/": {
         parameters: {
             query?: never;
@@ -742,6 +758,22 @@ export interface paths {
         get: operations["hr_applications_notes_list"];
         put?: never;
         post: operations["hr_applications_notes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/retry-processing/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_application_retry_processing"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2337,6 +2369,13 @@ export interface components {
             comment?: string;
         };
         /**
+         * @description * `high` - high
+         *     * `medium` - medium
+         *     * `low` - low
+         * @enum {string}
+         */
+        ConfidenceEnum: "high" | "medium" | "low";
+        /**
          * @description * `in_person` - in_person
          *     * `phone` - phone
          *     * `written` - written
@@ -2600,6 +2639,37 @@ export interface components {
             readonly assigned_recruiter: string | null;
             readonly lock_version: number;
         };
+        HRClaim: {
+            index: number;
+            type: string;
+            title: string;
+            subtitle: string;
+            dates: string;
+            detail: string;
+            snippet: string;
+            page: number | null;
+            excluded: boolean;
+            excluded_reason: string;
+            /** Format: uuid */
+            id: string;
+            section: string;
+            method: string;
+            confidence: components["schemas"]["ConfidenceEnum"];
+            inferred: boolean;
+            corrections: components["schemas"]["HRCorrection"][];
+        };
+        HRCorrection: {
+            /** Format: uuid */
+            id: string;
+            status: string;
+            /** Format: date-time */
+            created_at: string;
+            values: {
+                [key: string]: string;
+            };
+            remove: boolean;
+            note: string;
+        };
         HRDocument: {
             /** Format: uuid */
             id: string;
@@ -2609,6 +2679,15 @@ export interface components {
             scan_status: string;
             size_bytes: number;
             available: boolean;
+        };
+        HRExtraction: {
+            /** Format: uuid */
+            application_id: string;
+            status: string;
+            flags: string[];
+            manual_review_requested: boolean;
+            can_retry: boolean;
+            runs: components["schemas"]["HRRun"][];
         };
         HRJobDetail: {
             /** Format: uuid */
@@ -2692,6 +2771,25 @@ export interface components {
             id: string;
             title: string;
             version: number;
+        };
+        HRRun: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            document_id: string;
+            filename: string;
+            status: string;
+            error_code: string;
+            flags: string[];
+            language: string;
+            /** Format: double */
+            quality_score: number | null;
+            page_count: number | null;
+            attempts: number;
+            /** Format: date-time */
+            finished_at: string | null;
+            set_aside: number;
+            claims: components["schemas"]["HRClaim"][];
         };
         HRStatusEvent: {
             from_status: string;
@@ -5583,6 +5681,27 @@ export interface operations {
             };
         };
     };
+    hr_application_extraction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRExtraction"];
+                };
+            };
+        };
+    };
     hr_applications_messages_list: {
         parameters: {
             query?: never;
@@ -5675,6 +5794,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Note"];
+                };
+            };
+        };
+    };
+    hr_application_retry_processing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HRExtraction"];
                 };
             };
         };

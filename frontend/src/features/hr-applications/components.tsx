@@ -19,6 +19,7 @@ import { useJob, useJobsContext } from "@/features/jobs/hooks";
 import { ApiError } from "@/lib/api-client";
 
 import { APPLICATION_VIEWERS, useHRApplication, useJobApplications } from "./api";
+import { ExtractionPanel } from "./extraction-panel";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 
 const FILTERS = [
@@ -320,6 +321,8 @@ export function HRApplicationView({ id }: { id: string }) {
           </ul>
         )}
       </section>
+
+      <ExtractionPanel app={a} />
 
       <section aria-labelledby="hr-answers" className="rounded-lg border p-4">
         <h2 id="hr-answers" className="text-lg font-semibold">

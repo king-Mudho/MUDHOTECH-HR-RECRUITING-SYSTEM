@@ -1507,6 +1507,42 @@
       "send": "Send message",
       "closed": "The candidate withdrew this application, so new messages are closed.",
       "failed": "The message could not be sent."
+    },
+    "extraction": {
+      "title": "What was read from the CV",
+      "aiLabel": "AI-assisted suggestion — requires human review. Always check the CV itself before relying on an item.",
+      "retry": "Retry processing",
+      "retrying": "Retrying…",
+      "retryFailed": "Retry didn't start. Please try again.",
+      "manual": "The candidate asked for review by a person without software assistance. Read the CV and answers directly.",
+      "none": "Nothing has been read yet. This updates automatically once the CV has passed the file check.",
+      "reading": "Reading the CV…",
+      "runMeta": "{pages, plural, =0 {} one {# page} other {# pages}} · {attempts, plural, one {# attempt} other {# attempts}}",
+      "failedTitle": "The CV could not be read",
+      "failedBody": "Reason code: {code}. The candidate has been asked for a readable copy; you can also retry or review the file manually.",
+      "flagsTitle": "Things to check (never counted against the candidate)",
+      "page": "Page {page}:",
+      "inferred": "Inferred",
+      "correction": "Candidate correction:",
+      "correctionRemove": "says this item is wrong",
+      "setAside": "{count, plural, one {# item was} other {# items were}} set aside and not shown (personal details, contact details, hidden or injected text).",
+      "confidence": {
+        "high": "Clear",
+        "medium": "Likely",
+        "low": "Uncertain"
+      },
+      "flags": {
+        "identity_mismatch_possible": "The name on the CV is different from the applicant's account name. People use other or married names — check before drawing conclusions.",
+        "duplicate_document_across_accounts": "The same CV file was also uploaded by another account. It may be a shared template; review it as you would any CV.",
+        "injection_suspected": "The CV contains text addressed to screening software. Those lines were ignored.",
+        "hidden_text": "The CV contains hidden text (e.g. white or tiny). It was ignored.",
+        "possibly_not_cv": "The file may not be a CV (e.g. a certificate). The candidate has been asked to upload their CV.",
+        "language_unsupported": "The CV is not in English, so items may be missing — please read it directly.",
+        "low_ocr_confidence": "The CV is a scan and parts were hard to read.",
+        "ocr_unavailable": "The CV is a scan and could not be read automatically.",
+        "garbled_text": "The file's text layer was damaged; it was read from the page images instead.",
+        "date_anomaly": "Some dates look impossible (e.g. an end before the start); those roles were not counted."
+      }
     }
   },
   "notifications": {

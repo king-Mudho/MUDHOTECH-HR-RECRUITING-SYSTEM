@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 06 — Document Ingestion & CV Extraction (AI Part 1)
-- **Current task:** P06-T14
+- **Current task:** P06-T15
 - **Last updated:** 2026-11-15
-- **Overall:** 85 / 193 tasks · 5 / 16 phases
+- **Overall:** 86 / 193 tasks · 5 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -150,7 +150,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P06-T11 — Django adapter `apps.resumes`: ExtractionRun, DocumentText (encrypted), ExtractedClaim, ClaimCorrection
 - [x] P06-T12 — Cross-application flags: same sha256 across different accounts (EC-APP-15), CV name vs account name mismatch …
 - [x] P06-T13 — Candidate features: view "What we extracted from your CV" (wizard review step + documents page), submit corrections …
-- [ ] P06-T14 — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action
+- [x] P06-T14 — HR: extraction panel on application detail (claims grouped, snippet + page, flags banner), "Retry processing" action
 - [ ] P06-T15 — Benchmark harness `ai_engine/tests/benchmark/run_extraction_benchmark.py` → metrics JSON + markdown report in …
 - [ ] P06-EXIT — All exit criteria verified with evidence
 
@@ -520,3 +520,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P06-T11 | apps.resumes: ExtractionRun (versioned by engine, attempts, flags, reused_from), DocumentText + ExtractedClaim payloads encrypted (plain columns only for type/section/method/confidence/location/skill_id), ClaimCorrection; engine adapter (taxonomy indexes cached per process, sandboxed parse, claims, normalisation, protect); consumers application.submitted -> processing + schedule, document.accepted (incl. re-upload after processing_error), document.rejected -> processing_error; task extract_resume (idempotent, storage retries with backoff, last attempt fails safely); duplicate file reuse (EC-DOC-25); objection to automated processing skips extraction (EC-AI-12); unreadable/not-a-CV -> candidate re-upload notification; application.evidence_ready outbox event; HR retry service; RESUMES_AUTOSTART gate; 12 flow tests incl. encryption at rest and tenant scoping; full suite 1971 passed | API + UI for retry/extraction view in P06-T13/T14 |
 | 2026-11-15 | Impl | P06-T12 | apps/resumes/crosscheck.py: duplicate_document_across_accounts (same sha256 uploaded by another account, deleted files ignored; nothing about the other account revealed) and identity_mismatch_possible (top-of-CV name line, Unicode/accent-aware, titles/headings excluded, compared with account/snapshot names); flags added to Application.flags + evidence_ready payload + audit (flag names only, no PII); no status/score change. Corpus: 0 false alarms, 126/126 mismatches caught. 13 tests |  |
 | 2026-11-15 | Impl | P06-T13 | ResumeParse (candidate-owned preview, encrypted, on request, platform taxonomy) + API: GET candidate/resumes/{id}/extraction (202 while reading), POST import-to-profile (explicit confirm, chosen items, duplicates skipped, source=cv_import, audit), GET candidate/applications/{id}/extraction, POST candidate/claims/{id}/corrections (EC-DOC-27: original kept, ClaimCorrection, outbox application.evidence_corrected, audit; protected/contact not correctable; owner-only 404s). Frontend features/resumes: grouped extraction view (snippet + page, ignored personal details explained, flags in plain words, polling), import dialog with confirmation, correction dialog (RHF + zod); wired into wizard review step, documents page ('What we read') and candidate application page. Backend 1990 passed; frontend 127 tests, lint, typecheck, build |  |
+| 2026-11-15 | Impl | P06-T14 | GET hr/applications/{id}/extraction (applications.view; visibility per HR rules): runs with grouped claims, snippet + page, confidence label (clear/likely/uncertain), inferred marker, candidate corrections with notes, application + run flags; protected/contact/hidden/injected items only counted as 'set aside' (not even their kinds shown). POST hr/applications/{id}/retry-processing (applications.transition; 409 conflict.nothing_to_retry otherwise) -> new attempt via services.retry + audit. Both in the cross-tenant registry and role matrix. Frontend ExtractionPanel on the HR application page: AI-assisted label, flags banner in plain words (never counted against the candidate), retry button for editors, polling while reading. Tests: 2 API + 14 tenancy/matrix + 3 UI |  |
