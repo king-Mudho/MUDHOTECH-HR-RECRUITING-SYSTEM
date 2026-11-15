@@ -1139,7 +1139,7 @@ def generate(out: Path, count: int, seed: int) -> dict[str, Any]:
             write_pdf(cv, path)
     labels = corpus_labels(count, seed)
     (out / "labels.json").write_text(
-        json.dumps(labels, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps(labels, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )
     return labels
 

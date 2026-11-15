@@ -11,6 +11,8 @@ backend/.venv/Scripts/python scripts/generate_synthetic_cvs.py          # 150 CV
 ```
 
 `backend/tests/test_synthetic_corpus.py` fails if this folder no longer matches the generator.
+After regenerating without changing the generator, only the five encrypted PDFs differ; restore
+them (`git checkout -- backend/fixtures/synthetic_cvs`) rather than committing that churn.
 
 ## What is in it
 
