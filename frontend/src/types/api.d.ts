@@ -216,6 +216,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/candidate/applications/{application_id}/extraction/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_application_extraction"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/claims/{claim_id}/corrections/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_claim_correction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/profile/": {
         parameters: {
             query?: never;
@@ -444,6 +476,39 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["candidate_resumes_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/resumes/{document_id}/extraction/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description What we read from one of your CVs. 202 while it is still being read (poll again). */
+        get: operations["candidate_resume_extraction"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/candidate/resumes/{document_id}/import-to-profile/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_resume_import"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1967,6 +2032,22 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        ApplicationClaim: {
+            index: number;
+            type: string;
+            title: string;
+            subtitle: string;
+            dates: string;
+            detail: string;
+            snippet: string;
+            page: number | null;
+            excluded: boolean;
+            excluded_reason: string;
+            /** Format: uuid */
+            id: string;
+            correctable: boolean;
+            corrections: components["schemas"]["CorrectionView"][];
+        };
         /**
          * @description * `cv` - CV
          *     * `cover_letter` - Cover letter
@@ -1977,6 +2058,21 @@ export interface components {
          * @enum {string}
          */
         ApplicationDocumentRoleEnum: "cv" | "cover_letter" | "certificate" | "transcript" | "portfolio" | "other";
+        ApplicationExtraction: {
+            /** Format: uuid */
+            application_id: string;
+            objected: boolean;
+            runs: components["schemas"]["ApplicationRun"][];
+        };
+        ApplicationRun: {
+            /** Format: uuid */
+            document_id: string;
+            filename: string;
+            status: string;
+            error_code: string;
+            flags: string[];
+            claims: components["schemas"]["ApplicationClaim"][];
+        };
         /**
          * @description * `draft` - Draft
          *     * `submitted` - Submitted
@@ -2168,6 +2264,18 @@ export interface components {
          * @enum {string}
          */
         ChannelEnum: "email" | "inapp" | "sms" | "whatsapp";
+        ClaimView: {
+            index: number;
+            type: string;
+            title: string;
+            subtitle: string;
+            dates: string;
+            detail: string;
+            snippet: string;
+            page: number | null;
+            excluded: boolean;
+            excluded_reason: string;
+        };
         Clarification: {
             /** Format: uuid */
             readonly id: string;
@@ -2241,6 +2349,26 @@ export interface components {
             preferred_name?: string;
             phone?: string;
             city?: string;
+        };
+        CorrectionRequestRequest: {
+            values?: {
+                [key: string]: string;
+            };
+            /** @default false */
+            remove: boolean;
+            /** @default  */
+            note: string;
+        };
+        CorrectionView: {
+            /** Format: uuid */
+            id: string;
+            status: string;
+            /** Format: date-time */
+            created_at: string;
+            values: {
+                [key: string]: string;
+            };
+            remove: boolean;
         };
         CriteriaInputRequest: {
             lock_version?: number;
@@ -2573,6 +2701,18 @@ export interface components {
             reason_text: string;
             /** Format: date-time */
             at: string;
+        };
+        ImportRequestRequest: {
+            confirm: boolean;
+            indexes: number[];
+        };
+        ImportResult: {
+            experiences: number;
+            educations: number;
+            certifications: number;
+            skills: number;
+            languages: number;
+            skipped: number;
         };
         /**
          * @description * `essential` - Essential
@@ -3644,6 +3784,16 @@ export interface components {
             created_at: string;
             is_default: boolean;
         };
+        ResumeExtraction: {
+            /** Format: uuid */
+            document_id: string;
+            status: string;
+            error_code: string;
+            flags: string[];
+            /** Format: date-time */
+            imported_at: string | null;
+            claims: components["schemas"]["ClaimView"][];
+        };
         RevertRequest: {
             key: components["schemas"]["KeyEnum"];
             /** @default email */
@@ -4357,6 +4507,54 @@ export interface operations {
             };
         };
     };
+    candidate_application_extraction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationExtraction"];
+                };
+            };
+        };
+    };
+    candidate_claim_correction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CorrectionRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CorrectionRequestRequest"];
+                "multipart/form-data": components["schemas"]["CorrectionRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionView"];
+                };
+            };
+        };
+    };
     candidate_profile_retrieve: {
         parameters: {
             query?: never;
@@ -5037,6 +5235,62 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    candidate_resume_extraction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeExtraction"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeExtraction"];
+                };
+            };
+        };
+    };
+    candidate_resume_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ImportRequestRequest"];
+                "multipart/form-data": components["schemas"]["ImportRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
+                };
             };
         };
     };

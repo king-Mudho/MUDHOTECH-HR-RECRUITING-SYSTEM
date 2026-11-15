@@ -127,7 +127,9 @@
     "salaryRange": "The maximum must be at least the minimum.",
     "justificationRequired": "Explain why this is essential for the role.",
     "invalidKey": "Use lowercase letters, numbers and dashes.",
-    "twoOptions": "Add at least two options."
+    "twoOptions": "Add at least two options.",
+    "tooLong": "This is too long.",
+    "correctionEmpty": "Tell us what should change, or tick that this item is wrong."
   },
   "forms": {
     "errorSummaryTitle": "Please fix the following:",
@@ -1150,7 +1152,9 @@
         "infected": "Problem: upload again",
         "error": "Problem: upload again",
         "notAccepted": "Problem: upload again"
-      }
+      },
+      "showExtraction": "What we read",
+      "hideExtraction": "Hide what we read"
     },
     "applications": {
       "title": "Your applications",
@@ -1175,7 +1179,8 @@
       "withdrawBody": "The employer will be told and will stop considering it. You can apply again later if the vacancy is still open.",
       "discardTitle": "Discard this draft?",
       "discardBody": "Your unfinished application will be removed.",
-      "failed": "Something went wrong. Please try again."
+      "failed": "Something went wrong. Please try again.",
+      "extracted": "What was read from your CV"
     },
     "settings": {
       "title": "Settings",
@@ -1304,7 +1309,6 @@
         "other": "Complete the remaining information"
       },
       "extractedTitle": "What we read from your CV",
-      "extractedSoon": "After you submit, we read your CV to prepare it for the employer. You will be able to see and correct this information in a later update.",
       "consents": "Consent",
       "privacy": "I have read how {company} will use my information and agree to it being used for this application.",
       "requiredMark": "(required)",
@@ -1341,7 +1345,9 @@
           "title": "Verify your email first",
           "body": "Open the link we emailed you, then submit again. Your draft is saved."
         }
-      }
+      },
+      "extractedCorrect": "If something is wrong, you can still submit: you'll be able to correct it on your application page, and your full CV always goes to the employer.",
+      "extractedNone": "Attach a CV to see what we read from it."
     },
     "done": {
       "title": "Application submitted",
@@ -1566,6 +1572,86 @@
       "loadVersion": "Load into editor",
       "failed": "That didn't work. Please try again.",
       "reverted": "Reverted. New messages use the platform default."
+    }
+  },
+  "extraction": {
+    "title": "What we extracted from your CV",
+    "explain": "This is what our software read from your CV. It helps employers find the evidence in your CV quickly; a person always makes decisions.",
+    "explainApplication": "This is what was read from the CV you sent with this application. If something is wrong, tell us — your correction is kept next to the original and the employer's review is updated.",
+    "reading": "We're reading your CV. This usually takes less than a minute…",
+    "nothingFound": "We couldn't pick out any details. Employers can still read your CV in full.",
+    "untitled": "(no title)",
+    "from": "Page {page}:",
+    "objected": "You asked for a person to review this application without software assistance, so nothing was extracted automatically.",
+    "ignoredTitle": "Details we ignore",
+    "ignoredPersonal": "We noticed your {items}. These are never used to assess you.",
+    "ignoredOther": "{count, plural, one {# item} other {# items}} (such as hidden or unusual text) will not be used.",
+    "groups": {
+      "experience": "Work experience",
+      "education": "Education",
+      "certification": "Certificates and licences",
+      "skill": "Skills",
+      "language": "Languages",
+      "project": "Projects"
+    },
+    "flags": {
+      "title": "Good to know",
+      "possibly_not_cv": "This file doesn't look like a CV. If you uploaded a certificate or ID by mistake, please upload your CV too.",
+      "language_unsupported": "Your CV isn't in English, so a person will review it.",
+      "low_ocr_confidence": "Your CV looks like a scan and some text was hard to read. A clearer copy or a Word/PDF version helps.",
+      "ocr_unavailable": "Your CV looks like a scan, so a person will read it.",
+      "hidden_text": "Some text in your CV is hidden (for example white or tiny text) and is not used."
+    },
+    "failed": {
+      "title": "We couldn't read this file",
+      "corrupt": "The file may be damaged. Please upload it again, ideally saved as PDF or Word (.docx).",
+      "encrypted_pdf": "The file is password-protected. Please upload a version without a password.",
+      "too_many_pages": "The file has too many pages for a CV.",
+      "unsupported_format": "We can read PDF and Word (.docx) files.",
+      "macro_document": "The file contains macros. Please save it as a normal Word or PDF file.",
+      "timeout": "The file took too long to read. Please try a simpler PDF or Word version.",
+      "other": "Please upload your CV again as a PDF or Word (.docx) file. Your application is safe."
+    },
+    "import": {
+      "open": "Add these details to my profile",
+      "done": "Added to your profile",
+      "title": "Add details to your profile",
+      "body": "Choose what to copy into your profile. Nothing changes until you confirm, and you can edit or remove anything later.",
+      "choose": "Details to add",
+      "confirm": "I've checked these details and want to add them to my profile.",
+      "submit": "{count, plural, one {Add # item} other {Add # items}}",
+      "cancel": "Cancel",
+      "failed": "We couldn't update your profile. Please try again."
+    },
+    "correct": {
+      "button": "Correct",
+      "open": "Correct “{item}”",
+      "sent": "Correction sent",
+      "title": "Correct “{item}”",
+      "body": "Fill in only what is wrong. The original stays on record and the employer sees your correction.",
+      "remove": "This item is wrong — it isn't in my CV or doesn't apply to me",
+      "keepBlank": "Leave blank to keep",
+      "note": "Anything else we should know?",
+      "noteHelp": "Optional, up to 1000 characters.",
+      "submit": "Send correction",
+      "cancel": "Cancel",
+      "fields": {
+        "title": "Job title",
+        "employer": "Employer",
+        "location": "Location",
+        "start": "Start (YYYY-MM)",
+        "end": "End (YYYY-MM, blank if current)",
+        "qualification_text": "Qualification",
+        "institution": "Institution",
+        "year": "Year completed",
+        "grade": "Grade or class",
+        "name": "Name",
+        "body": "Issued by",
+        "issued": "Issued (YYYY-MM)",
+        "years": "Years of experience",
+        "language": "Language",
+        "level": "Level"
+      }
     }
   }
 }

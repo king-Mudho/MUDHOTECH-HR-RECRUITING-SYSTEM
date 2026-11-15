@@ -432,6 +432,59 @@ paths:
                 items:
                   $ref: '#/components/schemas/CandidateAction'
           description: ''
+  /api/v1/candidate/applications/{application_id}/extraction/:
+    get:
+      operationId: candidate_application_extraction
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationExtraction'
+          description: ''
+  /api/v1/candidate/claims/{claim_id}/corrections/:
+    post:
+      operationId: candidate_claim_correction
+      parameters:
+      - in: path
+        name: claim_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrectionRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CorrectionRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CorrectionRequestRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorrectionView'
+          description: ''
   /api/v1/candidate/profile/:
     get:
       operationId: candidate_profile_retrieve
@@ -1178,6 +1231,68 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/candidate/resumes/{document_id}/extraction/:
+    get:
+      operationId: candidate_resume_extraction
+      description: What we read from one of your CVs. 202 while it is still being
+        read (poll again).
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeExtraction'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeExtraction'
+          description: ''
+  /api/v1/candidate/resumes/{document_id}/import-to-profile/:
+    post:
+      operationId: candidate_resume_import
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImportRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+          description: ''
   /api/v1/candidate/resumes/{document_id}/set-default/:
     post:
       operationId: candidate_resumes_set_default
@@ -4706,6 +4821,53 @@ components:
       - submitted_at
       - updated_at
       - withdrawn_at
+    ApplicationClaim:
+      type: object
+      properties:
+        index:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+        dates:
+          type: string
+        detail:
+          type: string
+        snippet:
+          type: string
+        page:
+          type: integer
+          nullable: true
+        excluded:
+          type: boolean
+        excluded_reason:
+          type: string
+        id:
+          type: string
+          format: uuid
+        correctable:
+          type: boolean
+        corrections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CorrectionView'
+      required:
+      - correctable
+      - corrections
+      - dates
+      - detail
+      - excluded
+      - excluded_reason
+      - id
+      - index
+      - page
+      - snippet
+      - subtitle
+      - title
+      - type
     ApplicationDocumentRoleEnum:
       enum:
       - cv
@@ -4722,6 +4884,49 @@ components:
         * `transcript` - Transcript
         * `portfolio` - Portfolio
         * `other` - Other
+    ApplicationExtraction:
+      type: object
+      properties:
+        application_id:
+          type: string
+          format: uuid
+        objected:
+          type: boolean
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationRun'
+      required:
+      - application_id
+      - objected
+      - runs
+    ApplicationRun:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        status:
+          type: string
+        error_code:
+          type: string
+        flags:
+          type: array
+          items:
+            type: string
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationClaim'
+      required:
+      - claims
+      - document_id
+      - error_code
+      - filename
+      - flags
+      - status
     ApplicationStatusEnum:
       enum:
       - draft
@@ -5159,6 +5364,41 @@ components:
         * `inapp` - In-app
         * `sms` - SMS
         * `whatsapp` - WhatsApp
+    ClaimView:
+      type: object
+      properties:
+        index:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+        dates:
+          type: string
+        detail:
+          type: string
+        snippet:
+          type: string
+        page:
+          type: integer
+          nullable: true
+        excluded:
+          type: boolean
+        excluded_reason:
+          type: string
+      required:
+      - dates
+      - detail
+      - excluded
+      - excluded_reason
+      - index
+      - page
+      - snippet
+      - subtitle
+      - title
+      - type
     Clarification:
       type: object
       properties:
@@ -5336,6 +5576,44 @@ components:
         city:
           type: string
           maxLength: 100
+    CorrectionRequestRequest:
+      type: object
+      properties:
+        values:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 300
+        remove:
+          type: boolean
+          default: false
+        note:
+          type: string
+          default: ''
+          maxLength: 1000
+    CorrectionView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        values:
+          type: object
+          additionalProperties:
+            type: string
+        remove:
+          type: boolean
+      required:
+      - created_at
+      - id
+      - remove
+      - status
+      - values
     CriteriaInputRequest:
       type: object
       properties:
@@ -6367,6 +6645,43 @@ components:
       - reason_code
       - reason_text
       - to_status
+    ImportRequestRequest:
+      type: object
+      properties:
+        confirm:
+          type: boolean
+        indexes:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+          maxItems: 200
+          minItems: 1
+      required:
+      - confirm
+      - indexes
+    ImportResult:
+      type: object
+      properties:
+        experiences:
+          type: integer
+        educations:
+          type: integer
+        certifications:
+          type: integer
+        skills:
+          type: integer
+        languages:
+          type: integer
+        skipped:
+          type: integer
+      required:
+      - certifications
+      - educations
+      - experiences
+      - languages
+      - skills
+      - skipped
     ImportanceEnum:
       enum:
       - essential
@@ -9029,6 +9344,35 @@ components:
       - rejected_reason
       - scan_status
       - size_bytes
+    ResumeExtraction:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        error_code:
+          type: string
+        flags:
+          type: array
+          items:
+            type: string
+        imported_at:
+          type: string
+          format: date-time
+          nullable: true
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimView'
+      required:
+      - claims
+      - document_id
+      - error_code
+      - flags
+      - imported_at
+      - status
     RevertRequest:
       type: object
       properties:

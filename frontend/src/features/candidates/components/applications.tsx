@@ -14,6 +14,7 @@ import { PageSkeleton } from "@/components/states/page-skeleton";
 import { StatusBadge } from "@/components/states/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ApplicationExtractionView } from "@/features/resumes/components/extraction";
 import { ApiError } from "@/lib/api-client";
 
 import { candidateApi, type Application } from "../api";
@@ -208,6 +209,19 @@ export function CandidateApplicationDetail({ id }: { id: string }) {
                 </dl>
               </section>
             ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {a.status !== "draft" ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-lg font-semibold">{t("extracted")}</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ApplicationExtractionView applicationId={id} />
           </CardContent>
         </Card>
       ) : null}

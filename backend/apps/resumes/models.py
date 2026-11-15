@@ -12,7 +12,7 @@ from django.conf import settings
 from django.db import models
 
 from apps.core.fields import EncryptedTextField
-from apps.core.models import TenantModel
+from apps.core.models import BaseModel, TenantModel
 
 
 class RunStatus(models.TextChoices):
@@ -122,3 +122,33 @@ class ClaimCorrection(TenantModel):
 
     class Meta:
         ordering = ("-created_at",)
+
+
+class ResumeParse(BaseModel):
+    """A candidate's own preview of what we read from one of their CVs (P06-T13).
+
+    Candidate data, not tenant data: parsed on request against the platform taxonomy, shown only
+    to the owner (wizard review step, documents page) and used for "import to profile". The
+    employer's evaluation always uses its own ``ExtractionRun`` for the submitted application.
+    """
+
+    owner_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="resume_parses"
+    )
+    document = models.ForeignKey(
+        "documents.Document", on_delete=models.CASCADE, related_name="resume_parses"
+    )
+    engine_version = models.CharField(max_length=20)
+    status = models.CharField(max_length=12, choices=RunStatus.choices, default=RunStatus.PENDING)
+    error_code = models.CharField(max_length=40, blank=True, default="")
+    flags = models.JSONField(default=list, blank=True)
+    claims = EncryptedTextField(blank=True, default="")  # JSON list of contract claims
+    imported_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["document", "engine_version"], name="uniq_resume_parse_version"
+            )
+        ]

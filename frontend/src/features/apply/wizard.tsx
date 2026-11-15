@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { candidateApi, type Application, type Review } from "@/features/candidates/api";
+import { ResumeExtractionView } from "@/features/resumes/components/extraction";
 import { candidateKeys, useProfile, useResumes } from "@/features/candidates/hooks";
 import { FileUploader } from "@/features/documents/components/file-uploader";
 import { ApiError, api, newIdempotencyKey } from "@/lib/api-client";
@@ -625,6 +626,9 @@ function ReviewStep({
     },
   });
   const blocking = missing.length ? missing : (review?.missing ?? []);
+  const cvDocument = (review?.documents ?? []).find(
+    (d) => d.role === "cv" && (d.scan_status === "clean" || d.scan_status === "skipped"),
+  )?.document;
   const labelFor = (m: { code: string; key: string }) => {
     if (m.code === "document_required")
       return t("missingDoc", { doc: tc.has(m.key) ? tc(m.key) : m.key });
@@ -712,7 +716,14 @@ function ReviewStep({
         <h3 id="extracted" className="font-semibold">
           {t("extractedTitle")}
         </h3>
-        <p className="text-muted-foreground mt-1">{t("extractedSoon")}</p>
+        {cvDocument ? (
+          <div className="mt-2">
+            <ResumeExtractionView documentId={cvDocument} />
+            <p className="text-muted-foreground mt-2">{t("extractedCorrect")}</p>
+          </div>
+        ) : (
+          <p className="text-muted-foreground mt-1">{t("extractedNone")}</p>
+        )}
       </section>
       <fieldset className="flex flex-col gap-3 rounded-lg border p-4 text-sm">
         <legend className="px-1 font-semibold">{t("consents")}</legend>

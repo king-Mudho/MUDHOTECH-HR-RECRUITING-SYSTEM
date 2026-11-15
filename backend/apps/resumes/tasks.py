@@ -51,3 +51,18 @@ def on_document_accepted(event: OutboxEvent) -> None:
 def on_document_rejected(event: OutboxEvent) -> None:
     if settings.RESUMES_AUTOSTART:
         services.on_document_rejected(event.payload["document_id"])
+
+
+@shared_task(
+    name="apps.resumes.tasks.parse_resume_preview",
+    base=BaseTask,
+    acks_late=True,
+    autoretry_for=(OSError, ConnectionError),
+    retry_backoff=True,
+    max_retries=3,
+)
+def parse_resume_preview(parse_id: str) -> str:
+    """A candidate's own CV preview (P06-T13). Idempotent per (document, engine version)."""
+    from . import candidate
+
+    return candidate.run_preview(parse_id)

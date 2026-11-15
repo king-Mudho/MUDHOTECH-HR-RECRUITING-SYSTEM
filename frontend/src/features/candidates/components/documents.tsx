@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { documentsApi } from "@/features/documents/api";
 import { FileUploader } from "@/features/documents/components/file-uploader";
+import { ResumeExtractionView } from "@/features/resumes/components/extraction";
 import { ApiError, api } from "@/lib/api-client";
 
 import { candidateKeys, useResumes, type Resume } from "../hooks";
@@ -35,6 +36,7 @@ export function CandidateDocuments() {
   const client = useQueryClient();
   const resumes = useResumes();
   const [removing, setRemoving] = useState<Resume | null>(null);
+  const [showing, setShowing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const refresh = () => {
     void client.invalidateQueries({ queryKey: candidateKeys.resumes });
@@ -120,6 +122,17 @@ export function CandidateDocuments() {
                     {t("makeDefault")}
                   </Button>
                 ) : null}
+                {r.scan_status === "clean" || r.scan_status === "skipped" ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    aria-expanded={showing === r.id}
+                    aria-controls={`extraction-${r.id}`}
+                    onClick={() => setShowing(showing === r.id ? null : r.id)}
+                  >
+                    {showing === r.id ? t("hideExtraction") : t("showExtraction")}
+                  </Button>
+                ) : null}
                 <Button
                   size="sm"
                   variant="ghost"
@@ -129,6 +142,11 @@ export function CandidateDocuments() {
                   <Trash2 aria-hidden="true" />
                 </Button>
               </div>
+              {showing === r.id ? (
+                <div id={`extraction-${r.id}`} className="w-full border-t pt-3">
+                  <ResumeExtractionView documentId={r.id} allowImport />
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>
