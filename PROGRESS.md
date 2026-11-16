@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T15
+- **Current task:** P07-EXIT
 - **Last updated:** 2026-11-16
-- **Overall:** 101 / 193 tasks · 6 / 16 phases
+- **Overall:** 102 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -169,7 +169,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P07-T12 — Vacancy-level analytics for screening: score/band distribution, low-coverage warning (EC-AI-15), high-score …
 - [x] P07-T13 — Frontend: `/hr/jobs/[id]/screening` (runs, progress bar, failures with retry, distribution chart with table …
 - [x] P07-T14 — Model registry seed entries (embedding model, rules engine version, null LLM) and `ai_quality` metrics capture hooks
-- [ ] P07-T15 — Benchmark: matching & recall harness against gold labels → report `docs/reports/screening_benchmark_<date>.md`
+- [x] P07-T15 — Benchmark: matching & recall harness against gold labels → report `docs/reports/screening_benchmark_<date>.md`
 - [ ] P07-EXIT — All exit criteria verified with evidence
 
 ### Phase 08 — Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)  (`phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md`)
@@ -568,3 +568,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | Impl | P07-T12 | GET hr/jobs/{id}/screening-analytics: band counts, score buckets, median; low-coverage warning (>=50% of >=5 evaluations, EC-AI-15) and high-score saturation info without cut-off (EC-AI-14) | - |
 | 2026-11-16 | Impl | P07-T13 | Frontend /hr/jobs/[id]/screening (start run with scope + re-evaluation reason, run progress bars, failures with retry, score distribution chart with table alternative, band counts, EC-AI-14/15 warnings) and EvaluationPanel on the HR application page (ScoreBreakdown with coverage hatch, CriteriaPanel with status/method/confidence/evidence and confirm / not-supported verification, explanation citations linking to evidence); all labelled AI-assisted; manual-review band shows no scores; vitest 6 new | Live browser check not run (ports 3000/8000 held by another project); covered by component tests |
 | 2026-11-16 | Impl | P07-T14 | ModelRegistryEntry (rules engine version+thresholds, embedding model, null LLM; synced on post_migrate, old entries closed not deleted) recorded on each ScreeningRun.model_ids; AIQualityReport daily per org/vacancy counters (evaluations, bands, triggers, coverage, grounding sentences/dropped, LLM use, verifications by decision) captured in the evaluation/verification transactions + derived rates | Scheduled reports and override alerts in P13-T07 |
+| 2026-11-16 | Impl | P07-T15 | run_screening_benchmark (recall of gold suitable in recommended/review_needed 1.00, grounding 1.00, determinism 1.00, counterfactual 121/121, 100 engine evaluations 0.13 s) -> docs/reports/screening_benchmark_2026-11-16.md/.json; Django throughput test 100 evaluations 16.7 s; nightly screening benchmark step | review_needed is the largest band (95/135) - calibrate in Phase 10 |

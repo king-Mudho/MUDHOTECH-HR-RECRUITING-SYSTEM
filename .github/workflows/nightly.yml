@@ -148,6 +148,12 @@ jobs:
         run: |
           mkdir -p reports && chmod 777 reports  # the image runs as a non-root user
           docker run --rm -v "$PWD/backend:/app" -v "$PWD/reports:/reports" mhrs-worker:bench             python -m ai_engine.tests.benchmark.run_extraction_benchmark               --out-dir /reports --workers 2 --semantic --check
+      - name: Screening benchmark (recall, grounding, determinism, counterfactual; P07-T15)
+        if: always()
+        run: >-
+          docker run --rm -v "$PWD/backend:/app" -v "$PWD/scripts:/scripts:ro"
+          -v "$PWD/reports:/reports" mhrs-worker:bench
+          python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir /reports --check
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
