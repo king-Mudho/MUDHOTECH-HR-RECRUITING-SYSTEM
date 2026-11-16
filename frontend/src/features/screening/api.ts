@@ -14,6 +14,7 @@ export type CriterionResult = components["schemas"]["CriterionResult"];
 export type StartRunInput = components["schemas"]["StartRunRequest"];
 export type VerifyInput = components["schemas"]["VerifyRequest"];
 export type Verification = components["schemas"]["Verification"];
+export type EvaluationSummary = components["schemas"]["EvaluationSummary"];
 
 /** Mirrors backend RBAC (`applications.transition`) — UI hiding only; the server decides. */
 export const SCREENING_EDITORS = ["org_admin", "hr_manager", "recruiter"];
@@ -105,5 +106,27 @@ export function useVerifyClaim(appId: string) {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: screeningKeys.evaluation(orgId ?? "", appId) });
     },
+  });
+}
+
+export function useEvaluationVersions(appId: string) {
+  const { orgId } = useJobsContext();
+  return useQuery({
+    queryKey: [...screeningKeys.evaluation(orgId ?? "", appId), "versions"],
+    queryFn: () =>
+      api.get<EvaluationSummary[]>(`/hr/applications/${appId}/evaluations/`, { orgId: orgId! }),
+    enabled: !!orgId,
+  });
+}
+
+export function useEvaluationVersion(appId: string, version: number | null) {
+  const { orgId } = useJobsContext();
+  return useQuery({
+    queryKey: [...screeningKeys.evaluation(orgId ?? "", appId), "version", version],
+    queryFn: () =>
+      api.get<Evaluation>(`/hr/applications/${appId}/evaluations/${version}/`, {
+        orgId: orgId!,
+      }),
+    enabled: !!orgId && version !== null,
   });
 }

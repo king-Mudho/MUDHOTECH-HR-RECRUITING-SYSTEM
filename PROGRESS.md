@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
-- **Current task:** P08-T05
+- **Current task:** P08-T09
 - **Last updated:** 2026-11-16
-- **Overall:** 106 / 193 tasks · 7 / 16 phases
+- **Overall:** 110 / 193 tasks · 7 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -177,10 +177,10 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P08-T02 — Services: create proposal (pre-fill suggestions from bands — suggestions only), set decisions (reason required for …
 - [x] P08-T03 — Override tracking: entry stores `ai_band_at_decision`, `score_at_decision`, `override` computed
 - [x] P08-T04 — Blind review mode: server-side serializer redaction (name → "Candidate #A12", email/phone/links/address hidden, …
-- [ ] P08-T05 — Applicants list API & UI final: filters (band, score range, coverage, flags, essentials state, status, tags, …
-- [ ] P08-T06 — Candidate review page `/hr/applications/[id]` per `docs/08 §3.3`: `EvidenceViewer` (pdf.js in sandboxed …
-- [ ] P08-T07 — Compare view `/hr/compare` (≤ 4) — criteria rows × candidates, evidence snippets on hover
-- [ ] P08-T08 — Shortlist builder `/hr/jobs/[id]/shortlist` per `docs/08 §3.4` incl
+- [x] P08-T05 — Applicants list API & UI final: filters (band, score range, coverage, flags, essentials state, status, tags, …
+- [x] P08-T06 — Candidate review page `/hr/applications/[id]` per `docs/08 §3.3`: `EvidenceViewer` (pdf.js in sandboxed …
+- [x] P08-T07 — Compare view `/hr/compare` (≤ 4) — criteria rows × candidates, evidence snippets on hover
+- [x] P08-T08 — Shortlist builder `/hr/jobs/[id]/shortlist` per `docs/08 §3.4` incl
 - [ ] P08-T09 — Role visibility: hiring manager sees shortlist only (EC-REV-09)
 - [ ] P08-T10 — HR dashboard `/hr/dashboard`: KPI cards & queues per SRS M15, per-vacancy funnel, filters
 - [ ] P08-T11 — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job …
@@ -486,6 +486,8 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | P08-T01 | `DecisionReason` lives in `apps.applications` (Phase 05) and is shared with shortlists; T01 added the reasons | One reason list for single-application and shortlist decisions | - |
 | 2026-11-16 | P08-T02 | Added an undo-only `shortlisted -> under_review` transition (not offered on the board; requires the undo flag) | EC-REV-04 undo must reverse via new status events; the SRS table had no reverse edge from shortlisted | - |
 | 2026-11-16 | P08-T02 | Shortlist "reject" returns the proposal to draft with a reason instead of a terminal `rejected` status | The proposer fixes and resubmits the same proposal; "rejected" never refers to a candidate | - |
+| 2026-11-16 | P08-T06 | Evidence viewer highlights on the extracted text view for PDF and DOCX; pdf.js renders the original PDF (canvas, no scripting) only when identity is visible | The original file shows the applicant's name (blind review) and DOCX cannot be rendered safely; offsets of the stored text give exact highlights | - |
+| 2026-11-16 | P08-T05 | Applicants list moved from page-number to cursor pagination (with a total count); response is `{count, next_cursor, previous_cursor, results}` | EC-JOB-17 (5,000+ applicants) | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -606,3 +608,7 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | Impl | P08-T02 | Services propose (suggestions from bands, never not-selected), set_decisions (reasons for not_selected/hold/overrides, Other needs text, lock_version), submit, approve (applications.decide, dual control -> self_approval_forbidden, row lock -> already_processed, transitions with approver as human actor, notifications after delay, withdrawn skipped EC-REV-07), return for changes, undo within window (undo-only shortlisted->under_review transition, notifications suppressed); API hr/jobs/{id}/shortlists, hr/shortlists/{id}[/entries|refresh|submit|approve(Idempotency-Key)|reject|undo]; tenancy+matrix | Approval with undecided entries leaves them untouched; T08 adds the explicit confirmation |
 | 2026-11-16 | Impl | P08-T03 | Override computed per decision (shortlist of lower/eligibility band, not selected of recommended) with snapshot; selectors.override_stats (approved shortlists only: rate, direction, reasons, by band) | - |
 | 2026-11-16 | Impl | P08-T04 | Blind review server-side: BlindView redacts list/detail/shortlist entries (alias Candidate #XXXX, no email/contact/file names), originals not downloadable until reveal, search by reference only (T05); POST hr/applications/{id}/reveal-identity (reason, per reviewer, audited); optional blind_mask_institutions policy masks institutions in the extraction panel; reveal UI | - |
+| 2026-11-16 | Impl | P08-T05 | Applicants table API: filters band/score range/coverage/flags/essentials/status/tag/assigned/search (reference only in blind mode), cursor pagination with total + whitelisted ordering (unscored last), essentials counts denormalised on applications (+backfill) and new indexes; AI numbers cleared for manual-review band; saved views (private) + bulk assign/tag/clarification/propose shortlist via the single-action services; UI with presets, saved views, filters, load-more, row windowing over 200 rows, selection + bulk bar | - |
+| 2026-11-16 | Impl | P08-T06 | Review page: ReviewWorkspace with EvidenceViewer (CV text per page with highlighted evidence spans, contact/personal/references masked, name masked in blind mode, pdf.js render of original PDFs when identity visible), criterion selection highlights its evidence, evaluation version switcher (read-only older versions), flags banner, j/k next/previous from the applicants list; GET hr/applications/{id}/evidence-text | Live browser check pending (ports held by another project) |
+| 2026-11-16 | Impl | P08-T07 | /hr/compare?ids= (2-4): criteria rows x applicants with score, evidence status and expandable snippets; manual-review applicants show no AI output; Compare action from the applicants bulk bar | - |
+| 2026-11-16 | Impl | P08-T08 | /hr/jobs/[id]/shortlist builder: propose with desired size, columns Suggested / Needs your review / Low coverage / Others, decision chips with reasons (override reason required), summary bar, submit, approve dialog with counts/reasons/uncertain warning and explicit 'leave undecided in review' (server: undecided_remaining), Idempotency-Key, return with reason, undo countdown | - |

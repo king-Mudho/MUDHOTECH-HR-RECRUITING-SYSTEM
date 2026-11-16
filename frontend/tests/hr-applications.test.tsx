@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
@@ -81,19 +81,38 @@ const row = {
   channel: "web",
   is_assisted: true,
   objects_to_automated_processing: false,
+  identity_hidden: false,
+  tags: [],
+  assigned_recruiter: null,
+  lock_version: 1,
+  ai_band: "recommended_for_review",
+  score: 84,
+  coverage: 0.9,
+  flags: ["low_ocr_confidence"],
+  essentials: { met: 3, unknown: 1, not_evidenced: 0 },
+  assigned_name: "",
 };
 
 describe("HR applications", () => {
-  it("lists applications, sends the org header and filters by status", async () => {
+  it("lists applicants with AI suggestions, filters by saved view and runs bulk actions", async () => {
+    const bulk: unknown[] = [];
     routes(
       (u) => (u === "/api/v1/me/" ? { body: me("recruiter") } : undefined),
       (u) =>
         u === "/api/v1/hr/jobs/j1/"
           ? { body: { id: "j1", title: "Software Developer" } }
           : undefined,
+      (u) => (u.startsWith("/api/v1/hr/saved-views/") ? { body: [] } : undefined),
+      (u, init) => {
+        if (u === "/api/v1/hr/jobs/j1/applications/bulk/" && init?.method === "POST") {
+          bulk.push(JSON.parse(String(init.body)));
+          return { body: { action: "assign_me", done: 1, skipped: [], shortlist_id: null } };
+        }
+        return undefined;
+      },
       (u) =>
         u.startsWith("/api/v1/hr/jobs/j1/applications/")
-          ? { body: { count: 1, results: [row] } }
+          ? { body: { count: 1, next_cursor: null, previous_cursor: null, results: [row] } }
           : undefined,
     );
     wrap(<JobApplicationsList jobId="j1" />);
@@ -101,13 +120,48 @@ describe("HR applications", () => {
       "href",
       "/hr/applications/a1",
     );
-    expect(screen.getByText("Assisted")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("table")).getByText("Recommended for review"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Essentials: 3 evidenced, 1 unknown, 0 weakly evidenced"),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/AI-assisted suggestions/)).toBeInTheDocument();
     const call = fetchMock.mock.calls.find(([u]) => String(u).includes("/applications/"));
     expect(new Headers((call![1] as RequestInit).headers).get("X-Org-Id")).toBe(ORG);
-    await userEvent.click(screen.getByRole("button", { name: "Withdrawn" }));
+    expect(String(call![0])).toContain("ordering=-score");
+    await userEvent.click(screen.getByRole("button", { name: "Errors" }));
     await waitFor(() =>
-      expect(fetchMock.mock.calls.some(([u]) => String(u).includes("status=withdrawn"))).toBe(true),
+      expect(
+        fetchMock.mock.calls.some(([u]) => String(u).includes("status=processing_error")),
+      ).toBe(true),
     );
+    await userEvent.click(await screen.findByRole("checkbox", { name: "Select Rudo Moyo" }));
+    await userEvent.click(screen.getByRole("button", { name: "Assign to me" }));
+    await waitFor(() => expect(bulk).toEqual([{ action: "assign_me", application_ids: ["a1"] }]));
+    expect(await screen.findByText("1 application updated.")).toBeInTheDocument();
+  });
+
+  it("renders only a window of rows for long lists", async () => {
+    const many = Array.from({ length: 250 }, (_, i) => ({
+      ...row,
+      id: `a${i}`,
+      candidate_name: `Candidate ${i}`,
+    }));
+    routes(
+      (u) => (u === "/api/v1/me/" ? { body: me("hr_manager") } : undefined),
+      (u) => (u === "/api/v1/hr/jobs/j1/" ? { body: { id: "j1", title: "Dev" } } : undefined),
+      (u) => (u.startsWith("/api/v1/hr/saved-views/") ? { body: [] } : undefined),
+      (u) =>
+        u.startsWith("/api/v1/hr/jobs/j1/applications/")
+          ? { body: { count: 250, next_cursor: null, previous_cursor: null, results: many } }
+          : undefined,
+    );
+    wrap(<JobApplicationsList jobId="j1" />);
+    expect(await screen.findByRole("link", { name: "Candidate 0" })).toBeInTheDocument();
+    const links = screen.getAllByRole("link").filter((l) => l.textContent?.startsWith("Candidate"));
+    expect(links.length).toBeLessThan(40);
+    expect(screen.getByText("Showing 250 of 250")).toBeInTheDocument();
   });
 
   it("hides the list from roles that cannot view applications", async () => {

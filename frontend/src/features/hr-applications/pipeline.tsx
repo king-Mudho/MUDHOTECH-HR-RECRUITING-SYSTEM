@@ -11,7 +11,6 @@ import { PageSkeleton } from "@/components/states/page-skeleton";
 import { StatusBadge } from "@/components/states/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Paginated } from "@/features/jobs/api";
 import { useJob, useJobsContext } from "@/features/jobs/hooks";
 import { api } from "@/lib/api-client";
 
@@ -25,9 +24,9 @@ export function usePipeline(jobId: string) {
   return useQuery({
     queryKey: ["hr-applications", orgId ?? "", "job", jobId, "pipeline"],
     queryFn: () =>
-      api.get<Paginated<HRApplicationRow>>(`/hr/jobs/${jobId}/applications/`, {
+      api.get<{ count: number; results: HRApplicationRow[] }>(`/hr/jobs/${jobId}/applications/`, {
         orgId: orgId!,
-        query: { page_size: 100 },
+        query: { page_size: 200, ordering: "-submitted_at" },
       }),
     enabled: !!orgId,
   });

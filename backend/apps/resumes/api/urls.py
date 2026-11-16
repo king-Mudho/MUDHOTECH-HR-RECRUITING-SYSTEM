@@ -29,6 +29,11 @@ urlpatterns = [
         name="hr-application-extraction",
     ),
     path(
+        "hr/applications/<uuid:application_id>/evidence-text/",
+        hr.HREvidenceTextView.as_view(),
+        name="hr-application-evidence-text",
+    ),
+    path(
         "hr/applications/<uuid:application_id>/retry-processing/",
         hr.HRRetryProcessingView.as_view(),
         name="hr-application-retry-processing",

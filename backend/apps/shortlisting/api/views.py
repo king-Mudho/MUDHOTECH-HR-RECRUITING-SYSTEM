@@ -50,6 +50,10 @@ class ShortlistLockSerializer(StrictSerializer):
     lock_version = serializers.IntegerField(required=False, allow_null=True, default=None)
 
 
+class ShortlistApproveSerializer(ShortlistLockSerializer):
+    leave_undecided = serializers.BooleanField(required=False, default=False)
+
+
 class ShortlistReasonSerializer(ShortlistLockSerializer):
     reason = serializers.CharField(max_length=2000)
 
@@ -281,19 +285,20 @@ class ShortlistApproveView(APIView):
 
     @extend_schema(
         operation_id="hr_shortlist_approve",
-        request=ShortlistLockSerializer,
+        request=ShortlistApproveSerializer,
         responses=ShortlistDetailSerializer,
         parameters=[IDEMPOTENCY_HEADER],
     )
     @idempotent(endpoint="shortlists.approve")
     def post(self, request: Request, shortlist_id: str) -> Response:
-        data = ShortlistLockSerializer(data=request.data)
+        data = ShortlistApproveSerializer(data=request.data)
         data.is_valid(raise_exception=True)
         services.approve(
             request.membership,  # type: ignore[attr-defined]
             authed_user(request),
             shortlist_id,
             lock_version=data.validated_data["lock_version"],
+            leave_undecided=data.validated_data["leave_undecided"],
         )
         return _detail(request.membership, shortlist_id)  # type: ignore[attr-defined]
 

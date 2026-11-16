@@ -84,6 +84,17 @@ urlpatterns = [
         name="hr-application-reveal-identity",
     ),
     path(
+        "hr/jobs/<uuid:job_id>/applications/bulk/",
+        ats_views.HRBulkApplicationsView.as_view(),
+        name="hr-job-applications-bulk",
+    ),
+    path("hr/saved-views/", ats_views.HRSavedViewsView.as_view(), name="hr-saved-views"),
+    path(
+        "hr/saved-views/<uuid:view_id>/",
+        ats_views.HRSavedViewDetailView.as_view(),
+        name="hr-saved-view",
+    ),
+    path(
         "hr/decision-reasons/",
         ats_views.HRDecisionReasonsView.as_view(),
         name="hr-decision-reasons",

@@ -212,10 +212,28 @@ def _store(
     locked = Application.objects.for_org(app.organisation_id).select_for_update().get(pk=app.pk)
     locked.current_evaluation_id = evaluation.pk
     locked.ai_band = result.band
-    locked.score = evaluation.total_score
-    locked.coverage = evaluation.coverage
+    if result.band == "manual_review_requested":  # EC-AI-12: no AI numbers anywhere
+        locked.score = locked.coverage = None
+        locked.essentials_met = locked.essentials_unknown = locked.essentials_not_evidenced = None
+    else:
+        locked.score = evaluation.total_score
+        locked.coverage = evaluation.coverage
+        ess = result.essentials
+        # explicit evidence counts as met (bands rule); weak = not evidenced; missing = unknown
+        locked.essentials_met = len(ess.met) + len(ess.partial)
+        locked.essentials_unknown = len(ess.unknown)
+        locked.essentials_not_evidenced = len(ess.not_evidenced)
     locked.save(
-        update_fields=["current_evaluation_id", "ai_band", "score", "coverage", "updated_at"]
+        update_fields=[
+            "current_evaluation_id",
+            "ai_band",
+            "score",
+            "coverage",
+            "essentials_met",
+            "essentials_unknown",
+            "essentials_not_evidenced",
+            "updated_at",
+        ]
     )
     if locked.status == Status.PROCESSING:
         transition(locked, Status.UNDER_REVIEW, actor_type="system", reason_code="screened")

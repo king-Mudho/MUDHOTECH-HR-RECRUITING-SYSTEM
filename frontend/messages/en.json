@@ -1417,7 +1417,8 @@
       "actor": {
         "human": "by a person",
         "system": "automatically"
-      }
+      },
+      "flagsTitle": "Check before deciding"
     },
     "openPipeline": "Open the pipeline board",
     "pipeline": {
@@ -1634,7 +1635,8 @@
         "apply": "Apply",
         "cancel": "Cancel",
         "done": "{done, plural, one {# application updated} other {# applications updated}}{skipped, plural, =0 {} other {, # skipped}}.",
-        "failed": "The bulk action could not be completed."
+        "failed": "The bulk action could not be completed.",
+        "compare": "Compare"
       }
     }
   },
@@ -1841,7 +1843,11 @@
       "manual": "The candidate asked for a person to review the application without software assistance. No AI scores are shown.",
       "version": "Evaluation version {version}",
       "why": "Why",
-      "criteria": "Criteria and evidence"
+      "criteria": "Criteria and evidence",
+      "versionLabel": "Version",
+      "current": "Current",
+      "versionOption": "Version {version} ({trigger})",
+      "olderVersion": "Showing earlier evaluation version {version} (superseded, read-only)"
     },
     "start": {
       "title": "Run screening",
@@ -1890,6 +1896,111 @@
         "low_coverage": "Low evidence coverage",
         "high_score_saturation": "Many high scores"
       }
+    },
+    "evidence": {
+      "title": "Evidence",
+      "hint": "Pick a criterion to highlight the passages that support it. Contact and personal details are masked.",
+      "none": "No readable CV text yet.",
+      "documents": "Documents",
+      "modeLabel": "View",
+      "mode": {
+        "text": "Text with highlights",
+        "pdf": "Original PDF"
+      },
+      "page": "Page {page}",
+      "pageAria": "CV page {page}",
+      "pdfFailed": "The original could not be shown here.",
+      "download": "Download it instead"
+    },
+    "review": {
+      "position": "Applicant {index} of {total} · press j / k for next / previous"
+    },
+    "compare": {
+      "metaTitle": "Compare applicants",
+      "title": "Comparing {count} applicants",
+      "caption": "Criteria for each applicant",
+      "forbidden": "You do not have access to compare applicants.",
+      "pickTitle": "Choose applicants to compare",
+      "pick": "Select two to four applicants in the applicants list, then choose Compare.",
+      "limit": "Only the first {max} applicants are shown.",
+      "criterion": "Criterion",
+      "total": "Overall (AI suggestion)",
+      "score": "{score} / 100",
+      "coverage": "{value}% coverage",
+      "unknown": "Unknown",
+      "essential": "Essential",
+      "manual": "Manual review requested",
+      "evidence": "{count, plural, one {# evidence snippet} other {# evidence snippets}}"
     }
+  },
+  "shortlisting": {
+    "metaTitle": "Shortlist",
+    "title": "Shortlist · {job}",
+    "back": "Back to applicants",
+    "forbidden": "You do not have access to shortlists for this vacancy.",
+    "noneTitle": "No shortlist yet",
+    "none": "A recruiter or HR manager proposes the shortlist for this vacancy.",
+    "desiredSize": "Desired shortlist size",
+    "propose": "Propose shortlist",
+    "proposeHint": "AI bands pre-fill suggestions only. Every decision is made by a person and approved by an HR manager.",
+    "failed": "Something went wrong. Please try again.",
+    "desired": "Desired size: {size}",
+    "status": {
+      "draft": "Draft",
+      "pending_approval": "Waiting for approval",
+      "approved": "Approved",
+      "superseded": "Superseded",
+      "undone": "Undone"
+    },
+    "returnedTitle": "Returned for changes",
+    "summary": "{shortlist} shortlisted · {hold} on hold · {notSelected} not selected · {undecided} undecided",
+    "overrides": "{count, plural, one {# decision differs} other {# decisions differ}} from the AI suggestion",
+    "aboveSize": "more than the desired {size} (allowed)",
+    "columns": {
+      "suggested": "Suggested",
+      "review": "Needs your review",
+      "low": "Low evidence coverage",
+      "others": "Others"
+    },
+    "emptyColumn": "No applicants here.",
+    "coverage": "{value}% coverage",
+    "suggested": "AI suggestion: shortlist",
+    "overrideBadge": "Differs from AI suggestion",
+    "applyNote": {
+      "withdrawn": "Withdrew before approval",
+      "already_in_status": "Already in this status",
+      "status_changed": "Status changed before approval",
+      "undone": "Undone"
+    },
+    "decisionFor": "Decision for {name}",
+    "decisions": {
+      "shortlist": "Shortlist",
+      "hold": "Hold",
+      "not_selected": "Not selected",
+      "undecided": "Undecided"
+    },
+    "overrideHint": "This differs from the AI suggestion — please say why.",
+    "reason": "Reason",
+    "chooseReason": "Choose a reason",
+    "explain": "Explain",
+    "save": "Save decision",
+    "cancel": "Cancel",
+    "submit": "Submit for approval",
+    "approve": "Approve shortlist",
+    "return": "Return for changes",
+    "waiting": "Waiting for an HR manager to approve.",
+    "approveTitle": "Approve this shortlist?",
+    "approveConfirm": "Approve",
+    "uncertainWarning": "{count, plural, one {# applicant marked not selected has} other {# applicants marked not selected have}} uncertain evidence (low coverage or review needed).",
+    "reasonsUsed": "Reasons used",
+    "approveNote": "Applicants are told after the notification delay; you can undo until then.",
+    "leaveUndecided": "Leave {count, plural, one {# undecided applicant} other {# undecided applicants}} in review",
+    "returnTitle": "Return the shortlist for changes",
+    "approvedTitle": "Approved",
+    "undoWindow": "Applicants will be told at {at} ({time} left). You can undo until then.",
+    "notified": "Applicants have been told. To change a decision now, reopen the application with a reason.",
+    "undo": "Undo approval",
+    "undoTitle": "Undo this approval?",
+    "undoDescription": "All decisions return to review and the scheduled messages are cancelled."
   }
 }

@@ -78,13 +78,27 @@ def test_full_flow_over_http(world: World) -> None:  # noqa: F811
     assert no.status_code == 403
     # approval needs an Idempotency-Key
     assert hr.post(f"/api/v1/hr/shortlists/{sid}/approve/", {}, format="json").status_code == 400
+    undecided = hr.post(
+        f"/api/v1/hr/shortlists/{sid}/approve/",
+        {},
+        format="json",
+        HTTP_IDEMPOTENCY_KEY=str(uuid.uuid4()),
+    )
+    assert undecided.status_code == 400
+    assert undecided.json()["error"]["code"] == "undecided_remaining"
     key = str(uuid.uuid4())
     first = hr.post(
-        f"/api/v1/hr/shortlists/{sid}/approve/", {}, format="json", HTTP_IDEMPOTENCY_KEY=key
+        f"/api/v1/hr/shortlists/{sid}/approve/",
+        {"leave_undecided": True},
+        format="json",
+        HTTP_IDEMPOTENCY_KEY=key,
     )
     assert first.status_code == 200 and first.json()["status"] == "approved"
     replay = hr.post(
-        f"/api/v1/hr/shortlists/{sid}/approve/", {}, format="json", HTTP_IDEMPOTENCY_KEY=key
+        f"/api/v1/hr/shortlists/{sid}/approve/",
+        {"leave_undecided": True},
+        format="json",
+        HTTP_IDEMPOTENCY_KEY=key,
     )
     assert replay.status_code == 200 and replay["Idempotent-Replayed"] == "true"
     again = hr.post(

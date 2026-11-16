@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { ErrorState } from "@/components/states/states";
 import { PageSkeleton } from "@/components/states/page-skeleton";
@@ -16,6 +16,8 @@ import { ApiError } from "@/lib/api-client";
 import {
   SCREENING_EDITORS,
   useEvaluation,
+  useEvaluationVersion,
+  useEvaluationVersions,
   useVerifyClaim,
   type CriterionResult,
   type Evaluation,
@@ -195,17 +197,36 @@ export function CriteriaPanel({
   appId,
   evaluation,
   canVerify,
+  active = null,
+  onSelect,
 }: {
   appId: string;
   evaluation: Evaluation;
   canVerify: boolean;
+  active?: string | null;
+  onSelect?: (criterionId: string | null) => void;
 }) {
   const t = useTranslations("screening.criteria");
   const ts = useTranslations("screening.status");
   const row = (c: CriterionResult) => (
-    <li key={c.id} id={`criterion-${c.criterion_id}`} className="rounded-md border p-3 text-sm">
+    <li
+      key={c.id}
+      id={`criterion-${c.criterion_id}`}
+      className={`rounded-md border p-3 text-sm ${active === c.criterion_id ? "ring-primary ring-2" : ""}`}
+    >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-medium">{c.title}</span>
+        {onSelect ? (
+          <button
+            type="button"
+            className="text-left font-medium underline-offset-2 hover:underline"
+            aria-pressed={active === c.criterion_id}
+            onClick={() => onSelect(active === c.criterion_id ? null : c.criterion_id)}
+          >
+            {c.title}
+          </button>
+        ) : (
+          <span className="font-medium">{c.title}</span>
+        )}
         {c.importance === "essential" ? <Badge>{t("essential")}</Badge> : null}
         <Badge variant="outline">
           {ts.has(c.evidence_status) ? ts(c.evidence_status) : c.evidence_status}
@@ -264,42 +285,84 @@ export function ExplanationList({ evaluation }: { evaluation: Evaluation }) {
 }
 
 /** AI-assisted evaluation on the HR application page. */
-export function EvaluationPanel({ appId }: { appId: string }) {
+export function EvaluationPanel({
+  appId,
+  active = null,
+  onSelect,
+  onLoaded,
+}: {
+  appId: string;
+  active?: string | null;
+  onSelect?: (criterionId: string | null) => void;
+  onLoaded?: (evaluation: Evaluation | null) => void;
+}) {
   const t = useTranslations("screening.panel");
   const { role } = useJobsContext();
-  const evaluation = useEvaluation(appId);
+  const current = useEvaluation(appId);
+  const versions = useEvaluationVersions(appId);
+  const [picked, setPicked] = useState<number | null>(null);
+  const older = useEvaluationVersion(appId, picked);
+  const shown = picked !== null ? older.data : current.data;
+  const versionId = useId();
+  useEffect(() => {
+    if (current.data !== undefined) onLoaded?.(current.data);
+  }, [current.data, onLoaded]);
   return (
     <section aria-labelledby="hr-evaluation" className="rounded-lg border p-4">
-      <h2 id="hr-evaluation" className="text-lg font-semibold">
-        {t("title")}
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="hr-evaluation" className="text-lg font-semibold">
+          {t("title")}
+        </h2>
+        {versions.data && versions.data.length > 1 ? (
+          <div className="flex items-center gap-2 text-sm">
+            <Label htmlFor={versionId}>{t("versionLabel")}</Label>
+            <select
+              id={versionId}
+              className="border-input h-8 rounded-md border bg-transparent px-2"
+              value={picked ?? ""}
+              onChange={(e) => setPicked(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">{t("current")}</option>
+              {versions.data.slice(1).map((v) => (
+                <option key={v.id} value={v.version}>
+                  {t("versionOption", { version: v.version, trigger: v.trigger })}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+      </div>
       <AiNotice />
-      {evaluation.isPending ? (
+      {current.isPending || (picked !== null && older.isPending) ? (
         <PageSkeleton rows={2} />
-      ) : evaluation.isError ? (
-        <ErrorState error={evaluation.error} onRetry={() => evaluation.refetch()} />
-      ) : evaluation.data === null ? (
+      ) : current.isError ? (
+        <ErrorState error={current.error} onRetry={() => current.refetch()} />
+      ) : !shown ? (
         <p className="text-muted-foreground mt-2 text-sm">{t("none")}</p>
-      ) : evaluation.data.band === "manual_review_requested" ? (
+      ) : shown.band === "manual_review_requested" ? (
         <Alert className="mt-2">
           <AlertDescription>{t("manual")}</AlertDescription>
         </Alert>
       ) : (
         <div className="mt-3 flex flex-col gap-4">
-          <p className="text-muted-foreground text-xs">
-            {t("version", { version: evaluation.data.version })}
+          <p className="text-muted-foreground text-xs" aria-live="polite">
+            {picked !== null
+              ? t("olderVersion", { version: shown.version })
+              : t("version", { version: shown.version })}
           </p>
-          <ScoreBreakdown evaluation={evaluation.data} />
+          <ScoreBreakdown evaluation={shown} />
           <div>
             <h3 className="mb-2 text-sm font-semibold">{t("why")}</h3>
-            <ExplanationList evaluation={evaluation.data} />
+            <ExplanationList evaluation={shown} />
           </div>
           <div>
             <h3 className="mb-2 text-sm font-semibold">{t("criteria")}</h3>
             <CriteriaPanel
               appId={appId}
-              evaluation={evaluation.data}
-              canVerify={SCREENING_EDITORS.includes(role ?? "")}
+              evaluation={shown}
+              canVerify={picked === null && SCREENING_EDITORS.includes(role ?? "")}
+              active={active}
+              onSelect={onSelect}
             />
           </div>
         </div>

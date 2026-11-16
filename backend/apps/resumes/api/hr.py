@@ -78,3 +78,46 @@ class HRRetryProcessingView(APIView):
     def post(self, request: Request, application_id: str) -> Response:
         view = hr.retry(request.membership, authed_user(request), application_id)  # type: ignore[attr-defined]
         return Response(HRExtractionSerializer(view).data)
+
+
+# ------------------------------------------------------------------ evidence viewer (P08-T06)
+class EvidenceHighlightSerializer(serializers.Serializer):
+    claim_id = serializers.UUIDField()
+    type = serializers.CharField()
+    page = serializers.IntegerField()
+    start = serializers.IntegerField()
+    end = serializers.IntegerField()
+    criteria = serializers.ListField(child=serializers.UUIDField())
+
+
+class EvidencePageSerializer(serializers.Serializer):
+    number = serializers.IntegerField()
+    text = serializers.CharField(allow_blank=True)
+
+
+class EvidenceDocumentSerializer(serializers.Serializer):
+    document_id = serializers.UUIDField()
+    filename = serializers.CharField()
+    mime = serializers.CharField()
+    original_available = serializers.BooleanField()
+    pages = EvidencePageSerializer(many=True)
+    highlights = EvidenceHighlightSerializer(many=True)
+
+
+class EvidenceTextSerializer(serializers.Serializer):
+    application_id = serializers.UUIDField()
+    identity_hidden = serializers.BooleanField()
+    documents = EvidenceDocumentSerializer(many=True)
+
+
+class HREvidenceTextView(APIView):
+    """CV text page by page with evidence spans; contact/personal details masked."""
+
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(operation_id="hr_application_evidence_text", responses=EvidenceTextSerializer)
+    def get(self, request: Request, application_id: str) -> Response:
+        from apps.resumes.evidence_view import evidence_text
+
+        body = evidence_text(request.membership, application_id)  # type: ignore[attr-defined]
+        return Response(EvidenceTextSerializer(body).data)

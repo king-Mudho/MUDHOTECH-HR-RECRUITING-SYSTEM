@@ -466,7 +466,12 @@ def _notify(app: Application, decision: str, shortlist: Shortlist, when: Any) ->
 
 
 def approve(
-    membership: Any, actor: Any, shortlist_id: Any, *, lock_version: int | None = None
+    membership: Any,
+    actor: Any,
+    shortlist_id: Any,
+    *,
+    lock_version: int | None = None,
+    leave_undecided: bool = False,
 ) -> Shortlist:
     from apps.applications.services import transition
 
@@ -477,6 +482,14 @@ def approve(
                 code="already_processed", message="This shortlist has already been processed."
             )
         _check_approver(membership, actor, shortlist)
+        undecided = entries_of(shortlist).filter(decision=D.UNDECIDED).count()
+        if undecided and not leave_undecided:
+            # docs/08 §3.4: every uncertain case is seen before approval
+            raise DomainError(
+                "undecided_remaining",
+                "Some applicants have no decision. Decide them or confirm they stay in review.",
+                details={"undecided": [str(undecided)]},
+            )
         _bump(shortlist, lock_version)
         policy = _policy(shortlist.organisation_id)
         delay = timedelta(minutes=policy.notification_delay_minutes if policy else 15)

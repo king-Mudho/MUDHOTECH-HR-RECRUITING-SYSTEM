@@ -1,35 +1,27 @@
 "use client";
 
-import { Download, Search } from "lucide-react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
-import { EmptyState, ErrorState, ForbiddenState } from "@/components/states/states";
+import { ErrorState, ForbiddenState } from "@/components/states/states";
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { StatusBadge } from "@/components/states/status-badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScanChip } from "@/features/candidates/components/documents";
 import { documentsApi } from "@/features/documents/api";
-import { useJob, useJobsContext } from "@/features/jobs/hooks";
+import { useJobsContext } from "@/features/jobs/hooks";
+import { ReviewWorkspace } from "@/features/screening/review-workspace";
 import { ApiError } from "@/lib/api-client";
 
-import { APPLICATION_VIEWERS, useHRApplication, useJobApplications } from "./api";
-import { EvaluationPanel } from "@/features/screening/components";
-
+import { APPLICATION_VIEWERS, useHRApplication } from "./api";
+import { ApplicantsTable } from "./applicants";
 import { ExtractionPanel } from "./extraction-panel";
-import { RevealIdentity } from "./reveal-identity";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
-
-const FILTERS = [
-  { key: "active", status: "submitted,processing,processing_error,under_review,on_hold" },
-  { key: "withdrawn", status: "withdrawn" },
-  { key: "all", status: "" },
-] as const;
+import { RevealIdentity } from "./reveal-identity";
 
 function Denied({ error }: { error: unknown }) {
   const t = useTranslations("hrApplications");
@@ -38,192 +30,6 @@ function Denied({ error }: { error: unknown }) {
   if (error instanceof ApiError && error.status === 403)
     return <ForbiddenState description={t("forbidden")} />;
   return <ErrorState error={error} />;
-}
-
-export function JobApplicationsList({ jobId }: { jobId: string }) {
-  const t = useTranslations("hrApplications");
-  const format = useFormatter();
-  const { role, isPending, orgId } = useJobsContext();
-  const job = useJob(jobId);
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("active");
-  const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setSearch(searchInput.trim());
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(id);
-  }, [searchInput]);
-  const apps = useJobApplications(jobId, {
-    status: FILTERS.find((f) => f.key === filter)?.status || undefined,
-    search: search || undefined,
-    page,
-  });
-
-  if (isPending) return <PageSkeleton />;
-  if (!orgId || !role || !APPLICATION_VIEWERS.includes(role))
-    return <ForbiddenState description={t("forbidden")} />;
-  const totalPages = apps.data ? Math.max(1, Math.ceil(apps.data.count / 25)) : 1;
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <Link
-          href={`/hr/jobs/${jobId}`}
-          className="text-muted-foreground text-sm underline-offset-2 hover:underline"
-        >
-          {t("backToJob")}
-        </Link>
-        <h1 className="text-2xl font-semibold">
-          {t("title")}
-          {job.data ? (
-            <span className="text-muted-foreground font-normal"> · {job.data.title}</span>
-          ) : null}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {t("phaseNote")}{" "}
-          <Link href={`/hr/jobs/${jobId}/pipeline`} className="underline">
-            {t("openPipeline")}
-          </Link>{" "}
-          ·{" "}
-          <Link href={`/hr/jobs/${jobId}/screening`} className="underline">
-            {t("openScreening")}
-          </Link>
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex flex-col gap-1.5 sm:w-72">
-          <Label htmlFor="application-search">{t("search")}</Label>
-          <div className="relative">
-            <Search
-              aria-hidden="true"
-              className="text-muted-foreground absolute top-3 left-2.5 size-4"
-            />
-            <Input
-              id="application-search"
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              className="h-10 pl-8"
-            />
-          </div>
-        </div>
-        <div role="group" aria-label={t("filterLabel")} className="flex flex-wrap gap-1.5">
-          {FILTERS.map((f) => (
-            <Button
-              key={f.key}
-              type="button"
-              size="sm"
-              variant={filter === f.key ? "default" : "outline"}
-              aria-pressed={filter === f.key}
-              className="min-h-9"
-              onClick={() => {
-                setFilter(f.key);
-                setPage(1);
-              }}
-            >
-              {t(`filters.${f.key}`)}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {apps.isPending ? (
-        <PageSkeleton />
-      ) : apps.isError ? (
-        <Denied error={apps.error} />
-      ) : apps.data.results.length === 0 ? (
-        <EmptyState
-          title={search || filter !== "active" ? t("noMatchesTitle") : t("emptyTitle")}
-          description={search || filter !== "active" ? t("noMatches") : t("empty")}
-        />
-      ) : (
-        <>
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full text-sm">
-              <caption className="sr-only">{t("caption")}</caption>
-              <thead className="bg-muted/50 text-left">
-                <tr>
-                  <th scope="col" className="px-3 py-2 font-medium">
-                    {t("columns.candidate")}
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
-                    {t("columns.status")}
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
-                    {t("columns.submitted")}
-                  </th>
-                  <th scope="col" className="px-3 py-2 font-medium">
-                    {t("columns.reference")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {apps.data.results.map((a) => (
-                  <tr key={a.id} className="border-t">
-                    <td className="px-3 py-2">
-                      <Link
-                        href={`/hr/applications/${a.id}`}
-                        className="font-medium underline-offset-2 hover:underline"
-                      >
-                        {a.candidate_name || t("unnamed")}
-                      </Link>
-                      <div className="flex flex-wrap gap-1 pt-1">
-                        {a.is_assisted ? <Badge variant="outline">{t("assisted")}</Badge> : null}
-                        {a.objects_to_automated_processing ? (
-                          <Badge variant="outline">{t("humanOnly")}</Badge>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusBadge status={a.status} />
-                    </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      {a.submitted_at
-                        ? format.dateTime(new Date(a.submitted_at), {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })
-                        : "—"}
-                    </td>
-                    <td className="px-3 py-2 font-mono text-xs">{a.reference}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <nav
-            aria-label={t("pagination")}
-            className="flex items-center justify-between gap-2 text-sm"
-          >
-            <span aria-live="polite">{t("count", { count: apps.data.count })}</span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-              >
-                {t("previous")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                {t("next")}
-              </Button>
-            </div>
-          </nav>
-        </>
-      )}
-    </div>
-  );
 }
 
 function formatValue(value: unknown): string {
@@ -238,6 +44,7 @@ export function HRApplicationView({ id }: { id: string }) {
   const format = useFormatter();
   const { role, isPending, orgId } = useJobsContext();
   const app = useHRApplication(id);
+  const tf = useTranslations("hrApplications.extraction.flags");
   if (isPending || (orgId && app.isPending)) return <PageSkeleton />;
   if (!orgId || !role || !APPLICATION_VIEWERS.includes(role))
     return <ForbiddenState description={t("forbidden")} />;
@@ -280,6 +87,19 @@ export function HRApplicationView({ id }: { id: string }) {
           ) : null}
         </div>
       </div>
+
+      {a.flags.length ? (
+        <Alert role="status">
+          <AlertTitle>{t("detail.flagsTitle")}</AlertTitle>
+          <AlertDescription>
+            <ul className="list-disc pl-5">
+              {a.flags.map((f) => (
+                <li key={f}>{tf.has(f) ? tf(f) : f}</li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      ) : null}
 
       <ActionsPanel app={a} />
 
@@ -335,8 +155,8 @@ export function HRApplicationView({ id }: { id: string }) {
         )}
       </section>
 
+      <ReviewWorkspace appId={a.id} jobId={a.job.id} />
       <ExtractionPanel app={a} />
-      <EvaluationPanel appId={a.id} />
 
       <section aria-labelledby="hr-answers" className="rounded-lg border p-4">
         <h2 id="hr-answers" className="text-lg font-semibold">
@@ -389,10 +209,12 @@ export function HRApplicationView({ id }: { id: string }) {
 
 export function JobApplicationsRoute() {
   const { id } = useParams<{ id: string }>();
-  return <JobApplicationsList jobId={id} />;
+  return <ApplicantsTable jobId={id} />;
 }
 
 export function HRApplicationRoute() {
   const { id } = useParams<{ id: string }>();
   return <HRApplicationView id={id} />;
 }
+
+export { ApplicantsTable as JobApplicationsList };

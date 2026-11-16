@@ -83,6 +83,10 @@ class Application(TenantModel):
     score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     flags = ArrayField(models.CharField(max_length=40), default=list, blank=True)
     tags = ArrayField(models.CharField(max_length=40), default=list, blank=True)
+    # essentials of the current evaluation (P08-T05 filters; NULL = not evaluated / manual review)
+    essentials_met = models.PositiveSmallIntegerField(null=True, blank=True)
+    essentials_unknown = models.PositiveSmallIntegerField(null=True, blank=True)
+    essentials_not_evidenced = models.PositiveSmallIntegerField(null=True, blank=True)
     # NULL = not active; the partial unique constraint relies on NULLs (see module docstring).
     active_key = models.CharField(max_length=80, null=True, blank=True)  # noqa: DJ001
     lock_version = models.PositiveIntegerField(default=1)
@@ -94,6 +98,10 @@ class Application(TenantModel):
             models.Index(fields=["organisation", "ai_band"], name="app_org_band_idx"),
             models.Index(fields=["candidate_user", "status"], name="app_candidate_idx"),
             models.Index(fields=["status", "job"], name="app_status_job_idx"),
+            # applicants table (EC-JOB-17): default sort and common filters
+            models.Index(fields=["job", "score"], name="app_job_score_idx"),
+            models.Index(fields=["job", "coverage"], name="app_job_coverage_idx"),
+            models.Index(fields=["job", "submitted_at"], name="app_job_submitted_idx"),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -255,4 +263,21 @@ class IdentityReveal(TenantModel):
         ordering = ("-at",)
         constraints = [
             models.UniqueConstraint(fields=["application", "user"], name="uniq_identity_reveal")
+        ]
+
+
+class SavedView(TenantModel):
+    """A reviewer's saved filters for a list (P08-T05). Private to the person who saved it."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    scope = models.CharField(max_length=20, default="applications")
+    name = models.CharField(max_length=60)
+    params = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organisation", "user", "scope", "name"], name="uniq_saved_view_name"
+            )
         ]

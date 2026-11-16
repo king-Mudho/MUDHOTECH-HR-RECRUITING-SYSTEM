@@ -763,6 +763,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/evidence-text/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CV text page by page with evidence spans; contact/personal details masked. */
+        get: operations["hr_application_evidence_text"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/extraction/": {
         parameters: {
             query?: never;
@@ -967,9 +984,26 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Applicants table (P08-T05): filters, cursor pagination with a total, blind redaction. */
         get: operations["hr_job_applications_list"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/applications/bulk/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_job_applications_bulk"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1498,6 +1532,38 @@ export interface paths {
         /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
         post: operations["hr_notification_templates_revert"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/saved-views/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_saved_views"];
+        put?: never;
+        post: operations["hr_saved_view_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/saved-views/{view_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["hr_saved_view_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2296,6 +2362,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description * `assign_me` - assign_me
+         *     * `unassign` - unassign
+         *     * `tag` - tag
+         *     * `untag` - untag
+         *     * `clarification` - clarification
+         *     * `propose_shortlist` - propose_shortlist
+         * @enum {string}
+         */
+        ActionEnum: "assign_me" | "unassign" | "tag" | "untag" | "clarification" | "propose_shortlist";
         ActiveOrg: {
             /** Format: uuid */
             organisation_id: string;
@@ -2488,6 +2564,30 @@ export interface components {
             start: number;
             end: number;
             count: number;
+        };
+        BulkActionRequest: {
+            action: components["schemas"]["ActionEnum"];
+            application_ids: string[];
+            tags?: string[];
+            questions?: components["schemas"]["BulkQuestionRequest"][];
+            /** @default  */
+            message: string;
+            /** @default 5 */
+            due_days: number;
+        };
+        BulkActionResult: {
+            action: string;
+            done: number;
+            skipped: components["schemas"]["BulkSkip"][];
+            /** Format: uuid */
+            shortlist_id: string | null;
+        };
+        BulkQuestionRequest: {
+            prompt: string;
+        };
+        BulkSkip: {
+            application_id: string;
+            reason: string;
         };
         CandidateAction: {
             kind: components["schemas"]["KindEnum"];
@@ -2850,6 +2950,11 @@ export interface components {
          * @enum {string}
          */
         EmploymentTypeEnum: "full_time" | "part_time" | "contract" | "internship" | "attachment" | "temporary" | "graduate_trainee";
+        EssentialsCount: {
+            met: number;
+            unknown: number;
+            not_evidenced: number;
+        };
         Evaluation: {
             /** Format: uuid */
             id: string;
@@ -2912,6 +3017,34 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        EvidenceDocument: {
+            /** Format: uuid */
+            document_id: string;
+            filename: string;
+            mime: string;
+            original_available: boolean;
+            pages: components["schemas"]["EvidencePage"][];
+            highlights: components["schemas"]["EvidenceHighlight"][];
+        };
+        EvidenceHighlight: {
+            /** Format: uuid */
+            claim_id: string;
+            type: string;
+            page: number;
+            start: number;
+            end: number;
+            criteria: string[];
+        };
+        EvidencePage: {
+            number: number;
+            text: string;
+        };
+        EvidenceText: {
+            /** Format: uuid */
+            application_id: string;
+            identity_hidden: boolean;
+            documents: components["schemas"]["EvidenceDocument"][];
+        };
         /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
         Experience: {
             /** Format: uuid */
@@ -2960,6 +3093,33 @@ export interface components {
             /** Format: uuid */
             document_id: string | null;
         };
+        /** @description A row of the applicants table: AI fields are suggestions shown next to human data. */
+        HRApplicantRow: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly reference: string | null;
+            readonly status: components["schemas"]["ApplicationStatusEnum"];
+            /** Format: date-time */
+            readonly submitted_at: string | null;
+            readonly candidate_name: string;
+            readonly candidate_email: string;
+            readonly identity_hidden: boolean;
+            readonly channel: string;
+            readonly is_assisted: boolean;
+            readonly objects_to_automated_processing: boolean;
+            readonly tags: string[];
+            /** Format: uuid */
+            readonly assigned_recruiter: string | null;
+            readonly lock_version: number;
+            readonly ai_band: string;
+            /** Format: double */
+            readonly score: number | null;
+            /** Format: double */
+            readonly coverage: number | null;
+            readonly flags: string[];
+            readonly essentials: components["schemas"]["EssentialsCount"] | null;
+            readonly assigned_name: string;
+        };
         /**
          * @description Identity fields are redacted server-side in blind review (P08-T04): the view passes a
          *     ``BlindView`` in the context; without one nothing is shown.
@@ -2984,6 +3144,8 @@ export interface components {
             /** Format: date-time */
             readonly withdrawn_at: string | null;
             readonly withdraw_reason: string;
+            readonly flags: string[];
+            readonly ai_band: string;
             readonly job: components["schemas"]["HRJobRef"];
             readonly candidate: {
                 [key: string]: unknown;
@@ -2992,28 +3154,6 @@ export interface components {
             readonly answers: components["schemas"]["HRAnswer"][];
             readonly timeline: components["schemas"]["HRStatusEvent"][];
             readonly allowed_transitions: string[];
-        };
-        /**
-         * @description Identity fields are redacted server-side in blind review (P08-T04): the view passes a
-         *     ``BlindView`` in the context; without one nothing is shown.
-         */
-        HRApplicationList: {
-            /** Format: uuid */
-            readonly id: string;
-            readonly reference: string | null;
-            readonly status: components["schemas"]["ApplicationStatusEnum"];
-            /** Format: date-time */
-            readonly submitted_at: string | null;
-            readonly candidate_name: string;
-            readonly candidate_email: string;
-            readonly identity_hidden: boolean;
-            readonly channel: string;
-            readonly is_assisted: boolean;
-            readonly objects_to_automated_processing: boolean;
-            readonly tags: string[];
-            /** Format: uuid */
-            readonly assigned_recruiter: string | null;
-            readonly lock_version: number;
         };
         HRClaim: {
             index: number;
@@ -3615,20 +3755,11 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Department"][];
         };
-        PaginatedHRApplicationListList: {
-            /** @example 123 */
+        PaginatedHRApplicantRowList: {
             count: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=4
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=2
-             */
-            previous?: string | null;
-            results: components["schemas"]["HRApplicationList"][];
+            next_cursor?: string | null;
+            previous_cursor?: string | null;
+            results: components["schemas"]["HRApplicantRow"][];
         };
         PaginatedHRJobListList: {
             /** @example 123 */
@@ -4380,6 +4511,24 @@ export interface components {
          * @enum {string}
          */
         SalaryPeriodEnum: "hour" | "day" | "month" | "year";
+        SavedView: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** @default applications */
+            scope: string;
+            params: {
+                [key: string]: string;
+            };
+        };
+        SavedViewRequest: {
+            name: string;
+            /** @default applications */
+            scope: string;
+            params: {
+                [key: string]: string;
+            };
+        };
         /**
          * @description * `pending` - Being checked
          *     * `clean` - Accepted
@@ -4519,6 +4668,11 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             summary: components["schemas"]["ShortlistSummary"];
+        };
+        ShortlistApproveRequest: {
+            lock_version?: number | null;
+            /** @default false */
+            leave_undecided: boolean;
         };
         /**
          * @description * `undecided` - Not decided yet
@@ -6379,6 +6533,27 @@ export interface operations {
             };
         };
     };
+    hr_application_evidence_text: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceText"];
+                };
+            };
+        };
+    };
     hr_application_extraction: {
         parameters: {
             query?: never;
@@ -6745,15 +6920,26 @@ export interface operations {
     hr_job_applications_list: {
         parameters: {
             query?: {
-                ordering?: "-submitted_at" | "submitted_at";
-                /** @description A page number within the paginated result set. */
-                page?: number;
+                assigned?: "me" | "none";
+                /** @description Comma-separated AI bands */
+                band?: string;
+                /** @description Coverage below (0-1) */
+                coverage_lt?: number;
+                /** @description The pagination cursor value. */
+                cursor?: string;
+                essentials?: "all_met" | "not_evidenced" | "unknown";
+                /** @description Comma-separated; any of */
+                flags?: string;
+                max_score?: number;
+                min_score?: number;
+                ordering?: "-score" | "-submitted_at" | "coverage" | "score" | "submitted_at";
                 /** @description Number of results to return per page. */
                 page_size?: number;
-                /** @description Name, email or reference contains */
+                /** @description Reference; name/email too unless blind review */
                 search?: string;
                 /** @description Comma-separated statuses */
                 status?: string;
+                tag?: string;
             };
             header?: never;
             path: {
@@ -6768,7 +6954,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedHRApplicationListList"];
+                    "application/json": components["schemas"]["PaginatedHRApplicantRowList"];
+                };
+            };
+        };
+    };
+    hr_job_applications_bulk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkActionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["BulkActionRequest"];
+                "multipart/form-data": components["schemas"]["BulkActionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkActionResult"];
                 };
             };
         };
@@ -7739,6 +7952,72 @@ export interface operations {
             };
         };
     };
+    hr_saved_views: {
+        parameters: {
+            query?: {
+                scope?: "applications";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedView"][];
+                };
+            };
+        };
+    };
+    hr_saved_view_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedViewRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SavedViewRequest"];
+                "multipart/form-data": components["schemas"]["SavedViewRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedView"];
+                };
+            };
+        };
+    };
+    hr_saved_view_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                view_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     hr_screening_run: {
         parameters: {
             query?: never;
@@ -7795,9 +8074,9 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ShortlistLockRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["ShortlistLockRequest"];
-                "multipart/form-data": components["schemas"]["ShortlistLockRequest"];
+                "application/json": components["schemas"]["ShortlistApproveRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistApproveRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistApproveRequest"];
             };
         };
         responses: {

@@ -222,3 +222,112 @@ class HRRevealIdentityView(APIView):
             ).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+# ------------------------------------------------------------------ applicants table (P08-T05)
+class SavedViewSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    name = serializers.CharField(max_length=60)
+    scope = serializers.CharField(max_length=20, default="applications")
+    params = serializers.DictField(child=serializers.CharField(allow_blank=True))
+
+
+class HRSavedViewsView(APIView):
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(
+        operation_id="hr_saved_views",
+        parameters=[OpenApiParameter("scope", str, enum=["applications"])],
+        responses=SavedViewSerializer(many=True),
+    )
+    def get(self, request: Request) -> Response:
+        from apps.applications import saved_views
+
+        rows = saved_views.views_for(
+            request.membership,  # type: ignore[attr-defined]
+            request.query_params.get("scope", "applications"),
+        )
+        return Response(SavedViewSerializer(rows, many=True).data)
+
+    @extend_schema(
+        operation_id="hr_saved_view_create",
+        request=SavedViewSerializer,
+        responses={201: SavedViewSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        from apps.applications import saved_views
+
+        data = SavedViewSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        row = saved_views.create(request.membership, **data.validated_data)  # type: ignore[attr-defined]
+        return Response(SavedViewSerializer(row).data, status=status.HTTP_201_CREATED)
+
+
+class HRSavedViewDetailView(APIView):
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(operation_id="hr_saved_view_delete", responses={204: None})
+    def delete(self, request: Request, view_id: str) -> Response:
+        from apps.applications import saved_views
+
+        saved_views.delete(request.membership, view_id)  # type: ignore[attr-defined]
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BulkQuestionSerializer(StrictSerializer):
+    prompt = serializers.CharField(max_length=1000)
+
+
+class BulkActionSerializer(StrictSerializer):
+    action = serializers.ChoiceField(
+        choices=["assign_me", "unassign", "tag", "untag", "clarification", "propose_shortlist"]
+    )
+    application_ids = serializers.ListField(
+        child=serializers.UUIDField(), min_length=1, max_length=500
+    )
+    tags = serializers.ListField(
+        child=serializers.CharField(max_length=40), required=False, default=list, max_length=10
+    )
+    questions = BulkQuestionSerializer(many=True, required=False, default=list)
+    message = serializers.CharField(required=False, allow_blank=True, default="", max_length=2000)
+    due_days = serializers.IntegerField(required=False, default=5, min_value=1, max_value=30)
+
+
+class BulkSkipSerializer(serializers.Serializer):
+    application_id = serializers.CharField()
+    reason = serializers.CharField()
+
+
+class BulkActionResultSerializer(serializers.Serializer):
+    action = serializers.CharField()
+    done = serializers.IntegerField()
+    skipped = BulkSkipSerializer(many=True)
+    shortlist_id = serializers.UUIDField(allow_null=True)
+
+
+class HRBulkApplicationsView(APIView):
+    permission_classes = [HasOrgAction("applications.transition")]
+
+    @extend_schema(
+        operation_id="hr_job_applications_bulk",
+        request=BulkActionSerializer,
+        responses=BulkActionResultSerializer,
+    )
+    def post(self, request: Request, job_id: str) -> Response:
+        from apps.applications import bulk
+
+        data = BulkActionSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        v = data.validated_data
+        result = bulk.run(
+            request.membership,  # type: ignore[attr-defined]
+            authed_user(request),
+            job_id,
+            action=v["action"],
+            application_ids=v["application_ids"],
+            tags=v["tags"],
+            questions=[dict(q) for q in v["questions"]],
+            message=v["message"],
+            due_days=v["due_days"],
+        )
+        return Response(BulkActionResultSerializer(result).data)

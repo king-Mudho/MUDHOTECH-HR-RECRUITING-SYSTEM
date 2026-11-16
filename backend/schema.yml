@@ -1673,6 +1673,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Evaluation'
           description: ''
+  /api/v1/hr/applications/{application_id}/evidence-text/:
+    get:
+      operationId: hr_application_evidence_text
+      description: CV text page by page with evidence spans; contact/personal details
+        masked.
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvidenceText'
+          description: ''
   /api/v1/hr/applications/{application_id}/extraction/:
     get:
       operationId: hr_application_extraction
@@ -2113,7 +2136,46 @@ paths:
   /api/v1/hr/jobs/{job_id}/applications/:
     get:
       operationId: hr_job_applications_list
+      description: 'Applicants table (P08-T05): filters, cursor pagination with a
+        total, blind redaction.'
       parameters:
+      - in: query
+        name: assigned
+        schema:
+          type: string
+          enum:
+          - me
+          - none
+      - in: query
+        name: band
+        schema:
+          type: string
+        description: Comma-separated AI bands
+      - in: query
+        name: coverage_lt
+        schema:
+          type: number
+          format: double
+        description: Coverage below (0-1)
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - in: query
+        name: essentials
+        schema:
+          type: string
+          enum:
+          - all_met
+          - not_evidenced
+          - unknown
+      - in: query
+        name: flags
+        schema:
+          type: string
+        description: Comma-separated; any of
       - in: path
         name: job_id
         schema:
@@ -2121,18 +2183,25 @@ paths:
           format: uuid
         required: true
       - in: query
+        name: max_score
+        schema:
+          type: number
+          format: double
+      - in: query
+        name: min_score
+        schema:
+          type: number
+          format: double
+      - in: query
         name: ordering
         schema:
           type: string
           enum:
+          - -score
           - -submitted_at
+          - coverage
+          - score
           - submitted_at
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
       - name: page_size
         required: false
         in: query
@@ -2143,12 +2212,16 @@ paths:
         name: search
         schema:
           type: string
-        description: Name, email or reference contains
+        description: Reference; name/email too unless blind review
       - in: query
         name: status
         schema:
           type: string
         description: Comma-separated statuses
+      - in: query
+        name: tag
+        schema:
+          type: string
       tags:
       - hr
       security:
@@ -2158,7 +2231,40 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedHRApplicationListList'
+                $ref: '#/components/schemas/PaginatedHRApplicantRowList'
+          description: ''
+  /api/v1/hr/jobs/{job_id}/applications/bulk/:
+    post:
+      operationId: hr_job_applications_bulk
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkActionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BulkActionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BulkActionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkActionResult'
           description: ''
   /api/v1/hr/jobs/{job_id}/screening-analytics/:
     get:
@@ -3394,6 +3500,71 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/hr/saved-views/:
+    get:
+      operationId: hr_saved_views
+      parameters:
+      - in: query
+        name: scope
+        schema:
+          type: string
+          enum:
+          - applications
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavedView'
+          description: ''
+    post:
+      operationId: hr_saved_view_create
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedViewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SavedViewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SavedViewRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedView'
+          description: ''
+  /api/v1/hr/saved-views/{view_id}/:
+    delete:
+      operationId: hr_saved_view_delete
+      parameters:
+      - in: path
+        name: view_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/hr/screening-runs/{run_id}/:
     get:
       operationId: hr_screening_run
@@ -3458,13 +3629,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ShortlistLockRequest'
+              $ref: '#/components/schemas/ShortlistApproveRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ShortlistLockRequest'
+              $ref: '#/components/schemas/ShortlistApproveRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ShortlistLockRequest'
+              $ref: '#/components/schemas/ShortlistApproveRequest'
       security:
       - cookieAuth: []
       responses:
@@ -5265,6 +5436,22 @@ paths:
           description: ''
 components:
   schemas:
+    ActionEnum:
+      enum:
+      - assign_me
+      - unassign
+      - tag
+      - untag
+      - clarification
+      - propose_shortlist
+      type: string
+      description: |-
+        * `assign_me` - assign_me
+        * `unassign` - unassign
+        * `tag` - tag
+        * `untag` - untag
+        * `clarification` - clarification
+        * `propose_shortlist` - propose_shortlist
     ActiveOrg:
       type: object
       properties:
@@ -5746,6 +5933,80 @@ components:
       - count
       - end
       - start
+    BulkActionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        application_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 500
+          minItems: 1
+        tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 10
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkQuestionRequest'
+        message:
+          type: string
+          default: ''
+          maxLength: 2000
+        due_days:
+          type: integer
+          maximum: 30
+          minimum: 1
+          default: 5
+      required:
+      - action
+      - application_ids
+    BulkActionResult:
+      type: object
+      properties:
+        action:
+          type: string
+        done:
+          type: integer
+        skipped:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkSkip'
+        shortlist_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - action
+      - done
+      - shortlist_id
+      - skipped
+    BulkQuestionRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - prompt
+    BulkSkip:
+      type: object
+      properties:
+        application_id:
+          type: string
+        reason:
+          type: string
+      required:
+      - application_id
+      - reason
     CandidateAction:
       type: object
       properties:
@@ -6654,6 +6915,19 @@ components:
         * `attachment` - Attachment / industrial attachment
         * `temporary` - Temporary
         * `graduate_trainee` - Graduate trainee
+    EssentialsCount:
+      type: object
+      properties:
+        met:
+          type: integer
+        unknown:
+          type: integer
+        not_evidenced:
+          type: integer
+      required:
+      - met
+      - not_evidenced
+      - unknown
     Evaluation:
       type: object
       properties:
@@ -6808,6 +7082,85 @@ components:
       - total_score
       - trigger
       - version
+    EvidenceDocument:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        mime:
+          type: string
+        original_available:
+          type: boolean
+        pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidencePage'
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceHighlight'
+      required:
+      - document_id
+      - filename
+      - highlights
+      - mime
+      - original_available
+      - pages
+    EvidenceHighlight:
+      type: object
+      properties:
+        claim_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        page:
+          type: integer
+        start:
+          type: integer
+        end:
+          type: integer
+        criteria:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - claim_id
+      - criteria
+      - end
+      - page
+      - start
+      - type
+    EvidencePage:
+      type: object
+      properties:
+        number:
+          type: integer
+        text:
+          type: string
+      required:
+      - number
+      - text
+    EvidenceText:
+      type: object
+      properties:
+        application_id:
+          type: string
+          format: uuid
+        identity_hidden:
+          type: boolean
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceDocument'
+      required:
+      - application_id
+      - documents
+      - identity_hidden
     Experience:
       type: object
       description: 'Shared behaviour: ``source`` is read-only (CV imports go through
@@ -6930,6 +7283,107 @@ components:
       - prompt
       - type
       - value
+    HRApplicantRow:
+      type: object
+      description: 'A row of the applicants table: AI fields are suggestions shown
+        next to human data.'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationStatusEnum'
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        candidate_name:
+          type: string
+          readOnly: true
+        candidate_email:
+          type: string
+          readOnly: true
+        identity_hidden:
+          type: boolean
+          readOnly: true
+        channel:
+          type: string
+          readOnly: true
+        is_assisted:
+          type: boolean
+          readOnly: true
+        objects_to_automated_processing:
+          type: boolean
+          readOnly: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          readOnly: true
+        assigned_recruiter:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lock_version:
+          type: integer
+          readOnly: true
+        ai_band:
+          type: string
+          readOnly: true
+        score:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        coverage:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        flags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          readOnly: true
+        essentials:
+          allOf:
+          - $ref: '#/components/schemas/EssentialsCount'
+          nullable: true
+          readOnly: true
+        assigned_name:
+          type: string
+          readOnly: true
+      required:
+      - ai_band
+      - assigned_name
+      - assigned_recruiter
+      - candidate_email
+      - candidate_name
+      - channel
+      - coverage
+      - essentials
+      - flags
+      - id
+      - identity_hidden
+      - is_assisted
+      - lock_version
+      - objects_to_automated_processing
+      - reference
+      - score
+      - status
+      - submitted_at
+      - tags
     HRApplicationDetail:
       type: object
       description: |-
@@ -6993,6 +7447,15 @@ components:
         withdraw_reason:
           type: string
           readOnly: true
+        flags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          readOnly: true
+        ai_band:
+          type: string
+          readOnly: true
         job:
           allOf:
           - $ref: '#/components/schemas/HRJobRef'
@@ -7022,6 +7485,7 @@ components:
             type: string
           readOnly: true
       required:
+      - ai_band
       - allowed_transitions
       - answers
       - assigned_recruiter
@@ -7030,6 +7494,7 @@ components:
       - candidate_name
       - channel
       - documents
+      - flags
       - id
       - identity_hidden
       - is_assisted
@@ -7043,75 +7508,6 @@ components:
       - timeline
       - withdraw_reason
       - withdrawn_at
-    HRApplicationList:
-      type: object
-      description: |-
-        Identity fields are redacted server-side in blind review (P08-T04): the view passes a
-        ``BlindView`` in the context; without one nothing is shown.
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        reference:
-          type: string
-          readOnly: true
-          nullable: true
-        status:
-          allOf:
-          - $ref: '#/components/schemas/ApplicationStatusEnum'
-          readOnly: true
-        submitted_at:
-          type: string
-          format: date-time
-          readOnly: true
-          nullable: true
-        candidate_name:
-          type: string
-          readOnly: true
-        candidate_email:
-          type: string
-          readOnly: true
-        identity_hidden:
-          type: boolean
-          readOnly: true
-        channel:
-          type: string
-          readOnly: true
-        is_assisted:
-          type: boolean
-          readOnly: true
-        objects_to_automated_processing:
-          type: boolean
-          readOnly: true
-        tags:
-          type: array
-          items:
-            type: string
-            maxLength: 40
-          readOnly: true
-        assigned_recruiter:
-          type: string
-          format: uuid
-          readOnly: true
-          nullable: true
-        lock_version:
-          type: integer
-          readOnly: true
-      required:
-      - assigned_recruiter
-      - candidate_email
-      - candidate_name
-      - channel
-      - id
-      - identity_hidden
-      - is_assisted
-      - lock_version
-      - objects_to_automated_processing
-      - reference
-      - status
-      - submitted_at
-      - tags
     HRClaim:
       type: object
       properties:
@@ -8763,7 +9159,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Department'
-    PaginatedHRApplicationListList:
+    PaginatedHRApplicantRowList:
       type: object
       required:
       - count
@@ -8771,21 +9167,16 @@ components:
       properties:
         count:
           type: integer
-          example: 123
-        next:
+        next_cursor:
           type: string
           nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
+        previous_cursor:
           type: string
           nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
-            $ref: '#/components/schemas/HRApplicationList'
+            $ref: '#/components/schemas/HRApplicantRow'
     PaginatedHRJobListList:
       type: object
       required:
@@ -10621,6 +11012,47 @@ components:
         * `day` - per day
         * `month` - per month
         * `year` - per year
+    SavedView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        scope:
+          type: string
+          default: applications
+          maxLength: 20
+        params:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - id
+      - name
+      - params
+    SavedViewRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        scope:
+          type: string
+          minLength: 1
+          default: applications
+          maxLength: 20
+        params:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - name
+      - params
     ScanStatusEnum:
       enum:
       - pending
@@ -10940,6 +11372,15 @@ components:
       - submitted_at
       - summary
       - undo_reason
+    ShortlistApproveRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          nullable: true
+        leave_undecided:
+          type: boolean
+          default: false
     ShortlistDecisionDecisionEnum:
       enum:
       - undecided

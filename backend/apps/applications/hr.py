@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
 from apps.audit import services as audit
 from apps.core.exceptions import NotFoundError
@@ -32,31 +32,6 @@ def applications_visible_to(membership: Membership) -> QuerySet[Application]:
         .exclude(status__in=PRIVATE_STATUSES)
         .filter(job__in=jobs_visible_to(membership).values("pk"))
     )
-
-
-def job_applications(
-    membership: Membership, job_id: Any, params: dict[str, Any] | None = None
-) -> QuerySet[Application]:
-    if not jobs_visible_to(membership).filter(pk=job_id).exists():
-        raise NotFoundError()
-    qs = applications_visible_to(membership).filter(job_id=job_id)
-    params = params or {}
-    statuses = [s for s in str(params.get("status") or "").split(",") if s]
-    if statuses:
-        qs = qs.filter(status__in=statuses)
-    search = str(params.get("search") or "").strip()[:100]
-    if search:
-        snap = "candidate_profile_snapshot__"
-        qs = qs.filter(
-            Q(reference__icontains=search)
-            | Q(**{f"{snap}first_name__icontains": search})
-            | Q(**{f"{snap}last_name__icontains": search})
-            | Q(**{f"{snap}email__icontains": search})
-        )
-    ordering = params.get("ordering") or "-submitted_at"
-    if ordering not in {"submitted_at", "-submitted_at"}:
-        ordering = "-submitted_at"
-    return qs.order_by(ordering, "-created_at")
 
 
 def application_detail(user: Any, membership: Membership, application_id: Any) -> dict[str, Any]:

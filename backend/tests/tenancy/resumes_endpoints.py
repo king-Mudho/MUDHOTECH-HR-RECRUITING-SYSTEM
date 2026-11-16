@@ -29,6 +29,14 @@ RESUME_ENDPOINTS: list[Endpoint] = [
         setup=processing_error_setup,
     ),
     Endpoint(
+        "hr-application-evidence-text",
+        "get",
+        lambda c: f"{_app(c)}/evidence-text/",
+        "applications.view",
+        org_header=True,
+        setup=processing_error_setup,
+    ),
+    Endpoint(
         "hr-application-retry-processing",
         "post",
         lambda c: f"{_app(c)}/retry-processing/",

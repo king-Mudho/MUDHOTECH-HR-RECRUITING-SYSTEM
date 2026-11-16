@@ -227,7 +227,11 @@ def test_dual_control_forbids_self_approval(world: World) -> None:
     with pytest.raises(PermissionDeniedError) as exc:  # EC-REV-03
         services.approve(w.m(w.team.hr_manager), w.team.hr_manager, s.pk)
     assert exc.value.code == "self_approval_forbidden"
-    assert services.approve(w.m(w.team.admin), w.team.admin, s.pk).status == "approved"
+    with pytest.raises(DomainError) as exc:  # three applicants are still undecided
+        services.approve(w.m(w.team.admin), w.team.admin, s.pk)
+    assert exc.value.code == "undecided_remaining"
+    approved = services.approve(w.m(w.team.admin), w.team.admin, s.pk, leave_undecided=True)
+    assert approved.status == "approved"
 
 
 def test_withdrawn_before_approval_is_skipped_without_message(world: World) -> None:
@@ -333,7 +337,7 @@ def test_override_analytics_count_only_approved_decisions(world: World) -> None:
     )
     assert override_stats(w.team.org.pk)["decisions"] == 0  # drafts do not count
     services.submit(w.m(w.team.recruiter), w.team.recruiter, s.pk)
-    services.approve(w.m(w.team.hr_manager), w.team.hr_manager, s.pk)
+    services.approve(w.m(w.team.hr_manager), w.team.hr_manager, s.pk, leave_undecided=True)
     stats = override_stats(w.team.org.pk, job_id=w.job.pk)
     assert stats["decisions"] == 3 and stats["overrides"] == 2
     assert stats["override_rate"] == round(2 / 3, 4)

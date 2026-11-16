@@ -17,9 +17,10 @@ from rest_framework.views import APIView
 
 from apps.accounts.services import authed_user
 from apps.applications import hr
+from apps.applications.applicants import ApplicantPagination
+from apps.applications.applicants import applicants as applicants_query
 from apps.applications.blind import BlindView
 from apps.applications.models import Application
-from apps.core.pagination import StandardPagination
 from apps.organisations.permissions import HasOrgAction
 
 
@@ -65,6 +66,47 @@ class HRApplicationListSerializer(serializers.ModelSerializer):
 
     def get_identity_hidden(self, obj: Application) -> bool:
         return self._blind(obj).hidden(obj.pk)
+
+
+class EssentialsCountSerializer(serializers.Serializer):
+    met = serializers.IntegerField()
+    unknown = serializers.IntegerField()
+    not_evidenced = serializers.IntegerField()
+
+
+class HRApplicantRowSerializer(HRApplicationListSerializer):
+    """A row of the applicants table: AI fields are suggestions shown next to human data."""
+
+    essentials = serializers.SerializerMethodField()
+    assigned_name = serializers.SerializerMethodField()
+    score = serializers.FloatField(read_only=True, allow_null=True)
+    coverage = serializers.FloatField(read_only=True, allow_null=True)
+
+    class Meta(HRApplicationListSerializer.Meta):
+        fields = [
+            *HRApplicationListSerializer.Meta.fields,
+            "ai_band",
+            "score",
+            "coverage",
+            "flags",
+            "essentials",
+            "assigned_name",
+        ]
+        read_only_fields = fields
+
+    @extend_schema_field(EssentialsCountSerializer(allow_null=True))
+    def get_essentials(self, obj: Application) -> dict[str, int] | None:
+        if obj.essentials_met is None:
+            return None
+        return {
+            "met": obj.essentials_met,
+            "unknown": obj.essentials_unknown or 0,
+            "not_evidenced": obj.essentials_not_evidenced or 0,
+        }
+
+    def get_assigned_name(self, obj: Application) -> str:
+        user = obj.assigned_recruiter
+        return str(user.full_name or user.email) if user is not None else ""
 
 
 class HRDocumentSerializer(serializers.Serializer):
@@ -113,6 +155,8 @@ class HRApplicationDetailSerializer(HRApplicationListSerializer):
             *HRApplicationListSerializer.Meta.fields,
             "withdrawn_at",
             "withdraw_reason",
+            "flags",
+            "ai_band",
             "job",
             "candidate",
             "documents",
@@ -151,25 +195,46 @@ class HRApplicationDetailSerializer(HRApplicationListSerializer):
 
 
 class HRJobApplicationsView(generics.ListAPIView[Application]):
+    """Applicants table (P08-T05): filters, cursor pagination with a total, blind redaction."""
+
     permission_classes = [HasOrgAction("applications.view")]
-    serializer_class = HRApplicationListSerializer
-    pagination_class = StandardPagination
+    serializer_class = HRApplicantRowSerializer
+    pagination_class = ApplicantPagination
 
     def get_queryset(self) -> QuerySet[Application]:
         if getattr(self, "swagger_fake_view", False):
             return Application.objects.none()
-        return hr.job_applications(
-            self.request.membership,  # type: ignore[attr-defined]
+        from apps.applications.blind import policy_flags
+
+        membership = self.request.membership  # type: ignore[attr-defined]
+        blind, _ = policy_flags(membership.organisation_id)
+        return applicants_query(
+            membership,
             self.kwargs["job_id"],
             dict(self.request.query_params.items()),
+            blind=blind,
         )
 
     @extend_schema(
         operation_id="hr_job_applications_list",
         parameters=[
             OpenApiParameter("status", str, description="Comma-separated statuses"),
-            OpenApiParameter("search", str, description="Name, email or reference contains"),
-            OpenApiParameter("ordering", str, enum=["-submitted_at", "submitted_at"]),
+            OpenApiParameter("band", str, description="Comma-separated AI bands"),
+            OpenApiParameter("min_score", float),
+            OpenApiParameter("max_score", float),
+            OpenApiParameter("coverage_lt", float, description="Coverage below (0-1)"),
+            OpenApiParameter("flags", str, description="Comma-separated; any of"),
+            OpenApiParameter("essentials", str, enum=["all_met", "unknown", "not_evidenced"]),
+            OpenApiParameter("tag", str),
+            OpenApiParameter("assigned", str, enum=["me", "none"]),
+            OpenApiParameter(
+                "search", str, description="Reference; name/email too unless blind review"
+            ),
+            OpenApiParameter(
+                "ordering",
+                str,
+                enum=["-score", "score", "-submitted_at", "submitted_at", "coverage"],
+            ),
         ],
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:

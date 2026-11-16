@@ -3,11 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useJobsContext } from "@/features/jobs/hooks";
-import type { Paginated } from "@/features/jobs/api";
 import { api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
-export type HRApplicationRow = components["schemas"]["HRApplicationList"];
+export type HRApplicationRow = components["schemas"]["HRApplicantRow"];
 export type HRApplicationDetail = components["schemas"]["HRApplicationDetail"];
 
 export interface HRApplicationParams {
@@ -24,19 +23,6 @@ export const hrApplicationKeys = {
     ["hr-applications", orgId, "job", jobId, params] as const,
   detail: (orgId: string, id: string) => ["hr-applications", orgId, id] as const,
 };
-
-export function useJobApplications(jobId: string, params: HRApplicationParams) {
-  const { orgId } = useJobsContext();
-  return useQuery({
-    queryKey: hrApplicationKeys.list(orgId ?? "", jobId, params),
-    queryFn: () =>
-      api.get<Paginated<HRApplicationRow>>(`/hr/jobs/${jobId}/applications/`, {
-        orgId: orgId!,
-        query: { ...params },
-      }),
-    enabled: !!orgId,
-  });
-}
 
 export function useHRApplication(id: string) {
   const { orgId } = useJobsContext();
