@@ -278,6 +278,10 @@ from tests.tenancy.resumes_endpoints import RESUME_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(RESUME_ENDPOINTS)
 
+from tests.tenancy.screening_endpoints import SCREENING_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(SCREENING_ENDPOINTS)
+
 
 def register(endpoint: Endpoint) -> Endpoint:
     REGISTRY.append(endpoint)

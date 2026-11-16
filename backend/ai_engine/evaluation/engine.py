@@ -21,6 +21,7 @@ from ai_engine.contracts import (
     EmploymentKind,
     EvidenceStatus,
     ExperienceData,
+    ExtractionMethod,
     ProjectData,
     SummaryData,
 )
@@ -131,6 +132,27 @@ def _eligibility(spec: CriterionSpec, answers: list[AnswerResult]) -> CriterionR
     )
 
 
+UPGRADABLE = (EvidenceStatus.EXPLICIT, EvidenceStatus.INFERRED, EvidenceStatus.NEEDS_VERIFICATION)
+
+
+def _verified(result: CriterionResult, evidence: CandidateEvidence) -> CriterionResult:
+    """A criterion supported by a claim a person verified becomes ``human_verified`` (P07-T11).
+    The score is unchanged: verification raises trust, it does not award points."""
+    if result.status not in UPGRADABLE:
+        return result
+    human = any(
+        e.claim_index is not None
+        and e.claim_index < len(evidence.claims)
+        and evidence.claims[e.claim_index].method == ExtractionMethod.HUMAN
+        for e in result.evidence
+    )
+    if not human:
+        return result
+    return result.model_copy(
+        update={"status": EvidenceStatus.HUMAN_VERIFIED, "confidence": max(result.confidence, 0.95)}
+    )
+
+
 def evaluate(
     data: EvaluationInput,
     *,
@@ -161,7 +183,7 @@ def evaluate(
             result = _eligibility(spec, answers)
         else:
             result = evaluate_rule(spec, evidence, ctx) or missing(spec)
-        cv_results[spec.id] = result
+        cv_results[spec.id] = _verified(result, evidence)
     conflicts = find_conflicts(
         list(data.criteria),
         list(data.questions),

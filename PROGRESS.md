@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-T10
+- **Current task:** P07-T13
 - **Last updated:** 2026-11-16
-- **Overall:** 96 / 193 tasks · 6 / 16 phases
+- **Overall:** 99 / 193 tasks · 6 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -164,9 +164,9 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P07-T07 — `ai_engine/llm/` provider interface + `null_adapter` (default) + `anthropic_adapter` + `openai_adapter` (behind …
 - [x] P07-T08 — `versioning.py` input_hash; determinism test (EC-AI-08)
 - [x] P07-T09 — Django `apps.screening`: ScreeningRun, Evaluation, CriterionResult, EvaluationEvidence, HumanVerification models
-- [ ] P07-T10 — Screening runs API: start/retry for scope (all/pending/failed/selected) with chunking (50) and progress counts
-- [ ] P07-T11 — Human verification API (`/hr/claims/{id}/verify`): confirm/correct/reject → evidence status `human_verified` → …
-- [ ] P07-T12 — Vacancy-level analytics for screening: score/band distribution, low-coverage warning (EC-AI-15), high-score …
+- [x] P07-T10 — Screening runs API: start/retry for scope (all/pending/failed/selected) with chunking (50) and progress counts
+- [x] P07-T11 — Human verification API (`/hr/claims/{id}/verify`): confirm/correct/reject → evidence status `human_verified` → …
+- [x] P07-T12 — Vacancy-level analytics for screening: score/band distribution, low-coverage warning (EC-AI-15), high-score …
 - [ ] P07-T13 — Frontend: `/hr/jobs/[id]/screening` (runs, progress bar, failures with retry, distribution chart with table …
 - [ ] P07-T14 — Model registry seed entries (embedding model, rules engine version, null LLM) and `ai_quality` metrics capture hooks
 - [ ] P07-T15 — Benchmark: matching & recall harness against gold labels → report `docs/reports/screening_benchmark_<date>.md`
@@ -563,3 +563,6 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | Impl | P07-T07 | ai_engine/llm: base.py (Provider protocol, NullProvider default, LLMError/LLMUnavailableError/LLMRefusedError), anthropic_adapter.py (official SDK, claude-opus-5-5, effort low, no sampling params, refusal -> error, SDK retries off), openai_adapter.py (lazy optional SDK), versioned prompts prompts/summary_v1.md + section_assist_v1.md (hash-identified), service.py (enabled only by flag, skipped on injection, redaction, <data> separation, strict pydantic JSON with extra keys rejected, 2 retries then deterministic fallback, circuit breaker, cache by (prompt hash, input hash, model), summary sentences must cite existing evidence ids sharing words with it and pass a safety filter, section assist keeps verbatim skills only). ADR-026; anthropic SDK in optional llm extra. 13 tests with mocked providers incl. malicious/malformed/refusal/injection (EC-AI-07) | Django gate (platform flag AND org llm_enabled) wired in P07-T09 |
 | 2026-11-15 | Impl | P07-T08 | EvaluationInput.hash() = input_hash over engine version + every input (evidence, criteria, categories, questions, answers, config, policy); determinism test (EC-AI-08): re-evaluation and full re-extraction give byte-identical results and hashes; counterfactual fairness (EC-AI-13): synthetic CVs re-rendered by the generator with name, gender, home city, job cities and school town swapped (4 swaps across gender/region) -> identical total, coverage, band, confidence and per-criterion status/score/method for >=100 comparisons |  |
 | 2026-11-16 | Impl | P07-T09 | apps.screening: ScreeningRun/Evaluation/CriterionResult/EvaluationEvidence/HumanVerification (encrypted explanation/snippets), engine adapter, evaluate_application service + ai-queue task with retries, outbox consumers (evidence_ready/corrected/clarification), PROCESSING->UNDER_REVIEW system move; essentials rule = explicit evidence | - |
+| 2026-11-16 | Impl | P07-T10 | Screening runs API (POST/GET hr/jobs/{id}/screening-runs, GET hr/screening-runs/{id}) scopes all/pending/failed/selected, chunks of 50, progress + failures; re-evaluation on new job version needs reason (reevaluation trigger); versions API with superseded retained; manual-review band hides scores | - |
+| 2026-11-16 | Impl | P07-T11 | POST hr/claims/{id}/verify confirm/correct/reject -> HumanVerification (original kept), rejected needs note, corrections validated against claim schema; verified claims carry method=human so criteria become human_verified (score unchanged); optional re-evaluation (verification trigger); GET verifications | - |
+| 2026-11-16 | Impl | P07-T12 | GET hr/jobs/{id}/screening-analytics: band counts, score buckets, median; low-coverage warning (>=50% of >=5 evaluations, EC-AI-15) and high-score saturation info without cut-off (EC-AI-14) | - |

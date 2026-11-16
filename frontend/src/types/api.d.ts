@@ -714,6 +714,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/evaluation/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The current evaluation (404 until the application has been evaluated). */
+        get: operations["hr_application_evaluation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/evaluations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_evaluations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/evaluations/{version}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_evaluation_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/extraction/": {
         parameters: {
             query?: never;
@@ -812,6 +861,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/verifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_verifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/claims/{claim_id}/verify/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_claim_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/clarification-templates/": {
         parameters: {
             query?: never;
@@ -872,6 +953,38 @@ export interface paths {
         get: operations["hr_job_applications_list"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/screening-analytics/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_screening_analytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/screening-runs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_screening_runs_list"];
+        put?: never;
+        post: operations["hr_screening_runs_start"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1351,6 +1464,22 @@ export interface paths {
         put?: never;
         /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
         post: operations["hr_notification_templates_revert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/screening-runs/{run_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_screening_run"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2203,8 +2332,17 @@ export interface components {
          * @enum {string}
          */
         AvailabilityEnum: "immediate" | "notice" | "not_looking";
+        BandCount: {
+            band: string;
+            count: number;
+        };
         /** @enum {unknown} */
         BlankEnum: "";
+        Bucket: {
+            start: number;
+            end: number;
+            count: number;
+        };
         CandidateAction: {
             kind: components["schemas"]["KindEnum"];
             /** Format: uuid */
@@ -2451,6 +2589,26 @@ export interface components {
             /** Format: decimal */
             weight_within_category?: string;
         };
+        CriterionResult: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            criterion_id: string;
+            title: string;
+            type: string;
+            importance: string;
+            category: string;
+            /** Format: double */
+            score: number | null;
+            assessable: boolean;
+            evidence_status: string;
+            match_method: string;
+            /** Format: double */
+            confidence: number;
+            rationale: string;
+            flags: string[];
+            evidence: components["schemas"]["EvaluationEvidence"][];
+        };
         CsrfToken: {
             csrf_token: string;
         };
@@ -2459,6 +2617,13 @@ export interface components {
             category: components["schemas"]["CategoryEnum"];
             aliases?: string[];
         };
+        /**
+         * @description * `confirmed` - Confirmed
+         *     * `corrected` - Corrected
+         *     * `rejected` - Not supported by the evidence
+         * @enum {string}
+         */
+        DecisionEnum: "confirmed" | "corrected" | "rejected";
         DecisionReason: {
             readonly code: string;
             readonly label: string;
@@ -2546,6 +2711,68 @@ export interface components {
          * @enum {string}
          */
         EmploymentTypeEnum: "full_time" | "part_time" | "contract" | "internship" | "attachment" | "temporary" | "graduate_trainee";
+        Evaluation: {
+            /** Format: uuid */
+            id: string;
+            version: number;
+            status: string;
+            trigger: string;
+            band: string;
+            band_reasons: string[];
+            /** Format: date-time */
+            created_at: string;
+            engine_version: string;
+            config_version: string;
+            llm_used: boolean;
+            ai_notice: string;
+            /** Format: double */
+            total_score: number | null;
+            /** Format: double */
+            coverage: number | null;
+            confidence: string | null;
+            flags: string[];
+            categories: {
+                [key: string]: unknown;
+            }[];
+            essentials: {
+                [key: string]: unknown;
+            };
+            conflicts: {
+                [key: string]: unknown;
+            }[];
+            criteria: components["schemas"]["CriterionResult"][];
+            explanation: {
+                [key: string]: unknown;
+            }[];
+            summary: {
+                [key: string]: unknown;
+            }[];
+            clarification_suggestions: {
+                [key: string]: unknown;
+            }[];
+        };
+        EvaluationEvidence: {
+            /** Format: uuid */
+            claim_id: string | null;
+            /** Format: uuid */
+            question_response_id: string | null;
+            /** Format: uuid */
+            document_id: string | null;
+            page: number | null;
+            snippet: string;
+        };
+        EvaluationSummary: {
+            /** Format: uuid */
+            id: string;
+            version: number;
+            status: string;
+            trigger: string;
+            band: string;
+            /** Format: double */
+            total_score: number | null;
+            /** Format: date-time */
+            created_at: string;
+        };
         /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
         Experience: {
             /** Format: uuid */
@@ -4004,6 +4231,88 @@ export interface components {
             publish_at: string;
         };
         /**
+         * @description * `all` - All applications
+         *     * `pending` - Not yet evaluated
+         *     * `failed` - Failed
+         *     * `selected` - Selected applications
+         * @enum {string}
+         */
+        ScopeEnum: "all" | "pending" | "failed" | "selected";
+        ScreeningAnalytics: {
+            /** Format: uuid */
+            job_id: string;
+            evaluated: number;
+            bands: components["schemas"]["BandCount"][];
+            score_buckets: components["schemas"]["Bucket"][];
+            /** Format: double */
+            median_score: number | null;
+            low_coverage: number;
+            high_scores: number;
+            warnings: components["schemas"]["ScreeningWarning"][];
+            ai_notice: string;
+        };
+        ScreeningFailure: {
+            /** Format: uuid */
+            application_id: string;
+            status: string;
+        };
+        ScreeningRun: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            /** Format: uuid */
+            job_version_id: string;
+            trigger: string;
+            scope: string;
+            reason: string;
+            status: string;
+            total: number;
+            done: number;
+            failed: number;
+            /** Format: double */
+            progress: number;
+            engine_version: string;
+            config_version: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            started_at: string | null;
+            /** Format: date-time */
+            finished_at: string | null;
+        };
+        ScreeningRunDetail: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            /** Format: uuid */
+            job_version_id: string;
+            trigger: string;
+            scope: string;
+            reason: string;
+            status: string;
+            total: number;
+            done: number;
+            failed: number;
+            /** Format: double */
+            progress: number;
+            engine_version: string;
+            config_version: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            started_at: string | null;
+            /** Format: date-time */
+            finished_at: string | null;
+            failures: components["schemas"]["ScreeningFailure"][];
+        };
+        ScreeningWarning: {
+            code: string;
+            message: string;
+            count: number;
+        };
+        /**
          * @description * `staff` - Employer
          *     * `candidate` - Candidate
          *     * `system` - System
@@ -4051,6 +4360,15 @@ export interface components {
             source?: {
                 [key: string]: string;
             };
+        };
+        StartRunRequest: {
+            /** @default pending */
+            scope: components["schemas"]["ScopeEnum"];
+            application_ids?: string[];
+            /** @default  */
+            reason: string;
+            /** @default false */
+            use_current_version: boolean;
         };
         SubmitRequest: {
             accept_privacy: boolean;
@@ -4162,6 +4480,29 @@ export interface components {
             readonly ip: string;
             readonly user_agent: string;
             readonly is_current: boolean;
+        };
+        Verification: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            claim_id: string | null;
+            decision: string;
+            note: string;
+            /** Format: date-time */
+            at: string;
+            verifier: string;
+        };
+        VerifyRequest: {
+            decision: components["schemas"]["DecisionEnum"];
+            values?: {
+                [key: string]: unknown;
+            };
+            /** @default  */
+            note: string;
+            /** @default false */
+            reevaluate: boolean;
+            /** Format: uuid */
+            criterion_result_id?: string | null;
         };
         Version: {
             /** Format: uuid */
@@ -5681,6 +6022,70 @@ export interface operations {
             };
         };
     };
+    hr_application_evaluation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Evaluation"];
+                };
+            };
+        };
+    };
+    hr_application_evaluations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationSummary"][];
+                };
+            };
+        };
+    };
+    hr_application_evaluation_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Evaluation"];
+                };
+            };
+        };
+    };
     hr_application_extraction: {
         parameters: {
             query?: never;
@@ -5873,6 +6278,54 @@ export interface operations {
             };
         };
     };
+    hr_application_verifications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verification"][];
+                };
+            };
+        };
+    };
+    hr_claim_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["VerifyRequest"];
+                "multipart/form-data": components["schemas"]["VerifyRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verification"];
+                };
+            };
+        };
+    };
     hr_clarification_templates_list: {
         parameters: {
             query?: never;
@@ -5996,6 +6449,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedHRApplicationListList"];
+                };
+            };
+        };
+    };
+    hr_screening_analytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreeningAnalytics"];
+                };
+            };
+        };
+    };
+    hr_screening_runs_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreeningRun"][];
+                };
+            };
+        };
+    };
+    hr_screening_runs_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["StartRunRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StartRunRequest"];
+                "multipart/form-data": components["schemas"]["StartRunRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreeningRunDetail"];
                 };
             };
         };
@@ -6846,6 +7368,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    hr_screening_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreeningRunDetail"];
+                };
             };
         };
     };
