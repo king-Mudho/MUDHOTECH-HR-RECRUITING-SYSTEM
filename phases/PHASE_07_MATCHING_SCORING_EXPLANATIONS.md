@@ -28,7 +28,22 @@ rubric, with coverage, confidence, a non-rejecting band, grounded explanations a
 EC-AI-01..17, EC-DOC-24.
 
 ## Exit criteria
-- [ ] Blueprint example reproduces: 30/35, 20/25, 17/20, 8/10, 9/10 → 84/100 (unit test with constructed evidence).
-- [ ] Recall of gold-qualified candidates in (recommended ∪ review_needed) ≥ 0.95 on synthetic set; grounding 100%; determinism 100%; counterfactual invariance 100%.
-- [ ] Missing evidence never produces a 0 score for a criterion (property test).
-- [ ] 100 applications evaluated after extraction in ≤ 5 min on dev machine (record).
+- [x] Blueprint example reproduces: 30/35, 20/25, 17/20, 8/10, 9/10 → 84/100 (unit test with constructed evidence).
+- [x] Recall of gold-qualified candidates in (recommended ∪ review_needed) ≥ 0.95 on synthetic set; grounding 100%; determinism 100%; counterfactual invariance 100%.
+- [x] Missing evidence never produces a 0 score for a criterion (property test).
+- [x] 100 applications evaluated after extraction in ≤ 5 min on dev machine (record).
+
+## Exit evidence (2026-11-16)
+- Blueprint example: `ai_engine/tests/test_scoring.py::test_blueprint_example_84` (constructed evidence
+  30/35, 20/25, 17/20, 8/10, 9/10 -> 84.0, coverage 1.0, recommended).
+- Benchmark `docs/reports/screening_benchmark_2026-11-16.md` (`run_screening_benchmark --check`, 135
+  readable CVs): recall of gold *suitable* in recommended or review needed 1.00 (44/44), grounding 1.00
+  (620 sentences, 0 dropped), determinism 1.00, counterfactual invariance 121/121; also covered in CI by
+  `test_fairness.py`; nightly job runs the benchmark with `--check`.
+- Missing is never 0: `test_scoring.py::test_property_missing_never_lowers_a_score_or_counts_as_zero`,
+  `test_rules.py::test_no_evidence_is_missing_never_zero`, contract check
+  `test_result_contract_enforces_missing_is_not_zero`, `test_answers_conflicts.py::test_unanswered_is_missing_never_zero`.
+- Throughput: `apps/screening/tests/test_throughput.py` - 100 extracted applications through the full Django
+  screening path in 16.7 s on the dev machine (target <= 300 s); pure engine 100 evaluations 0.13 s.
+- Edge cases: `scripts/ec_coverage.py --phase 07` 18/18; backend 2,163 passed / 3 skipped (fresh test DB),
+  frontend 136 Vitest, lint/type-check/migrations/schema clean.

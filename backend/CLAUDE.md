@@ -32,6 +32,13 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
   querying), `ClaimCorrection`, candidate-owned `ResumeParse`; `services.py` orchestration (consumers of
   `application.submitted`, `document.accepted`, `document.rejected`; emits `application.evidence_ready`),
   `engine.py` (taxonomy indexes cached per process), `crosscheck.py`, `candidate.py`, `hr.py`.
+- `apps/screening` (Phase 07) — `ScreeningRun`/`Evaluation`/`CriterionResult`/`EvaluationEvidence`/
+  `HumanVerification` (evaluations are versioned; older ones `superseded`, never edited), `engine.py`
+  (builds `EvaluationInput` from claims + verdicts/corrections + answers), `services.evaluate_application`
+  (idempotent per input hash; PROCESSING -> UNDER_REVIEW system move), `runs.py` (scopes, chunks of 50),
+  `verification.py`, `analytics.py`, `selectors.py` (manual-review band hides all AI output),
+  `registry.py` (model registry, synced on `post_migrate`), `quality.py` (daily AI quality counters).
+  Screening starts from outbox consumers only when `SCREENING_AUTOSTART` (off in `config.settings.test`).
 - `tests/core_testapp/` — test-only models (`Widget` tenant model, `SecretNote` encrypted field); installed
   only by `config.settings.test`.
 - `fixtures/` — taxonomy seeds, synthetic CVs (never real data). `schema.yml` — committed OpenAPI schema.
@@ -82,6 +89,7 @@ ruff format . && ruff check . && mypy apps ai_engine
 celery -A config worker -Q documents -c 2 -l info
 python manage.py load_taxonomy && python manage.py embed_skills          # worker container (model)
 python -m ai_engine.tests.benchmark.run_extraction_benchmark --workers 2 --semantic --check  # worker image
+python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir ../docs/reports --check  # P07 targets
 ```
 In Git Bash, prefix docker commands that pass container paths with `MSYS_NO_PATHCONV=1`.
 On the host (Windows, `backend/`): `python -m uv sync` creates `.venv` (Python 3.12), then

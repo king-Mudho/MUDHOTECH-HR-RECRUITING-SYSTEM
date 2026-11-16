@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 07 — Matching, Scoring & Explainable Evaluation (AI Part 2)
-- **Current task:** P07-EXIT
+- **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
+- **Current task:** P08-T01
 - **Last updated:** 2026-11-16
-- **Overall:** 102 / 193 tasks · 6 / 16 phases
+- **Overall:** 102 / 193 tasks · 7 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -19,8 +19,8 @@
 | 04 | [Candidate Portal, Documents, Applications & Questionnaires](phases/PHASE_04_CANDIDATE_PORTAL_APPLICATIONS.md) | MVP | 16 | ✅ Done | 2026-11-10 |
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ✅ Done | 2026-11-11 |
 | 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ✅ Done | 2026-11-15 |
-| 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | 🟦 In progress | |
-| 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ⬜ Not started | |
+| 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ✅ Done | 2026-11-16 |
+| 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | 🟦 In progress | |
 | 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ⬜ Not started | |
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | ⬜ Not started | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | ⬜ Not started | |
@@ -432,6 +432,33 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   component and API tests, not yet in a live browser session (ports 3000/8000 were held by another
   project and RAM was low) - check them in the Phase 07 smoke test; worker image is 3.3 GB.
 
+### Phase 07 — Matching, Scoring & Explainable Evaluation (closed 2026-11-16)
+- **Built:** pure `ai_engine` matching and evaluation: criterion contracts with evidence status
+  (missing is unknown, never 0), rule matching for qualifications/certifications/languages/licences,
+  versioned thresholds (`EngineConfig`), skill cascade exact -> alias -> relation -> semantic (inferred,
+  capped), experience relevance, screening answers with knock-outs and CV/answer conflicts, category
+  scoring with coverage re-weighting, essentials, confidence and bands (no reject band;
+  `manual_review_requested` / `eligibility_review` / `review_needed` / `recommended_for_review` /
+  `lower_match`), grounded template explanations and clarification suggestions, optional guarded LLM
+  phrasing (off by default, ADR-026). Django `apps.screening`: versioned evaluations with criterion
+  results and evidence links (encrypted snippets/explanations), ai-queue task with retries ->
+  `processing_error`, consumers for evidence ready / corrected / clarification answered, PROCESSING ->
+  UNDER_REVIEW system move; screening runs (scopes, chunks of 50, progress, failures, re-evaluation on a new
+  job version with a reason), human claim verification (`human_verified`, rejected claims dropped),
+  vacancy analytics with EC-AI-14/15 warnings, model registry + AI quality counters; HR screening page and
+  evaluation panel with citations and verify actions.
+- **Evidence:** see `phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md` "Exit evidence" and
+  `docs/reports/screening_benchmark_2026-11-16.md`.
+- **Deviations:** essentials count as met with explicit evidence (listed-only skills, 50) per docs/05 §10
+  "met/explicit"; weak (25) or unknown essentials do not; `SCREENING_AUTOSTART` (off in other apps' tests);
+  HR verification stores `HumanVerification` and never edits the extracted claim; AI fields in API
+  responses are named `ai_notice`.
+- **Known limitations / follow-ups:** review needed is the largest band (95/135) because absent essentials
+  are unknown - calibrate with Phase 10 and consider an "essentials not evidenced" filter in Phase 08;
+  scheduled AI quality reports and override alerts are P13-T07; the new screens were verified by component
+  and API tests only (ports 3000/8000 held by another project) - include them in the Phase 08 browser smoke
+  test.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -454,6 +481,8 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | P06-T11 | `RESUMES_AUTOSTART` setting; off in test settings, on in resumes tests | Other apps' tests submit applications without S3 fixtures | - |
 | 2026-11-15 | P06-T13 | Candidate preview = candidate-owned `ResumeParse`; corrections only on submitted application claims; import-to-profile is the pre-submit correction path | Extraction runs are tenant data tied to an application | - |
 | 2026-11-15 | P07-T01 | A qualification criterion's `min_months` is the "or equivalent experience" alternative (docs/05 §8.1 `equivalent_experience_months`) and `equivalents` lists accepted fields | No separate column in `job_criteria`; avoids a schema change for one optional rule | - |
+| 2026-11-16 | P07-T05 | Essentials count as met with explicit evidence (listed-only skill = 50); weak (<= 25) or unknown essentials keep the band below recommended | docs/05 §10 says "met/explicit"; strict >= 75 made every listed-only essential a lower match | - |
+| 2026-11-16 | P07-T09 | `SCREENING_AUTOSTART` setting; off in test settings, on in screening tests that need it | Other apps' tests emit `application.evidence_ready` without a rubric | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -569,3 +598,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | Impl | P07-T13 | Frontend /hr/jobs/[id]/screening (start run with scope + re-evaluation reason, run progress bars, failures with retry, score distribution chart with table alternative, band counts, EC-AI-14/15 warnings) and EvaluationPanel on the HR application page (ScoreBreakdown with coverage hatch, CriteriaPanel with status/method/confidence/evidence and confirm / not-supported verification, explanation citations linking to evidence); all labelled AI-assisted; manual-review band shows no scores; vitest 6 new | Live browser check not run (ports 3000/8000 held by another project); covered by component tests |
 | 2026-11-16 | Impl | P07-T14 | ModelRegistryEntry (rules engine version+thresholds, embedding model, null LLM; synced on post_migrate, old entries closed not deleted) recorded on each ScreeningRun.model_ids; AIQualityReport daily per org/vacancy counters (evaluations, bands, triggers, coverage, grounding sentences/dropped, LLM use, verifications by decision) captured in the evaluation/verification transactions + derived rates | Scheduled reports and override alerts in P13-T07 |
 | 2026-11-16 | Impl | P07-T15 | run_screening_benchmark (recall of gold suitable in recommended/review_needed 1.00, grounding 1.00, determinism 1.00, counterfactual 121/121, 100 engine evaluations 0.13 s) -> docs/reports/screening_benchmark_2026-11-16.md/.json; Django throughput test 100 evaluations 16.7 s; nightly screening benchmark step | review_needed is the largest band (95/135) - calibrate in Phase 10 |
+| 2026-11-16 | Close | P07-EXIT | Phase 07 closed: exit criteria verified (blueprint 84/100 test; screening benchmark recall 1.00, grounding 1.00, determinism 1.00, counterfactual 121/121; missing-never-0 property tests; 100 Django evaluations in 16.7 s; EC 18/18; backend 2,163 passed, 136 Vitest). Fixed during close: EC tags for existing tests + EC-AI-17 test | Phase 08 started |

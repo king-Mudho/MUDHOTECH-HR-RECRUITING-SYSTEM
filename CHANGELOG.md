@@ -28,3 +28,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   with outbox orchestration and safe failure handling; duplicate-file and name-mismatch flags; candidate
   "What we extracted" view, import to profile and corrections; HR extraction panel with retry;
   extraction benchmark with a nightly job.
+- Phase 07 matching, scoring & explanations (AI part 2): evidence-based criterion matching (rules,
+  skill aliases/relations/semantic, experience relevance, screening answers, knock-outs, conflicts);
+  category scores with coverage, essentials, confidence and review bands (no reject band; missing
+  evidence is unknown, never a fail); grounded explanations with citations and clarification
+  suggestions; optional guarded LLM phrasing (off by default); versioned evaluations with evidence
+  links, screening runs and re-evaluation with reasons, human claim verification, vacancy score
+  distribution with coverage and saturation warnings; model registry and AI quality counters; HR
+  screening page and evaluation panel labelled "AI-assisted suggestion — requires human review";
+  screening benchmark (recall, grounding, determinism, counterfactual fairness) with a nightly job.
