@@ -87,6 +87,7 @@ def test_usage_decides_the_band() -> None:
     assert listed.reason == "listed_only"
 
 
+# EC-AI-01: equivalent skill present -> alias/relation/semantic match, method recorded
 def test_alias_and_equivalents() -> None:
     alias = match_skill(
         criterion("Python", "Python"), ev(skill("python3", "Python", canonical="Python"))

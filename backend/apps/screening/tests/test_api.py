@@ -90,6 +90,7 @@ def test_failed_scope_retries_processing_errors(
     assert read_app.status == Status.UNDER_REVIEW and read_app.current_evaluation_id
 
 
+# EC-AI-09 / EC-JOB-06: new version only on explicit re-evaluation, with a reason
 def test_reevaluation_needs_a_reason_and_keeps_superseded_versions(
     read_app: Application, vacancy: Any, django_capture_on_commit_callbacks: Any
 ) -> None:
@@ -219,6 +220,7 @@ def test_correction_rejects_unknown_or_locked_fields(
     assert not HumanVerification.objects.for_org(read_app.organisation_id).exists()
 
 
+# EC-AI-12: AI evaluation hidden from HR when the candidate objected
 def test_manual_review_band_hides_scores(read_app: Application, vacancy: Any) -> None:
     evaluation = services.evaluate_application(read_app.pk)
     Evaluation.objects.for_org(read_app.organisation_id).filter(pk=evaluation.pk).update(
@@ -245,6 +247,7 @@ def _evaluation(app: Application, *, score: float, coverage: float, band: str) -
     )
 
 
+# EC-AI-14 (distribution, no auto cut-off) / EC-AI-15 (low coverage warning)
 def test_analytics_distribution_and_warnings(vacancy: Any) -> None:
     apps = [
         make_application(vacancy.job, UserFactory(), status=Status.UNDER_REVIEW) for _ in range(6)

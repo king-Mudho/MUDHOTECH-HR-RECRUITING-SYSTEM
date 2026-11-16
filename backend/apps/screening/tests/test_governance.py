@@ -81,3 +81,16 @@ def test_evaluations_and_verifications_update_quality_counters(
     assert report.metrics["verifications"] == 1
     assert quality.rates(report.metrics)["verification_override_rate"] == 1.0
     assert not any("python" in str(k).lower() for k in report.metrics)  # counters only
+
+
+# EC-AI-17: skills taxonomy updated -> new taxonomy_version; earlier runs keep the old one
+def test_runs_keep_the_taxonomy_version_they_used(vacancy: Any) -> None:
+    from apps.core.time import now
+    from apps.taxonomy.models import TaxonomyVersion
+
+    first = runs.start_run(member(vacancy), vacancy.team.hr_manager, vacancy.job.pk, scope="all")
+    TaxonomyVersion.objects.create(version="2099.01.1", published_at=now())
+    second = runs.start_run(member(vacancy), vacancy.team.hr_manager, vacancy.job.pk, scope="all")
+    first.refresh_from_db()
+    assert second.taxonomy_version == "2099.01.1"
+    assert first.taxonomy_version != "2099.01.1"

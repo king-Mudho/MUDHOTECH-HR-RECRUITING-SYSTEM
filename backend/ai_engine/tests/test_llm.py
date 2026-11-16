@@ -155,6 +155,7 @@ def test_malicious_or_ungrounded_sentences_are_dropped(bad: str) -> None:
     assert service(FakeProvider([bad])).summarise(result, explanation, SPECS, ev) is None
 
 
+# EC-AI-07: malformed/uncited LLM output -> retry x2 -> deterministic template
 def test_malformed_output_retries_then_falls_back() -> None:
     result, explanation, ev = run()
     extra_key = json.dumps({"sentences": [], "score": 99})

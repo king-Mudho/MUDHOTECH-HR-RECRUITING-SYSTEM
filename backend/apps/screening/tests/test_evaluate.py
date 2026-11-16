@@ -113,6 +113,7 @@ def test_knockout_routes_to_eligibility_review(read_app: Application, vacancy: A
     assert read_app.status == Status.UNDER_REVIEW  # a person decides
 
 
+# EC-AI-12: objection to automated processing -> manual_review_requested
 def test_objection_gives_manual_review_and_withdrawn_is_skipped(vacancy: Any, act: Any) -> None:
     from apps.applications.models import Application as App
     from apps.resumes import services as resumes
@@ -138,11 +139,13 @@ def test_final_failure_parks_the_application(read_app: Application) -> None:
     assert AuditEvent.objects.filter(action="screening.failed").exists()
 
 
+# EC-AI-11 / EC-AI-10: redelivered task (acks_late) is idempotent per input - no new version
 def test_task_and_consumer_gate(read_app: Application, settings: Any) -> None:
     from apps.screening.tasks import evaluate_application
 
     assert evaluate_application.apply(args=(str(read_app.pk),)).get() == "v1"
     assert evaluate_application.apply(args=(str(read_app.pk),)).get() == "skipped"
+    assert evaluate_application.acks_late  # a dead worker's task is redelivered, not lost
 
 
 def test_llm_gate_requires_flag_policy_and_provider(read_app: Application, settings: Any) -> None:

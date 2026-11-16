@@ -186,6 +186,7 @@ def test_or_equivalent_experience() -> None:
 
 
 # -------------------------------------------------------------------- certification/licence
+# EC-AI-16: expired certification -> flagged for review, not a fail
 def test_certifications_licences_and_expiry() -> None:
     cert = claim(CertificationData(name="Nurses Council of Zimbabwe - practising certificate"))
     found = evaluate_rule(

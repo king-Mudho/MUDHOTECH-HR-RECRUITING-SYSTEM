@@ -172,6 +172,7 @@ def test_combine_conflicts_and_answers() -> None:
     assert combine(spec, res("exp", 100), [answer(50)], []).score == 100  # CV evidence first
 
 
+# EC-AI-04: missing evidence for an essential -> review_needed, never an automatic fail
 def test_band_precedence() -> None:
     specs = [
         crit("t1", "technical"),
