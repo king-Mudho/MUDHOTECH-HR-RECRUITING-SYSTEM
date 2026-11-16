@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "apps.documents",
     "apps.applications",
     "apps.resumes",
+    "apps.screening",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -331,7 +332,9 @@ APPLICATION_DEADLINE_GRACE_SECONDS = env.int("APPLICATION_DEADLINE_GRACE_SECONDS
 AI_NOTICE_VERSION = "2026-11-10"
 
 # --- AI ---
-LLM_PROVIDER = env("LLM_PROVIDER", default="none")
+LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)
+LLM_API_KEY = env("LLM_API_KEY", default="")
+LLM_MODEL = env("LLM_MODEL", default="")  # empty = provider default (claude-opus-5-5)
 EMBEDDING_MODEL = env("EMBEDDING_MODEL", default="sentence-transformers/all-MiniLM-L6-v2")
 SEMANTIC_SKILL_MATCHING = env.bool("SEMANTIC_SKILL_MATCHING", default=True)
 SEMANTIC_SKILL_THRESHOLD = env.float(
@@ -342,6 +345,8 @@ EXTRACTION_SANDBOX = env.bool("EXTRACTION_SANDBOX", default=True)
 EXTRACTION_MAX_PAGES = env.int("EXTRACTION_MAX_PAGES", default=30)
 # Start CV extraction when applications are submitted / documents accepted (P06-T11)
 RESUMES_AUTOSTART = env.bool("RESUMES_AUTOSTART", default=True)
+# Evaluate applications when their evidence is ready (P07-T09)
+SCREENING_AUTOSTART = env.bool("SCREENING_AUTOSTART", default=True)
 
 # --- Health checks ---
 HEALTHCHECK_TIMEOUT_SECONDS = env.float("HEALTHCHECK_TIMEOUT_SECONDS", default=2.0)

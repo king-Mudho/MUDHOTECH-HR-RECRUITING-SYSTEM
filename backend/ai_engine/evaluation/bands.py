@@ -60,13 +60,13 @@ def band_for(
     reasons += [f"flag:{f}" for f in processing]
     if reasons:
         return REVIEW, tuple(reasons)
-    essentials_all_met = not (
-        scores.essentials.partial or scores.essentials.not_evidenced or scores.essentials.unknown
-    )
+    # docs/05 §10 "all essentials met/explicit": explicit evidence (even listed-only, 50) counts;
+    # weak (<= 25) or unknown essentials do not
+    essentials_all_met = not (scores.essentials.not_evidenced or scores.essentials.unknown)
     if (
         scores.total is not None
         and scores.total >= policy.recommended_min_score
         and essentials_all_met
     ):
         return RECOMMENDED, ("score_and_essentials",)
-    return LOWER, ("below_threshold_or_essentials_partial",)
+    return LOWER, ("below_threshold_or_essentials_weak",)

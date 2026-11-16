@@ -187,8 +187,10 @@ def test_band_precedence() -> None:
     assert band_for(good, eligibility_unmet=True)[0] == ELIGIBILITY
     assert band_for(good, conflicts=1) == (REVIEW, ("conflicts",))
     assert band_for(good, flags=[Flag.INJECTION_SUSPECTED])[0] == REVIEW
-    partial = score(CATS, specs, {**{s.id: res(s.id, 100) for s in specs}, "t1": res("t1", 50)}, [])
-    assert band_for(partial)[0] == LOWER  # an essential only partly met
+    listed = score(CATS, specs, {**{s.id: res(s.id, 100) for s in specs}, "t1": res("t1", 50)}, [])
+    assert band_for(listed)[0] == RECOMMENDED  # explicit (listed) evidence of the essential
+    weak = score(CATS, specs, {**{s.id: res(s.id, 100) for s in specs}, "t1": res("t1", 25)}, [])
+    assert band_for(weak)[0] == LOWER  # an essential only weakly evidenced
     low = score(CATS, specs, {"t1": res("t1", 100)}, [])
     band, reasons = band_for(low)
     assert band == REVIEW and "low_coverage" in reasons and "essentials_unknown" in reasons

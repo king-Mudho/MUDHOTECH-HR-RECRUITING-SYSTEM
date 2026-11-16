@@ -16,6 +16,7 @@ EMBEDDING_MODEL = "hashing-384"  # deterministic, no model download in tests
 EXTRACTION_SANDBOX = False  # in-process parsing keeps the suite fast
 # other apps' tests don't run the extraction pipeline; the resumes tests opt in
 RESUMES_AUTOSTART = False
+SCREENING_AUTOSTART = False
 # allauth rate limits use the cache; keep them generous unless a test overrides them.
 # Deterministic Fernet keys used ONLY by the test-suite.
 FIELD_ENCRYPTION_KEYS = (
