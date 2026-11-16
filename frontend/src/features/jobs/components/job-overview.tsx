@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil, Users } from "lucide-react";
+import { ExternalLink, Gauge, Pencil, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
@@ -548,6 +548,14 @@ export function JobOverview({ jobId }: { jobId: string }) {
               <Link href={`/hr/jobs/${data.id}/applications`}>
                 <Users aria-hidden="true" />
                 {t("applications")}
+              </Link>
+            </Button>
+          ) : null}
+          {live && role && APPLICATION_VIEWERS.includes(role) ? (
+            <Button asChild variant="outline" className="min-h-10">
+              <Link href={`/hr/jobs/${data.id}/screening`}>
+                <Gauge aria-hidden="true" />
+                {t("screening")}
               </Link>
             </Button>
           ) : null}

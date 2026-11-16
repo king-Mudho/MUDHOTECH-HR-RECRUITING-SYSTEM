@@ -862,7 +862,8 @@
       "editNewVersion": "Edit new version",
       "edit": "Edit",
       "viewPublic": "View public page",
-      "applications": "View applications"
+      "applications": "View applications",
+      "screening": "Screening"
     },
     "assignments": {
       "title": "Team on this vacancy",
@@ -1364,7 +1365,7 @@
     "title": "Applications",
     "caption": "Applications for this vacancy",
     "backToJob": "Back to vacancy",
-    "phaseNote": "Screening scores arrive in a later release.",
+    "phaseNote": "AI-assisted screening suggestions are reviewed by people; nothing is decided automatically.",
     "search": "Search applications",
     "searchPlaceholder": "Name, email or reference",
     "filterLabel": "Filter by status",
@@ -1543,7 +1544,8 @@
         "garbled_text": "The file's text layer was damaged; it was read from the page images instead.",
         "date_anomaly": "Some dates look impossible (e.g. an end before the start); those roles were not counted."
       }
-    }
+    },
+    "openScreening": "Open screening"
   },
   "notifications": {
     "bell": "Notifications",
@@ -1687,6 +1689,115 @@
         "years": "Years of experience",
         "language": "Language",
         "level": "Level"
+      }
+    }
+  },
+  "screening": {
+    "metaTitle": "Screening",
+    "title": "Screening · {job}",
+    "backToJob": "Back to vacancy",
+    "forbidden": "You do not have access to screening for this vacancy.",
+    "aiNotice": "AI-assisted suggestion — requires human review",
+    "bands": {
+      "recommended_for_review": "Recommended for review",
+      "review_needed": "Review needed",
+      "eligibility_review": "Eligibility to check",
+      "lower_match": "Lower match",
+      "manual_review_requested": "Manual review requested"
+    },
+    "status": {
+      "human_verified": "Verified by a person",
+      "explicit": "Stated in the CV",
+      "candidate_reported": "From the candidate's answers",
+      "inferred": "Inferred",
+      "needs_verification": "Needs verification",
+      "conflicting": "Sources disagree",
+      "missing": "No evidence yet (unknown)"
+    },
+    "breakdown": {
+      "total": "{score} / 100",
+      "confidence": "Confidence: {level}",
+      "coverage": "Evidence coverage",
+      "coverageAria": "Evidence coverage {value} percent",
+      "points": "{points} of {weight}",
+      "notAssessable": "Not assessable yet (weight {weight})"
+    },
+    "criteria": {
+      "essential": "Essential",
+      "unknown": "Unknown",
+      "score": "{score} / 100",
+      "meta": "Method: {method} · confidence {confidence}%",
+      "page": "Page {page}:",
+      "answer": "Answer:",
+      "noEvidence": "No evidence found. Missing evidence is unknown, not a fail — consider a clarification."
+    },
+    "explanation": {
+      "citations": "{count, plural, one {# source} other {# sources}}",
+      "citationAria": "Go to the evidence ({count, plural, one {# source} other {# sources}})"
+    },
+    "verify": {
+      "confirm": "Confirm",
+      "notSupported": "Not supported",
+      "noteLabel": "Why is this not supported by the evidence?",
+      "save": "Save and re-evaluate",
+      "confirmedDone": "Confirmed. A new evaluation version is being prepared.",
+      "notSupportedDone": "Recorded. A new evaluation version is being prepared.",
+      "failed": "Could not save the verification. Please try again."
+    },
+    "panel": {
+      "title": "Screening evaluation",
+      "none": "Not evaluated yet.",
+      "manual": "The candidate asked for a person to review the application without software assistance. No AI scores are shown.",
+      "version": "Evaluation version {version}",
+      "why": "Why",
+      "criteria": "Criteria and evidence"
+    },
+    "start": {
+      "title": "Run screening",
+      "scope": "Applications",
+      "scopes": {
+        "pending": "Not yet evaluated",
+        "all": "All under review",
+        "failed": "Failed processing"
+      },
+      "newVersion": "Re-evaluate against the current vacancy version",
+      "reason": "Reason",
+      "reasonHint": "Required when re-evaluating against a new version (at least 5 characters).",
+      "submit": "Start",
+      "starting": "Starting…",
+      "started": "{count, plural, =0 {Nothing to evaluate.} one {# application queued.} other {# applications queued.}}",
+      "failed": "Could not start the run. Please try again."
+    },
+    "runs": {
+      "title": "Runs",
+      "empty": "No screening runs yet.",
+      "status": {
+        "queued": "Queued",
+        "running": "Running",
+        "completed": "Completed",
+        "failed": "Completed with failures"
+      },
+      "meta": "{scope} · {trigger} · {total} applications",
+      "progress": "{done} of {total} done",
+      "showFailures": "{count, plural, one {# failure} other {# failures}}",
+      "failuresTitle": "Applications that could not be processed",
+      "noFailures": "No applications are waiting for a retry.",
+      "failureLink": "Open application",
+      "retryFailed": "Retry failed applications"
+    },
+    "analytics": {
+      "title": "Score distribution",
+      "summary": "{count, plural, one {# evaluation} other {# evaluations}} · median score {median}",
+      "showTable": "Show as table",
+      "showChart": "Show as chart",
+      "tableCaption": "Number of applications per score range",
+      "range": "Score range",
+      "rangeValue": "{start}–{end}",
+      "applications": "Applications",
+      "chartAria": "Score distribution of {count} evaluations; use “Show as table” for the numbers",
+      "warnings": {
+        "low_coverage": "Low evidence coverage",
+        "high_score_saturation": "Many high scores"
       }
     }
   }

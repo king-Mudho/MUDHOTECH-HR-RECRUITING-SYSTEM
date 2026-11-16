@@ -19,6 +19,8 @@ import { useJob, useJobsContext } from "@/features/jobs/hooks";
 import { ApiError } from "@/lib/api-client";
 
 import { APPLICATION_VIEWERS, useHRApplication, useJobApplications } from "./api";
+import { EvaluationPanel } from "@/features/screening/components";
+
 import { ExtractionPanel } from "./extraction-panel";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 
@@ -83,6 +85,10 @@ export function JobApplicationsList({ jobId }: { jobId: string }) {
           {t("phaseNote")}{" "}
           <Link href={`/hr/jobs/${jobId}/pipeline`} className="underline">
             {t("openPipeline")}
+          </Link>{" "}
+          ·{" "}
+          <Link href={`/hr/jobs/${jobId}/screening`} className="underline">
+            {t("openScreening")}
           </Link>
         </p>
       </div>
@@ -323,6 +329,7 @@ export function HRApplicationView({ id }: { id: string }) {
       </section>
 
       <ExtractionPanel app={a} />
+      <EvaluationPanel appId={a.id} />
 
       <section aria-labelledby="hr-answers" className="rounded-lg border p-4">
         <h2 id="hr-answers" className="text-lg font-semibold">
