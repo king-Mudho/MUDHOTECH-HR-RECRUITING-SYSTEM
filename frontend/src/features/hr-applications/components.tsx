@@ -22,6 +22,7 @@ import { APPLICATION_VIEWERS, useHRApplication, useJobApplications } from "./api
 import { EvaluationPanel } from "@/features/screening/components";
 
 import { ExtractionPanel } from "./extraction-panel";
+import { RevealIdentity } from "./reveal-identity";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 
 const FILTERS = [
@@ -286,14 +287,20 @@ export function HRApplicationView({ id }: { id: string }) {
         <h2 id="hr-contact" className="text-lg font-semibold">
           {t("detail.contact")}
         </h2>
-        <dl className="mt-2 grid gap-1 text-sm sm:grid-cols-[10rem_1fr]">
-          {contactRows.map(([label, value]) => (
-            <div key={label} className="contents">
-              <dt className="text-muted-foreground">{label}</dt>
-              <dd>{formatValue(value)}</dd>
-            </div>
-          ))}
-        </dl>
+        {a.identity_hidden ? (
+          <div className="mt-2">
+            <RevealIdentity applicationId={a.id} />
+          </div>
+        ) : (
+          <dl className="mt-2 grid gap-1 text-sm sm:grid-cols-[10rem_1fr]">
+            {contactRows.map(([label, value]) => (
+              <div key={label} className="contents">
+                <dt className="text-muted-foreground">{label}</dt>
+                <dd>{formatValue(value)}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
         {typeof c.summary === "string" && c.summary ? (
           <p className="mt-3 text-sm whitespace-pre-line">{c.summary}</p>
         ) : null}

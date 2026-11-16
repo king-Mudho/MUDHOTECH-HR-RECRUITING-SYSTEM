@@ -183,3 +183,42 @@ class HRDecisionReasonsView(APIView):
         applies_to = request.query_params.get("applies_to") or None
         rows = ats.decision_reasons(request.organisation, applies_to)  # type: ignore[attr-defined]
         return Response(DecisionReasonSerializer(rows, many=True).data)
+
+
+# ------------------------------------------------------------------------- blind review (P08-T04)
+class RevealIdentitySerializer(StrictSerializer):
+    reason = serializers.CharField(max_length=2000)
+
+
+class IdentityRevealSerializer(serializers.Serializer):
+    application_id = serializers.UUIDField()
+    revealed_at = serializers.DateTimeField()
+
+
+class HRRevealIdentityView(APIView):
+    """Show this reviewer who a blind-reviewed applicant is (reason required, audited)."""
+
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(
+        operation_id="hr_application_reveal_identity",
+        request=RevealIdentitySerializer,
+        responses={201: IdentityRevealSerializer},
+    )
+    def post(self, request: Request, application_id: str) -> Response:
+        from apps.applications.blind import reveal
+
+        data = RevealIdentitySerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        row = reveal(
+            request.membership,  # type: ignore[attr-defined]
+            authed_user(request),
+            application_id,
+            reason=data.validated_data["reason"],
+        )
+        return Response(
+            IdentityRevealSerializer(
+                {"application_id": row.application_id, "revealed_at": row.at}
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )

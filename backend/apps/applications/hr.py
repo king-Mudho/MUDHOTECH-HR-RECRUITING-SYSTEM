@@ -130,8 +130,12 @@ def staff_can_access_document(user: Any, document: Any) -> bool:
         .exclude(status__in=PRIVATE_STATUSES)
         .values_list("pk", "organisation_id")
     )
+    from .blind import BlindView
+
     for app_id, org_id in apps:
         membership = active_membership(user, org_id)
         if membership and applications_visible_to(membership).filter(pk=app_id).exists():
+            if BlindView(user, org_id, [app_id]).hidden(app_id):
+                continue  # P08-T04: the original file shows the name; reveal identity first
             return True
     return False

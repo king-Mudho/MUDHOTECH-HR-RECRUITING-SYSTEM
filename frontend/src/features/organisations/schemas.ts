@@ -50,6 +50,7 @@ export const policySchema = z.object({
   ai_enabled: z.boolean(),
   llm_enabled: z.boolean(),
   blind_review_default: z.boolean(),
+  blind_mask_institutions: z.boolean(),
   notification_delay_minutes: z
     .number({ message: "required" })
     .int()

@@ -58,9 +58,16 @@ class Endpoint:
     # Collection endpoints (list/create) name no victim object, so the cross-tenant suite sends the
     # victim's org id in the header instead (must 404 + audit as a tenant violation).
     targets_object: bool = True
+    # endpoints decorated with ``@idempotent`` need an ``Idempotency-Key`` header
+    idempotent: bool = False
 
     def headers(self, ctx: Ctx) -> dict[str, str]:
-        return {"HTTP_X_ORG_ID": ctx.org_id} if self.org_header else {}
+        import uuid
+
+        out = {"HTTP_X_ORG_ID": ctx.org_id} if self.org_header else {}
+        if self.idempotent:
+            out["HTTP_IDEMPOTENCY_KEY"] = str(uuid.uuid4())
+        return out
 
     def __str__(self) -> str:
         return f"{self.method.upper()} {self.name}"
@@ -281,6 +288,10 @@ REGISTRY.extend(RESUME_ENDPOINTS)
 from tests.tenancy.screening_endpoints import SCREENING_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(SCREENING_ENDPOINTS)
+
+from tests.tenancy.shortlisting_endpoints import SHORTLIST_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(SHORTLIST_ENDPOINTS)
 
 
 def register(endpoint: Endpoint) -> Endpoint:

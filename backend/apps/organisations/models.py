@@ -92,6 +92,7 @@ class OrganisationPolicy(BaseModel):
     ai_enabled = models.BooleanField(default=True)
     llm_enabled = models.BooleanField(default=False)  # D-06
     blind_review_default = models.BooleanField(default=True)  # ADR-013
+    blind_mask_institutions = models.BooleanField(default=False)  # P08-T04 (optional)
     notification_delay_minutes = models.PositiveSmallIntegerField(default=15)  # ADR-014
     hide_ai_from_panelists = models.BooleanField(default=True)  # ADR-019
     rights_request_sla_days = models.PositiveSmallIntegerField(default=30)

@@ -204,6 +204,7 @@ describe("PolicySettings", () => {
     ai_enabled: true,
     llm_enabled: false,
     blind_review_default: true,
+    blind_mask_institutions: false,
     notification_delay_minutes: 15,
     hide_ai_from_panelists: true,
     rights_request_sla_days: 30,

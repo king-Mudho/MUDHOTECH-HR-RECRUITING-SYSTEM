@@ -79,6 +79,11 @@ urlpatterns = [
         name="hr-application-assign",
     ),
     path(
+        "hr/applications/<uuid:application_id>/reveal-identity/",
+        ats_views.HRRevealIdentityView.as_view(),
+        name="hr-application-reveal-identity",
+    ),
+    path(
         "hr/decision-reasons/",
         ats_views.HRDecisionReasonsView.as_view(),
         name="hr-decision-reasons",

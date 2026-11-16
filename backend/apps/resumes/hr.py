@@ -32,9 +32,13 @@ def confidence_label(value: float) -> str:
 
 
 def hr_view(membership: Any, application_id: Any) -> dict[str, Any]:
+    from apps.applications.blind import HIDDEN_INSTITUTION, BlindView
+
     from .services import objected
 
     app = _visible(membership, application_id)
+    blind = BlindView(membership.user, app.organisation_id, [app.pk])
+    mask = blind.masks_institutions(app.pk)
     runs = list(
         ExtractionRun.objects.for_org(app.organisation_id)
         .filter(application=app, engine_version=ENGINE_VERSION)
@@ -56,6 +60,10 @@ def hr_view(membership: Any, application_id: Any) -> dict[str, Any]:
                 continue
             claim = ExtractedClaim.model_validate_json(row.payload)
             shown = display(claim)
+            institution = getattr(claim.data, "institution", "") or ""
+            if mask and claim.data.type == "education" and institution:
+                shown["subtitle"] = HIDDEN_INSTITUTION
+                shown["snippet"] = shown["snippet"].replace(institution, HIDDEN_INSTITUTION)
             claims.append(
                 {
                     **shown,
@@ -82,7 +90,7 @@ def hr_view(membership: Any, application_id: Any) -> dict[str, Any]:
             {
                 "id": run.pk,
                 "document_id": run.document_id,
-                "filename": run.document.original_filename,
+                "filename": ("CV" if blind.hidden(app.pk) else run.document.original_filename),
                 "status": run.status,
                 "error_code": run.error_code,
                 "flags": run.flags,

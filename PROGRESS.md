@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
-- **Current task:** P08-T01
+- **Current task:** P08-T05
 - **Last updated:** 2026-11-16
-- **Overall:** 102 / 193 tasks · 7 / 16 phases
+- **Overall:** 106 / 193 tasks · 7 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -170,13 +170,13 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P07-T13 — Frontend: `/hr/jobs/[id]/screening` (runs, progress bar, failures with retry, distribution chart with table …
 - [x] P07-T14 — Model registry seed entries (embedding model, rules engine version, null LLM) and `ai_quality` metrics capture hooks
 - [x] P07-T15 — Benchmark: matching & recall harness against gold labels → report `docs/reports/screening_benchmark_<date>.md`
-- [ ] P07-EXIT — All exit criteria verified with evidence
+- [x] P07-EXIT — All exit criteria verified with evidence
 
 ### Phase 08 — Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)  (`phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md`)
-- [ ] P08-T01 — `apps.shortlisting` models: Shortlist, ShortlistEntry, DecisionReason (seed: shortlist reasons, not-selected reasons e.g
-- [ ] P08-T02 — Services: create proposal (pre-fill suggestions from bands — suggestions only), set decisions (reason required for …
-- [ ] P08-T03 — Override tracking: entry stores `ai_band_at_decision`, `score_at_decision`, `override` computed
-- [ ] P08-T04 — Blind review mode: server-side serializer redaction (name → "Candidate #A12", email/phone/links/address hidden, …
+- [x] P08-T01 — `apps.shortlisting` models: Shortlist, ShortlistEntry, DecisionReason (seed: shortlist reasons, not-selected reasons e.g
+- [x] P08-T02 — Services: create proposal (pre-fill suggestions from bands — suggestions only), set decisions (reason required for …
+- [x] P08-T03 — Override tracking: entry stores `ai_band_at_decision`, `score_at_decision`, `override` computed
+- [x] P08-T04 — Blind review mode: server-side serializer redaction (name → "Candidate #A12", email/phone/links/address hidden, …
 - [ ] P08-T05 — Applicants list API & UI final: filters (band, score range, coverage, flags, essentials state, status, tags, …
 - [ ] P08-T06 — Candidate review page `/hr/applications/[id]` per `docs/08 §3.3`: `EvidenceViewer` (pdf.js in sandboxed …
 - [ ] P08-T07 — Compare view `/hr/compare` (≤ 4) — criteria rows × candidates, evidence snippets on hover
@@ -483,6 +483,9 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-15 | P07-T01 | A qualification criterion's `min_months` is the "or equivalent experience" alternative (docs/05 §8.1 `equivalent_experience_months`) and `equivalents` lists accepted fields | No separate column in `job_criteria`; avoids a schema change for one optional rule | - |
 | 2026-11-16 | P07-T05 | Essentials count as met with explicit evidence (listed-only skill = 50); weak (<= 25) or unknown essentials keep the band below recommended | docs/05 §10 says "met/explicit"; strict >= 75 made every listed-only essential a lower match | - |
 | 2026-11-16 | P07-T09 | `SCREENING_AUTOSTART` setting; off in test settings, on in screening tests that need it | Other apps' tests emit `application.evidence_ready` without a rubric | - |
+| 2026-11-16 | P08-T01 | `DecisionReason` lives in `apps.applications` (Phase 05) and is shared with shortlists; T01 added the reasons | One reason list for single-application and shortlist decisions | - |
+| 2026-11-16 | P08-T02 | Added an undo-only `shortlisted -> under_review` transition (not offered on the board; requires the undo flag) | EC-REV-04 undo must reverse via new status events; the SRS table had no reverse edge from shortlisted | - |
+| 2026-11-16 | P08-T02 | Shortlist "reject" returns the proposal to draft with a reason instead of a terminal `rejected` status | The proposer fixes and resubmits the same proposal; "rejected" never refers to a candidate | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -599,3 +602,7 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | Impl | P07-T14 | ModelRegistryEntry (rules engine version+thresholds, embedding model, null LLM; synced on post_migrate, old entries closed not deleted) recorded on each ScreeningRun.model_ids; AIQualityReport daily per org/vacancy counters (evaluations, bands, triggers, coverage, grounding sentences/dropped, LLM use, verifications by decision) captured in the evaluation/verification transactions + derived rates | Scheduled reports and override alerts in P13-T07 |
 | 2026-11-16 | Impl | P07-T15 | run_screening_benchmark (recall of gold suitable in recommended/review_needed 1.00, grounding 1.00, determinism 1.00, counterfactual 121/121, 100 engine evaluations 0.13 s) -> docs/reports/screening_benchmark_2026-11-16.md/.json; Django throughput test 100 evaluations 16.7 s; nightly screening benchmark step | review_needed is the largest band (95/135) - calibrate in Phase 10 |
 | 2026-11-16 | Close | P07-EXIT | Phase 07 closed: exit criteria verified (blueprint 84/100 test; screening benchmark recall 1.00, grounding 1.00, determinism 1.00, counterfactual 121/121; missing-never-0 property tests; 100 Django evaluations in 16.7 s; EC 18/18; backend 2,163 passed, 136 Vitest). Fixed during close: EC tags for existing tests + EC-AI-17 test | Phase 08 started |
+| 2026-11-16 | Impl | P08-T01 | apps.shortlisting: Shortlist (one open per vacancy, dual-control approvers, notify_after/undo fields, lock_version) + ShortlistEntry (suggestion separate from decision; DB checks: decision needs a human actor, not_selected needs a reason; AI band/score/coverage snapshot); DecisionReason reused from apps.applications with new not-selected/hold/override reasons | - |
+| 2026-11-16 | Impl | P08-T02 | Services propose (suggestions from bands, never not-selected), set_decisions (reasons for not_selected/hold/overrides, Other needs text, lock_version), submit, approve (applications.decide, dual control -> self_approval_forbidden, row lock -> already_processed, transitions with approver as human actor, notifications after delay, withdrawn skipped EC-REV-07), return for changes, undo within window (undo-only shortlisted->under_review transition, notifications suppressed); API hr/jobs/{id}/shortlists, hr/shortlists/{id}[/entries|refresh|submit|approve(Idempotency-Key)|reject|undo]; tenancy+matrix | Approval with undecided entries leaves them untouched; T08 adds the explicit confirmation |
+| 2026-11-16 | Impl | P08-T03 | Override computed per decision (shortlist of lower/eligibility band, not selected of recommended) with snapshot; selectors.override_stats (approved shortlists only: rate, direction, reasons, by band) | - |
+| 2026-11-16 | Impl | P08-T04 | Blind review server-side: BlindView redacts list/detail/shortlist entries (alias Candidate #XXXX, no email/contact/file names), originals not downloadable until reveal, search by reference only (T05); POST hr/applications/{id}/reveal-identity (reason, per reviewer, audited); optional blind_mask_institutions policy masks institutions in the extraction panel; reveal UI | - |

@@ -238,3 +238,21 @@ class DecisionReason(models.Model):
 
     def __str__(self) -> str:
         return f"{self.applies_to}:{self.code}"
+
+
+class IdentityReveal(TenantModel):
+    """A reviewer chose to see who a blind-reviewed applicant is (P08-T04, EC-REV-06).
+    Per reviewer and application; the reason is audited."""
+
+    application = models.ForeignKey(
+        Application, on_delete=models.CASCADE, related_name="identity_reveals"
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    reason = models.TextField()
+    at = models.DateTimeField()
+
+    class Meta:
+        ordering = ("-at",)
+        constraints = [
+            models.UniqueConstraint(fields=["application", "user"], name="uniq_identity_reveal")
+        ]

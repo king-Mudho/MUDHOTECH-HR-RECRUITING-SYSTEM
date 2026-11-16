@@ -43,7 +43,12 @@ def submitted(job: Any, first: str = "Rudo", last: str = "Moyo", **kw: Any) -> A
 
 @pytest.fixture
 def team() -> Any:
-    return make_org_with_team()
+    from apps.organisations.models import OrganisationPolicy
+
+    team = make_org_with_team()
+    # these tests cover what staff see with identity shown; blind mode has test_blind.py
+    OrganisationPolicy.objects.filter(organisation=team.org).update(blind_review_default=False)
+    return team
 
 
 @pytest.fixture

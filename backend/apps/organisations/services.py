@@ -58,6 +58,7 @@ POLICY_EDITABLE_FIELDS = (
     "ai_enabled",
     "llm_enabled",
     "blind_review_default",
+    "blind_mask_institutions",
     "notification_delay_minutes",
     "hide_ai_from_panelists",
     "rights_request_sla_days",

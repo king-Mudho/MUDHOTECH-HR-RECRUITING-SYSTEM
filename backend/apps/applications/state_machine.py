@@ -25,6 +25,8 @@ CANDIDATE, STAFF, SYSTEM = "candidate", "staff", "system"
 class Rule:
     actors: frozenset[str]
     reason_required: bool = False
+    # only reachable through the shortlist undo (P08-T02, EC-REV-04); never offered on the board
+    undo_only: bool = False
 
 
 def _r(*actors: str, reason: bool = False) -> Rule:
@@ -60,6 +62,8 @@ TRANSITIONS: dict[tuple[str, str], Rule] = {
     (S.SHORTLISTED, S.INTERVIEW): _r(STAFF),
     (S.SHORTLISTED, S.NOT_SELECTED): HUMAN_DECISION,
     (S.SHORTLISTED, S.WITHDRAWN): _r(CANDIDATE),
+    # undo of an approved shortlist inside the notification delay window (EC-REV-04)
+    (S.SHORTLISTED, S.UNDER_REVIEW): Rule(frozenset({STAFF}), True, undo_only=True),
     (S.INTERVIEW, S.OFFER): HUMAN_DECISION,
     (S.INTERVIEW, S.NOT_SELECTED): HUMAN_DECISION,
     (S.INTERVIEW, S.WITHDRAWN): _r(CANDIDATE),
@@ -85,7 +89,9 @@ def allowed_targets(from_status: str, actor_kind: str | None = None) -> list[str
     return sorted(
         to
         for (frm, to), rule in TRANSITIONS.items()
-        if frm == from_status and (actor_kind is None or actor_kind in rule.actors)
+        if frm == from_status
+        and not rule.undo_only
+        and (actor_kind is None or actor_kind in rule.actors)
     )
 
 

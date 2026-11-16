@@ -382,6 +382,8 @@
       "llm_enabled_help": "Off by default. When on, only redacted text is sent to the configured provider.",
       "blind_review_default": "Blind first-pass review",
       "blind_review_default_help": "Hide candidate names during the first review to reduce bias.",
+      "blind_mask_institutions": "Hide institution names in blind review",
+      "blind_mask_institutions_help": "Also hide the names of schools and universities while reviewers cannot see who the applicant is.",
       "hide_ai_from_panelists": "Hide AI scores from interview panels",
       "hide_ai_from_panelists_help": "Prevents anchoring on AI suggestions during interviews.",
       "shortlist_dual_control": "Shortlists need a second approver",
@@ -1545,7 +1547,96 @@
         "date_anomaly": "Some dates look impossible (e.g. an end before the start); those roles were not counted."
       }
     },
-    "openScreening": "Open screening"
+    "openScreening": "Open screening",
+    "blind": {
+      "hidden": "Blind review: the applicant's name and contact details are hidden to reduce bias. Original files can be opened after you reveal the identity.",
+      "reveal": "Reveal identity",
+      "reason": "Why do you need to see who this is?",
+      "reasonHint": "Recorded in the audit log (at least 5 characters). Only you will see the identity.",
+      "confirm": "Reveal",
+      "cancel": "Cancel",
+      "failed": "Could not reveal the identity. Please try again."
+    },
+    "applicants": {
+      "openShortlist": "Open shortlist",
+      "views": "Saved views",
+      "presets": {
+        "all_active": "All active",
+        "needs_review": "Needs review",
+        "recommended": "Recommended",
+        "eligibility": "Eligibility review",
+        "errors": "Errors"
+      },
+      "saveViewLabel": "Save these filters as",
+      "saveView": "Save view",
+      "filtersLegend": "Filters",
+      "any": "Any",
+      "band": "AI band",
+      "essentials": "Essentials",
+      "essentialsState": {
+        "all_met": "All evidenced",
+        "unknown": "Some unknown",
+        "not_evidenced": "Some weakly evidenced"
+      },
+      "assigned": "Assigned",
+      "assignedMe": "Assigned to me",
+      "assignedNone": "Not assigned",
+      "minScore": "Minimum score",
+      "tag": "Tag",
+      "lowCoverage": "Low evidence coverage only",
+      "sort": "Sort by",
+      "orderings": {
+        "-score": "Score (high to low)",
+        "score": "Score (low to high)",
+        "-submitted_at": "Newest first",
+        "submitted_at": "Oldest first",
+        "coverage": "Lowest coverage first"
+      },
+      "aiNotice": "Bands and scores are AI-assisted suggestions — they require human review and never decide on their own.",
+      "columns": {
+        "candidate": "Candidate",
+        "band": "AI band",
+        "score": "Score",
+        "essentials": "Essentials",
+        "flags": "Flags",
+        "status": "Status",
+        "submitted": "Submitted",
+        "assigned": "Assigned"
+      },
+      "essentialsAria": "Essentials: {met} evidenced, {unknown} unknown, {notEvidenced} weakly evidenced",
+      "coverageShort": "{value}% coverage",
+      "flags": {
+        "identity_mismatch_possible": "The name on the CV is different from the applicant's account name. People use other or married names — check before drawing conclusions.",
+        "duplicate_document_across_accounts": "The same CV file was also uploaded by another account. It may be a shared template; review it as you would any CV.",
+        "injection_suspected": "The CV contains text addressed to screening software. Those lines were ignored.",
+        "hidden_text": "The CV contains hidden text (e.g. white or tiny). It was ignored.",
+        "possibly_not_cv": "The file may not be a CV (e.g. a certificate). The candidate has been asked to upload their CV.",
+        "language_unsupported": "The CV is not in English, so items may be missing — please read it directly.",
+        "low_ocr_confidence": "The CV is a scan and parts were hard to read.",
+        "ocr_unavailable": "The CV is a scan and could not be read automatically.",
+        "garbled_text": "The file's text layer was damaged; it was read from the page images instead.",
+        "date_anomaly": "Some dates look impossible (e.g. an end before the start); those roles were not counted."
+      },
+      "selectAll": "Select all shown applicants",
+      "select": "Select {name}",
+      "shown": "Showing {shown} of {count}",
+      "loadMore": "Load more",
+      "loading": "Loading…",
+      "bulk": {
+        "label": "Bulk actions",
+        "selected": "{count, plural, one {# selected} other {# selected}}",
+        "assignMe": "Assign to me",
+        "tag": "Add tag",
+        "clarification": "Request clarification",
+        "propose": "Propose shortlist",
+        "tagLabel": "Tag",
+        "questionLabel": "Question for the applicants",
+        "apply": "Apply",
+        "cancel": "Cancel",
+        "done": "{done, plural, one {# application updated} other {# applications updated}}{skipped, plural, =0 {} other {, # skipped}}.",
+        "failed": "The bulk action could not be completed."
+      }
+    }
   },
   "notifications": {
     "bell": "Notifications",

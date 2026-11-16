@@ -209,6 +209,10 @@ def transition(
                 details={"from": frm, "to": to, "allowed": sm.allowed_targets(frm)}
             )
         kind = _actor_kind(app, actor, actor_type)
+        if rule.undo_only and not (metadata or {}).get("undo"):
+            raise ApplicationTransitionError(
+                details={"from": frm, "to": to, "allowed": sm.allowed_targets(frm)}
+            )
         if kind not in rule.actors:
             raise ApplicationTransitionError(
                 message="You can't make this status change.",

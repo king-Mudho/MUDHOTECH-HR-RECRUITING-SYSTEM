@@ -17,14 +17,19 @@ from rest_framework.views import APIView
 
 from apps.accounts.services import authed_user
 from apps.applications import hr
+from apps.applications.blind import BlindView
 from apps.applications.models import Application
 from apps.core.pagination import StandardPagination
 from apps.organisations.permissions import HasOrgAction
 
 
 class HRApplicationListSerializer(serializers.ModelSerializer):
+    """Identity fields are redacted server-side in blind review (P08-T04): the view passes a
+    ``BlindView`` in the context; without one nothing is shown."""
+
     candidate_name = serializers.SerializerMethodField()
     candidate_email = serializers.SerializerMethodField()
+    identity_hidden = serializers.SerializerMethodField()
 
     class Meta:
         model = Application
@@ -35,6 +40,7 @@ class HRApplicationListSerializer(serializers.ModelSerializer):
             "submitted_at",
             "candidate_name",
             "candidate_email",
+            "identity_hidden",
             "channel",
             "is_assisted",
             "objects_to_automated_processing",
@@ -44,13 +50,21 @@ class HRApplicationListSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
+    def _blind(self, obj: Application) -> BlindView:
+        view = self.context.get("blind")
+        if view is None:  # fail closed
+            view = BlindView(None, obj.organisation_id, [])
+            view.enabled = True
+        return view
+
     def get_candidate_name(self, obj: Application) -> str:
-        snap = obj.candidate_profile_snapshot or {}
-        name = " ".join(p for p in (snap.get("first_name"), snap.get("last_name")) if p)
-        return name or str(snap.get("email") or "")
+        return self._blind(obj).name(obj)
 
     def get_candidate_email(self, obj: Application) -> str:
-        return str((obj.candidate_profile_snapshot or {}).get("email") or "")
+        return self._blind(obj).email(obj)
+
+    def get_identity_hidden(self, obj: Application) -> bool:
+        return self._blind(obj).hidden(obj.pk)
 
 
 class HRDocumentSerializer(serializers.Serializer):
@@ -121,11 +135,11 @@ class HRApplicationDetailSerializer(HRApplicationListSerializer):
 
     @extend_schema_field(serializers.DictField())
     def get_candidate(self, obj: Application) -> dict[str, Any]:
-        return dict(obj.candidate_profile_snapshot or {})
+        return self._blind(obj).candidate(obj)
 
     @extend_schema_field(HRDocumentSerializer(many=True))
     def get_documents(self, obj: Application) -> list[dict[str, Any]]:
-        return list(self.context["extra"]["documents"])
+        return self._blind(obj).documents(obj, list(self.context["extra"]["documents"]))
 
     @extend_schema_field(HRAnswerSerializer(many=True))
     def get_answers(self, obj: Application) -> list[dict[str, Any]]:
@@ -161,6 +175,19 @@ class HRJobApplicationsView(generics.ListAPIView[Application]):
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().get(request, *args, **kwargs)
 
+    def get_serializer(self, *args: Any, **kwargs: Any) -> Any:
+        if getattr(self, "swagger_fake_view", False):
+            return super().get_serializer(*args, **kwargs)
+        rows = args[0] if args else []
+        ids = [a.pk for a in rows] if isinstance(rows, list) else []
+        kwargs.setdefault("context", self.get_serializer_context())
+        kwargs["context"]["blind"] = BlindView(
+            self.request.user,
+            self.request.membership.organisation_id,  # type: ignore[attr-defined]
+            ids,
+        )
+        return super().get_serializer(*args, **kwargs)
+
 
 class HRApplicationDetailView(APIView):
     permission_classes = [HasOrgAction("applications.view")]
@@ -175,6 +202,12 @@ class HRApplicationDetailView(APIView):
         return Response(
             HRApplicationDetailSerializer(
                 data["application"],
-                context={"extra": data, "membership": request.membership},  # type: ignore[attr-defined]
+                context={
+                    "extra": data,
+                    "membership": request.membership,  # type: ignore[attr-defined]
+                    "blind": BlindView(
+                        request.user, data["application"].organisation_id, [data["application"].pk]
+                    ),
+                },
             ).data
         )

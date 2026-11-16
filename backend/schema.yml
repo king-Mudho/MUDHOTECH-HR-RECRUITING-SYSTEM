@@ -1829,6 +1829,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/HRExtraction'
           description: ''
+  /api/v1/hr/applications/{application_id}/reveal-identity/:
+    post:
+      operationId: hr_application_reveal_identity
+      description: Show this reviewer who a blind-reviewed applicant is (reason required,
+        audited).
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealIdentityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RevealIdentityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RevealIdentityRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityReveal'
+          description: ''
   /api/v1/hr/applications/{application_id}/tags/:
     put:
       operationId: hr_applications_tags_update
@@ -2199,6 +2234,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreeningRunDetail'
+          description: ''
+  /api/v1/hr/jobs/{job_id}/shortlists/:
+    get:
+      operationId: hr_job_shortlists
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shortlist'
+          description: ''
+    post:
+      operationId: hr_job_shortlist_propose
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlistProposeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortlistProposeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortlistProposeRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
           description: ''
   /api/v1/hr/jobs/{id}/:
     get:
@@ -3325,6 +3414,217 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreeningRunDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/:
+    get:
+      operationId: hr_shortlist
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/approve/:
+    post:
+      operationId: hr_shortlist_approve
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: UUID
+        required: true
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/entries/:
+    patch:
+      operationId: hr_shortlist_entries
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShortlistDecisionsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShortlistDecisionsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShortlistDecisionsRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/refresh/:
+    post:
+      operationId: hr_shortlist_refresh
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/reject/:
+    post:
+      operationId: hr_shortlist_reject
+      description: Return the proposal to its author for changes (never about a candidate).
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/submit/:
+    post:
+      operationId: hr_shortlist_submit
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortlistLockRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
+          description: ''
+  /api/v1/hr/shortlists/{shortlist_id}/undo/:
+    post:
+      operationId: hr_shortlist_undo
+      parameters:
+      - in: path
+        name: shortlist_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortlistReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlistDetail'
           description: ''
   /api/v1/invitations/{token}/:
     get:
@@ -6128,16 +6428,6 @@ components:
       required:
       - canonical_name
       - category
-    DecisionEnum:
-      enum:
-      - confirmed
-      - corrected
-      - rejected
-      type: string
-      description: |-
-        * `confirmed` - Confirmed
-        * `corrected` - Corrected
-        * `rejected` - Not supported by the evidence
     DecisionReason:
       type: object
       properties:
@@ -6642,6 +6932,9 @@ components:
       - value
     HRApplicationDetail:
       type: object
+      description: |-
+        Identity fields are redacted server-side in blind review (P08-T04): the view passes a
+        ``BlindView`` in the context; without one nothing is shown.
       properties:
         id:
           type: string
@@ -6665,6 +6958,9 @@ components:
           readOnly: true
         candidate_email:
           type: string
+          readOnly: true
+        identity_hidden:
+          type: boolean
           readOnly: true
         channel:
           type: string
@@ -6735,6 +7031,7 @@ components:
       - channel
       - documents
       - id
+      - identity_hidden
       - is_assisted
       - job
       - lock_version
@@ -6748,6 +7045,9 @@ components:
       - withdrawn_at
     HRApplicationList:
       type: object
+      description: |-
+        Identity fields are redacted server-side in blind review (P08-T04): the view passes a
+        ``BlindView`` in the context; without one nothing is shown.
       properties:
         id:
           type: string
@@ -6771,6 +7071,9 @@ components:
           readOnly: true
         candidate_email:
           type: string
+          readOnly: true
+        identity_hidden:
+          type: boolean
           readOnly: true
         channel:
           type: string
@@ -6801,6 +7104,7 @@ components:
       - candidate_name
       - channel
       - id
+      - identity_hidden
       - is_assisted
       - lock_version
       - objects_to_automated_processing
@@ -7325,6 +7629,18 @@ components:
       - reason_code
       - reason_text
       - to_status
+    IdentityReveal:
+      type: object
+      properties:
+        application_id:
+          type: string
+          format: uuid
+        revealed_at:
+          type: string
+          format: date-time
+      required:
+      - application_id
+      - revealed_at
     ImportRequestRequest:
       type: object
       properties:
@@ -9077,6 +9393,8 @@ components:
           type: boolean
         blind_review_default:
           type: boolean
+        blind_mask_institutions:
+          type: boolean
         notification_delay_minutes:
           type: integer
           maximum: 32767
@@ -9124,6 +9442,16 @@ components:
           type: boolean
         lock_version:
           type: integer
+    PatchedShortlistDecisionsRequest:
+      type: object
+      properties:
+        decisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortlistDecisionRequest'
+        lock_version:
+          type: integer
+          nullable: true
     PlatformOrganisation:
       type: object
       properties:
@@ -9238,6 +9566,8 @@ components:
         llm_enabled:
           type: boolean
         blind_review_default:
+          type: boolean
+        blind_mask_institutions:
           type: boolean
         notification_delay_minutes:
           type: integer
@@ -10053,6 +10383,15 @@ components:
       - flags
       - imported_at
       - status
+    RevealIdentityRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
     RevertRequest:
       type: object
       properties:
@@ -10537,6 +10876,306 @@ components:
         * `lead` - Lead / principal
         * `manager` - Manager
         * `executive` - Executive
+    Shortlist:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+        job_version_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        desired_size:
+          type: integer
+          nullable: true
+        proposed_by:
+          type: string
+        proposed_by_id:
+          type: string
+          format: uuid
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        notify_after:
+          type: string
+          format: date-time
+          nullable: true
+        return_reason:
+          type: string
+        undo_reason:
+          type: string
+        notes:
+          type: string
+        lock_version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        summary:
+          $ref: '#/components/schemas/ShortlistSummary'
+      required:
+      - approved_at
+      - created_at
+      - desired_size
+      - id
+      - job_id
+      - job_version_id
+      - lock_version
+      - notes
+      - notify_after
+      - proposed_by
+      - proposed_by_id
+      - return_reason
+      - status
+      - submitted_at
+      - summary
+      - undo_reason
+    ShortlistDecisionDecisionEnum:
+      enum:
+      - undecided
+      - shortlist
+      - not_selected
+      - hold
+      type: string
+      description: |-
+        * `undecided` - Not decided yet
+        * `shortlist` - Shortlist
+        * `not_selected` - Not selected
+        * `hold` - On hold
+    ShortlistDecisionRequest:
+      type: object
+      properties:
+        application_id:
+          type: string
+          format: uuid
+        decision:
+          $ref: '#/components/schemas/ShortlistDecisionDecisionEnum'
+        reason_code:
+          type: string
+          default: ''
+          maxLength: 40
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 2000
+      required:
+      - application_id
+      - decision
+    ShortlistDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+        job_version_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        desired_size:
+          type: integer
+          nullable: true
+        proposed_by:
+          type: string
+        proposed_by_id:
+          type: string
+          format: uuid
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        notify_after:
+          type: string
+          format: date-time
+          nullable: true
+        return_reason:
+          type: string
+        undo_reason:
+          type: string
+        notes:
+          type: string
+        lock_version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        summary:
+          $ref: '#/components/schemas/ShortlistSummary'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortlistEntry'
+      required:
+      - approved_at
+      - created_at
+      - desired_size
+      - entries
+      - id
+      - job_id
+      - job_version_id
+      - lock_version
+      - notes
+      - notify_after
+      - proposed_by
+      - proposed_by_id
+      - return_reason
+      - status
+      - submitted_at
+      - summary
+      - undo_reason
+    ShortlistEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        application_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        candidate_name:
+          type: string
+        identity_hidden:
+          type: boolean
+        status:
+          type: string
+        suggestion:
+          type: string
+        decision:
+          type: string
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        ai_band:
+          type: string
+        score:
+          type: number
+          format: double
+          nullable: true
+        coverage:
+          type: number
+          format: double
+          nullable: true
+        override:
+          type: boolean
+        decided_by:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        applied_at:
+          type: string
+          format: date-time
+          nullable: true
+        apply_note:
+          type: string
+      required:
+      - ai_band
+      - application_id
+      - applied_at
+      - apply_note
+      - candidate_name
+      - coverage
+      - decided_at
+      - decided_by
+      - decision
+      - id
+      - identity_hidden
+      - override
+      - reason_code
+      - reason_text
+      - reference
+      - score
+      - status
+      - suggestion
+    ShortlistLockRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          nullable: true
+    ShortlistProposeRequest:
+      type: object
+      properties:
+        desired_size:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          nullable: true
+        notes:
+          type: string
+          default: ''
+          maxLength: 4000
+    ShortlistReasonRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    ShortlistSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        undecided:
+          type: integer
+        shortlist:
+          type: integer
+        not_selected:
+          type: integer
+        hold:
+          type: integer
+        overrides:
+          type: integer
+        low_coverage:
+          type: integer
+        uncertain_not_selected:
+          type: integer
+        reasons:
+          type: object
+          additionalProperties:
+            type: integer
+        above_desired_size:
+          type: boolean
+      required:
+      - above_desired_size
+      - hold
+      - low_coverage
+      - not_selected
+      - overrides
+      - reasons
+      - shortlist
+      - total
+      - uncertain_not_selected
+      - undecided
     SizeBandEnum:
       enum:
       - 1-9
@@ -10935,11 +11574,21 @@ components:
       - id
       - note
       - verifier
+    VerifyDecisionEnum:
+      enum:
+      - confirmed
+      - corrected
+      - rejected
+      type: string
+      description: |-
+        * `confirmed` - Confirmed
+        * `corrected` - Corrected
+        * `rejected` - Not supported by the evidence
     VerifyRequest:
       type: object
       properties:
         decision:
-          $ref: '#/components/schemas/DecisionEnum'
+          $ref: '#/components/schemas/VerifyDecisionEnum'
         values:
           type: object
           additionalProperties: {}

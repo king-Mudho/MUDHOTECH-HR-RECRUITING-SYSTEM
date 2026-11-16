@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.applications",
     "apps.resumes",
     "apps.screening",
+    "apps.shortlisting",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",

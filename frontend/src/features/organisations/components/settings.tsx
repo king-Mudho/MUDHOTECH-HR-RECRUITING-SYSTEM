@@ -554,6 +554,7 @@ const BOOLEAN_POLICIES = [
   "ai_enabled",
   "llm_enabled",
   "blind_review_default",
+  "blind_mask_institutions",
   "hide_ai_from_panelists",
   "shortlist_dual_control",
   "rubric_dual_control",

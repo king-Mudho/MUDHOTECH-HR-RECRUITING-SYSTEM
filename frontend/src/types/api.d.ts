@@ -829,6 +829,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/reveal-identity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Show this reviewer who a blind-reviewed applicant is (reason required, audited). */
+        post: operations["hr_application_reveal_identity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/tags/": {
         parameters: {
             query?: never;
@@ -985,6 +1002,22 @@ export interface paths {
         get: operations["hr_screening_runs_list"];
         put?: never;
         post: operations["hr_screening_runs_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/shortlists/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_job_shortlists"];
+        put?: never;
+        post: operations["hr_job_shortlist_propose"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1480,6 +1513,119 @@ export interface paths {
         get: operations["hr_screening_run"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_shortlist"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_shortlist_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/entries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["hr_shortlist_entries"];
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/refresh/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_shortlist_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Return the proposal to its author for changes (never about a candidate). */
+        post: operations["hr_shortlist_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_shortlist_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/shortlists/{shortlist_id}/undo/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_shortlist_undo"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2617,13 +2763,6 @@ export interface components {
             category: components["schemas"]["CategoryEnum"];
             aliases?: string[];
         };
-        /**
-         * @description * `confirmed` - Confirmed
-         *     * `corrected` - Corrected
-         *     * `rejected` - Not supported by the evidence
-         * @enum {string}
-         */
-        DecisionEnum: "confirmed" | "corrected" | "rejected";
         DecisionReason: {
             readonly code: string;
             readonly label: string;
@@ -2821,6 +2960,10 @@ export interface components {
             /** Format: uuid */
             document_id: string | null;
         };
+        /**
+         * @description Identity fields are redacted server-side in blind review (P08-T04): the view passes a
+         *     ``BlindView`` in the context; without one nothing is shown.
+         */
         HRApplicationDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -2830,6 +2973,7 @@ export interface components {
             readonly submitted_at: string | null;
             readonly candidate_name: string;
             readonly candidate_email: string;
+            readonly identity_hidden: boolean;
             readonly channel: string;
             readonly is_assisted: boolean;
             readonly objects_to_automated_processing: boolean;
@@ -2849,6 +2993,10 @@ export interface components {
             readonly timeline: components["schemas"]["HRStatusEvent"][];
             readonly allowed_transitions: string[];
         };
+        /**
+         * @description Identity fields are redacted server-side in blind review (P08-T04): the view passes a
+         *     ``BlindView`` in the context; without one nothing is shown.
+         */
         HRApplicationList: {
             /** Format: uuid */
             readonly id: string;
@@ -2858,6 +3006,7 @@ export interface components {
             readonly submitted_at: string | null;
             readonly candidate_name: string;
             readonly candidate_email: string;
+            readonly identity_hidden: boolean;
             readonly channel: string;
             readonly is_assisted: boolean;
             readonly objects_to_automated_processing: boolean;
@@ -3026,6 +3175,12 @@ export interface components {
             reason_text: string;
             /** Format: date-time */
             at: string;
+        };
+        IdentityReveal: {
+            /** Format: uuid */
+            application_id: string;
+            /** Format: date-time */
+            revealed_at: string;
         };
         ImportRequestRequest: {
             confirm: boolean;
@@ -3774,6 +3929,7 @@ export interface components {
             ai_enabled?: boolean;
             llm_enabled?: boolean;
             blind_review_default?: boolean;
+            blind_mask_institutions?: boolean;
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
@@ -3790,6 +3946,10 @@ export interface components {
             notice_period_days?: number | null;
             open_to_relocation?: boolean;
             lock_version?: number;
+        };
+        PatchedShortlistDecisionsRequest: {
+            decisions?: components["schemas"]["ShortlistDecisionRequest"][];
+            lock_version?: number | null;
         };
         PlatformOrganisation: {
             /** Format: uuid */
@@ -3835,6 +3995,7 @@ export interface components {
             ai_enabled?: boolean;
             llm_enabled?: boolean;
             blind_review_default?: boolean;
+            blind_mask_institutions?: boolean;
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             rights_request_sla_days?: number;
@@ -4119,6 +4280,9 @@ export interface components {
             imported_at: string | null;
             claims: components["schemas"]["ClaimView"][];
         };
+        RevealIdentityRequest: {
+            reason: string;
+        };
         RevertRequest: {
             key: components["schemas"]["KeyEnum"];
             /** @default email */
@@ -4330,6 +4494,128 @@ export interface components {
          * @enum {string}
          */
         SeniorityEnum: "entry" | "junior" | "mid" | "senior" | "lead" | "manager" | "executive";
+        Shortlist: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            /** Format: uuid */
+            job_version_id: string;
+            status: string;
+            desired_size: number | null;
+            proposed_by: string;
+            /** Format: uuid */
+            proposed_by_id: string;
+            /** Format: date-time */
+            submitted_at: string | null;
+            /** Format: date-time */
+            approved_at: string | null;
+            /** Format: date-time */
+            notify_after: string | null;
+            return_reason: string;
+            undo_reason: string;
+            notes: string;
+            lock_version: number;
+            /** Format: date-time */
+            created_at: string;
+            summary: components["schemas"]["ShortlistSummary"];
+        };
+        /**
+         * @description * `undecided` - Not decided yet
+         *     * `shortlist` - Shortlist
+         *     * `not_selected` - Not selected
+         *     * `hold` - On hold
+         * @enum {string}
+         */
+        ShortlistDecisionDecisionEnum: "undecided" | "shortlist" | "not_selected" | "hold";
+        ShortlistDecisionRequest: {
+            /** Format: uuid */
+            application_id: string;
+            decision: components["schemas"]["ShortlistDecisionDecisionEnum"];
+            /** @default  */
+            reason_code: string;
+            /** @default  */
+            reason_text: string;
+        };
+        ShortlistDetail: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            /** Format: uuid */
+            job_version_id: string;
+            status: string;
+            desired_size: number | null;
+            proposed_by: string;
+            /** Format: uuid */
+            proposed_by_id: string;
+            /** Format: date-time */
+            submitted_at: string | null;
+            /** Format: date-time */
+            approved_at: string | null;
+            /** Format: date-time */
+            notify_after: string | null;
+            return_reason: string;
+            undo_reason: string;
+            notes: string;
+            lock_version: number;
+            /** Format: date-time */
+            created_at: string;
+            summary: components["schemas"]["ShortlistSummary"];
+            entries: components["schemas"]["ShortlistEntry"][];
+        };
+        ShortlistEntry: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            application_id: string;
+            reference: string | null;
+            candidate_name: string;
+            identity_hidden: boolean;
+            status: string;
+            suggestion: string;
+            decision: string;
+            reason_code: string;
+            reason_text: string;
+            ai_band: string;
+            /** Format: double */
+            score: number | null;
+            /** Format: double */
+            coverage: number | null;
+            override: boolean;
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            /** Format: date-time */
+            applied_at: string | null;
+            apply_note: string;
+        };
+        ShortlistLockRequest: {
+            lock_version?: number | null;
+        };
+        ShortlistProposeRequest: {
+            desired_size?: number | null;
+            /** @default  */
+            notes: string;
+        };
+        ShortlistReasonRequest: {
+            lock_version?: number | null;
+            reason: string;
+        };
+        ShortlistSummary: {
+            total: number;
+            undecided: number;
+            shortlist: number;
+            not_selected: number;
+            hold: number;
+            overrides: number;
+            low_coverage: number;
+            uncertain_not_selected: number;
+            reasons: {
+                [key: string]: number;
+            };
+            above_desired_size: boolean;
+        };
         /**
          * @description * `1-9` - 1-9
          *     * `10-49` - 10-49
@@ -4492,8 +4778,15 @@ export interface components {
             at: string;
             verifier: string;
         };
+        /**
+         * @description * `confirmed` - Confirmed
+         *     * `corrected` - Corrected
+         *     * `rejected` - Not supported by the evidence
+         * @enum {string}
+         */
+        VerifyDecisionEnum: "confirmed" | "corrected" | "rejected";
         VerifyRequest: {
-            decision: components["schemas"]["DecisionEnum"];
+            decision: components["schemas"]["VerifyDecisionEnum"];
             values?: {
                 [key: string]: unknown;
             };
@@ -6224,6 +6517,33 @@ export interface operations {
             };
         };
     };
+    hr_application_reveal_identity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevealIdentityRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RevealIdentityRequest"];
+                "multipart/form-data": components["schemas"]["RevealIdentityRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentityReveal"];
+                };
+            };
+        };
+    };
     hr_applications_tags_update: {
         parameters: {
             query?: never;
@@ -6518,6 +6838,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScreeningRunDetail"];
+                };
+            };
+        };
+    };
+    hr_job_shortlists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Shortlist"][];
+                };
+            };
+        };
+    };
+    hr_job_shortlist_propose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ShortlistProposeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistProposeRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistProposeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
                 };
             };
         };
@@ -7388,6 +7756,186 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScreeningRunDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_approve: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID */
+                "Idempotency-Key": string;
+            };
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ShortlistLockRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistLockRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistLockRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_entries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedShortlistDecisionsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedShortlistDecisionsRequest"];
+                "multipart/form-data": components["schemas"]["PatchedShortlistDecisionsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShortlistReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistReasonRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ShortlistLockRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistLockRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistLockRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
+                };
+            };
+        };
+    };
+    hr_shortlist_undo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shortlist_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShortlistReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ShortlistReasonRequest"];
+                "multipart/form-data": components["schemas"]["ShortlistReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShortlistDetail"];
                 };
             };
         };

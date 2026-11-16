@@ -33,7 +33,8 @@ EXPECTED = {
     "needs_information": {"processing", "under_review", "withdrawn"},
     "under_review": {"shortlisted", "on_hold", "not_selected", "needs_information", "withdrawn"},
     "on_hold": {"under_review", "shortlisted", "not_selected", "withdrawn"},
-    "shortlisted": {"interview", "not_selected", "withdrawn"},
+    # under_review: shortlist undo only (P08-T02, EC-REV-04)
+    "shortlisted": {"interview", "not_selected", "withdrawn", "under_review"},
     "interview": {"offer", "not_selected", "withdrawn"},
     "offer": {"hired", "offer_declined", "withdrawn"},
     "hired": {"under_review"},
@@ -104,7 +105,15 @@ def test_every_transition_for_every_actor_kind(world: Any, frm: str, to: str, ki
             transition(app, to, actor=actor, actor_type=actor_type, reason="Recorded reason")
         assert Application.objects.for_org(job.organisation).get(pk=app.pk).status == frm
         return
-    done = transition(app, to, actor=actor, actor_type=actor_type, reason="Recorded reason")
+    if rule.undo_only:  # reachable only through the shortlist undo (P08-T02)
+        with pytest.raises(ApplicationTransitionError):
+            transition(app, to, actor=actor, actor_type=actor_type, reason="Recorded reason")
+        meta = {"undo": True}
+    else:
+        meta = {}
+    done = transition(
+        app, to, actor=actor, actor_type=actor_type, reason="Recorded reason", metadata=meta
+    )
     assert done.status == to
     event = ApplicationStatusEvent.objects.for_org(job.organisation).get(application=app)
     assert (event.from_status, event.to_status) == (frm, to)

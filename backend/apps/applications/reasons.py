@@ -11,7 +11,9 @@ REASONS: dict[str, list[tuple[str, str]]] = {
         ("other", "Other (explained in the note)"),
     ],
     "not_selected": [
-        ("essential_not_met", "Essential requirement not evidenced"),
+        ("essential_not_met", "Essential criterion not evidenced after review"),
+        ("less_relevant_experience", "Less relevant experience than the shortlisted candidates"),
+        ("eligibility_not_met", "Eligibility requirement not met (verified)"),
         ("stronger_match_elsewhere", "Other applicants matched the requirements more closely"),
         ("position_filled", "The position has been filled"),
         ("no_response", "No response to a clarification request"),
@@ -21,12 +23,16 @@ REASONS: dict[str, list[tuple[str, str]]] = {
         ("awaiting_information", "Waiting for more information"),
         ("awaiting_budget", "Waiting for budget or approval"),
         ("future_round", "Kept for a later round"),
+        ("pending_verification", "Waiting for a claim or document to be verified"),
         ("other", "Other (explained in the note)"),
     ],
     "override": [
         ("decided_in_error", "Earlier decision was made in error"),
         ("new_information", "New information received"),
         ("candidate_request", "Candidate asked for reconsideration"),
+        ("evidence_review_differs", "Review of the evidence differs from the AI suggestion"),
+        ("verified_information", "Verified information changed the assessment"),
+        ("context_not_in_cv", "Relevant context not captured in the CV"),
         ("other", "Other (explained in the note)"),
     ],
 }
