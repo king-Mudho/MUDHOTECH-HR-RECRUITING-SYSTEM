@@ -21,7 +21,7 @@ rubric, with coverage, confidence, a non-rejecting band, grounded explanations a
 - [x] **P07-T11** — Human verification API (`/hr/claims/{id}/verify`): confirm/correct/reject → evidence status `human_verified` → optional re-evaluation.
 - [x] **P07-T12** — Vacancy-level analytics for screening: score/band distribution, low-coverage warning (EC-AI-15), high-score saturation info (EC-AI-14).
 - [x] **P07-T13** — Frontend: `/hr/jobs/[id]/screening` (runs, progress bar, failures with retry, distribution chart with table alternative, warnings); evaluation view components `ScoreBreakdown` (category bars + coverage hatch), `CriteriaPanel` (status, band, method, confidence, evidence, verify actions), explanation with clickable citations; all labelled "AI-assisted suggestion — requires human review".
-- [ ] **P07-T14** — Model registry seed entries (embedding model, rules engine version, null LLM) and `ai_quality` metrics capture hooks.
+- [x] **P07-T14** — Model registry seed entries (embedding model, rules engine version, null LLM) and `ai_quality` metrics capture hooks.
 - [ ] **P07-T15** — Benchmark: matching & recall harness against gold labels → report `docs/reports/screening_benchmark_<date>.md`.
 
 ## Edge cases

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Evaluation, ScreeningRun
+from .models import AIQualityReport, Evaluation, ModelRegistryEntry, ScreeningRun
 
 
 @admin.register(ScreeningRun)
@@ -22,3 +22,16 @@ class EvaluationAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request: object) -> bool:
         return False
+
+
+@admin.register(ModelRegistryEntry)
+class ModelRegistryEntryAdmin(admin.ModelAdmin):
+    list_display = ("kind", "name", "version", "provider", "active_from", "active_to")
+    list_filter = ("kind", "provider")
+
+
+@admin.register(AIQualityReport)
+class AIQualityReportAdmin(admin.ModelAdmin):
+    list_display = ("period", "organisation", "job")
+    list_filter = ("period",)
+    readonly_fields = ("metrics",)

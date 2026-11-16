@@ -12,7 +12,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from apps.core.fields import EncryptedTextField
-from apps.core.models import TenantModel
+from apps.core.models import BaseModel, TenantModel
 
 
 class Trigger(models.TextChoices):
@@ -172,3 +172,66 @@ class HumanVerification(TenantModel):
 
     class Meta:
         ordering = ("-at",)
+
+
+# ----------------------------------------------------------------------- AI governance (P07-T14)
+class ModelRegistryEntry(BaseModel):
+    """Every model or engine that can influence an evaluation (docs/03 model_registry, docs/05 §12).
+    Platform-level (not tenant data); synced from settings on ``migrate``."""
+
+    class Kind(models.TextChoices):
+        EMBEDDING = "embedding", "Embedding model"
+        NER = "ner", "Named-entity model"
+        LLM = "llm", "Language model"
+        RULES = "rules", "Rules engine"
+
+    name = models.CharField(max_length=120)
+    version = models.CharField(max_length=60)
+    kind = models.CharField(max_length=12, choices=Kind.choices)
+    purpose = models.CharField(max_length=300)
+    provider = models.CharField(max_length=80)
+    data_policy = models.TextField(blank=True, default="")
+    limitations = models.TextField(blank=True, default="")
+    evaluation_report = models.CharField(max_length=200, blank=True, default="")
+    active_from = models.DateTimeField()
+    active_to = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("kind", "name", "-active_from")
+        constraints = [
+            models.UniqueConstraint(fields=["kind", "name", "version"], name="uniq_model_version")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.name}@{self.version}"
+
+
+class AIQualityReport(BaseModel):
+    """Aggregated AI quality metrics per organisation, vacancy and day (docs/03 ai_quality_reports).
+    Counters only - no candidate data. Phase 13 adds scheduled reports and alerts on top."""
+
+    organisation = models.ForeignKey(
+        "organisations.Organisation",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="+",
+    )
+    job = models.ForeignKey(
+        "jobs.Job", null=True, blank=True, on_delete=models.CASCADE, related_name="+"
+    )
+    period = models.DateField()
+    metrics = models.JSONField(default=dict, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        ordering = ("-period",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organisation", "job", "period"],
+                name="uniq_quality_period",
+                nulls_distinct=False,  # one platform-wide row per day too
+            )
+        ]

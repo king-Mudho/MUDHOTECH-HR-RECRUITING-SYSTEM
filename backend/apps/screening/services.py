@@ -244,6 +244,9 @@ def _store(
             "llm_used": evaluation.llm_used,
         },
     )
+    from .quality import capture_evaluation
+
+    capture_evaluation(evaluation, sentences=len(explanation.sentences), job_id=app.job_id)
     return evaluation
 
 

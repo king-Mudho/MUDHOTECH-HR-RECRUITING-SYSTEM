@@ -89,6 +89,7 @@ def start_run(
     """Create a run and dispatch its evaluations after commit."""
     from apps.taxonomy.services import current_version
 
+    from .registry import active_ids
     from .tasks import dispatch_run
 
     job = _job(membership, job_id)
@@ -119,6 +120,7 @@ def start_run(
             engine_version=ENGINE_VERSION,
             config_version=DEFAULT_CONFIG.version,
             taxonomy_version=current_version(),
+            model_ids=active_ids(),
             status=ScreeningRun.Status.RUNNING if apps else ScreeningRun.Status.COMPLETED,
             total=len(apps),
             started_at=now(),

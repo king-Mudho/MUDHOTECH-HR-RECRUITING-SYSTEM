@@ -31,7 +31,7 @@ def _claim(membership: Any, claim_id: Any) -> ClaimRow:
 
     row = (
         ClaimRow.objects.for_org(membership.organisation_id)
-        .select_related("run")
+        .select_related("run__application")
         .filter(pk=claim_id)
         .first()
     )
@@ -117,6 +117,9 @@ def verify(
             organisation=row.organisation_id,
             after={"decision": decision, "claim_id": str(row.pk), "fields": sorted(values or {})},
         )
+        from .quality import capture_verification
+
+        capture_verification(verdict, job_id=row.run.application.job_id)
         if reevaluate:
             from .tasks import evaluate_application
 
