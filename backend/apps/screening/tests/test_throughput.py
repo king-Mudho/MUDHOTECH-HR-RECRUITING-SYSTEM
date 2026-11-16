@@ -48,7 +48,9 @@ def test_one_hundred_evaluations_within_five_minutes(read_app: Application, vaca
     seconds = time.perf_counter() - start
     print(f"\n[P07 exit] 100 Django evaluations: {seconds:.1f} s")  # noqa: T201 - recorded in report
     assert Evaluation.objects.for_org(read_app.organisation_id).count() == 100
-    assert not Application.objects.for_org(read_app.organisation_id).filter(
-        status=Status.PROCESSING
-    ).exists()
+    assert (
+        not Application.objects.for_org(read_app.organisation_id)
+        .filter(status=Status.PROCESSING)
+        .exists()
+    )
     assert seconds <= LIMIT_SECONDS
