@@ -147,3 +147,43 @@ class TestCreatePlatformAdmin:
         monkeypatch.setenv("PLATFORM_ADMIN_PASSWORD", password)
         with pytest.raises(CommandError):
             call_command("create_platform_admin", stdout=StringIO())
+
+
+def test_closing_an_organisation(s3: Any) -> None:
+    """EC-ORG-10: closed and read-only, vacancies closed, candidates told, data kept until
+    the retention period (counted from the closing date) and then anonymised."""
+    from datetime import timedelta
+
+    from apps.applications.models import Application, Status
+    from apps.applications.tests.factories import make_application, published_job
+    from apps.core.time import now
+    from apps.jobs.models import Job
+    from apps.notifications.models import Notification
+    from apps.privacy import retention
+
+    team = make_org_with_team()
+    job = published_job(organisation=team.org)
+    active = make_application(job, UserFactory(), status=Status.UNDER_REVIEW)
+    done = make_application(job, UserFactory(), status=Status.NOT_SELECTED)
+    c, _ = client()
+    detail = f"{URL}{team.org.pk}/"
+    assert c.post(f"{detail}close/", {}, format="json").status_code == 400  # reason required
+    res = c.post(f"{detail}close/", {"reason": "Customer ended the contract"}, format="json")
+    assert res.status_code == 200 and res.json()["status"] == "closed"
+    team.org.refresh_from_db()
+    assert team.org.is_read_only
+    job = Job.objects.unscoped().get(pk=job.pk)
+    assert job.status == "closed" and job.closed_at is not None
+    told = Notification.objects.filter(key="organisation_closed")
+    assert set(told.values_list("recipient_user", flat=True)) == {active.candidate_user_id}
+    assert Application.objects.unscoped().get(pk=active.pk).status == Status.UNDER_REVIEW
+    assert AuditEvent.objects.filter(action="organisation.closed").exists()
+    # kept for now; anonymised once the retention period has passed since closing
+    assert not retention.due_applications(team.org).exists()
+    later = now() + timedelta(days=30 * 13)
+    due = set(retention.due_applications(team.org, at=later).values_list("pk", flat=True))
+    assert due == {active.pk, done.pk}
+    support, _ = client(PlatformRole.PLATFORM_SUPPORT)
+    assert (
+        support.post(f"{detail}close/", {"reason": "not allowed"}, format="json").status_code == 403
+    )

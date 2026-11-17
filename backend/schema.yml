@@ -5755,6 +5755,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
           description: ''
+  /api/v1/platform/organisations/{organisation_id}/close/:
+    post:
+      operationId: platform_organisations_close
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this organisation.
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSuspendReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlatformSuspendReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlatformSuspendReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrganisation'
+          description: ''
   /api/v1/platform/organisations/{organisation_id}/reactivate/:
     post:
       operationId: platform_organisations_reactivate
@@ -9723,6 +9757,7 @@ components:
       - new_message
       - not_selected
       - note_mention
+      - organisation_closed
       - recruiter_digest
       - recruitment_paused
       - retention_report
@@ -9746,6 +9781,7 @@ components:
         * `new_message` - new_message
         * `not_selected` - not_selected
         * `note_mention` - note_mention
+        * `organisation_closed` - organisation_closed
         * `recruiter_digest` - recruiter_digest
         * `recruitment_paused` - recruitment_paused
         * `retention_report` - retention_report

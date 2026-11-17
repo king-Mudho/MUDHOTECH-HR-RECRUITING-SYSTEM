@@ -176,6 +176,7 @@ def test_core_scenario(vacancy: Any, act: Any, settings: Any, monkeypatch: Any) 
 
     outcome = Notification.objects.filter(key__in=["shortlisted", "not_selected"], channel="email")
     assert outcome.count() == SHORTLIST and not outcome.filter(status="sent").exists()
+    before = list(mail.outbox)  # the clarification goes out at once in the daytime
     mail.outbox.clear()
     notify_after = approved.json()["notify_after"]
     assert all(n.scheduled_for.isoformat() >= notify_after[:19] for n in outcome)  # not before
@@ -188,7 +189,9 @@ def test_core_scenario(vacancy: Any, act: Any, settings: Any, monkeypatch: Any) 
         for a in apps.filter(status="shortlisted").select_related("candidate_user")
     }
     clarified = Application.objects.for_org(team.org).get(pk=unsure[0]["id"]).candidate_user.email
-    recipients = [m.to[0] for m in mail.outbox]
+    # quiet hours defer the clarification to the same run as the outcomes at night
+    recipients = [m.to[0] for m in before if m.to[0] == clarified]
+    recipients += [m.to[0] for m in mail.outbox]
     assert len(recipients) == SHORTLIST + 1  # ten outcomes + the clarification request
     assert set(recipients) == shortlisted | {clarified}  # nobody else hears anything
     assert outcome.filter(status="sent").count() == SHORTLIST

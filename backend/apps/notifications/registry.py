@@ -96,6 +96,13 @@ _KINDS = [
         urgent=True,
     ),
     NotificationKind(
+        "organisation_closed",
+        "The employer closed its account; the application will not progress (EC-ORG-10)",
+        "candidate",
+        ("organisation_name", "job_title", "reference"),
+        urgent=True,
+    ),
+    NotificationKind(
         "draft_deadline_reminder",
         "Unfinished application close to the deadline",
         "candidate",

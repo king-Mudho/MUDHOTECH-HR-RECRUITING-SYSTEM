@@ -111,6 +111,13 @@ class PlatformOrganisationViewSet(
         return self._act(request, services.suspend_organisation, PlatformSuspendReasonSerializer)
 
     @extend_schema(
+        operation_id="platform_organisations_close", request=PlatformSuspendReasonSerializer
+    )
+    @action(detail=True, methods=["post"])
+    def close(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return self._act(request, services.close_organisation, PlatformSuspendReasonSerializer)
+
+    @extend_schema(
         operation_id="platform_organisations_reactivate", request=PlatformReasonSerializer
     )
     @action(detail=True, methods=["post"])

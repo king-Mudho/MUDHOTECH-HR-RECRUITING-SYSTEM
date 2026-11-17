@@ -446,12 +446,15 @@
       "verify": "Verify",
       "suspend": "Suspend",
       "reactivate": "Reactivate",
+      "close": "Close account",
       "verifyTitle": "Verify {name}?",
       "verifyBody": "Verified organisations can publish vacancies. Confirm you have checked their registration details.",
       "suspendTitle": "Suspend {name}?",
       "suspendBody": "Their public vacancies will be hidden, staff become read-only and processing pauses. Candidates see that recruitment is paused.",
       "reactivateTitle": "Reactivate {name}?",
       "reactivateBody": "Staff regain normal access. If the organisation was never verified it returns to pending verification.",
+      "closeTitle": "Close {name}?",
+      "closeBody": "This cannot be undone. Open vacancies close, staff become read-only and candidates with applications in progress are told. Data is kept until the organisation's retention period ends and is then anonymised.",
       "error": "The action could not be completed. Please try again."
     }
   },
@@ -2259,5 +2262,124 @@
     "since": "{from} – now",
     "between": "{from} – {to}",
     "readOnly": "Only platform admins can change the switch."
+  },
+  "privacyNotice": {
+    "title": "Privacy notice",
+    "description": "How MUDHOTECH HR RECRUITING SYSTEM collects, uses, keeps and deletes personal data, and your rights.",
+    "updated": "Last updated 17 November 2026 · draft pending legal review",
+    "intro": "This notice explains how MudhoTech Solutions (Pvt) Ltd handles personal data in MUDHOTECH HR RECRUITING SYSTEM. Each employer also shows its own privacy notice when you apply.",
+    "sections": [
+      {
+        "title": "Who is responsible",
+        "items": [
+          "The employer you apply to is responsible (the data controller) for your application and decides how it is assessed.",
+          "MudhoTech processes applications on the employer's behalf, and is responsible for your account, sign-in and security records.",
+          "We follow the Cyber and Data Protection Act [Chapter 12:07] of Zimbabwe."
+        ]
+      },
+      {
+        "title": "What we collect",
+        "items": [
+          "Your account details: name, email address, phone number and town.",
+          "What you send with an application: CV and documents, answers to the employer's questions.",
+          "Information the system finds in your CV, linked to where it came from so people can check it.",
+          "Security records such as sign-in times and shortened IP addresses.",
+          "We never ask for your date of birth, ID number, gender, marital status, religion, ethnicity or tribe, health or HIV status, disability, politics or a photo."
+        ]
+      },
+      {
+        "title": "How we use it",
+        "items": [
+          "To send your application to the employer you chose, and only for that vacancy unless you agree otherwise.",
+          "To help the employer's recruiters find evidence in your application. People make every decision; see How we use AI.",
+          "To send you updates about your applications and keep your account secure.",
+          "We never sell your data or use it to train AI models."
+        ]
+      },
+      {
+        "title": "How long we keep it",
+        "items": [
+          "Applications that did not lead to a job are anonymised after the employer's retention period (12 months after the vacancy closes unless the employer sets otherwise).",
+          "If an employer closes its account, its vacancies close, you are told, and your data is kept only until the same retention period ends.",
+          "Data may be kept longer only when the law requires it, for example during a legal dispute.",
+          "Backups are encrypted and expire automatically within 35 days, so deleted data disappears from backups within 35 days of deletion."
+        ]
+      },
+      {
+        "title": "Your rights",
+        "items": [
+          "See and download your data, correct it, or ask for it to be deleted, from Privacy in your account.",
+          "Ask for a fully manual review of an application, with no AI assessment.",
+          "Withdraw consent you gave for optional uses, such as being considered for future vacancies.",
+          "We answer requests within 30 days. You can also complain to the Data Protection Authority (POTRAZ)."
+        ]
+      },
+      {
+        "title": "Security and where data is stored",
+        "items": [
+          "Data is encrypted in transit and at rest, files are virus-checked, and every view of candidate data is logged.",
+          "Our servers are in South Africa (Amazon Web Services, Cape Town region).",
+          "MudhoTech staff can see an employer's data only with approved, time-limited, read-only access that the employer can see."
+        ]
+      }
+    ]
+  },
+  "termsPage": {
+    "title": "Terms of use",
+    "description": "Terms for using MUDHOTECH HR RECRUITING SYSTEM.",
+    "updated": "Draft pending legal review",
+    "intro": "These terms are being finalised with our legal advisers. Until then, the points below describe how the service works.",
+    "sections": [
+      {
+        "title": "Using the service",
+        "items": [
+          "Job seekers can create an account, apply for vacancies and manage their data free of charge.",
+          "Employers use the service under a written subscription and data processing agreement with MudhoTech Solutions (Pvt) Ltd.",
+          "Do not upload anything you do not have the right to share, or files that contain malware."
+        ]
+      },
+      {
+        "title": "Decisions about applications",
+        "items": [
+          "Employers make every decision about applications. AI only helps them find evidence and is labelled as an AI-assisted suggestion.",
+          "Vacancies are published by verified employers; report a suspicious vacancy to support."
+        ]
+      },
+      {
+        "title": "Contact",
+        "items": [
+          "MudhoTech Solutions (Pvt) Ltd, Harare, Zimbabwe. Use the support address shown in your account or in our emails."
+        ]
+      }
+    ]
+  },
+  "accessibilityStatement": {
+    "title": "Accessibility statement",
+    "description": "How accessible MUDHOTECH HR RECRUITING SYSTEM is and how to tell us about problems.",
+    "updated": "Last reviewed 17 November 2026",
+    "intro": "We want everyone to be able to find vacancies, apply and manage their applications, including people who use a keyboard, a screen reader or zoom.",
+    "sections": [
+      {
+        "title": "Our target",
+        "items": [
+          "We aim to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA.",
+          "Every release is checked automatically for accessibility problems, and pages work with a keyboard alone.",
+          "Pages work on small screens and slow connections, and respect a reduced-motion setting."
+        ]
+      },
+      {
+        "title": "Known limitations",
+        "items": [
+          "Original PDF files shown inside the review screen are images of the pages; the extracted text is always available as an alternative.",
+          "A full screen-reader review is planned before general availability."
+        ]
+      },
+      {
+        "title": "Tell us about a problem",
+        "items": [
+          "If something does not work for you, contact support with the page address and what happened. We reply within 5 working days and can accept your application another way if needed."
+        ]
+      }
+    ]
   }
 }

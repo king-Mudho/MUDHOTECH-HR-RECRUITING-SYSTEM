@@ -17,7 +17,7 @@ import type { components } from "@/types/api";
 
 type PlatformOrganisation = components["schemas"]["PlatformOrganisation"];
 type Page = { count: number; results: PlatformOrganisation[] };
-type Action = "verify" | "suspend" | "reactivate";
+type Action = "verify" | "suspend" | "reactivate" | "close";
 
 const FILTERS = ["", "pending_verification", "active", "suspended", "closed"] as const;
 
@@ -162,6 +162,16 @@ export function AdminOrganisations() {
                             {t("reactivate")}
                           </Button>
                         ) : null}
+                        {org.status !== "closed" ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="min-h-8"
+                            onClick={() => setPending({ org, action: "close" })}
+                          >
+                            {t("close")}
+                          </Button>
+                        ) : null}
                       </div>
                     ) : null}
                   </td>
@@ -178,8 +188,10 @@ export function AdminOrganisations() {
         title={pending ? t(`${pending.action}Title`, { name: pending.org.name }) : ""}
         description={pending ? t(`${pending.action}Body`) : undefined}
         confirmLabel={pending ? t(pending.action) : ""}
-        destructive={pending?.action === "suspend"}
-        reason={pending?.action === "suspend" ? "required" : "optional"}
+        destructive={pending?.action === "suspend" || pending?.action === "close"}
+        reason={
+          pending?.action === "suspend" || pending?.action === "close" ? "required" : "optional"
+        }
         pending={act.isPending}
         error={act.error instanceof ApiError ? act.error.message : act.isError ? t("error") : null}
         onConfirm={(reason) =>

@@ -2520,6 +2520,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/organisations/{organisation_id}/close/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_organisations_close"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform/organisations/{organisation_id}/reactivate/": {
         parameters: {
             query?: never;
@@ -4152,6 +4168,7 @@ export interface components {
          *     * `new_message` - new_message
          *     * `not_selected` - not_selected
          *     * `note_mention` - note_mention
+         *     * `organisation_closed` - organisation_closed
          *     * `recruiter_digest` - recruiter_digest
          *     * `recruitment_paused` - recruitment_paused
          *     * `retention_report` - retention_report
@@ -4162,7 +4179,7 @@ export interface components {
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -10583,6 +10600,34 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_organisations_close: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this organisation. */
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformSuspendReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PlatformSuspendReasonRequest"];
+                "multipart/form-data": components["schemas"]["PlatformSuspendReasonRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {

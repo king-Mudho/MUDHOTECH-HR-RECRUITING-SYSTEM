@@ -85,3 +85,36 @@ def test_run_anonymises_only_what_is_due_and_is_idempotent(world: Any) -> None:
     second = retention.run_for(team.org, dry_run=False)
     assert second.counts == {"held": 1}  # nothing left to do
     assert RetentionRun.objects.filter(organisation=team.org, dry_run=False).count() == 2
+
+
+def test_retention_deletes_files_but_audit_keeps_ids_only(world: Any) -> None:
+    """EC-PRV-05: the file leaves object storage; the audit trail keeps ids and counts only."""
+    from apps.applications.models import ApplicationDocument
+    from apps.audit.models import AuditEvent
+    from apps.core import storage
+    from apps.documents.models import Document, ScanStatus
+
+    team, apps = world
+    target = apps["old_not_selected"]
+    doc = Document.objects.create(
+        owner_user=target.candidate_user,
+        purpose="cv",
+        original_filename="Tendai_Chari_CV.pdf",
+        size_bytes=4,
+        storage_key=f"cv/{target.pk}/Tendai_Chari_CV.pdf",
+        bucket="documents",
+        scan_status=ScanStatus.CLEAN,
+    )
+    storage.put_bytes("documents", doc.storage_key, b"data", "application/pdf")
+    ApplicationDocument.objects.create(
+        organisation=team.org, application=target, document=doc, role="cv"
+    )
+    run = retention.run_for(team.org, dry_run=False)
+    assert run.counts["files"] == 1
+    assert storage.head_object("documents", f"cv/{target.pk}/Tendai_Chari_CV.pdf") is None
+    doc.refresh_from_db()
+    assert doc.deleted_at is not None and "Tendai" not in doc.original_filename
+    events = AuditEvent.objects.filter(chain=str(team.org.pk))
+    assert events.filter(action="privacy.retention_run").exists()
+    dump = str(list(events.values("before", "after", "reason", "target_id")))
+    assert "Tendai" not in dump and "Chari" not in dump  # ids and counts only

@@ -76,6 +76,19 @@ As you asked, your application **{{ reference }}** for **{{ job_title }}** at
 If the vacancy is still open you can apply again from your account.""",
         "Your application for {{ job_title }} was withdrawn.",
     ),
+    "organisation_closed": DefaultTemplate(
+        "Update on your application for {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} has closed its account on {{ platform_name }}, so your application
+**{{ reference }}** for **{{ job_title }}** will not progress here. This is not a decision about
+you or your application.
+
+Your data is kept only as long as the employer's retention policy requires and is then
+anonymised. You can download or delete your data at any time from your account.""",
+        "{{ organisation_name }} closed its account; your application for {{ job_title }} "
+        "will not progress.",
+    ),
     "draft_deadline_reminder": DefaultTemplate(
         "Your application for {{ job_title }} is not finished yet",
         """Hello {{ recipient_name }},
