@@ -1,0 +1,86 @@
+# Load tests (P10-T05, NFR-PERF-01): job board 200 RPS, 100 and 1,000 submissions, HR list.
+# Weekly and on demand (too long for every push). Results: artifact "load-report".
+name: Load
+
+on:
+  schedule:
+    - cron: "0 3 * * 0" # Sundays 03:00 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["loadtests/**", ".github/workflows/load.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  load:
+    name: Locust against the docker compose stack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HOST: http://127.0.0.1:8000
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Start the stack with load-test limits
+        run: |
+          cp .env.example .env
+          echo "LOAD_TEST=true" >> .env
+          docker compose up -d --build postgres redis s3 mailpit backend worker-default worker-documents worker-ai beat
+          for i in $(seq 1 90); do curl -fsS $HOST/readyz && break; sleep 5; done
+          curl -fsS $HOST/readyz
+      - name: Seed demo data, 1,000 candidates and 100 applications for the HR list
+        run: |
+          docker compose exec -T backend python manage.py seed_demo
+          docker compose exec -T backend python manage.py seed_load_accounts --count 1100
+          docker compose exec -T backend python manage.py seed_core_scenario --count 100
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+      - name: Install Locust (pinned, outside the project lockfile)
+        run: |
+          uv venv /tmp/lt
+          uv pip install --python /tmp/lt "locust==2.32.4"
+          echo "/tmp/lt/bin" >> "$GITHUB_PATH"
+      - name: Job board (target 200 RPS)
+        run: |
+          mkdir -p out
+          export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
+          locust -f loadtests/locustfile.py JobBoardUser --headless -u 400 -r 40 -t 3m --host $HOST --csv out/board --only-summary
+          python loadtests/check.py out/board_stats.csv --title "Job board" --min-rps 200 --report out/LOAD.md
+      - name: 100 concurrent submissions
+        if: always()
+        run: |
+          export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
+          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 100 -r 20 -t 3m --host $HOST --csv out/submit100 --only-summary
+          python loadtests/check.py out/submit100_stats.csv --title "100 submissions" --report out/LOAD.md
+      - name: HR applicants list under load
+        if: always()
+        run: |
+          export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
+          locust -f loadtests/locustfile.py HRReviewer --headless -u 20 -r 5 -t 2m --host $HOST --csv out/hr --only-summary
+          python loadtests/check.py out/hr_stats.csv --title "HR applicants list" --report out/LOAD.md
+      - name: 1,000 concurrent submissions
+        if: always()
+        run: |
+          export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
+          export LOAD_USER_OFFSET=100  # accounts 101-1100; 1-100 applied in the previous step
+          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 1000 -r 50 -t 8m --host $HOST --csv out/submit1000 --only-summary
+          python loadtests/check.py out/submit1000_stats.csv --title "1,000 submissions" --report out/LOAD.md
+      - name: Every submission accounted for
+        if: always()
+        run: |
+          docker compose exec -T backend python manage.py shell -c "
+          from apps.applications.models import Application
+          n = Application.objects.unscoped().filter(candidate_user__email__endswith='@load.test').exclude(status='draft').count()
+          print(f'submitted applications from load users: {n}')
+          " | tee -a out/LOAD.md
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: load-report
+          path: out/
+      - name: Stack logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 300

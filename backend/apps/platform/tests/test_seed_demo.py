@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -89,3 +91,16 @@ def test_command_refuses_without_debug_or_password(monkeypatch: pytest.MonkeyPat
     monkeypatch.delenv("DEMO_PASSWORD")
     with pytest.raises(CommandError, match="DEMO_PASSWORD"):
         call_command("seed_demo", "--allow-non-debug")
+
+
+def test_seed_load_accounts_is_idempotent(settings: Any, monkeypatch: Any) -> None:
+    """P10-T05: verified synthetic candidates for Locust."""
+    from io import StringIO
+
+    settings.DEBUG = True
+    monkeypatch.setenv("DEMO_PASSWORD", "Synthetic-Demo-Seed-2026")
+    call_command("seed_load_accounts", count=3, stdout=StringIO())
+    call_command("seed_load_accounts", count=3, stdout=StringIO())
+    users = User.objects.filter(email__endswith="@load.test")
+    assert users.count() == 3 and all(u.email_verified_at for u in users)
+    assert users.first().check_password("Synthetic-Demo-Seed-2026")  # type: ignore[union-attr]

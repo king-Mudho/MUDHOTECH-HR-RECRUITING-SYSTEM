@@ -52,7 +52,11 @@ class ApplicationSerializer(serializers.ModelSerializer):
     def get_notices(self, obj: Application) -> dict[str, str]:
         from apps.privacy import services as privacy
 
-        version, text = privacy.privacy_notice_version(obj.organisation_id)
+        # one lookup per employer per response, not per application (P10-T05 query budget)
+        cache = self.context.setdefault("_privacy_notices", {})
+        if obj.organisation_id not in cache:
+            cache[obj.organisation_id] = privacy.privacy_notice_version(obj.organisation_id)
+        version, text = cache[obj.organisation_id]
         return {
             "privacy_notice": text,
             "privacy_notice_version": version,
