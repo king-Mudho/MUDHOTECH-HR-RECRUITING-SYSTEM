@@ -26,8 +26,28 @@ shortlist (with undo window); dashboards show operational truth; auditors can re
 EC-REV-01..11, EC-PRV-06 (auditor redaction), EC-JOB-17.
 
 ## Exit criteria (MVP feature-complete)
-- [ ] Core Scenario E2E passes reliably (3 consecutive runs).
-- [ ] Audit query proves 0 consequential transitions without human actor.
-- [ ] Reconstruction bundle complete for a random sample of 10 applications.
-- [ ] Dashboard reconciliation tests pass.
-- [ ] Tag `v0.9.0-mvp` created; CHANGELOG updated.
+- [x] Core Scenario E2E passes reliably (3 consecutive runs).
+- [x] Audit query proves 0 consequential transitions without human actor.
+- [x] Reconstruction bundle complete for a random sample of 10 applications.
+- [x] Dashboard reconciliation tests pass.
+- [x] Tag `v0.9.0-mvp` created; CHANGELOG updated.
+
+## Exit evidence (2026-11-17)
+- Core scenario: `apps/screening/tests/test_core_scenario.py` (marked slow) drives the HTTP API end to end:
+  100 synthetic applications -> real extraction + screening via the outbox -> HR filters, verifies 2 claims,
+  requests 1 clarification, proposes and approves a shortlist of 10 -> after the delay (and quiet hours)
+  exactly 10 outcome emails + the clarification email, nobody else. Passed 3 consecutive runs (92 s, 60 s,
+  63 s). The same journey in the browser (`frontend/e2e/core-scenario.spec.ts` with
+  `seed_core_scenario --count 100 --delay-minutes 1`) runs in the nightly Docker job; it could not run on
+  the dev machine (0.7 GB free RAM, ports held by another project) - confirm on the first nightly.
+- No consequential transition without a human: `python manage.py check_human_decisions` (exits 1 otherwise),
+  asserted in the core scenario and `test_no_consequential_transition_without_a_human`; DB check constraints
+  on shortlist entries (decision needs actor; not selected needs reason).
+- Reconstruction: the core scenario reconstructs a random sample of 10 applications and checks job version,
+  rubric, every evaluation version (engine/thresholds/models/input hash/evidence refs), status history,
+  shortlist decisions (approver, applied time), notifications; PDF rendering tested
+  (`test_reconstruct.py`), auditor redaction (EC-PRV-06).
+- Dashboard reconciliation: `apps/applications/tests/test_dashboard.py` compares every card and the funnel with
+  direct queries.
+- Edge cases: `scripts/ec_coverage.py --phase 08` 13/13; backend full suite green, 160+ Vitest.
+- Tag `v0.9.0-mvp` created; CHANGELOG release section added.

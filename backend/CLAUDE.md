@@ -39,6 +39,13 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
   `verification.py`, `analytics.py`, `selectors.py` (manual-review band hides all AI output),
   `registry.py` (model registry, synced on `post_migrate`), `quality.py` (daily AI quality counters).
   Screening starts from outbox consumers only when `SCREENING_AUTOSTART` (off in `config.settings.test`).
+- Phase 08: `apps/shortlisting` (Shortlist/ShortlistEntry; `services.py` propose/decide/submit/approve/
+  return/undo; `selectors.override_stats`); in `apps/applications`: `blind.py` (server-side blind review +
+  IdentityReveal), `applicants.py` (applicants query + `ApplicantPagination` cursor with count), `bulk.py`,
+  `saved_views.py`, `conflicts.py` (EC-REV-11, EC-ACC-09/10 - applied inside `hr.applications_visible_to`),
+  `dashboard.py`, `reconstruct.py` + `reconstruct_pdf.py`; `apps/audit` API (events, CSV export, reconstruct)
+  and `audit.log_view()` for every view of candidate data. Hiring managers see shortlisted-onward
+  applications unless `JobAssignment.sees_full_pool`.
 - `tests/core_testapp/` — test-only models (`Widget` tenant model, `SecretNote` encrypted field); installed
   only by `config.settings.test`.
 - `fixtures/` — taxonomy seeds, synthetic CVs (never real data). `schema.yml` — committed OpenAPI schema.
@@ -90,6 +97,8 @@ celery -A config worker -Q documents -c 2 -l info
 python manage.py load_taxonomy && python manage.py embed_skills          # worker container (model)
 python -m ai_engine.tests.benchmark.run_extraction_benchmark --workers 2 --semantic --check  # worker image
 python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir ../docs/reports --check  # P07 targets
+python manage.py check_human_decisions        # 0 consequential transitions without a human (exit 1 otherwise)
+DEMO_PASSWORD=... python manage.py seed_core_scenario --count 100 --delay-minutes 1   # after seed_demo (e2e)
 ```
 In Git Bash, prefix docker commands that pass container paths with `MSYS_NO_PATHCONV=1`.
 On the host (Windows, `backend/`): `python -m uv sync` creates `.venv` (Python 3.12), then

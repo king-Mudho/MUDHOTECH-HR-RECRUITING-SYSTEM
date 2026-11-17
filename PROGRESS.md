@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
-- **Current task:** P08-EXIT
+- **Current phase:** 09 — Privacy, Governance & Security Hardening
+- **Current task:** P09-T01
 - **Last updated:** 2026-11-17
-- **Overall:** 115 / 193 tasks · 7 / 16 phases
+- **Overall:** 115 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -20,8 +20,8 @@
 | 05 | [ATS Workflow, Notifications & Messaging](phases/PHASE_05_ATS_NOTIFICATIONS_MESSAGING.md) | MVP | 11 | ✅ Done | 2026-11-11 |
 | 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ✅ Done | 2026-11-15 |
 | 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ✅ Done | 2026-11-16 |
-| 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | 🟦 In progress | |
-| 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ⬜ Not started | |
+| 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ✅ Done | 2026-11-17 |
+| 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | 🟦 In progress | |
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | ⬜ Not started | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | ⬜ Not started | |
 | 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ⬜ Not started | |
@@ -186,7 +186,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P08-T11 — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job …
 - [x] P08-T12 — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors
 - [x] P08-T13 — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing …
-- [ ] P08-EXIT — All exit criteria verified with evidence
+- [x] P08-EXIT — All exit criteria verified with evidence
 
 ### Phase 09 — Privacy, Governance & Security Hardening  (`phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md`)
 - [ ] P09-T01 — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold
@@ -459,6 +459,26 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   and API tests only (ports 3000/8000 held by another project) - include them in the Phase 08 browser smoke
   test.
 
+### Phase 08 — Shortlist Review, HR Dashboard & Audit UI (closed 2026-11-17, MVP feature-complete)
+- **Built:** shortlists (proposals pre-filled with AI suggestions only, human decisions with structured reasons,
+  override capture with the AI band/score/coverage at decision time, submit, dual-control approval with row lock
+  and idempotency, transitions applied atomically with the approver as actor, notifications after the delay,
+  undo within the window); override analytics; server-side blind review with audited identity reveal and optional
+  institution masking; applicants table (filters incl. essentials state, saved views, cursor pagination,
+  windowing, bulk assign/tag/clarification/propose); review page (evidence viewer with highlighted spans, masked
+  contact/personal data, pdf.js original when identity visible, criterion selection, evaluation versions, flags,
+  j/k); compare view; shortlist builder; role visibility (hiring managers see the shortlist unless granted,
+  declared conflicts, staff-as-candidate rules); HR dashboard with AI vs human split and funnel; audit trail UI with
+  safe CSV export; decision reconstruction (JSON + PDF, auditor redaction); access logging of every PII/CV view.
+- **Evidence:** see `phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md` "Exit evidence".
+- **Deviations:** see the P08 rows in "Deviations from spec" (shared DecisionReason, undo-only transition,
+  return-to-draft, cursor pagination, text-view highlights).
+- **Known limitations / follow-ups:** the browser core scenario runs only in the nightly Docker job (not run
+  locally: RAM/ports) - check its first run; HR screens verified by component/API tests, not a live local browser
+  session; access logs are not partitioned yet (Phase 09 hardening); audit export is synchronous and capped at
+  10,000 rows (async exports with the reports module); blind review masks the name in CV text by matching the
+  profile name only.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -617,3 +637,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P08-T11 | GET hr/audit-events (filters, cursor) + CSV export (formula injection neutralised, audited) for auditors/admins; GET hr/applications/{id}/reconstruct (job version, rubric, evaluation versions with engine/thresholds/models/evidence refs, human decisions with reasons, shortlist decisions with AI band + overrides, verifications, reveals/conflicts, notifications) + PDF (PyMuPDF Story); auditors see PII redacted unless revealed (EC-PRV-06); /hr/settings/audit + reconstruction PDF button | - |
 | 2026-11-17 | Impl | P08-T12 | audit.log_view on every candidate PII/CV view (application detail, extraction panel, CV text, evaluations, reconstruction, shortlist detail, applicants list); list views may be sampled via ACCESS_LOG_LIST_SAMPLE_RATE, never for auditors, object views always; reconstruction lists who viewed | Partition access logs in Phase 09 |
 | 2026-11-17 | Impl | P08-T13 | Core scenario: in-process HTTP test (100 synthetic applications, real extraction + screening, filter, verify 2 claims, 1 clarification, approved shortlist of 10, 10 outcome emails after delay/quiet hours, accountability, reconstruction sample of 10) passing 3 consecutive runs; check_human_decisions command; seed_core_scenario + Playwright core-scenario.spec.ts in the nightly Docker job (worker-ai added) | Confirm the first nightly browser run |
+| 2026-11-17 | Close | P08-EXIT | Phase 08 closed (MVP feature-complete): core scenario 3/3 passes, 0 consequential transitions without a human, reconstruction sample of 10 complete, dashboard reconciliation, EC 13/13; tag v0.9.0-mvp. Browser core scenario wired into the nightly job | Phase 09 started |

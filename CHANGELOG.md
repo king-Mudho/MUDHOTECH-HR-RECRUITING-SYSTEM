@@ -4,6 +4,10 @@ All notable changes to the MUDHOTECH HR RECRUITING SYSTEM are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [SemVer](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.0-mvp] - 2026-11-17
+MVP feature-complete.
+
 ### Added
 - Phase 01 foundation: repository hygiene files (`.gitignore`, `.gitattributes`, `.editorconfig`, licence, changelog).
 - Phase 02 identity, tenancy & access control: email accounts with verification, MFA, lockout and sessions; append-only
@@ -37,3 +41,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   distribution with coverage and saturation warnings; model registry and AI quality counters; HR
   screening page and evaluation panel labelled "AI-assisted suggestion — requires human review";
   screening benchmark (recall, grounding, determinism, counterfactual fairness) with a nightly job.
+- Phase 08 shortlist review, HR dashboard & audit UI (MVP feature-complete): accountable shortlists with
+  human decisions, structured reasons, override tracking, dual-control approval and an undo window before
+  candidates are told; server-side blind review with audited identity reveal; applicants table with filters,
+  saved views and bulk actions; review page with highlighted CV evidence and evaluation versions; compare
+  view; conflict-of-interest rules; HR dashboard separating AI suggestions from human decisions; audit trail
+  with safe export; decision reconstruction (JSON and PDF); access logging of every view of candidate data;
+  end-to-end core scenario (100 applicants to an approved shortlist of ten).
