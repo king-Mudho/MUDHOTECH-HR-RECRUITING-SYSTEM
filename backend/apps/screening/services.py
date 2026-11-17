@@ -28,9 +28,10 @@ from apps.audit import services as audit
 from apps.core import outbox
 from apps.core.exceptions import DomainError
 
-from . import engine
+from . import engine, killswitch
 from .models import CriterionResult, Evaluation, EvaluationEvidence, ScreeningRun, Trigger
 
+MANUAL_BAND = "manual_review_requested"
 logger = logging.getLogger(__name__)
 EVALUABLE_STATUSES = frozenset(
     {Status.PROCESSING, Status.UNDER_REVIEW, Status.NEEDS_INFORMATION, Status.ON_HOLD}
@@ -61,6 +62,7 @@ def llm_service(app: Application) -> Any:
         provider_name != "none"
         and is_enabled("llm", app.organisation)
         and bool(getattr(policy, "llm_enabled", False))
+        and killswitch.ai_allowed(app.organisation)
     )
     if not enabled:
         return LLMService()
@@ -291,6 +293,9 @@ def evaluate_application(
             app = transition(app, Status.PROCESSING, actor_type="system", reason_code="retry")
     if app.status not in EVALUABLE_STATUSES:
         return None
+    if not killswitch.ai_allowed(app.organisation):
+        route_to_manual_review(app.pk)  # P09-T11: AI is switched off, a human reviews
+        return None
     version = None
     if job_version_id is not None:
         from apps.jobs.models import JobVersion
@@ -338,6 +343,40 @@ def evaluate_application(
         run=run,
         reason=reason,
     )
+
+
+def route_to_manual_review(application_id: Any) -> None:
+    """AI kill-switch: no evaluation; the application waits for a human with no AI output."""
+    with transaction.atomic():
+        app = Application.objects.unscoped().select_for_update().filter(pk=application_id).first()
+        if app is None or app.status not in EVALUABLE_STATUSES:
+            return
+        already = app.ai_band == MANUAL_BAND and app.score is None
+        app.ai_band = MANUAL_BAND
+        app.score = app.coverage = None
+        app.essentials_met = app.essentials_unknown = app.essentials_not_evidenced = None
+        app.save(
+            update_fields=[
+                "ai_band",
+                "score",
+                "coverage",
+                "essentials_met",
+                "essentials_unknown",
+                "essentials_not_evidenced",
+                "updated_at",
+            ]
+        )
+        moved = app.status == Status.PROCESSING
+        if moved:
+            transition(app, Status.UNDER_REVIEW, actor_type="system", reason_code="ai_disabled")
+        if moved or not already:
+            audit.record(
+                action="screening.ai_disabled",
+                target=app,
+                organisation=app.organisation_id,
+                actor_type="system",
+                after={"band": MANUAL_BAND},
+            )
 
 
 def mark_failed(application_id: Any, error: str) -> None:

@@ -5608,6 +5608,78 @@ paths:
               schema:
                 $ref: '#/components/schemas/Policy'
           description: ''
+  /api/v1/platform/ai/:
+    get:
+      operationId: platform_ai
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGovernance'
+          description: ''
+    post:
+      operationId: platform_ai_switch
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KillSwitchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/KillSwitchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/KillSwitchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGovernance'
+          description: ''
+  /api/v1/platform/ai/organisations/{organisation_id}/:
+    post:
+      operationId: platform_ai_org_switch
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgKillSwitchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrgKillSwitchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrgKillSwitchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIGovernance'
+          description: ''
   /api/v1/platform/organisations/:
     get:
       operationId: platform_organisations_list
@@ -6162,6 +6234,23 @@ paths:
           description: ''
 components:
   schemas:
+    AIGovernance:
+      type: object
+      properties:
+        platform_enabled:
+          type: boolean
+        disabled_organisations:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisabledOrg'
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegistryEntry'
+      required:
+      - disabled_organisations
+      - models
+      - platform_enabled
     ActionActionEnum:
       enum:
       - start
@@ -6822,7 +6911,7 @@ components:
       type: object
       properties:
         kind:
-          $ref: '#/components/schemas/KindEnum'
+          $ref: '#/components/schemas/CandidateActionKindEnum'
         application_id:
           type: string
           format: uuid
@@ -6842,6 +6931,16 @@ components:
       - job_title
       - kind
       - organisation_name
+    CandidateActionKindEnum:
+      enum:
+      - clarification
+      - reupload
+      - message
+      type: string
+      description: |-
+        * `clarification` - clarification
+        * `reupload` - reupload
+        * `message` - message
     CandidateSkill:
       type: object
       properties:
@@ -7842,6 +7941,17 @@ components:
       required:
       - file
       - purpose
+    DisabledOrg:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
     Document:
       type: object
       properties:
@@ -9644,16 +9754,18 @@ components:
         * `rights_request_received` - rights_request_received
         * `rights_request_update` - rights_request_update
         * `shortlisted` - shortlisted
-    KindEnum:
-      enum:
-      - clarification
-      - reupload
-      - message
-      type: string
-      description: |-
-        * `clarification` - clarification
-        * `reupload` - reupload
-        * `message` - message
+    KillSwitchRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 500
+      required:
+      - enabled
+      - reason
     Language:
       type: object
       properties:
@@ -10214,6 +10326,19 @@ components:
       - ai_notice_version
       - privacy_notice
       - privacy_notice_version
+    OrgKillSwitchRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          nullable: true
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 500
+      required:
+      - enabled
+      - reason
     Organisation:
       type: object
       properties:
@@ -11954,6 +12079,75 @@ components:
         reason:
           type: string
           maxLength: 1000
+    RegistryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/RegistryEntryKindEnum'
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        version:
+          type: string
+          readOnly: true
+        purpose:
+          type: string
+          readOnly: true
+        provider:
+          type: string
+          readOnly: true
+        data_policy:
+          type: string
+          readOnly: true
+        limitations:
+          type: string
+          readOnly: true
+        evaluation_report:
+          type: string
+          readOnly: true
+        active_from:
+          type: string
+          format: date-time
+          readOnly: true
+        active_to:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        active:
+          type: boolean
+          readOnly: true
+      required:
+      - active
+      - active_from
+      - active_to
+      - data_policy
+      - evaluation_report
+      - id
+      - kind
+      - limitations
+      - name
+      - provider
+      - purpose
+      - version
+    RegistryEntryKindEnum:
+      enum:
+      - embedding
+      - ner
+      - llm
+      - rules
+      type: string
+      description: |-
+        * `embedding` - Embedding model
+        * `ner` - Named-entity model
+        * `llm` - Language model
+        * `rules` - Rules engine
     Rendered:
       type: object
       properties:

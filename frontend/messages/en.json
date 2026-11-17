@@ -46,7 +46,8 @@
     "footerNavigation": "Footer",
     "security": "Account security",
     "signOut": "Sign out",
-    "supportAccess": "Support access"
+    "supportAccess": "Support access",
+    "modelRegistry": "AI governance"
   },
   "footer": {
     "privacy": "Privacy",
@@ -982,7 +983,8 @@
           "It never shortlists, turns down, makes offers to or hires anyone. Only an authorised person at the employer can do that, and they must record a reason.",
           "It never uses or guesses your age, gender, ethnicity or tribe, religion, marital status, pregnancy, health or HIV status, disability, politics or appearance.",
           "It never penalises career breaks or the layout of your CV.",
-          "It never follows instructions written inside a CV or document."
+          "It never follows instructions written inside a CV or document.",
+          "It never runs while the employer or MudhoTech has switched AI off. Applications are then reviewed by people only, and nothing you sent is lost."
         ]
       },
       "choices": {
@@ -2220,5 +2222,42 @@
     "request": "Request access",
     "approve": "Approve",
     "failed": "That did not work. Please try again."
+  },
+  "aiGovernance": {
+    "title": "AI governance",
+    "intro": "Models and engines that can influence an evaluation, and the switch that turns AI screening off. While AI is off, every new application goes to manual review with no score or AI text.",
+    "switchTitle": "AI screening",
+    "platformOn": "AI screening is on for the platform.",
+    "platformOff": "AI screening is OFF for every organisation. Applications go to manual review.",
+    "turnOff": "Switch AI off",
+    "turnOn": "Switch AI on",
+    "reason": "Reason (recorded in the audit log)",
+    "reasonHint": "At least 10 characters, for example an incident number.",
+    "orgTitle": "Organisation overrides",
+    "orgIntro": "Switch AI off for one organisation only. Organisations can also switch AI off themselves in their settings.",
+    "organisationId": "Organisation ID",
+    "orgOff": "Switch off for this organisation",
+    "orgClear": "Remove override",
+    "noOverrides": "No organisation has AI switched off by the platform.",
+    "modelsTitle": "Model registry",
+    "active": "Active",
+    "retired": "Retired",
+    "kind": {
+      "rules": "Rules engine",
+      "embedding": "Embedding model",
+      "llm": "Language model",
+      "ner": "Named-entity model"
+    },
+    "fields": {
+      "purpose": "Purpose",
+      "provider": "Provider",
+      "dataPolicy": "Data policy",
+      "limitations": "Limitations",
+      "report": "Evaluation report",
+      "period": "Active period"
+    },
+    "since": "{from} – now",
+    "between": "{from} – {to}",
+    "readOnly": "Only platform admins can change the switch."
   }
 }

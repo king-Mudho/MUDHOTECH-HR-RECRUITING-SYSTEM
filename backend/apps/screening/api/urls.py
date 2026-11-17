@@ -1,8 +1,14 @@
 from django.urls import path
 
-from . import views
+from . import governance, views
 
 urlpatterns = [
+    path("platform/ai/", governance.PlatformAIView.as_view(), name="platform-ai"),
+    path(
+        "platform/ai/organisations/<uuid:organisation_id>/",
+        governance.PlatformOrgAIView.as_view(),
+        name="platform-ai-org",
+    ),
     path(
         "hr/jobs/<uuid:job_id>/screening-runs/",
         views.JobScreeningRunsView.as_view(),

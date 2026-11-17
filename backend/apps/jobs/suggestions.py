@@ -36,7 +36,13 @@ class SuggestionsDisabledError(DomainError):
 
 def enabled_for(job: Job) -> bool:
     policy = OrganisationPolicy.objects.filter(organisation_id=job.organisation_id).first()
-    return flags.is_enabled(FLAG, job.organisation) and bool(policy and policy.ai_enabled)
+    from apps.screening.killswitch import ai_allowed  # P09-T11 kill-switch
+
+    return (
+        flags.is_enabled(FLAG, job.organisation)
+        and bool(policy and policy.ai_enabled)
+        and ai_allowed(job.organisation)
+    )
 
 
 def _vocabulary(org: Any) -> dict[str, Any]:

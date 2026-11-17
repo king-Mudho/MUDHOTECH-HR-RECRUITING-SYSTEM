@@ -125,7 +125,8 @@ New evaluation version when: rubric/job version changes (HR-triggered, with reas
 - Metrics: extraction precision/recall per claim type; skill-match P/R; criterion agreement (Cohen's κ) vs reviewers; **recall of qualified candidates** in `recommended_for_review ∪ review_needed`; grounding rate (target 100%); parse success; latency.
 - Override analytics in production: override rate by band, by vacancy; alert if > 30% for a vacancy (rubric may be wrong).
 - Fairness: no protected data collected → use proxies audit (e.g. institution, location, gap) + counterfactual tests (swap names/genders/locations in synthetic CVs ⇒ identical scores required). Where orgs collect voluntary, separate EEO data (later), aggregate only.
-- Model registry entries + quarterly AI quality report per org.
+- Model registry entries + quarterly AI quality report per org (`/admin/model-registry`, model card `docs/ai-governance/MODEL_CARD_screening_engine.md`, policy `docs/ai-governance/AI_POLICY.md`).
+- **Kill-switch** (P09-T11): platform flag `ai.screening` (global or per organisation) AND the org policy `ai_enabled`; while off, applications skip evaluation and go to `under_review` in `manual_review_requested` (no AI output). Runbook `docs/runbooks/disable-ai.md`, command `manage.py ai_switch`.
 
 ## 14. Performance
 - Worker concurrency: documents queue 2–4 processes (CPU bound), ai queue 2 processes with model warm.

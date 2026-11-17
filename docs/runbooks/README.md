@@ -11,7 +11,7 @@ Follow-up (incident record, audit, communication)**. Never paste personal data o
 | `incident-data-leak.md` — contain, assess, notify (CDPA / POTRAZ) | planned | Phase 09 |
 | `credential-compromise.md` — rotate secrets, revoke sessions | planned | Phase 09 |
 | `malware-detected.md` — quarantine handling, candidate messaging | planned | Phase 04 |
-| `disable-ai.md` — feature-flag kill switch for AI screening | planned | Phase 07 |
+| `disable-ai.md` — feature-flag kill switch for AI screening | written | Phase 09 (P09-T11) |
 | `email-deliverability.md` — SES bounces/complaints, suppression | planned | Phase 05 |
 | `certificate-renewal.md` — Certbot renewal and checks | planned | Phase 11 |
 | `disk-full.md` — logs, docker images, volumes | planned | Phase 11 |

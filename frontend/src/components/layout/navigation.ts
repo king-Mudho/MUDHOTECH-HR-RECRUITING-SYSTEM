@@ -25,4 +25,5 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/dead-letters", labelKey: "deadLetters", icon: "deadLetters" },
   { href: "/admin/audit-logs", labelKey: "auditLogs", icon: "audit" },
   { href: "/admin/support-access", labelKey: "supportAccess", icon: "audit" },
+  { href: "/admin/model-registry", labelKey: "modelRegistry", icon: "flags" },
 ];
