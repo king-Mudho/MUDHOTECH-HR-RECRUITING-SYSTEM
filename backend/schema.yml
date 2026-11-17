@@ -5877,6 +5877,29 @@ paths:
                 items:
                   $ref: '#/components/schemas/RightsRequest'
           description: ''
+  /api/v1/privacy/requests/{request_id}/export/:
+    get:
+      operationId: privacy_request_export
+      description: A 60-second download link for the person's own export (valid for
+        24 hours).
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - privacy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportUrl'
+          description: ''
   /api/v1/privacy/requests/{request_id}/statement/:
     post:
       operationId: privacy_request_statement
@@ -8175,6 +8198,14 @@ components:
       - employer
       - start_date
       - title
+    ExportUrl:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+      required:
+      - url
     ExtendRequest:
       type: object
       properties:

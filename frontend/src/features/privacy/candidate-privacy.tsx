@@ -258,6 +258,29 @@ function Statement({ request }: { request: RightsRequest }) {
   );
 }
 
+function DownloadExport({ id }: { id: string }) {
+  const t = useTranslations("privacy.requests");
+  const download = useMutation({
+    mutationFn: () => api.get<{ url: string }>(`/privacy/requests/${id}/export/`),
+    onSuccess: ({ url }) => {
+      window.location.assign(url);
+    },
+  });
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      <Button size="sm" onClick={() => download.mutate()} disabled={download.isPending}>
+        {t("download")}
+      </Button>
+      <span className="text-muted-foreground text-xs">{t("downloadHint")}</span>
+      {errorText(download.error, t("downloadFailed")) ? (
+        <span role="alert" className="text-destructive text-xs">
+          {errorText(download.error, t("downloadFailed"))}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 function MyRequests() {
   const t = useTranslations("privacy.requests");
   const tt = useTranslations("privacy.types");
@@ -294,6 +317,7 @@ function MyRequests() {
                 {t("due", { date: format.dateTime(new Date(r.due_at), { dateStyle: "medium" }) })}
               </p>
               {r.resolution ? <p className="mt-1">{r.resolution}</p> : null}
+              {r.export_available ? <DownloadExport id={r.id} /> : null}
               {r.type === "correction" && r.status === "declined" ? (
                 <Statement request={r} />
               ) : null}

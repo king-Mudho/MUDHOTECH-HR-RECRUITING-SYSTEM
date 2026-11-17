@@ -373,3 +373,19 @@ class PlatformRightsRequestActionView(APIView):
         data.is_valid(raise_exception=True)
         row = rights.act(None, authed_user(request), request_id, **data.validated_data)
         return Response(StaffRightsRequestSerializer(_shape([row], staff=True)[0]).data)
+
+
+class ExportUrlSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+
+class RightsExportView(APIView):
+    """A 60-second download link for the person's own export (valid for 24 hours)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(operation_id="privacy_request_export", responses=ExportUrlSerializer)
+    def get(self, request: Request, request_id: str) -> Response:
+        from ..export import download_url
+
+        return Response({"url": download_url(authed_user(request), request_id)})

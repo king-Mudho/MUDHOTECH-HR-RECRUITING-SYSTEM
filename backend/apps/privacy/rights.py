@@ -188,6 +188,16 @@ def confirm(user: Any, token: str) -> list[RightsRequest]:
                 target=("rights_request", str(row.pk)),
                 organisation=row.organisation_id,
             )
+            if row.type in (Type.ACCESS, Type.EXPORT):  # P09-T03: build the bundle now
+                from apps.core import outbox
+
+                outbox.emit(
+                    "privacy.export_requested",
+                    ("rights_request", str(row.pk)),
+                    {"request_id": str(row.pk)},
+                    dedupe_key=f"privacy.export_requested:{row.pk}",
+                    organisation_id=row.organisation_id,
+                )
             for handler in handlers(row.organisation_id):
                 notifications.notify(
                     handler,
@@ -293,6 +303,15 @@ def act(
                 code="conflict.invalid_transition",
                 message="This request cannot be changed that way now.",
                 details={"from": row.status, "action": action},
+            )
+        if (
+            target == Status.COMPLETED
+            and row.type in (Type.ACCESS, Type.EXPORT)
+            and not row.export_document_id
+        ):
+            raise ConflictError(
+                code="conflict.export_not_ready",
+                message="The export is still being prepared. Try again shortly.",
             )
         before = row.status
         row.status = target

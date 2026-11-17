@@ -227,6 +227,7 @@ CELERY_TASK_ROUTES = {
     "apps.notifications.*": {"queue": "notifications"},
     "apps.messaging.*": {"queue": "notifications"},
     "apps.analytics.*": {"queue": "reports"},
+    "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}

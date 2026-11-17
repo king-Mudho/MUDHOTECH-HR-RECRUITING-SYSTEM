@@ -14,6 +14,11 @@ urlpatterns = [
         views.RightsStatementView.as_view(),
         name="privacy-request-statement",
     ),
+    path(
+        "privacy/requests/<uuid:request_id>/export/",
+        views.RightsExportView.as_view(),
+        name="privacy-request-export",
+    ),
     path("privacy/employers/", views.MyEmployersView.as_view(), name="privacy-employers"),
     path("privacy/consents/", views.MyConsentsView.as_view(), name="privacy-consents"),
     path(

@@ -2142,7 +2142,10 @@
       "due": "Answer due by {date}",
       "statementLabel": "Add your own statement to the record",
       "addStatement": "Add statement",
-      "yourStatement": "Your statement: {text}"
+      "yourStatement": "Your statement: {text}",
+      "download": "Download my data",
+      "downloadHint": "A ZIP with your data, a readable summary and your documents. Available for 24 hours.",
+      "downloadFailed": "The download is no longer available."
     },
     "confirm": {
       "title": "Confirm your data request",

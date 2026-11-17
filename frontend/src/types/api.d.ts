@@ -2584,6 +2584,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/privacy/requests/{request_id}/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description A 60-second download link for the person's own export (valid for 24 hours). */
+        get: operations["privacy_request_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/privacy/requests/{request_id}/statement/": {
         parameters: {
             query?: never;
@@ -3538,6 +3555,10 @@ export interface components {
             is_current?: boolean;
             description?: string;
             order?: number;
+        };
+        ExportUrl: {
+            /** Format: uri */
+            url: string;
         };
         ExtendRequest: {
             /** Format: date-time */
@@ -10466,6 +10487,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RightsRequest"][];
+                };
+            };
+        };
+    };
+    privacy_request_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportUrl"];
                 };
             };
         };
