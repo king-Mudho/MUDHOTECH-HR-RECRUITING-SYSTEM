@@ -14,6 +14,8 @@
  */
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
+import { hrContext } from "./hr-context";
+
 const PASSWORD = process.env.DEMO_PASSWORD ?? "";
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 const HR = "hr@mudhotech-demo.test";
@@ -27,17 +29,6 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel(/^Password/).fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/hr\/dashboard/, { timeout: 20_000 });
-}
-
-async function context(page: Page): Promise<{ org: string; job: string }> {
-  const me = await (await page.request.get("/api/v1/me/")).json();
-  const org = me.active_organisation_id as string;
-  const jobs = await (
-    await page.request.get("/api/v1/hr/jobs/?search=Software%20Developer", {
-      headers: { "X-Org-Id": org },
-    })
-  ).json();
-  return { org, job: jobs.results[0].id as string };
 }
 
 async function waitForProcessing(request: APIRequestContext, org: string, job: string) {
@@ -63,7 +54,7 @@ async function mailCount(request: APIRequestContext, query: string): Promise<num
 test("core scenario: 100 applicants to an approved shortlist of ten", async ({ page }) => {
   test.skip(!PASSWORD, "DEMO_PASSWORD not set");
   await signIn(page, HR);
-  const { org, job } = await context(page);
+  const { org, job } = await hrContext(page);
   await waitForProcessing(page.request, org, job);
 
   // filter: recommended applicants (AI suggestion), newest data from the server

@@ -174,7 +174,7 @@ def log_view(
     from django.conf import settings as django_settings
 
     rate = float(getattr(django_settings, "ACCESS_LOG_LIST_SAMPLE_RATE", 1.0))
-    if listing and membership.role != "auditor" and rate < 1.0 and random.random() >= rate:  # noqa: S311
+    if listing and membership.role != "auditor" and rate < 1.0 and random.random() >= rate:  # noqa: S311  # nosec B311 - sampling, not security
         return None
     return log_access(
         user=membership.user,

@@ -178,7 +178,7 @@ def confirm(user: Any, token: str) -> list[RightsRequest]:
             row.status = Status.RECEIVED
             row.verified_at = now()
             row.due_at = now() + timedelta(days=_sla_days(row.organisation_id))
-            row.verify_token_hash = ""
+            row.verify_token_hash = ""  # nosec B105 - clears the used token
             row.save(
                 update_fields=["status", "verified_at", "due_at", "verify_token_hash", "updated_at"]
             )

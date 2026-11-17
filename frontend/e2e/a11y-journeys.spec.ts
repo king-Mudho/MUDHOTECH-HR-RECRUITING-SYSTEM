@@ -12,6 +12,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 import { settleForAxe } from "./a11y";
+import { hrContext } from "./hr-context";
 
 const PASSWORD = process.env.DEMO_PASSWORD ?? "";
 const HR = "hr@mudhotech-demo.test";
@@ -94,13 +95,7 @@ test("candidate journey pages have no serious accessibility violations", async (
 
 test("HR journey pages have no serious accessibility violations", async ({ page }) => {
   await signIn(page, HR, "/hr/dashboard");
-  const me = await (await page.request.get("/api/v1/me/")).json();
-  const jobs = await (
-    await page.request.get("/api/v1/hr/jobs/?search=Software%20Developer", {
-      headers: { "X-Org-Id": me.active_organisation_id as string },
-    })
-  ).json();
-  const job = jobs.results[0].id as string;
+  const { job } = await hrContext(page);
   await sweep(page, [
     "/hr/dashboard",
     "/hr/jobs",
