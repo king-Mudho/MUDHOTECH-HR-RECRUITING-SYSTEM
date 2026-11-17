@@ -313,6 +313,18 @@ def act(
                 code="conflict.export_not_ready",
                 message="The export is still being prepared. Try again shortly.",
             )
+        if target == Status.COMPLETED and row.type == Type.DELETION and row.user is not None:
+            from .erasure import LegalHoldError, erase
+
+            try:
+                erase(row.user, organisation_id, actor=actor)  # P09-T04
+            except LegalHoldError:
+                # EC-PRV-01: recorded, the hold explained to the requester, finished after release
+                target = Status.ON_HOLD
+                text = (
+                    "Part of your data is under a legal hold. We will delete it as soon as the "
+                    "hold is released."
+                )
         before = row.status
         row.status = target
         row.handled_by = actor
