@@ -9,5 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Page() {
-  return <PlatformSupportAccess />;
+  return (
+    <main id="main-content" className="flex-1 p-6">
+      <PlatformSupportAccess />
+    </main>
+  );
 }

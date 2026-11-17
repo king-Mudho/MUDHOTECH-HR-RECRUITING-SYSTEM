@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-T13
+- **Current task:** P09-EXIT
 - **Last updated:** 2026-11-17
-- **Overall:** 127 / 193 tasks · 8 / 16 phases
+- **Overall:** 128 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -201,7 +201,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P09-T10 — Manual security checklist `docs/security/ASVS_CHECKLIST.md` (L2 items relevant) completed with evidence links
 - [x] P09-T11 — AI governance: `/admin/model-registry` UI, `docs/ai-governance/MODEL_CARD_screening_engine.md`, …
 - [x] P09-T12 — DPIA `docs/dpia/DPIA.md` (processing description, necessity, risks, mitigations, residual risk, sign-off section for …
-- [ ] P09-T13 — Accessibility pass on candidate + HR core journeys: axe zero serious/critical, keyboard walkthrough, NVDA spot check …
+- [x] P09-T13 — Accessibility pass on candidate + HR core journeys: axe zero serious/critical, keyboard walkthrough, NVDA spot check …
 - [ ] P09-EXIT — All exit criteria verified with evidence
 
 ### Phase 10 — Quality Assurance, AI Validation & Pilot Readiness  (`phases/PHASE_10_QA_AI_VALIDATION_PILOT.md`)
@@ -651,3 +651,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T10 | ASVS 4.0.3 L2 checklist with evidence per item; findings F1-F10 fixed or documented |  |
 | 2026-11-17 | Impl | P09-T11 | AI kill-switch (platform flag ai.screening global/per-org + org policy): evaluation skipped, applications routed to manual review with no AI output, LLM and suggestions off; /platform/ai API + ai_switch command; /admin/model-registry UI; model card, AI policy, disable-ai runbook; how-we-use-ai notice item | Real-world calibration of bands in Phase 10 |
 | 2026-11-17 | Impl | P09-T12 | DPIA (processing, necessity, 13 risks with mitigations, residual risk, action plan, sign-off) and DPA template (controller=employer, processor=MudhoTech, annexes) - both marked for legal review (D-08) | Counsel review and sign-off before go-live (D-08) |
+| 2026-11-17 | Impl | P09-T13 | Accessibility pass: axe sweep of candidate + HR core journey pages with keyboard walk (e2e/a11y-journeys.spec.ts, nightly), main-landmark guard test, jsdom axe check; fixed missing main landmark on 4 pages and focus obscured by sticky bar; AUDIT.md | NVDA spot check by a human tester before go-live; consistent help link (3.2.6) in Phase 10 UI polish |

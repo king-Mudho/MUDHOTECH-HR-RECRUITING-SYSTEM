@@ -12,8 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<PageSkeleton />}>
-      <HRDashboard />
-    </Suspense>
+    <main id="main-content" className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 sm:p-6">
+      <Suspense fallback={<PageSkeleton />}>
+        <HRDashboard />
+      </Suspense>
+    </main>
   );
 }

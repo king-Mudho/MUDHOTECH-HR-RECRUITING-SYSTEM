@@ -148,6 +148,8 @@
   }
   html {
     @apply font-sans;
+    /* WCAG 2.4.11: keep focused elements clear of the sticky 3.5rem top bar (P09-T13) */
+    scroll-padding-top: 4.5rem;
   }
 }
 

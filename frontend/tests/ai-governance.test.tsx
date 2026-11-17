@@ -4,6 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import axe from "axe-core";
+
 import { AiGovernance } from "@/features/ai-governance/ai-governance";
 import messages from "../messages/en.json";
 
@@ -130,5 +132,22 @@ describe("AiGovernance", () => {
     wrap(<AiGovernance />);
     expect(await screen.findByText(/Only platform admins/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Switch AI off" })).toBeNull();
+  });
+
+  it("has no serious or critical axe violations (jsdom, contrast checked in Playwright)", async () => {
+    routes(
+      (u) =>
+        u === "/api/v1/me/"
+          ? { body: { ...me("none"), platform_role: "platform_admin" } }
+          : undefined,
+      (u) => (u === "/api/v1/platform/ai/" ? { body: state(true) } : undefined),
+    );
+    const { container } = wrap(<AiGovernance />);
+    await screen.findByRole("button", { name: "Switch AI off" });
+    const results = await axe.run(container, { rules: { "color-contrast": { enabled: false } } });
+    const serious = results.violations.filter((v) =>
+      ["serious", "critical"].includes(v.impact ?? ""),
+    );
+    expect(serious.map((v) => v.id)).toEqual([]);
   });
 });
