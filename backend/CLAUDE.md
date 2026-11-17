@@ -46,6 +46,14 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
   `dashboard.py`, `reconstruct.py` + `reconstruct_pdf.py`; `apps/audit` API (events, CSV export, reconstruct)
   and `audit.log_view()` for every view of candidate data. Hiring managers see shortlisted-onward
   applications unless `JobAssignment.sees_full_pool`.
+- Phase 09: `apps/privacy` (`PrivacyNotice`, `RightsRequest`, `RetentionRun`, `LegalHold`; `rights.py`
+  create/confirm/act, `export.py` bundle on the reports queue, `erasure.py` `erase()` + `residual_pii`,
+  `retention.py` daily run + weekly dry run); `apps/organisations/support_access.py` (break-glass grants,
+  middleware makes them read-only and logs reads); `apps/core/security_headers.py`, `apps/core/csv_safe.py`
+  (every CSV writer must use it - a test enforces it); PostgreSQL RLS (`core.0003`, middleware sets
+  `app.current_org` for `/api/v1/hr/` requests; new tenant tables need the policy added in a migration);
+  `apps/screening/killswitch.py` (`ai_allowed(org)` - check it before any new AI feature);
+  `platform.services.close_organisation`.
 - `tests/core_testapp/` — test-only models (`Widget` tenant model, `SecretNote` encrypted field); installed
   only by `config.settings.test`.
 - `fixtures/` — taxonomy seeds, synthetic CVs (never real data). `schema.yml` — committed OpenAPI schema.
@@ -97,6 +105,8 @@ celery -A config worker -Q documents -c 2 -l info
 python manage.py load_taxonomy && python manage.py embed_skills          # worker container (model)
 python -m ai_engine.tests.benchmark.run_extraction_benchmark --workers 2 --semantic --check  # worker image
 python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir ../docs/reports --check  # P07 targets
+python manage.py ai_switch off --reason "INC-1: drift" [--org <uuid>]   # AI kill-switch (runbook disable-ai)
+python manage.py verify_erasure <user_id> --value "former@email"        # exit 1 if PII remains
 python manage.py check_human_decisions        # 0 consequential transitions without a human (exit 1 otherwise)
 DEMO_PASSWORD=... python manage.py seed_core_scenario --count 100 --delay-minutes 1   # after seed_demo (e2e)
 ```

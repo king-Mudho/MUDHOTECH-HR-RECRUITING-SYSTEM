@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
+### Added
+- Phase 09 privacy, governance & security hardening: data-subject rights requests with export bundles,
+  erasure with legal holds and erasure verification, retention engine, break-glass support access,
+  PostgreSQL row-level security, security headers and CSP, nightly security scanning, ASVS L2 checklist,
+  AI kill-switch with model registry UI, model card and AI policy, DPIA and DPA template (for legal
+  review), accessibility pass, organisation closure, public privacy notice, terms and accessibility pages.
+
+### Changed
+- Minimum password length is now 12 characters.
+- The Django admin is only mounted when `ENABLE_DJANGO_ADMIN` is set (on in development).
+
 ## [0.9.0-mvp] - 2026-11-17
 MVP feature-complete.
 

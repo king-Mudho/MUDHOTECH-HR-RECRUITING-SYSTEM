@@ -5,10 +5,10 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-EXIT
+- **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
+- **Current task:** P10-T01
 - **Last updated:** 2026-11-17
-- **Overall:** 128 / 193 tasks · 8 / 16 phases
+- **Overall:** 128 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -21,8 +21,8 @@
 | 06 | [Document Ingestion & CV Extraction (AI Part 1)](phases/PHASE_06_CV_EXTRACTION.md) | MVP | 15 | ✅ Done | 2026-11-15 |
 | 07 | [Matching, Scoring & Explainable Evaluation (AI Part 2)](phases/PHASE_07_MATCHING_SCORING_EXPLANATIONS.md) | MVP | 15 | ✅ Done | 2026-11-16 |
 | 08 | [Shortlist Review, HR Dashboard & Audit UI  (→ MVP feature-complete)](phases/PHASE_08_SHORTLIST_DASHBOARD_AUDIT.md) | MVP | 13 | ✅ Done | 2026-11-17 |
-| 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | 🟦 In progress | |
-| 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | ⬜ Not started | |
+| 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ✅ Done | 2026-11-17 |
+| 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | 🟦 In progress | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | ⬜ Not started | |
 | 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ⬜ Not started | |
 | 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ⬜ Not started | |
@@ -202,7 +202,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P09-T11 — AI governance: `/admin/model-registry` UI, `docs/ai-governance/MODEL_CARD_screening_engine.md`, …
 - [x] P09-T12 — DPIA `docs/dpia/DPIA.md` (processing description, necessity, risks, mitigations, residual risk, sign-off section for …
 - [x] P09-T13 — Accessibility pass on candidate + HR core journeys: axe zero serious/critical, keyboard walkthrough, NVDA spot check …
-- [ ] P09-EXIT — All exit criteria verified with evidence
+- [x] P09-EXIT — All exit criteria verified with evidence
 
 ### Phase 10 — Quality Assurance, AI Validation & Pilot Readiness  (`phases/PHASE_10_QA_AI_VALIDATION_PILOT.md`)
 - [ ] P10-T01 — EC coverage: run `scripts/ec_coverage.py`
@@ -479,6 +479,29 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   10,000 rows (async exports with the reports module); blind review masks the name in CV text by matching the
   profile name only.
 
+### Phase 09 — Privacy, Governance & Security Hardening (closed 2026-11-17)
+- **Built:** privacy notices kept per version and legal holds; data-subject rights requests (password
+  re-auth, email confirmation, routing to employer or platform admins, SLA reminders, staff handling);
+  export bundle (JSON + PDF + documents, 24 h link); erasure/anonymisation with legal-hold checks and
+  `verify_erasure`; daily retention engine with weekly dry-run report; break-glass support access
+  (second-admin approval, <= 4 h, read-only, logged, tenant banner); PostgreSQL row-level security as a
+  second tenant boundary; security headers/CSP, admin gating, 12-character passwords, no-store, safe
+  CSV everywhere; nightly semgrep/detect-secrets/Trivy/ZAP; ASVS L2 checklist; AI kill-switch (platform,
+  per organisation, org policy) with `/admin/model-registry`, model card, AI policy and runbook; DPIA and
+  DPA template (for legal review); accessibility pass with an axe sweep of the core journeys; closing an
+  organisation; public privacy notice, terms (draft) and accessibility statement pages.
+- **Evidence:** see `phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md` "Exit evidence".
+- **Deviations:** ADR-027 (CSP without nonces, PPR/Cache Components); RLS context only for `/api/v1/hr/`
+  requests with an explicit organisation header (system code, candidates and platform staff are
+  scoped in the application layer); closing an organisation does not change application statuses
+  (no consequential state without a person) - candidates are told and retention anonymises later.
+- **Known limitations / follow-ups:** production DB role must be NOSUPERUSER NOBYPASSRLS (docs/10 §3.1)
+  or RLS is bypassed; NVDA screen-reader spot check by a human tester before go-live; consistent help link
+  (WCAG 3.2.6) in Phase 10 polish; DPIA/DPA/terms need counsel sign-off (D-08); access-log partitioning
+  and async audit exports still open (reports module); shortlisted/interview applications of a closed
+  organisation are kept by retention (KEEP_STATUSES) until a person decides them; the new nightly
+  security steps and the a11y journey spec need their first nightly run checked.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -652,3 +675,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T11 | AI kill-switch (platform flag ai.screening global/per-org + org policy): evaluation skipped, applications routed to manual review with no AI output, LLM and suggestions off; /platform/ai API + ai_switch command; /admin/model-registry UI; model card, AI policy, disable-ai runbook; how-we-use-ai notice item | Real-world calibration of bands in Phase 10 |
 | 2026-11-17 | Impl | P09-T12 | DPIA (processing, necessity, 13 risks with mitigations, residual risk, action plan, sign-off) and DPA template (controller=employer, processor=MudhoTech, annexes) - both marked for legal review (D-08) | Counsel review and sign-off before go-live (D-08) |
 | 2026-11-17 | Impl | P09-T13 | Accessibility pass: axe sweep of candidate + HR core journey pages with keyboard walk (e2e/a11y-journeys.spec.ts, nightly), main-landmark guard test, jsdom axe check; fixed missing main landmark on 4 pages and focus obscured by sticky bar; AUDIT.md | NVDA spot check by a human tester before go-live; consistent help link (3.2.6) in Phase 10 UI polish |
+| 2026-11-17 | Close | P09-EXIT | Phase 09 closed: rights lifecycle E2E with verify_erasure clean; no high/critical findings (bandit, pip-audit, npm audit, detect-secrets; nightly semgrep/Trivy/ZAP); ASVS L2 checklist complete; DPIA, DPA template, model card, AI policy written; AI kill-switch verified; EC 12/12. Fixed during close: EC-ORG-10 organisation closure, public privacy/terms/accessibility pages (footer links 404ed), EC-PRV-05 test, robust RLS overhead check and core-scenario email count (both failed on a fresh CI-like DB) | Phase 10 started |

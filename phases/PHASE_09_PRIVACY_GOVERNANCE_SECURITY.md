@@ -26,7 +26,31 @@ management, break-glass support access, AI governance artefacts, security header
 EC-PRV-01..10, EC-ACC-13, EC-ORG-10.
 
 ## Exit criteria
-- [ ] Rights request lifecycle E2E (export + deletion) passes; deleted candidate leaves no PII in DB/S3 (verification script).
-- [ ] No high/critical findings from security tooling; ASVS checklist complete.
-- [ ] DPIA, DPA template, model card, AI policy written.
-- [ ] AI kill-switch verified.
+- [x] Rights request lifecycle E2E (export + deletion) passes; deleted candidate leaves no PII in DB/S3 (verification script).
+- [x] No high/critical findings from security tooling; ASVS checklist complete.
+- [x] DPIA, DPA template, model card, AI policy written.
+- [x] AI kill-switch verified.
+
+## Exit evidence (2026-11-17)
+- Rights lifecycle: `apps/privacy/tests/test_lifecycle.py` drives the API end to end - export request
+  (password re-auth, email-token confirmation, bundle built on the reports queue, 24 h download, staff
+  completion), organisation-scoped deletion (erases the employer's records and files) and account
+  deletion by a platform admin; `verify_erasure` then finds no former identifier in the database and the
+  CV object is gone from storage. Unit coverage in `test_export.py`, `test_erasure.py` (legal holds,
+  `verify_erasure` failing when PII remains), `test_retention.py`.
+- Security tooling (2026-11-17): bandit 0 medium/high, pip-audit 0, npm audit 0 high/critical (one
+  moderate dev-tooling advisory, recorded), detect-secrets 0 new; nightly adds semgrep, Trivy (fs +
+  images, fail on HIGH/CRITICAL) and the ZAP baseline. ASVS L2 checklist complete with evidence per item
+  (`docs/security/ASVS_CHECKLIST.md`, findings F1-F10).
+- Documents: `docs/dpia/DPIA.md`, `docs/legal/DPA_TEMPLATE.md` (both for legal review, D-08),
+  `docs/ai-governance/MODEL_CARD_screening_engine.md`, `docs/ai-governance/AI_POLICY.md`,
+  `docs/runbooks/disable-ai.md`, `docs/accessibility/AUDIT.md`.
+- AI kill-switch: `apps/screening/tests/test_killswitch.py` - with the platform flag, an organisation
+  override or the organisation policy off, evaluation is skipped and the application reaches
+  `under_review` in `manual_review_requested` with no score or AI text; LLM summaries and criteria
+  suggestions are off; API and `ai_switch` command require a platform admin and a reason, audited.
+- Edge cases: `scripts/ec_coverage.py --phase 09` 12/12 (EC-ORG-10 close flow, EC-PRV-05, EC-PRV-10 added
+  at close).
+- Full backend suite on a fresh CI-like database: 2,448 passed (the RLS overhead check and the core
+  scenario's clarification-email count were made robust during the close); Vitest 160 passed.
+
