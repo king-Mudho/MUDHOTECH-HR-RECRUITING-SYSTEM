@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import platform
+import shutil
 import statistics
 import time as clock
 from collections import Counter
@@ -97,13 +98,9 @@ def submit(job: Job, count: int, password: str) -> PilotResult:
     zone = daytime_zone()
     start = clock.perf_counter()
     for i, label in enumerate(corpus(count), start=1):
-        user = _user(
-            f"pilot{stamp}-{i:03d}@pilot.test",
-            password,
-            f"Pilot{i:03d}",
-            "Synthetic",
-            timezone=zone,
-        )
+        # the account carries the synthetic person named on the CV, as a real applicant's would
+        first, _, last = label["person"]["name"].partition(" ")
+        user = _user(f"pilot{stamp}-{i:03d}@pilot.test", password, first, last, timezone=zone)
         app, _ = applications.start_or_resume_draft(job, user, source={"channel": "pilot"})
         data = (CORPUS / label["file"]).read_bytes()
         key = f"cv/pilot/{user.pk}/{label['file']}"
@@ -174,7 +171,22 @@ def accounting(result: PilotResult) -> dict[str, Any]:
         for a in [e.application]
         if a.submitted_at
     ]
+    labels = {
+        c["file"]: c
+        for c in json.loads((CORPUS / "labels.json").read_text(encoding="utf-8"))["cvs"]
+    }
+    by_role: dict[str, Counter[str]] = {}
+    for a in apps:
+        label = labels.get(result.corpus_files.get(str(a.pk), ""), {})
+        role = label.get("role", "unknown")
+        # gold suitability is labelled for the CV's own role, i.e. this vacancy for developers
+        suitability = (
+            label.get("hr_reference_suitability", "") if role == "software_developer" else ""
+        )
+        key = f"{role} ({suitability})" if suitability else role
+        by_role.setdefault(key, Counter())[a.ai_band or "none"] += 1
     return {
+        "by_role": by_role,
         "submitted": len(result.submitted),
         "records": len(found),
         "missing": sorted(set(result.submitted) - found),
@@ -196,6 +208,20 @@ def _table(title: str, counts: Counter[str], total: int) -> list[str]:
     return lines
 
 
+def _role_table(by_role: dict[str, Counter[str]]) -> list[str]:
+    bands = sorted({b for c in by_role.values() for b in c})
+    lines = ["| CV role | " + " | ".join(bands) + " |", "|---|" + "---|" * len(bands)]
+    for role in sorted(by_role):
+        lines.append(f"| {role} | " + " | ".join(str(by_role[role][b]) for b in bands) + " |")
+    return lines
+
+
+def _semantic_on() -> bool:
+    from apps.screening.services import _semantic
+
+    return _semantic() is not None
+
+
 def report(result: PilotResult, acc: dict[str, Any], *, inline: bool) -> str:
     total = acc["records"]
     waiting = acc["statuses"].get("submitted", 0) + acc["statuses"].get("processing", 0)
@@ -208,6 +234,8 @@ def report(result: PilotResult, acc: dict[str, Any], *, inline: bool) -> str:
         "encrypted and prompt-injection CVs) - no real people.",
         "",
         f"- Vacancy: **{result.title}** (`{result.job_id}`)",
+        f"- Capabilities: semantic matching **{'on' if _semantic_on() else 'off'}**, "
+        f"OCR **{'on' if shutil.which('tesseract') else 'off (scanned CVs cannot be read)'}**",
         f"- Mode: {'inline (consumers in one process)' if inline else 'workers'}; "
         f"{platform.system()} {platform.machine()} · Python {platform.python_version()}",
         f"- Submitting {acc['submitted']} applications"
@@ -245,6 +273,10 @@ def report(result: PilotResult, acc: dict[str, Any], *, inline: bool) -> str:
         "## Bands (routing hints for people; there is no reject band)",
         "",
         *_table("Band", acc["bands"], total),
+        "",
+        "## Bands by CV role (developer CVs split by gold suitability)",
+        "",
+        *_role_table(acc["by_role"]),
         "",
         "## Flags",
         "",

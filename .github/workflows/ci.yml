@@ -104,7 +104,7 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: "1"
       - name: npm audit (production deps)
-        run: npm audit --omit=dev --audit-level=high
+        run: node scripts/audit.mjs  # high/critical fail unless accepted in audit-allowlist.json (expires)
 
   contract:
     name: API contract (schema drift + generated types)

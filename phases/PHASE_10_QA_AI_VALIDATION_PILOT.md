@@ -15,7 +15,7 @@ fault injection and load tests; produce a pilot evaluation report.
 - [ ] **P10-T05** — Load tests (Locust): 100 and 1,000 concurrent submissions; public job board 200 RPS read; HR applicants list with 5,000 applications; record P95s vs NFR-PERF; fix bottlenecks (indexes, N+1 via `django-query-count`/nplusone).
 - [ ] **P10-T06** — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record; tune worker concurrency/prefetch.
 - [ ] **P10-T07** — Resilience/fault injection: kill workers mid-task, stop Redis during submissions, S3 errors, DB restart, duplicate messages → assert O1 (no loss, no duplicates) and recovery (EC-OPS-01..04).
-- [ ] **P10-T08** — Pilot dataset & script: `python manage.py run_pilot_benchmark` → creates vacancy, submits 100 applications, waits, outputs accounting table (100/100 records, parse success/fail, bands, flags) to `docs/reports/PILOT_BENCHMARK.md`.
+- [x] **P10-T08** — Pilot dataset & script: `python manage.py run_pilot_benchmark` → creates vacancy, submits 100 applications, waits, outputs accounting table (100/100 records, parse success/fail, bands, flags) to `docs/reports/PILOT_BENCHMARK.md`.
 - [ ] **P10-T09** — UAT pack `docs/uat/UAT_SCRIPTS.md` for HR reviewers (step-by-step scenarios, expected results, sign-off table) and `docs/user-guides/` (Candidate guide, Recruiter guide, HR Manager guide, Org Admin guide) with screenshots (Playwright-generated).
 - [ ] **P10-T10** — Bug bash & fix all P0/P1 defects; log in `docs/reports/DEFECT_LOG.md`.
 

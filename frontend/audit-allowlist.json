@@ -1,0 +1,9 @@
+[
+  {
+    "id": "GHSA-fc5q-39xc-vjpf",
+    "package": "picomatch (via next-intl -> @parcel/watcher)",
+    "reason": "ReDoS needs attacker-controlled glob patterns. picomatch is only loaded by next-intl's message-extraction file watcher, which MHRS does not enable; no user input reaches a glob. No patched picomatch exists yet (<=4.0.7 affected, 4.0.7 latest).",
+    "acceptedOn": "2026-11-17",
+    "reviewBy": "2026-12-15"
+  }
+]

@@ -160,3 +160,8 @@ Local run 2026-11-17: bandit 0 medium/high, pip-audit 0 vulnerabilities, detect-
 npm audit 0 high/critical. One **moderate** advisory (GHSA-g3hv-75wg-m249, minimatch ReDoS) is reachable
 only through dev tooling (`typescript-eslint`, `shadcn` CLI via `ts-morph`), never in the production
 bundle or image; accepted until upstream releases a fix (the suggested fix downgrades `shadcn`).
+
+Production npm audit gate (`frontend/scripts/audit.mjs`): high/critical advisories fail CI unless
+listed in `frontend/audit-allowlist.json` with a reason and a review date; an expired entry fails
+again. Accepted 2026-11-17 until 2026-12-15: GHSA-fc5q-39xc-vjpf (picomatch ReDoS) - only loaded by
+next-intl's message-extraction watcher, which MHRS does not use, and no patched release exists.
