@@ -60,7 +60,11 @@ def jobs_setup(ctx: Ctx, needs: tuple[str, ...] = STAGES) -> None:
             },
         )
         JobAssignment.objects.create(
-            organisation=org, job=job, membership=hiring, role_on_job="hiring_manager"
+            organisation=org,
+            job=job,
+            membership=hiring,
+            role_on_job="hiring_manager",
+            sees_full_pool=True,  # role matrix: HM may see these test applications
         )
         services.set_criteria(job, actor=team.recruiter, criteria=CRITERIA)
         services.set_questionnaire(job, actor=team.recruiter, questions=questions or QUESTIONS)

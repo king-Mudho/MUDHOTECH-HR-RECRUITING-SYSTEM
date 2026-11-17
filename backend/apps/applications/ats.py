@@ -45,6 +45,9 @@ OUTCOME_NOTIFICATIONS = {Status.SHORTLISTED: "shortlisted", Status.NOT_SELECTED:
 
 
 def _visible(membership: Membership, application_id: Any, *, lock: bool = False) -> Application:
+    from .conflicts import guard_own
+
+    guard_own(membership, application_id)  # EC-ACC-09: 403 + audit, not a silent 404
     qs = applications_visible_to(membership).select_related("job", "organisation", "candidate_user")
     if lock:
         qs = qs.select_for_update(of=("self",))

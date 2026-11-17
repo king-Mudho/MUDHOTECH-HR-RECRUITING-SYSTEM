@@ -79,6 +79,11 @@ urlpatterns = [
         name="hr-application-assign",
     ),
     path(
+        "hr/applications/<uuid:application_id>/declare-conflict/",
+        ats_views.HRDeclareConflictView.as_view(),
+        name="hr-application-declare-conflict",
+    ),
+    path(
         "hr/applications/<uuid:application_id>/reveal-identity/",
         ats_views.HRRevealIdentityView.as_view(),
         name="hr-application-reveal-identity",
@@ -93,6 +98,14 @@ urlpatterns = [
         "hr/saved-views/<uuid:view_id>/",
         ats_views.HRSavedViewDetailView.as_view(),
         name="hr-saved-view",
+    ),
+    path(
+        "hr/dashboard/summary/",
+        ats_views.HRDashboardSummaryView.as_view(),
+        name="hr-dashboard-summary",
+    ),
+    path(
+        "hr/jobs/<uuid:job_id>/funnel/", ats_views.HRJobFunnelView.as_view(), name="hr-job-funnel"
     ),
     path(
         "hr/decision-reasons/",

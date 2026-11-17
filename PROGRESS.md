@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
-- **Current task:** P08-T09
-- **Last updated:** 2026-11-16
-- **Overall:** 110 / 193 tasks · 7 / 16 phases
+- **Current task:** P08-T12
+- **Last updated:** 2026-11-17
+- **Overall:** 113 / 193 tasks · 7 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -181,9 +181,9 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P08-T06 — Candidate review page `/hr/applications/[id]` per `docs/08 §3.3`: `EvidenceViewer` (pdf.js in sandboxed …
 - [x] P08-T07 — Compare view `/hr/compare` (≤ 4) — criteria rows × candidates, evidence snippets on hover
 - [x] P08-T08 — Shortlist builder `/hr/jobs/[id]/shortlist` per `docs/08 §3.4` incl
-- [ ] P08-T09 — Role visibility: hiring manager sees shortlist only (EC-REV-09)
-- [ ] P08-T10 — HR dashboard `/hr/dashboard`: KPI cards & queues per SRS M15, per-vacancy funnel, filters
-- [ ] P08-T11 — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job …
+- [x] P08-T09 — Role visibility: hiring manager sees shortlist only (EC-REV-09)
+- [x] P08-T10 — HR dashboard `/hr/dashboard`: KPI cards & queues per SRS M15, per-vacancy funnel, filters
+- [x] P08-T11 — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job …
 - [ ] P08-T12 — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors
 - [ ] P08-T13 — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing …
 - [ ] P08-EXIT — All exit criteria verified with evidence
@@ -612,3 +612,6 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | Impl | P08-T06 | Review page: ReviewWorkspace with EvidenceViewer (CV text per page with highlighted evidence spans, contact/personal/references masked, name masked in blind mode, pdf.js render of original PDFs when identity visible), criterion selection highlights its evidence, evaluation version switcher (read-only older versions), flags banner, j/k next/previous from the applicants list; GET hr/applications/{id}/evidence-text | Live browser check pending (ports held by another project) |
 | 2026-11-16 | Impl | P08-T07 | /hr/compare?ids= (2-4): criteria rows x applicants with score, evidence status and expandable snippets; manual-review applicants show no AI output; Compare action from the applicants bulk bar | - |
 | 2026-11-16 | Impl | P08-T08 | /hr/jobs/[id]/shortlist builder: propose with desired size, columns Suggested / Needs your review / Low coverage / Others, decision chips with reasons (override reason required), summary bar, submit, approve dialog with counts/reasons/uncertain warning and explicit 'leave undecided in review' (server: undecided_remaining), Idempotency-Key, return with reason, undo countdown | - |
+| 2026-11-17 | Impl | P08-T09 | Visibility in applications_visible_to: hiring managers see shortlisted-onward unless the job assignment grants sees_full_pool (EC-REV-09); declare-conflict action hides the application from the declarer, clears their assignment, audited (EC-REV-11); staff get 403 + audit on their own application and lose access to that vacancy's applications; staff applications visible to HR managers/admins only (EC-ACC-09/10); UI action | - |
+| 2026-11-17 | Impl | P08-T10 | GET hr/dashboard/summary (cards per FR-M15-01, AI band counts separate from human decisions, queues; filters department/vacancy/recruiter/date) + GET hr/jobs/{id}/funnel; /hr/dashboard page; reconciliation tests compare every card with direct queries | - |
+| 2026-11-17 | Impl | P08-T11 | GET hr/audit-events (filters, cursor) + CSV export (formula injection neutralised, audited) for auditors/admins; GET hr/applications/{id}/reconstruct (job version, rubric, evaluation versions with engine/thresholds/models/evidence refs, human decisions with reasons, shortlist decisions with AI band + overrides, verifications, reveals/conflicts, notifications) + PDF (PyMuPDF Story); auditors see PII redacted unless revealed (EC-PRV-06); /hr/settings/audit + reconstruction PDF button | - |

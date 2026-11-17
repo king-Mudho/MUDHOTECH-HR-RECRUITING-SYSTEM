@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
 from apps.audit import services as audit
 from apps.core.exceptions import NotFoundError
@@ -24,17 +24,43 @@ from .models import Application, ApplicationDocument, Status
 PRIVATE_STATUSES = (Status.DRAFT, Status.ABANDONED)
 
 
+SHORTLIST_ONWARD = (
+    Status.SHORTLISTED,
+    Status.INTERVIEW,
+    Status.OFFER,
+    Status.HIRED,
+    Status.OFFER_DECLINED,
+)
+
+
 def applications_visible_to(membership: Membership) -> QuerySet[Application]:
+    """The one place that decides which applications a member may see (P08-T09):
+    assigned vacancies only; hiring managers see the shortlist onwards unless granted the full
+    pool (EC-REV-09); conflict-of-interest rules (EC-REV-11, EC-ACC-09/10)."""
+    from apps.jobs.models import JobAssignment
+    from apps.organisations.models import Role
+
+    from .conflicts import restrict
+
     if not rbac.can(membership.role, "applications.view"):
         return Application.objects.for_org(membership.organisation_id).none()
-    return (
+    qs = (
         Application.objects.for_org(membership.organisation_id)
         .exclude(status__in=PRIVATE_STATUSES)
         .filter(job__in=jobs_visible_to(membership).values("pk"))
     )
+    if membership.role == Role.HIRING_MANAGER:
+        full_pool = JobAssignment.objects.for_org(membership.organisation_id).filter(
+            membership=membership, role_on_job="hiring_manager", sees_full_pool=True
+        )
+        qs = qs.filter(Q(status__in=SHORTLIST_ONWARD) | Q(job_id__in=full_pool.values("job_id")))
+    return restrict(membership, qs)
 
 
 def application_detail(user: Any, membership: Membership, application_id: Any) -> dict[str, Any]:
+    from .conflicts import guard_own
+
+    guard_own(membership, application_id)
     app = (
         applications_visible_to(membership)
         .select_related("job", "job_version")

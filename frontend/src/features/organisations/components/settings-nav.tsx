@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
-const TABS = ["organisation", "structure", "team", "policies", "notifications"] as const;
+const TABS = ["organisation", "structure", "team", "policies", "notifications", "audit"] as const;
 
 export function SettingsNav() {
   const t = useTranslations("organisations.settings.nav");

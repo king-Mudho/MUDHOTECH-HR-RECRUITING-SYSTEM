@@ -714,6 +714,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/declare-conflict/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Step back from an application you have a conflict of interest with (EC-REV-11). */
+        post: operations["hr_application_declare_conflict"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/evaluation/": {
         parameters: {
             query?: never;
@@ -830,6 +847,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/reconstruct/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Everything needed to explain one application's assessment and decisions. */
+        get: operations["hr_application_reconstruct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/reconstruct.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_reconstruct_pdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/retry-processing/": {
         parameters: {
             query?: never;
@@ -911,6 +961,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/audit-events/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_audit_events"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/audit-events/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CSV for auditors (formula injection neutralised; capped; the export itself is audited). */
+        get: operations["hr_audit_events_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/claims/{claim_id}/verify/": {
         parameters: {
             query?: never;
@@ -935,6 +1018,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["hr_clarification_templates_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/dashboard/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_dashboard_summary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1004,6 +1103,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["hr_job_applications_bulk"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/funnel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_job_funnel"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2547,6 +2662,23 @@ export interface components {
             readonly scan_status: string;
             readonly size_bytes: number;
         };
+        AuditEvent: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            created_at: string;
+            seq: number;
+            readonly actor: string | null;
+            actor_type: string;
+            action: string;
+            target_type: string;
+            target_id: string;
+            before: unknown;
+            after: unknown;
+            reason: string;
+            request_id: string;
+            hash: string;
+        };
         /**
          * @description * `immediate` - Immediately
          *     * `notice` - After my notice period
@@ -2759,6 +2891,12 @@ export interface components {
          * @enum {string}
          */
         ConfidenceEnum: "high" | "medium" | "low";
+        ConflictDeclared: {
+            /** Format: uuid */
+            application_id: string;
+            /** Format: date-time */
+            declared_at: string;
+        };
         /**
          * @description * `in_person` - in_person
          *     * `phone` - phone
@@ -2863,10 +3001,71 @@ export interface components {
             category: components["schemas"]["CategoryEnum"];
             aliases?: string[];
         };
+        DashboardAI: {
+            ai_notice: string;
+            bands: {
+                [key: string]: number;
+            };
+        };
+        DashboardAppRow: {
+            /** Format: uuid */
+            application_id: string;
+            reference: string | null;
+            job_title: string;
+            status: string;
+            /** Format: date-time */
+            at: string | null;
+        };
+        DashboardApproval: {
+            /** Format: uuid */
+            shortlist_id: string;
+            /** Format: uuid */
+            job_id: string;
+            job_title: string;
+            /** Format: date-time */
+            submitted_at: string | null;
+        };
+        DashboardCards: {
+            open_vacancies: number;
+            applications_today: number;
+            applications_7d: number;
+            processing_queue: number;
+            processing_errors: number;
+            pending_reviews: number;
+            clarifications_outstanding: number;
+            shortlist_approvals_pending: number;
+        };
+        DashboardClarification: {
+            /** Format: uuid */
+            application_id: string;
+            job_title: string;
+            /** Format: date-time */
+            due_at: string;
+        };
+        DashboardHuman: {
+            shortlisted: number;
+            not_selected: number;
+            on_hold: number;
+        };
+        DashboardQueues: {
+            failed_processing: components["schemas"]["DashboardAppRow"][];
+            pending_reviews: components["schemas"]["DashboardAppRow"][];
+            clarifications_due: components["schemas"]["DashboardClarification"][];
+            approvals: components["schemas"]["DashboardApproval"][];
+        };
+        DashboardSummary: {
+            cards: components["schemas"]["DashboardCards"];
+            ai_suggestions: components["schemas"]["DashboardAI"];
+            human_decisions: components["schemas"]["DashboardHuman"];
+            queues: components["schemas"]["DashboardQueues"];
+        };
         DecisionReason: {
             readonly code: string;
             readonly label: string;
             readonly applies_to: components["schemas"]["AppliesToEnum"];
+        };
+        DeclareConflictRequest: {
+            reason: string;
         };
         Department: {
             /** Format: uuid */
@@ -3085,6 +3284,16 @@ export interface components {
          * @enum {string}
          */
         FrameworkEnum: "ZW" | "INTL";
+        Funnel: {
+            /** Format: uuid */
+            job_id: string;
+            stages: components["schemas"]["FunnelStage"][];
+            withdrawn: number;
+        };
+        FunnelStage: {
+            stage: string;
+            count: number;
+        };
         HRAnswer: {
             key: string;
             prompt: string;
@@ -3739,6 +3948,11 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Assignment"][];
+        };
+        PaginatedAuditEventList: {
+            next_cursor?: string | null;
+            previous_cursor?: string | null;
+            results: components["schemas"]["AuditEvent"][];
         };
         PaginatedDepartmentList: {
             /** @example 123 */
@@ -6469,6 +6683,33 @@ export interface operations {
             };
         };
     };
+    hr_application_declare_conflict: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeclareConflictRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DeclareConflictRequest"];
+                "multipart/form-data": components["schemas"]["DeclareConflictRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConflictDeclared"];
+                };
+            };
+        };
+    };
     hr_application_evaluation: {
         parameters: {
             query?: never;
@@ -6671,6 +6912,50 @@ export interface operations {
             };
         };
     };
+    hr_application_reconstruct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    hr_application_reconstruct_pdf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
     hr_application_retry_processing: {
         parameters: {
             query?: never;
@@ -6794,6 +7079,72 @@ export interface operations {
             };
         };
     };
+    hr_audit_events: {
+        parameters: {
+            query?: {
+                /** @description Prefix, e.g. application. */
+                action?: string;
+                actor?: string;
+                /** @description The pagination cursor value. */
+                cursor?: string;
+                /** @description YYYY-MM-DD */
+                from?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                target_id?: string;
+                target_type?: string;
+                /** @description YYYY-MM-DD */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAuditEventList"];
+                };
+            };
+        };
+    };
+    hr_audit_events_export: {
+        parameters: {
+            query?: {
+                /** @description Prefix, e.g. application. */
+                action?: string;
+                actor?: string;
+                /** @description YYYY-MM-DD */
+                from?: string;
+                target_id?: string;
+                target_type?: string;
+                /** @description YYYY-MM-DD */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+        };
+    };
     hr_claim_verify: {
         parameters: {
             query?: never;
@@ -6836,6 +7187,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuestionTemplate"][];
+                };
+            };
+        };
+    };
+    hr_dashboard_summary: {
+        parameters: {
+            query?: {
+                department?: string;
+                /** @description YYYY-MM-DD */
+                from?: string;
+                job?: string;
+                recruiter?: string;
+                /** @description YYYY-MM-DD */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardSummary"];
                 };
             };
         };
@@ -6982,6 +7360,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BulkActionResult"];
+                };
+            };
+        };
+    };
+    hr_job_funnel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Funnel"];
                 };
             };
         };

@@ -331,3 +331,142 @@ class HRBulkApplicationsView(APIView):
             due_days=v["due_days"],
         )
         return Response(BulkActionResultSerializer(result).data)
+
+
+# ------------------------------------------------------------------ conflicts (P08-T09)
+class DeclareConflictSerializer(StrictSerializer):
+    reason = serializers.CharField(max_length=2000)
+
+
+class ConflictDeclaredSerializer(serializers.Serializer):
+    application_id = serializers.UUIDField()
+    declared_at = serializers.DateTimeField()
+
+
+class HRDeclareConflictView(APIView):
+    """Step back from an application you have a conflict of interest with (EC-REV-11)."""
+
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(
+        operation_id="hr_application_declare_conflict",
+        request=DeclareConflictSerializer,
+        responses={201: ConflictDeclaredSerializer},
+    )
+    def post(self, request: Request, application_id: str) -> Response:
+        from apps.applications.conflicts import declare
+
+        data = DeclareConflictSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        row = declare(
+            request.membership,  # type: ignore[attr-defined]
+            authed_user(request),
+            application_id,
+            reason=data.validated_data["reason"],
+        )
+        return Response(
+            ConflictDeclaredSerializer(
+                {"application_id": row.application_id, "declared_at": row.declared_at}
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+# ------------------------------------------------------------------ dashboard (P08-T10)
+class DashboardCardsSerializer(serializers.Serializer):
+    open_vacancies = serializers.IntegerField()
+    applications_today = serializers.IntegerField()
+    applications_7d = serializers.IntegerField()
+    processing_queue = serializers.IntegerField()
+    processing_errors = serializers.IntegerField()
+    pending_reviews = serializers.IntegerField()
+    clarifications_outstanding = serializers.IntegerField()
+    shortlist_approvals_pending = serializers.IntegerField()
+
+
+class DashboardAISerializer(serializers.Serializer):
+    ai_notice = serializers.CharField()
+    bands = serializers.DictField(child=serializers.IntegerField())
+
+
+class DashboardHumanSerializer(serializers.Serializer):
+    shortlisted = serializers.IntegerField()
+    not_selected = serializers.IntegerField()
+    on_hold = serializers.IntegerField()
+
+
+class DashboardAppRowSerializer(serializers.Serializer):
+    application_id = serializers.UUIDField()
+    reference = serializers.CharField(allow_null=True)
+    job_title = serializers.CharField()
+    status = serializers.CharField()
+    at = serializers.DateTimeField(allow_null=True)
+
+
+class DashboardClarificationSerializer(serializers.Serializer):
+    application_id = serializers.UUIDField()
+    job_title = serializers.CharField()
+    due_at = serializers.DateTimeField()
+
+
+class DashboardApprovalSerializer(serializers.Serializer):
+    shortlist_id = serializers.UUIDField()
+    job_id = serializers.UUIDField()
+    job_title = serializers.CharField()
+    submitted_at = serializers.DateTimeField(allow_null=True)
+
+
+class DashboardQueuesSerializer(serializers.Serializer):
+    failed_processing = DashboardAppRowSerializer(many=True)
+    pending_reviews = DashboardAppRowSerializer(many=True)
+    clarifications_due = DashboardClarificationSerializer(many=True)
+    approvals = DashboardApprovalSerializer(many=True)
+
+
+class DashboardSummarySerializer(serializers.Serializer):
+    cards = DashboardCardsSerializer()
+    ai_suggestions = DashboardAISerializer()
+    human_decisions = DashboardHumanSerializer()
+    queues = DashboardQueuesSerializer()
+
+
+class FunnelStageSerializer(serializers.Serializer):
+    stage = serializers.CharField()
+    count = serializers.IntegerField()
+
+
+class FunnelSerializer(serializers.Serializer):
+    job_id = serializers.UUIDField()
+    stages = FunnelStageSerializer(many=True)
+    withdrawn = serializers.IntegerField()
+
+
+class HRDashboardSummaryView(APIView):
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(
+        operation_id="hr_dashboard_summary",
+        parameters=[
+            OpenApiParameter("department", str),
+            OpenApiParameter("job", str),
+            OpenApiParameter("recruiter", str),
+            OpenApiParameter("from", str, description="YYYY-MM-DD"),
+            OpenApiParameter("to", str, description="YYYY-MM-DD"),
+        ],
+        responses=DashboardSummarySerializer,
+    )
+    def get(self, request: Request) -> Response:
+        from apps.applications import dashboard
+
+        body = dashboard.summary(request.membership, dict(request.query_params.items()))  # type: ignore[attr-defined]
+        return Response(DashboardSummarySerializer(body).data)
+
+
+class HRJobFunnelView(APIView):
+    permission_classes = [HasOrgAction("applications.view")]
+
+    @extend_schema(operation_id="hr_job_funnel", responses=FunnelSerializer)
+    def get(self, request: Request, job_id: str) -> Response:
+        from apps.applications import dashboard
+
+        return Response(FunnelSerializer(dashboard.funnel(request.membership, job_id)).data)  # type: ignore[attr-defined]

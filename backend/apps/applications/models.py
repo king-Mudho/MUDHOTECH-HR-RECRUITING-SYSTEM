@@ -281,3 +281,22 @@ class SavedView(TenantModel):
                 fields=["organisation", "user", "scope", "name"], name="uniq_saved_view_name"
             )
         ]
+
+
+class ConflictDeclaration(TenantModel):
+    """A reviewer stepped back from an application (EC-REV-11). Permanent for that reviewer."""
+
+    application = models.ForeignKey(
+        Application, on_delete=models.CASCADE, related_name="conflict_declarations"
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    reason = models.TextField()
+    declared_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ("-declared_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["application", "user"], name="uniq_conflict_declaration"
+            )
+        ]

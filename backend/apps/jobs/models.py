@@ -335,6 +335,8 @@ class JobAssignment(TenantModel):
         "organisations.Membership", on_delete=models.CASCADE, related_name="job_assignments"
     )
     role_on_job = models.CharField(max_length=16, choices=RoleOnJob.choices)
+    # hiring managers see the shortlist only unless HR grants the full pool (EC-REV-09)
+    sees_full_pool = models.BooleanField(default=False)
 
     class Meta:
         constraints = [

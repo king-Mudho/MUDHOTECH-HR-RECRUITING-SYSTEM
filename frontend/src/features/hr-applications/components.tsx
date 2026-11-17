@@ -16,9 +16,11 @@ import { documentsApi } from "@/features/documents/api";
 import { useJobsContext } from "@/features/jobs/hooks";
 import { ReviewWorkspace } from "@/features/screening/review-workspace";
 import { ApiError } from "@/lib/api-client";
+import { downloadWithOrg } from "@/lib/download";
 
 import { APPLICATION_VIEWERS, useHRApplication } from "./api";
 import { ApplicantsTable } from "./applicants";
+import { DeclareConflict } from "./declare-conflict";
 import { ExtractionPanel } from "./extraction-panel";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 import { RevealIdentity } from "./reveal-identity";
@@ -101,6 +103,24 @@ export function HRApplicationView({ id }: { id: string }) {
         </Alert>
       ) : null}
 
+      <div className="flex flex-wrap justify-end gap-2">
+        {["org_admin", "hr_manager"].includes(role) ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              void downloadWithOrg(
+                `/api/v1/hr/applications/${a.id}/reconstruct.pdf`,
+                orgId,
+                `reconstruction-${a.reference ?? a.id}.pdf`,
+              )
+            }
+          >
+            {t("detail.reconstruct")}
+          </Button>
+        ) : null}
+        <DeclareConflict applicationId={a.id} jobId={a.job.id} />
+      </div>
       <ActionsPanel app={a} />
 
       <section aria-labelledby="hr-contact" className="rounded-lg border p-4">

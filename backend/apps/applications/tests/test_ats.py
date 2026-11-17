@@ -32,7 +32,8 @@ def world() -> Any:
             organisation=team.org,
             job=job,
             membership=Membership.objects.for_org(team.org).get(user=user),
-            defaults={"role_on_job": role},
+            # the hiring manager is granted the full pool here (EC-REV-09 is in test_conflicts)
+            defaults={"role_on_job": role, "sees_full_pool": True},
         )
     app = make_application(job, UserFactory(verified=True), status=Status.UNDER_REVIEW)
     return team, app

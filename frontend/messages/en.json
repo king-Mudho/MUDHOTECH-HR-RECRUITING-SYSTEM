@@ -327,7 +327,8 @@
         "structure": "Departments & locations",
         "team": "Team",
         "policies": "Policies",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "audit": "Audit trail"
       },
       "pendingVerification": "Your organisation is awaiting verification. You can prepare vacancies, but publishing is enabled after verification.",
       "suspended": "This organisation is suspended. Recruitment data is read-only.",
@@ -1418,7 +1419,8 @@
         "human": "by a person",
         "system": "automatically"
       },
-      "flagsTitle": "Check before deciding"
+      "flagsTitle": "Check before deciding",
+      "reconstruct": "Decision reconstruction (PDF)"
     },
     "openPipeline": "Open the pipeline board",
     "pipeline": {
@@ -1638,6 +1640,13 @@
         "failed": "The bulk action could not be completed.",
         "compare": "Compare"
       }
+    },
+    "conflict": {
+      "action": "Declare a conflict of interest",
+      "title": "Step back from this application?",
+      "description": "Use this if you know the applicant personally (family, friend, former colleague). The application will be removed from your lists and any assignment to you is cleared. HR managers can see the declaration.",
+      "confirm": "Declare conflict",
+      "failed": "Could not record the declaration. Please try again."
     }
   },
   "notifications": {
@@ -2002,5 +2011,77 @@
     "undo": "Undo approval",
     "undoTitle": "Undo this approval?",
     "undoDescription": "All decisions return to review and the scheduled messages are cancelled."
+  },
+  "hrDashboard": {
+    "title": "HR dashboard",
+    "forbidden": "Your role does not include the recruitment dashboard.",
+    "filters": "Filters",
+    "vacancy": "Vacancy",
+    "allVacancies": "All vacancies",
+    "from": "Submitted from",
+    "to": "Submitted to",
+    "cardsLabel": "Key figures",
+    "cards": {
+      "open_vacancies": "Open vacancies",
+      "applications_today": "Applications today",
+      "applications_7d": "Applications (7 days)",
+      "processing_queue": "Being processed",
+      "processing_errors": "Processing errors",
+      "pending_reviews": "Waiting for review",
+      "clarifications_outstanding": "Clarifications outstanding",
+      "shortlist_approvals_pending": "Shortlists to approve"
+    },
+    "aiTitle": "AI suggestions (applications in review)",
+    "humanTitle": "Decisions made by people",
+    "humanNote": "Status changes recorded by HR staff in the selected period.",
+    "decisions": {
+      "shortlisted": "Shortlisted",
+      "not_selected": "Not selected",
+      "on_hold": "On hold"
+    },
+    "none": "Nothing here.",
+    "funnel": "Vacancy funnel",
+    "funnelCaption": "Applications at each stage",
+    "stages": {
+      "submitted": "Submitted",
+      "processed": "Processed",
+      "reviewed": "Reviewed",
+      "shortlisted": "Shortlisted"
+    },
+    "withdrawn": "{count, plural, one {# withdrawn} other {# withdrawn}}",
+    "queues": {
+      "failed_processing": "Processing errors",
+      "pending_reviews": "Oldest waiting for review",
+      "approvals": "Shortlists waiting for approval",
+      "clarifications_due": "Clarifications due soonest"
+    },
+    "due": "due {when}"
+  },
+  "audit": {
+    "title": "Audit trail",
+    "intro": "Every sensitive action is recorded in a tamper-evident log. Filter by action (for example application. or shortlist.), by record or by date.",
+    "forbidden": "Only organisation admins and auditors can read the audit trail.",
+    "action": "Action starts with",
+    "target": "Record id",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply filters",
+    "export": "Export CSV",
+    "emptyTitle": "No events",
+    "empty": "No audit events match these filters.",
+    "caption": "Audit events, newest first",
+    "columns": {
+      "when": "When",
+      "who": "Who",
+      "action": "Action",
+      "target": "Record",
+      "reason": "Reason"
+    },
+    "actorType": {
+      "human": "Person",
+      "system": "System",
+      "platform_support": "Platform support"
+    },
+    "more": "Load more"
   }
 }
