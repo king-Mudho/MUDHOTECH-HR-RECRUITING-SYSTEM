@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-T01
+- **Current task:** P10-T02
 - **Last updated:** 2026-11-17
-- **Overall:** 128 / 193 tasks · 9 / 16 phases
+- **Overall:** 129 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -205,7 +205,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P09-EXIT — All exit criteria verified with evidence
 
 ### Phase 10 — Quality Assurance, AI Validation & Pilot Readiness  (`phases/PHASE_10_QA_AI_VALIDATION_PILOT.md`)
-- [ ] P10-T01 — EC coverage: run `scripts/ec_coverage.py`
+- [x] P10-T01 — EC coverage: run `scripts/ec_coverage.py`
 - [ ] P10-T02 — Full Playwright suite (desktop + mobile emulation) for: candidate apply journey, clarification, withdraw, HR job …
 - [ ] P10-T03 — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles
 - [ ] P10-T04 — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), …
@@ -676,3 +676,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T12 | DPIA (processing, necessity, 13 risks with mitigations, residual risk, action plan, sign-off) and DPA template (controller=employer, processor=MudhoTech, annexes) - both marked for legal review (D-08) | Counsel review and sign-off before go-live (D-08) |
 | 2026-11-17 | Impl | P09-T13 | Accessibility pass: axe sweep of candidate + HR core journey pages with keyboard walk (e2e/a11y-journeys.spec.ts, nightly), main-landmark guard test, jsdom axe check; fixed missing main landmark on 4 pages and focus obscured by sticky bar; AUDIT.md | NVDA spot check by a human tester before go-live; consistent help link (3.2.6) in Phase 10 UI polish |
 | 2026-11-17 | Close | P09-EXIT | Phase 09 closed: rights lifecycle E2E with verify_erasure clean; no high/critical findings (bandit, pip-audit, npm audit, detect-secrets; nightly semgrep/Trivy/ZAP); ASVS L2 checklist complete; DPIA, DPA template, model card, AI policy written; AI kill-switch verified; EC 12/12. Fixed during close: EC-ORG-10 organisation closure, public privacy/terms/accessibility pages (footer links 404ed), EC-PRV-05 test, robust RLS overhead check and core-scenario email count (both failed on a fresh CI-like DB) | Phase 10 started |
+| 2026-11-17 | Impl | P10-T01 | EC coverage for phases 01-09: 157/157 listed ids covered (ec_coverage.py --phase 01..09). Unassigned docs/07 ids belong to later phases: EC-INT/OFF (Phase 12), EC-BIL (billing), EC-OPS-03 (P10-T07); EC-OPS-05..10 are Phase 11 |  |
