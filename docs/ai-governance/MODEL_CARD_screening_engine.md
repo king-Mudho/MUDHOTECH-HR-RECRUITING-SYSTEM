@@ -4,7 +4,7 @@
 |---|---|
 | System | MUDHOTECH HR RECRUITING SYSTEM (MHRS) — AI-assisted application screening |
 | Owner | MudhoTech Solutions (Pvt) Ltd, Harare, Zimbabwe |
-| Versions covered | Engine `0.3.0`, matching thresholds `2026.11.1`, embedding model per `EMBEDDING_MODEL` (local sentence-transformers in production, `hashing-384` in tests), LLM provider `none` (default, ADR-026) |
+| Versions covered | Engine `0.3.1`, matching thresholds `2026.11.2` (calibrated P10-T03, ADR-028), embedding model per `EMBEDDING_MODEL` (local sentence-transformers in production, `hashing-384` in tests), LLM provider `none` (default, ADR-026) |
 | Live registry | `/admin/model-registry` (`ModelRegistryEntry`; every evaluation stores `engine_version` + `model_ids`) |
 | Card date | 2026-11-17 (Phase 09, P09-T11). Review at every engine/threshold/model change and at least quarterly |
 
@@ -73,8 +73,8 @@ when a target is missed.
 
 ## 5. Known limitations
 
-- Calibrated on a **synthetic** labelled set; real-world calibration is planned for Phase 10 with HR
-  reviewers. Treat bands as routing hints only.
+- Calibrated on a **synthetic** labelled set (`docs/reports/AI_VALIDATION_REPORT.md`); real-world
+  calibration needs HR-labelled real applications. Treat bands as routing hints only.
 - Conservative by design: missing essentials are *unknown*, so *review needed* is the largest band
   (95/135 in the benchmark). This costs reviewer time rather than excluding people.
 - English-centric extraction and embeddings; other languages are flagged for manual review.

@@ -149,7 +149,7 @@ def load_indexes() -> tuple[SkillIndex, QualificationIndex]:
     )
 
 
-def semantic_matcher(enabled: bool) -> Semantic | None:
+def semantic_matcher(enabled: bool, threshold: float | None = None) -> Semantic | None:
     if not enabled or importlib.util.find_spec("sentence_transformers") is None:
         return None
     from ai_engine.matching.semantic import (
@@ -170,7 +170,9 @@ def semantic_matcher(enabled: bool) -> Semantic | None:
     skills = [
         SkillVector(s["name"], s["name"], v) for s, v in zip(doc["skills"], vectors, strict=True)
     ]
-    return SemanticSkillMatcher(svc, skills)
+    if threshold is None:
+        return SemanticSkillMatcher(svc, skills)
+    return SemanticSkillMatcher(svc, skills, threshold=threshold)
 
 
 def pipeline(

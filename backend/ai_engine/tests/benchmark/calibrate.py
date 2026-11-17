@@ -167,6 +167,34 @@ def run(
     }
 
 
+def extraction_sweep(thresholds: list[float]) -> list[dict[str, Any]]:
+    """Semantic skill matching during extraction: equivalent wording found vs precision."""
+    from .run_extraction_benchmark import Results, load_indexes, pipeline, score_cv
+
+    data = json.loads((CORPUS / "labels.json").read_text(encoding="utf-8"))
+    today = tuple(int(x) for x in data["reference_month"].split("-"))
+    skills, quals = load_indexes()
+    cvs = [c for c in data["cvs"] if c["parse_expected"] == "ok" and not c["needs_ocr"]]
+    rows = []
+    for threshold in [None, *thresholds]:
+        matcher = semantic_matcher(threshold is not None, threshold)
+        r = Results()
+        for cv in cvs:
+            result = pipeline(
+                (CORPUS / cv["file"]).read_bytes(), cv["id"], skills, quals, matcher, today
+            )  # type: ignore[arg-type]
+            score_cv(cv, result, skills, r, today)
+        rows.append(
+            {
+                "threshold": threshold,
+                "skill_precision": round(r.skill_listed.precision, 4),
+                "skill_recall": round(r.skill_recall.rate, 4),
+                "equivalent_recall": round(r.equivalent_recall.rate, 4),
+            }
+        )
+    return rows
+
+
 def acceptable(row: dict[str, Any]) -> bool:
     return all(
         row[r]["recall"] >= 0.95 and row[r]["not_suitable_recommended"] == 0
@@ -198,6 +226,20 @@ def markdown(report: dict[str, Any]) -> str:
             f"| {v['recall']:.0%} | {v['recommended']:.0%} | {v['not_suitable_recommended']} "
             f"| {'✅' if acceptable(row) else '—'} |"
         )
+    if report.get("extraction"):
+        lines += [
+            "",
+            "## Semantic skill matching during extraction",
+            "",
+            "| Threshold | Skill precision | Skill recall | Equivalent-wording recall |",
+            "|---|---|---|---|",
+        ]
+        for row in report["extraction"]:
+            t = "off" if row["threshold"] is None else f"{row['threshold']:.2f}"
+            lines.append(
+                f"| {t} | {row['skill_precision']:.3f} | {row['skill_recall']:.3f} "
+                f"| {row['equivalent_recall']:.3f} |"
+            )
     return "\n".join(lines) + "\n"
 
 
@@ -207,6 +249,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--semantic", action="store_true", help="Use the local embedding model")
     parser.add_argument("--listed", default="50,75")
     parser.add_argument("--thresholds", default="0.78")
+    parser.add_argument("--extraction-thresholds", default="", help="e.g. 0.65,0.70,0.75,0.80")
     args = parser.parse_args(argv)
     semantic: EmbeddingService | None = None
     matcher = semantic_matcher(args.semantic)
@@ -220,6 +263,10 @@ def main(argv: list[str] | None = None) -> int:
         semantic,
         matcher,
     )
+    if args.extraction_thresholds:
+        report["extraction"] = extraction_sweep(
+            [float(x) for x in args.extraction_thresholds.split(",")]
+        )
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     stem = out / f"calibration_{report['date']}"

@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-17",
+  "engine_version": "0.3.1",
+  "config_version": "2026.11.2",
+  "machine": "Windows AMD64 \u00b7 Python 3.12.16",
+  "evaluated": 135,
+  "bands": {
+    "recommended_for_review": 32,
+    "review_needed": 95,
+    "lower_match": 8
+  },
+  "confusion": {
+    "not_suitable": {
+      "review_needed": 44,
+      "lower_match": 2
+    },
+    "possibly_suitable": {
+      "review_needed": 34,
+      "lower_match": 6,
+      "recommended_for_review": 5
+    },
+    "suitable": {
+      "recommended_for_review": 27,
+      "review_needed": 17
+    }
+  },
+  "recall_suitable": 1.0,
+  "suitable": 44,
+  "missed_suitable": [],
+  "not_suitable_recommended_rate": 0.0,
+  "criterion_agreement": 0.9580838323353293,
+  "criteria_compared": 668,
+  "explanation_sentences": 620,
+  "grounding_dropped": 0,
+  "grounding_rate": 1.0,
+  "determinism": 1.0,
+  "counterfactual": {
+    "checked": 121,
+    "invariant": 121,
+    "rate": 1.0,
+    "differences": []
+  },
+  "seconds_per_100": 0.13
+}

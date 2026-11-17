@@ -75,7 +75,7 @@ Detect and exclude from evaluation inputs: date of birth/age, national ID (`\d{2
 
 ### 8.3 Semantic component
 - Model: local sentence-transformers (`all-MiniLM-L6-v2` 384-d, or `bge-small-en-v1.5`) loaded once per worker; embeddings cached by text hash; skill embeddings precomputed in `skills.embedding` (pgvector).
-- Calibration: thresholds tuned on the labelled synthetic set in Phase 10; stored in `engine_config` with version.
+- Calibration (P10-T03, ADR-028): tuned on the labelled synthetic set - extraction phrase->skill threshold 0.65, evaluation criterion->skill threshold 0.78, listed-only skills 75; stored in `EngineConfig` (version `2026.11.2`, engine `0.3.1`). Sweep: `ai_engine/tests/benchmark/calibrate.py`; report `docs/reports/AI_VALIDATION_REPORT.md`.
 
 ## 9. LLM usage (optional — `llm_enabled` org policy AND platform flag)
 Allowed uses: (a) structured extraction assist for low-confidence sections, (b) phrasing of summaries from **already-computed** criterion results, (c) suggesting criteria/questions from job description for HR approval.

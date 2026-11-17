@@ -10,7 +10,7 @@ fault injection and load tests; produce a pilot evaluation report.
 ## Tasks
 - [x] **P10-T01** — EC coverage: run `scripts/ec_coverage.py`; add missing tests until every EC id for Phases 1–9 is covered.
 - [x] **P10-T02** — Full Playwright suite (desktop + mobile emulation) for: candidate apply journey, clarification, withdraw, HR job creation→approval→publish, screening review, shortlist approval + undo, rights request, admin verify org. Visual snapshots for key pages.
-- [ ] **P10-T03** — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles; run extraction + screening benchmarks; compute metrics in `docs/09 §5`; calibrate semantic thresholds (store in engine config w/ new engine version); report `docs/reports/AI_VALIDATION_REPORT.md` incl. missed-qualified analysis and failure taxonomy.
+- [x] **P10-T03** — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles; run extraction + screening benchmarks; compute metrics in `docs/09 §5`; calibrate semantic thresholds (store in engine config w/ new engine version); report `docs/reports/AI_VALIDATION_REPORT.md` incl. missed-qualified analysis and failure taxonomy.
 - [ ] **P10-T04** — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), documented findings & mitigations in report.
 - [ ] **P10-T05** — Load tests (Locust): 100 and 1,000 concurrent submissions; public job board 200 RPS read; HR applicants list with 5,000 applications; record P95s vs NFR-PERF; fix bottlenecks (indexes, N+1 via `django-query-count`/nplusone).
 - [ ] **P10-T06** — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record; tune worker concurrency/prefetch.

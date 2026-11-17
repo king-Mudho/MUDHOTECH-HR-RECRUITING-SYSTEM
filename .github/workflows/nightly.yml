@@ -198,6 +198,12 @@ jobs:
           docker run --rm -v "$PWD/backend:/app" -v "$PWD/scripts:/scripts:ro"
           -v "$PWD/reports:/reports" mhrs-worker:bench
           python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir /reports --check
+      - name: Calibration sweep (corpus + vacancy rubrics; P10-T03, informational)
+        if: always()
+        run: >-
+          docker run --rm -v "$PWD/backend:/app" -v "$PWD/reports:/reports" mhrs-worker:bench
+          python -m ai_engine.tests.benchmark.calibrate --semantic --listed 50,75
+          --extraction-thresholds 0.60,0.65,0.75 --out-dir /reports
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

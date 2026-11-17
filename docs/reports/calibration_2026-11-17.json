@@ -1,0 +1,322 @@
+{
+  "date": "2026-11-17",
+  "cvs": 135,
+  "semantic": true,
+  "baseline": {
+    "skill_listed_only": 75,
+    "semantic_threshold": 0.78
+  },
+  "rows": [
+    {
+      "skill_listed_only": 50,
+      "semantic_threshold": 0.7,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 0.7272727272727273,
+        "recommended": 0.3409090909090909,
+        "suitable_lower": 12,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 15,
+            "review_needed": 17,
+            "lower_match": 12
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 3,
+            "lower_match": 5
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    },
+    {
+      "skill_listed_only": 50,
+      "semantic_threshold": 0.78,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 0.7272727272727273,
+        "recommended": 0.3409090909090909,
+        "suitable_lower": 12,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 15,
+            "review_needed": 17,
+            "lower_match": 12
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 4,
+            "lower_match": 4
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    },
+    {
+      "skill_listed_only": 50,
+      "semantic_threshold": 0.86,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 0.7272727272727273,
+        "recommended": 0.3409090909090909,
+        "suitable_lower": 12,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 15,
+            "review_needed": 17,
+            "lower_match": 12
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 4,
+            "lower_match": 4
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    },
+    {
+      "skill_listed_only": 75,
+      "semantic_threshold": 0.7,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 4,
+            "lower_match": 4
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    },
+    {
+      "skill_listed_only": 75,
+      "semantic_threshold": 0.78,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 4,
+            "lower_match": 4
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    },
+    {
+      "skill_listed_only": 75,
+      "semantic_threshold": 0.86,
+      "corpus": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 34,
+            "lower_match": 6,
+            "recommended_for_review": 5
+          },
+          "not_suitable": {
+            "review_needed": 44,
+            "lower_match": 2
+          }
+        }
+      },
+      "vacancy": {
+        "recall": 1.0,
+        "recommended": 0.6136363636363636,
+        "suitable_lower": 0,
+        "not_suitable_recommended": 0,
+        "confusion": {
+          "suitable": {
+            "recommended_for_review": 27,
+            "review_needed": 17
+          },
+          "possibly_suitable": {
+            "review_needed": 37,
+            "recommended_for_review": 4,
+            "lower_match": 4
+          },
+          "not_suitable": {
+            "review_needed": 46
+          }
+        }
+      }
+    }
+  ],
+  "extraction": [
+    {
+      "threshold": null,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7381
+    },
+    {
+      "threshold": 0.6,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7857
+    },
+    {
+      "threshold": 0.65,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7619
+    },
+    {
+      "threshold": 0.7,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7381
+    },
+    {
+      "threshold": 0.75,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7381
+    },
+    {
+      "threshold": 0.8,
+      "skill_precision": 0.9956,
+      "skill_recall": 0.9982,
+      "equivalent_recall": 0.7381
+    }
+  ]
+}

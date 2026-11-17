@@ -6,7 +6,7 @@ import hashlib
 import json
 from typing import Any
 
-ENGINE_VERSION = "0.3.0"  # P06-T03..T07: text extraction, OCR, sections, dates, claims
+ENGINE_VERSION = "0.3.1"  # P10-T03: semantic skill threshold 0.65 (was 0.3.0, P06-T03..T07)
 
 
 def input_hash(payload: Any) -> str:

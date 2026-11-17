@@ -7,7 +7,7 @@
   key-value cache with ``get_many``/``set_many`` (Django's Redis cache in production), so the
   same phrase is never encoded twice.
 * :class:`SemanticSkillMatcher` is the parser's ``semantic`` callback: nearest taxonomy skill for
-  an unmatched phrase, returned only above a threshold (0.75 until Phase 10 calibration). It is
+  an unmatched phrase, returned only above a threshold (calibrated 0.75 -> 0.65 in P10-T03). It is
   an *inferred* match with capped confidence; it never replaces an explicit one.
 
 If the model cannot load, callers run without semantic matching (deterministic path only,
@@ -29,7 +29,10 @@ from typing import Any, Protocol
 Vector = list[float]
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DIMENSIONS = 384
-DEFAULT_THRESHOLD = 0.75
+# P10-T03: 0.75 added nothing over no semantic matching (equivalent-wording recall 0.738); 0.65
+# raises it to 0.762 with no precision loss on the labelled set (0.60 scored 0.786 but the
+# equivalent-wording sample is 9 CVs, so one step of margin). Matches stay inferred and capped.
+DEFAULT_THRESHOLD = 0.65
 BATCH_SIZE = 32
 
 
