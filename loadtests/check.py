@@ -71,6 +71,24 @@ def main(argv: list[str] | None = None) -> int:
             )
         for problem in problems:
             sys.stdout.write(f"::error title={args.title}::{problem}\n")
+        # Locust's failure log: what actually went wrong (status codes, error bodies)
+        failures = Path(args.stats.replace("_stats.csv", "_failures.csv"))
+        if failures.exists():
+            with failures.open(encoding="utf-8") as fh:
+                for row in list(csv.DictReader(fh))[:10]:
+                    sys.stdout.write(
+                        f"::error title={args.title} failure::{row.get('Method')} "
+                        f"{row.get('Name')} x{row.get('Occurrences')}: "
+                        f"{(row.get('Error') or '')[:300]}\n"
+                    )
+        exceptions = Path(args.stats.replace("_stats.csv", "_exceptions.csv"))
+        if exceptions.exists():
+            with exceptions.open(encoding="utf-8") as fh:
+                for row in list(csv.DictReader(fh))[:5]:
+                    message = (row.get("Message") or "").replace("\n", " ")[:300]
+                    sys.stdout.write(
+                        f"::error title={args.title} exception::x{row.get('Count')}: {message}\n"
+                    )
     if problems:
         sys.stderr.write("FAILED: " + "; ".join(problems) + "\n")
         return 1

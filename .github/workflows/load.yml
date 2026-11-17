@@ -48,26 +48,26 @@ jobs:
         run: |
           mkdir -p out
           export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
-          locust -f loadtests/locustfile.py JobBoardUser --headless -u 400 -r 40 -t 3m --host $HOST --csv out/board --only-summary
+          locust -f loadtests/locustfile.py JobBoardUser --headless -u 400 -r 40 -t 3m --host $HOST --csv out/board --only-summary || true
           python loadtests/check.py out/board_stats.csv --title "Job board" --min-rps 200 --report out/LOAD.md
       - name: 100 concurrent submissions
         if: always()
         run: |
           export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
-          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 100 -r 20 -t 3m --host $HOST --csv out/submit100 --only-summary
+          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 100 -r 20 -t 3m --host $HOST --csv out/submit100 --only-summary || true
           python loadtests/check.py out/submit100_stats.csv --title "100 submissions" --report out/LOAD.md
       - name: HR applicants list under load
         if: always()
         run: |
           export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
-          locust -f loadtests/locustfile.py HRReviewer --headless -u 20 -r 5 -t 2m --host $HOST --csv out/hr --only-summary
+          locust -f loadtests/locustfile.py HRReviewer --headless -u 20 -r 5 -t 2m --host $HOST --csv out/hr --only-summary || true
           python loadtests/check.py out/hr_stats.csv --title "HR applicants list" --report out/LOAD.md
       - name: 1,000 concurrent submissions
         if: always()
         run: |
           export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' .env | cut -d= -f2-)"
           export LOAD_USER_OFFSET=100  # accounts 101-1100; 1-100 applied in the previous step
-          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 1000 -r 50 -t 8m --host $HOST --csv out/submit1000 --only-summary
+          locust -f loadtests/locustfile.py CandidateSubmitter --headless -u 1000 -r 50 -t 8m --host $HOST --csv out/submit1000 --only-summary || true
           python loadtests/check.py out/submit1000_stats.csv --title "1,000 submissions" --report out/LOAD.md
       - name: Every submission accounted for
         if: always()
