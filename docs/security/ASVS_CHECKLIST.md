@@ -156,5 +156,7 @@ Nightly (`.github/workflows/nightly.yml`): Playwright + axe on the Docker stack,
 **semgrep** (default, Django, React, TypeScript, secrets), **detect-secrets**, **Trivy** filesystem +
 backend/frontend images (CRITICAL/HIGH fail), real ClamAV, AI benchmarks.
 
-Local run 2026-11-17: bandit 0 medium/high, pip-audit 0 vulnerabilities, npm audit 0 vulnerabilities,
-detect-secrets 0 new findings.
+Local run 2026-11-17: bandit 0 medium/high, pip-audit 0 vulnerabilities, detect-secrets 0 new findings,
+npm audit 0 high/critical. One **moderate** advisory (GHSA-g3hv-75wg-m249, minimatch ReDoS) is reachable
+only through dev tooling (`typescript-eslint`, `shadcn` CLI via `ts-morph`), never in the production
+bundle or image; accepted until upstream releases a fix (the suggested fix downgrades `shadcn`).
