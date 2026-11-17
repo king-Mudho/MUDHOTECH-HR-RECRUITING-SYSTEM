@@ -391,28 +391,36 @@ def seed(password: str) -> SeedResult:
         org, team = org_objs[js.org], teams[js.org]
         if Job.objects.for_org(org).filter(title=js.title).exists():
             continue
-        dep = Department.objects.for_org(org).get(name=js.department)
-        loc = Location.objects.for_org(org).get(name=js.location)
-        recruiter, hr = team[Role.RECRUITER], team[Role.HR_MANAGER]
-        job = jobs.create_job(
-            org,
-            actor=recruiter,
-            data={
-                **js.data,
-                "title": js.title,
-                "closes_at": time.now() + timedelta(days=30),
-                "department_id": dep.pk,
-                "location_ids": [loc.pk],
-            },
-        )
-        hiring = Membership.objects.for_org(org).get(user=team[Role.HIRING_MANAGER])
-        JobAssignment.objects.for_org(org).get_or_create(
-            organisation=org, job=job, membership=hiring, role_on_job="hiring_manager"
-        )
-        jobs.set_criteria(job, actor=recruiter, criteria=_link_skills(js.criteria, org))
-        jobs.set_questionnaire(job, actor=recruiter, questions=js.questions)
-        jobs.submit_for_approval(job, actor=recruiter, note="Initial version")
-        jobs.approve(job, actor=hr, comment="Approved for the demo")
-        jobs.publish(job, actor=hr)
+        create_job_from_spec(org, team, js)
         result.jobs.append(f"{org.name}: {js.title}")
     return result
+
+
+def create_job_from_spec(
+    org: Organisation, team: dict[Role, User], js: JobSpec, *, title: str | None = None
+) -> Job:
+    """Create, approve and publish a vacancy from a demo spec (also used by the pilot benchmark)."""
+    dep = Department.objects.for_org(org).get(name=js.department)
+    loc = Location.objects.for_org(org).get(name=js.location)
+    recruiter, hr = team[Role.RECRUITER], team[Role.HR_MANAGER]
+    job = jobs.create_job(
+        org,
+        actor=recruiter,
+        data={
+            **js.data,
+            "title": title or js.title,
+            "closes_at": time.now() + timedelta(days=30),
+            "department_id": dep.pk,
+            "location_ids": [loc.pk],
+        },
+    )
+    hiring = Membership.objects.for_org(org).get(user=team[Role.HIRING_MANAGER])
+    JobAssignment.objects.for_org(org).get_or_create(
+        organisation=org, job=job, membership=hiring, role_on_job="hiring_manager"
+    )
+    jobs.set_criteria(job, actor=recruiter, criteria=_link_skills(js.criteria, org))
+    jobs.set_questionnaire(job, actor=recruiter, questions=js.questions)
+    jobs.submit_for_approval(job, actor=recruiter, note="Initial version")
+    jobs.approve(job, actor=hr, comment="Approved for the demo")
+    jobs.publish(job, actor=hr)
+    return job
