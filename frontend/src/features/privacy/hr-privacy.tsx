@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useJobsContext } from "@/features/jobs/hooks";
+import { OrgSupportAccess } from "@/features/support/support-access";
 import { ApiError, api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
@@ -255,6 +256,7 @@ export function HRPrivacy() {
       <h2 className="text-xl font-semibold">{t("title")}</h2>
       <Requests orgId={orgId} />
       <Holds orgId={orgId} />
+      <OrgSupportAccess />
     </div>
   );
 }

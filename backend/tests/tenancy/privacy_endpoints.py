@@ -33,6 +33,25 @@ def privacy_setup(ctx: Ctx) -> None:
     )
 
 
+def support_setup(ctx: Ctx) -> None:
+    from datetime import timedelta
+
+    from apps.accounts.models import PlatformRole
+    from apps.accounts.tests.factories import UserFactory
+    from apps.core.time import now
+    from apps.organisations.models import SupportAccessGrant
+
+    ctx.objects["grant"] = SupportAccessGrant.objects.create(
+        platform_user=UserFactory(platform_role=PlatformRole.PLATFORM_SUPPORT),
+        organisation=ctx.team.org,
+        reason="Investigating a stuck shortlist",
+        requested_at=now(),
+        duration_minutes=60,
+        approved_at=now(),
+        expires_at=now() + timedelta(hours=1),
+    )
+
+
 def ep(name: str, method: str, path: Any, **kw: Any) -> Endpoint:
     return Endpoint(
         name, method, path, "privacy.manage", org_header=True, setup=privacy_setup, **kw
@@ -66,5 +85,22 @@ PRIVACY_ENDPOINTS: list[Endpoint] = [
         "hr-legal-hold-release",
         "post",
         lambda c: f"/api/v1/hr/legal-holds/{c.objects['hold'].pk}/release/",
+    ),
+    Endpoint(
+        "hr-support-access",
+        "get",
+        lambda c: "/api/v1/hr/support-access/",
+        "members.manage",
+        org_header=True,
+        targets_object=False,
+        setup=support_setup,
+    ),
+    Endpoint(
+        "hr-support-access-revoke",
+        "post",
+        lambda c: f"/api/v1/hr/support-access/{c.objects['grant'].pk}/revoke/",
+        "members.manage",
+        org_header=True,
+        setup=support_setup,
     ),
 ]

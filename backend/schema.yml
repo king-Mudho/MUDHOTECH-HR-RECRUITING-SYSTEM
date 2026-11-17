@@ -4156,6 +4156,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShortlistDetail'
           description: ''
+  /api/v1/hr/support-access/:
+    get:
+      operationId: hr_support_access
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Grant'
+          description: ''
+  /api/v1/hr/support-access/{grant_id}/revoke/:
+    post:
+      operationId: hr_support_access_revoke
+      parameters:
+      - in: path
+        name: grant_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grant'
+          description: ''
+  /api/v1/hr/support-access/active/:
+    get:
+      operationId: hr_support_access_active
+      description: For the banner every staff member of the organisation sees while
+        support has access.
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveSupport'
+          description: ''
   /api/v1/invitations/{token}/:
     get:
       operationId: invitations_preview
@@ -5779,6 +5832,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffRightsRequest'
           description: ''
+  /api/v1/platform/support-access/:
+    get:
+      operationId: platform_support_access
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Grant'
+          description: ''
+    post:
+      operationId: platform_support_access_request
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestAccessRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RequestAccessRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RequestAccessRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grant'
+          description: ''
+  /api/v1/platform/support-access/{grant_id}/approve/:
+    post:
+      operationId: platform_support_access_approve
+      parameters:
+      - in: path
+        name: grant_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grant'
+          description: ''
+  /api/v1/platform/support-access/{grant_id}/revoke/:
+    post:
+      operationId: platform_support_access_revoke
+      parameters:
+      - in: path
+        name: grant_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grant'
+          description: ''
   /api/v1/privacy/consents/:
     get:
       operationId: privacy_consents
@@ -6068,6 +6204,21 @@ components:
           format: uuid
       required:
       - organisation_id
+    ActiveSupport:
+      type: object
+      properties:
+        active:
+          type: boolean
+        until:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+      required:
+      - active
+      - reason
+      - until
     AnswerItemRequest:
       type: object
       properties:
@@ -8253,6 +8404,59 @@ components:
       required:
       - count
       - stage
+    Grant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organisation_id:
+          type: string
+          format: uuid
+        organisation_name:
+          type: string
+        platform_user:
+          type: string
+        reason:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        duration_minutes:
+          type: integer
+        approved_by:
+          type: string
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        active:
+          type: boolean
+        accesses:
+          type: integer
+      required:
+      - accesses
+      - active
+      - approved_at
+      - approved_by
+      - duration_minutes
+      - expires_at
+      - id
+      - organisation_id
+      - organisation_name
+      - platform_user
+      - reason
+      - requested_at
+      - revoked_at
     HRAnswer:
       type: object
       properties:
@@ -9411,6 +9615,7 @@ components:
       - note_mention
       - recruiter_digest
       - recruitment_paused
+      - retention_report
       - rights_request_confirm
       - rights_request_due
       - rights_request_received
@@ -9433,6 +9638,7 @@ components:
         * `note_mention` - note_mention
         * `recruiter_digest` - recruiter_digest
         * `recruitment_paused` - recruitment_paused
+        * `retention_report` - retention_report
         * `rights_request_confirm` - rights_request_confirm
         * `rights_request_due` - rights_request_due
         * `rights_request_received` - rights_request_received
@@ -11761,6 +11967,24 @@ components:
       - html
       - subject
       - text
+    RequestAccessRequest:
+      type: object
+      properties:
+        organisation_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+      required:
+      - minutes
+      - organisation_id
+      - reason
     RequiredReasonRequest:
       type: object
       properties:

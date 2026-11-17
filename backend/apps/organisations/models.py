@@ -241,3 +241,36 @@ class Invitation(TenantModel):
         if self.expires_at <= time.now():
             return self.Status.EXPIRED
         return self.Status.PENDING
+
+
+class SupportAccessGrant(BaseModel):
+    """Break-glass read access for platform support (P09-T06, EC-PRV-07; docs/03
+    support_access_grants). Requested with a reason, approved by a different platform admin,
+    at most 4 hours, read-only, every request logged and visible to the organisation."""
+
+    platform_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    organisation = models.ForeignKey(
+        Organisation, on_delete=models.CASCADE, related_name="support_grants"
+    )
+    reason = models.TextField()
+    requested_at = models.DateTimeField()
+    duration_minutes = models.PositiveSmallIntegerField()
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name="+"
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    revoked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        ordering = ("-requested_at",)
+        indexes = [
+            models.Index(
+                fields=["platform_user", "organisation", "expires_at"], name="support_grant_idx"
+            )
+        ]

@@ -9,6 +9,7 @@ import { AreaMessages } from "@/i18n/client-messages";
 import { HR_NAV } from "@/components/layout/navigation";
 import { NotificationBell } from "@/components/layout/top-bar-actions";
 import { OrgSwitcher } from "@/features/organisations/components/org-switcher";
+import { SupportBanner } from "@/features/support/support-access";
 
 export default async function HrLayout({ children }: { children: ReactNode }) {
   const t = await getTranslations("areas");
@@ -28,7 +29,10 @@ export default async function HrLayout({ children }: { children: ReactNode }) {
         }
       >
         <Suspense fallback={<PageSkeleton />}>
-          <AuthGate area="hr">{children}</AuthGate>
+          <AuthGate area="hr">
+            <SupportBanner />
+            {children}
+          </AuthGate>
         </Suspense>
       </AppShell>
     </AreaMessages>

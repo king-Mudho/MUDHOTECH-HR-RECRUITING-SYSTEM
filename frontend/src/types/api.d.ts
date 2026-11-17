@@ -1877,6 +1877,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/support-access/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_support_access"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/support-access/{grant_id}/revoke/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_support_access_revoke"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/support-access/active/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description For the banner every staff member of the organisation sees while support has access. */
+        get: operations["hr_support_access_active"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invitations/{token}/": {
         parameters: {
             query?: never;
@@ -2519,6 +2568,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/support-access/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_support_access"];
+        put?: never;
+        post: operations["platform_support_access_request"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/support-access/{grant_id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_support_access_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/support-access/{grant_id}/revoke/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_support_access_revoke"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/privacy/consents/": {
         parameters: {
             query?: never;
@@ -2708,6 +2805,12 @@ export interface components {
         ActiveOrgRequest: {
             /** Format: uuid */
             organisation_id: string;
+        };
+        ActiveSupport: {
+            active: boolean;
+            /** Format: date-time */
+            until: string | null;
+            reason: string;
         };
         AnswerItemRequest: {
             key: string;
@@ -3581,6 +3684,27 @@ export interface components {
             stage: string;
             count: number;
         };
+        Grant: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            organisation_id: string;
+            organisation_name: string;
+            platform_user: string;
+            reason: string;
+            /** Format: date-time */
+            requested_at: string;
+            duration_minutes: number;
+            approved_by: string | null;
+            /** Format: date-time */
+            approved_at: string | null;
+            /** Format: date-time */
+            expires_at: string | null;
+            /** Format: date-time */
+            revoked_at: string | null;
+            active: boolean;
+            accesses: number;
+        };
         HRAnswer: {
             key: string;
             prompt: string;
@@ -3981,6 +4105,7 @@ export interface components {
          *     * `note_mention` - note_mention
          *     * `recruiter_digest` - recruiter_digest
          *     * `recruitment_paused` - recruitment_paused
+         *     * `retention_report` - retention_report
          *     * `rights_request_confirm` - rights_request_confirm
          *     * `rights_request_due` - rights_request_due
          *     * `rights_request_received` - rights_request_received
@@ -3988,7 +4113,7 @@ export interface components {
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
         /**
          * @description * `clarification` - clarification
          *     * `reupload` - reupload
@@ -4906,6 +5031,12 @@ export interface components {
             subject: string;
             text: string;
             html: string;
+        };
+        RequestAccessRequest: {
+            /** Format: uuid */
+            organisation_id: string;
+            reason: string;
+            minutes: number;
         };
         RequiredReasonRequest: {
             reason: string;
@@ -9081,6 +9212,65 @@ export interface operations {
             };
         };
     };
+    hr_support_access: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"][];
+                };
+            };
+        };
+    };
+    hr_support_access_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"];
+                };
+            };
+        };
+    };
+    hr_support_access_active: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActiveSupport"];
+                };
+            };
+        };
+    };
     invitations_preview: {
         parameters: {
             query?: never;
@@ -10384,6 +10574,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffRightsRequest"];
+                };
+            };
+        };
+    };
+    platform_support_access: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"][];
+                };
+            };
+        };
+    };
+    platform_support_access_request: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestAccessRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RequestAccessRequest"];
+                "multipart/form-data": components["schemas"]["RequestAccessRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"];
+                };
+            };
+        };
+    };
+    platform_support_access_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"];
+                };
+            };
+        };
+    };
+    platform_support_access_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grant"];
                 };
             };
         };

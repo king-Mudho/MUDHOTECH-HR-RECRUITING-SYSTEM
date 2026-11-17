@@ -45,7 +45,8 @@
     "adminNavigation": "Platform administration navigation",
     "footerNavigation": "Footer",
     "security": "Account security",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "supportAccess": "Support access"
   },
   "footer": {
     "privacy": "Privacy",
@@ -116,7 +117,7 @@
   "validation": {
     "required": "This field is required.",
     "invalidEmail": "Enter a valid email address.",
-    "passwordTooShort": "Use at least 10 characters.",
+    "passwordTooShort": "Use at least 12 characters.",
     "passwordsDoNotMatch": "The passwords do not match.",
     "mustAcceptTerms": "You need to accept the terms to continue.",
     "invalidCode": "Enter the code from your authenticator app or a recovery code.",
@@ -2197,5 +2198,27 @@
       },
       "failed": "The hold could not be placed."
     }
+  },
+  "support": {
+    "banner": "MUDHOTECH support has temporary read-only access to your organisation until {until}. Reason: {reason}",
+    "status": {
+      "active": "Active",
+      "pending": "Waiting for approval",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "meta": "Requested {requested} · until {until} · approved by {approver} · {accesses, plural, one {# access} other {# accesses}}",
+    "revoke": "Revoke",
+    "none": "No support access requests.",
+    "orgTitle": "Support access",
+    "orgIntro": "Platform support can only see your data with an approved, time-limited grant. Every access is logged here.",
+    "platformTitle": "Support access (break-glass)",
+    "platformIntro": "Request read-only access to one organisation for at most 4 hours. Another platform admin must approve it; the organisation sees the reason and every access.",
+    "organisationId": "Organisation id",
+    "reason": "Reason (the organisation sees this)",
+    "minutes": "Minutes (5–240)",
+    "request": "Request access",
+    "approve": "Approve",
+    "failed": "That did not work. Please try again."
   }
 }

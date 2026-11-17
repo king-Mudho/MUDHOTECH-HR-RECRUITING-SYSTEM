@@ -1,6 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
+from . import support
 from .context import ActiveOrgView
 from .me import MeView
 from .views import (
@@ -44,4 +45,30 @@ urlpatterns = [
         "invitations/<str:token>/accept/", InvitationAcceptView.as_view(), name="invitation-accept"
     ),
     path("companies/<slug:slug>/", CompanyView.as_view(), name="company"),
+    path(
+        "platform/support-access/",
+        support.PlatformSupportAccessView.as_view(),
+        name="platform-support-access",
+    ),
+    path(
+        "platform/support-access/<uuid:grant_id>/approve/",
+        support.PlatformSupportApproveView.as_view(),
+        name="platform-support-access-approve",
+    ),
+    path(
+        "platform/support-access/<uuid:grant_id>/revoke/",
+        support.PlatformSupportRevokeView.as_view(),
+        name="platform-support-access-revoke",
+    ),
+    path("hr/support-access/", support.HRSupportAccessView.as_view(), name="hr-support-access"),
+    path(
+        "hr/support-access/active/",
+        support.HRSupportActiveView.as_view(),
+        name="hr-support-access-active",
+    ),
+    path(
+        "hr/support-access/<uuid:grant_id>/revoke/",
+        support.HRSupportRevokeView.as_view(),
+        name="hr-support-access-revoke",
+    ),
 ]

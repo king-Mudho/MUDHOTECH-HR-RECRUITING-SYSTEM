@@ -24,4 +24,5 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/system-health", labelKey: "systemHealth", icon: "health" },
   { href: "/admin/dead-letters", labelKey: "deadLetters", icon: "deadLetters" },
   { href: "/admin/audit-logs", labelKey: "auditLogs", icon: "audit" },
+  { href: "/admin/support-access", labelKey: "supportAccess", icon: "audit" },
 ];

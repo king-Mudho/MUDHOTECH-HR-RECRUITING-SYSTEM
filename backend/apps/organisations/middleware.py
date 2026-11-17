@@ -40,7 +40,12 @@ class OrganisationContextMiddleware:
             if header:
                 membership = active_membership(user, header)
                 if membership is None:
-                    return self._violation(request, header)
+                    support = self._support(request, header)
+                    if isinstance(support, HttpResponse):
+                        return support
+                    if support is None:
+                        return self._violation(request, header)
+                    membership = support
             else:
                 membership = self._from_session(request)
             if membership is not None:
@@ -69,6 +74,35 @@ class OrganisationContextMiddleware:
         if membership is None:
             session.pop(SESSION_KEY, None)  # stale (left org / deactivated)
         return membership
+
+    @staticmethod
+    def _support(request: HttpRequest, header: str):  # type: ignore[no-untyped-def]
+        """Break-glass (P09-T06): read-only access for platform support with an approved,
+        unexpired grant; every request is access-logged against the grant."""
+        import uuid
+
+        from apps.audit import services as audit
+
+        from .support_access import active_grant, support_membership
+
+        try:
+            org_id = uuid.UUID(header)
+        except ValueError:
+            return None
+        grant = active_grant(request.user, org_id)
+        if grant is None:
+            return None
+        audit.log_access(
+            user=request.user,
+            target=("support_grant", grant.pk),
+            organisation=grant.organisation_id,
+            action="support_read",
+        )
+        if request.method not in SAFE_METHODS:
+            return JsonResponse(
+                error_body("support_read_only", "Support access is read-only."), status=403
+            )
+        return support_membership(request.user, grant)
 
     @staticmethod
     def _violation(request: HttpRequest, header: str) -> JsonResponse:
