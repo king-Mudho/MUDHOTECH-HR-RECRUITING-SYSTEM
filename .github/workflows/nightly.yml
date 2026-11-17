@@ -198,6 +198,12 @@ jobs:
           docker run --rm -v "$PWD/backend:/app" -v "$PWD/scripts:/scripts:ro"
           -v "$PWD/reports:/reports" mhrs-worker:bench
           python -m ai_engine.tests.benchmark.run_screening_benchmark --out-dir /reports --check
+      - name: Fairness benchmark (>= 500 perturbations must be identical; P10-T04)
+        if: always()
+        run: >-
+          docker run --rm -v "$PWD/backend:/app" -v "$PWD/scripts:/scripts:ro"
+          -v "$PWD/reports:/reports" mhrs-worker:bench
+          python -m ai_engine.tests.benchmark.run_fairness_benchmark --out-dir /reports --check
       - name: Calibration sweep (corpus + vacancy rubrics; P10-T03, informational)
         if: always()
         run: >-

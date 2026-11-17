@@ -47,5 +47,8 @@ Use **j / k** to move to the next / previous applicant from the list you came fr
 
 ## 4. Good practice
 - Read the evidence, not just the score. Check *unknown* essentials before deciding.
+- Make a language, qualification or location an essential only when the job truly needs it —
+  such requirements can exclude people by origin or background. Verify foreign qualifications
+  rather than discounting them; a verified foreign qualification counts like a local one.
 - Declare a conflict of interest if you know an applicant (you will no longer see that application).
 - Never download CVs to personal devices; every view is logged.

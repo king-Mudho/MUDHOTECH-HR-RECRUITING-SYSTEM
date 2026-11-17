@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-T04
+- **Current task:** P10-T05
 - **Last updated:** 2026-11-17
-- **Overall:** 132 / 193 tasks · 9 / 16 phases
+- **Overall:** 133 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -208,7 +208,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P10-T01 — EC coverage: run `scripts/ec_coverage.py`
 - [x] P10-T02 — Full Playwright suite (desktop + mobile emulation) for: candidate apply journey, clarification, withdraw, HR job …
 - [x] P10-T03 — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles
-- [ ] P10-T04 — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), …
+- [x] P10-T04 — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), …
 - [ ] P10-T05 — Load tests (Locust): 100 and 1,000 concurrent submissions
 - [ ] P10-T06 — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record
 - [ ] P10-T07 — Resilience/fault injection: kill workers mid-task, stop Redis during submissions, S3 errors, DB restart, duplicate …
@@ -680,3 +680,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P10-T02 | Playwright: journeys.spec (rights export with email confirmation + download, platform admin verifies a new org, key-page screenshots desktop+mobile uploaded as nightly artifact 'screens') on top of apply/jobs/auth/core-scenario/a11y specs; shared e2e helpers + hrContext; 38 tests x2 projects | Not runnable locally (RAM/ports) - check first nightly; visual baselines are screenshots for review (no pixel comparison until baselines are committed from a Linux run); shortlist undo stays API/component-tested |
 | 2026-11-17 | Impl | P10-T08 | run_pilot_benchmark: new vacancy from the demo spec, 100 synthetic applications (all 5 roles incl. corrupt/encrypted/scanned/injection), inline or worker mode, accounting report docs/reports/PILOT_BENCHMARK.md: 100/100 accounted, 94 under review, 6 processing_error (unreadable CVs, kept for HR), bands by CV role | D-008 (P1): 4/7 suitable developer CVs in lower match on the demo rubric - fix in P10-T03 calibration; host run had no semantic model/OCR - rerun in the worker image |
 | 2026-11-17 | Impl | P10-T03 | AI validation: 150-CV labelled corpus (5 roles); extraction + screening benchmarks meet every docs/09 §5 target with engine 0.3.1 / config 2026.11.2; calibration sweep (corpus + skills-heavy vacancy rubrics, listed-only score, evaluation + extraction semantic thresholds); ADR-028 (listed 75, extraction semantic 0.65); D-008 fixed and confirmed by pilot rerun; AI_VALIDATION_REPORT.md with missed-qualified analysis and failure taxonomy; nightly calibration step | Real-world calibration needs HR-labelled real applications; OCR results from the worker image (nightly) |
+| 2026-11-17 | Impl | P10-T04 | Fairness: run_fairness_benchmark - 1,095 perturbations over 135 CVs (identity 540, protected details 135, rural location 270, peer institution 89, career gap 61) all identical; nightly --check + CI sample test; proxy review (town, institution, gaps, foreign qualifications, languages, experience/age) in AI_VALIDATION_REPORT §6; fixed: verified foreign qualifications now count like local ones (was a lasting 75 'needs verification') | Real-world proxy monitoring needs aggregate voluntary data (later phase); HR-authored language essentials remain a residual risk |

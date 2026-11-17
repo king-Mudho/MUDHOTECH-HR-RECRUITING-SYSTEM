@@ -28,6 +28,7 @@ from ai_engine.contracts import (
     EvidenceStatus,
     ExperienceData,
     ExtractedClaim,
+    ExtractionMethod,
     LanguageData,
 )
 from ai_engine.normalisation.experience import DEFAULT_COUNTED, Role, summarise
@@ -155,7 +156,10 @@ def check_qualification(
         )
         return _better(result, alternative)
     if required is None or rank >= required:
-        if data.foreign or data.needs_verification:
+        # a person verified it (HumanVerification): a verified foreign qualification counts like a
+        # local one - otherwise "foreign" would act as a lasting proxy for origin (P10-T04)
+        verified = claim.method == ExtractionMethod.HUMAN
+        if (data.foreign or data.needs_verification) and not verified:
             status, score, reason = EvidenceStatus.NEEDS_VERIFICATION, 75, "foreign_qualification"
         elif field_ok:
             status, score, reason = EvidenceStatus.EXPLICIT, 100, "meets_level"

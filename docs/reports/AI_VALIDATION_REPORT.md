@@ -45,7 +45,7 @@ and kept for HR, never lost.
 | Same — skills-heavy vacancy rubric | **100 %** (44/44; was 73 % before calibration) | ≥ 95 % | calibration 2026-11-17 |
 | Not-suitable placed in recommended | **0** on both rubrics | 0 | screening benchmark, calibration |
 | Grounding (cited, supported sentences) | **100 %** (0 dropped) | 100 % | screening benchmark 2026-11-17 |
-| Counterfactual invariance | **121/121** | 100 % | screening benchmark (see P10-T04 for the ≥ 500 suite) |
+| Counterfactual invariance | **121/121** (screening benchmark); **1,095/1,095** across five families (§6) | 100 % | screening + fairness benchmarks |
 | Determinism | **100 %** | 100 % | both benchmarks |
 | Protected-attribute leaks | **0** | 0 | extraction benchmark |
 
@@ -153,12 +153,56 @@ Observations:
 - No protected attribute appears in any band reason, score or explanation (protected leaks 0;
   counterfactual invariance 100 %).
 
-## 6. Limitations and follow-ups
+## 6. Fairness (P10-T04)
+
+### 6.1 Counterfactual suite at scale
+
+`run_fairness_benchmark.py` re-renders every readable text CV with one change at a time and
+requires identical score, coverage, band, confidence and criterion results
+(`docs/reports/fairness_2026-11-17.md`; runs nightly with `--check`; a CI test samples it).
+
+| Family | What changes | Checked | Identical |
+|---|---|---|---|
+| Identity | name and gender (4 swaps across gender, language, region) | 540 | **540** |
+| Protected details | date of birth, gender, marital status, religion, tribe, disability, HIV status, political affiliation added | 135 | **135** |
+| Location | home, job and school towns moved to rural districts (Binga, Chipinge) | 270 | **270** |
+| Institution | school replaced by a peer of the same type and level | 89 | **89** |
+| Career gap | 12-month gap before the latest job, same total experience | 61 | **61** |
+| **Total** | | **1,095** | **1,095 (100 %)** |
+
+The first run showed 2 differences in the career-gap family. Both CVs had overlapping jobs, so
+moving older jobs back added real months of experience (a flaw in the perturbation, not bias); the
+suite now applies the gap only when total experience is unchanged.
+
+### 6.2 Proxy-variable review
+
+| Signal | Could proxy | Engine behaviour | Finding / mitigation |
+|---|---|---|---|
+| Name, photo, gender, age, marital status, religion, tribe, health, HIV, politics | protected attributes directly | Never collected; detected in CVs and excluded before matching and any LLM call | 0 leaks; 100 % invariance (§6.1) |
+| Town / region | ethnicity, tribe, socio-economic status | Not read by any criterion | 100 % invariance |
+| Institution | socio-economic background, region | Only the qualification **level** and field count, never the school | 100 % invariance |
+| Career gaps | caregiving (gender), illness, disability | Experience = union of dated months; gaps are not scored | 100 % invariance; principle 7 |
+| **Foreign qualification** | nationality, origin | Scores 75 with *needs verification* (a person checks equivalence) | **Fixed:** a person's verification did not clear it, so a verified foreign degree stayed at 75 for good. Now a verified foreign qualification counts like a local one (100) — `ai_engine/matching/rules.py`, `test_rules.py` |
+| Languages | ethnicity (e.g. Ndebele, Shona, Tonga) | Scored only when HR adds a language criterion | Residual risk: HR must justify essentials (required by the rubric); the recruiter guide asks for job-related language requirements only |
+| Years of experience | age | Minimum months only; no maximum exists in the rubric model | No age ceiling possible; graduation years are not used |
+| Unconventional paths, attachments, volunteering | socio-economic status | Counted per HR's employment-kind settings; "or equivalent experience" criteria supported | HR guidance; covered by EC tests |
+| Formatting, two-column, tables | access to tools, disability | Parser handles layouts; low quality routes to a person, never lowers a score | Extraction benchmark parse success 100 % (text) |
+
+### 6.3 Residual risks
+
+- Synthetic names, towns and institutions are a finite list; the nightly suite guards regressions,
+  but real-world proxy effects need monitoring with aggregate, voluntary data (docs/05 §13: optional
+  separate EEO data, later phase) and override analytics by vacancy.
+- HR-authored criteria can encode bias (for example an unnecessary language). The rubric requires
+  a justification for every essential, the protected-topic linter blocks protected questions, and
+  rubric approval is a human step; the quarterly AI quality report should review essentials.
+
+## 7. Limitations and follow-ups
 
 - Synthetic corpus only. Real-world calibration needs HR-labelled real applications under a pilot
   agreement (DPIA §6); until then bands remain routing hints.
 - Host runs here had no OCR and (unless stated) no semantic model; the nightly `ai-benchmark` job
   covers both in the worker image.
-- Fairness at scale (≥ 500 perturbations, proxy review) is P10-T04.
+- Fairness at scale: §6 (1,095 perturbations, proxy review).
 - D-008 is fixed and confirmed by the pilot rerun (`PILOT_BENCHMARK.md`, semantic on, no OCR on the
   host); no unsuitable or other-role CV was recommended.

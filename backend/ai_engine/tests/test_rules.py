@@ -159,6 +159,13 @@ def test_qualification_field_foreign_unknown_and_best_claim() -> None:
     )
     assert foreign is not None and foreign.status == EvidenceStatus.NEEDS_VERIFICATION
     assert foreign.score == 75 and "foreign_qualification" in foreign.flags
+    # P10-T04: once a person verified it, a foreign qualification counts like a local one
+    checked = edu("BACHELOR", foreign=True, needs_verification=True).model_copy(
+        update={"method": ExtractionMethod.HUMAN, "confidence": 1.0}
+    )
+    verified = evaluate_rule(computing, evidence(checked), ctx())
+    assert verified is not None and verified.score == 100
+    assert verified.status == EvidenceStatus.EXPLICIT
     unknown = evaluate_rule(computing, evidence(edu(None, "Kitchen Wizard Diploma")), ctx())
     assert unknown is not None and unknown.status == EvidenceStatus.NEEDS_VERIFICATION
     best = evaluate_rule(

@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-17",
+  "engine_version": "0.3.1",
+  "config_version": "2026.11.2",
+  "machine": "Windows AMD64 \u00b7 Python 3.12.16",
+  "cvs": 135,
+  "perturbations": 1095,
+  "invariant": 1095,
+  "families": {
+    "identity": {
+      "checked": 540,
+      "invariant": 540,
+      "rate": 1.0
+    },
+    "protected_details": {
+      "checked": 135,
+      "invariant": 135,
+      "rate": 1.0
+    },
+    "location": {
+      "checked": 270,
+      "invariant": 270,
+      "rate": 1.0
+    },
+    "institution": {
+      "checked": 89,
+      "invariant": 89,
+      "rate": 1.0
+    },
+    "career_gap": {
+      "checked": 61,
+      "invariant": 61,
+      "rate": 1.0
+    }
+  },
+  "differences": []
+}

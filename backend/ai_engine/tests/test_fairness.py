@@ -113,3 +113,30 @@ def test_counterfactual_invariance(gen: ModuleType, tmp_path: Path) -> None:
         if checked >= 120:
             break
     assert checked >= 100
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="synthetic corpus missing")
+def test_proxy_and_protected_perturbations(gen: ModuleType, tmp_path: Path) -> None:
+    """P10-T04 (EC-AI-13): protected details, rural towns, peer institutions and career gaps never
+    change a result (sample; the full >= 500 suite is run_fairness_benchmark in the nightly)."""
+    from .benchmark.run_fairness_benchmark import perturbations
+
+    planned = {cv.id: cv for cv in gen.plan(labels()["count"], labels()["seed"])}
+    seen: set[str] = set()
+    checked = 0
+    for label in labels()["cvs"]:
+        cv = planned[label["id"]]
+        if set(cv.variations) & EXCLUDED or cv.fmt == "scanned" or label["parse_expected"] != "ok":
+            continue
+        _, base, _ = evaluate_cv(label, data=render(gen, cv, tmp_path / f"o_{cv.id}.{cv.fmt}"))
+        for i, (family, what, changed) in enumerate(perturbations(cv, gen)):
+            if family == "identity":
+                continue  # covered above
+            data = render(gen, changed, tmp_path / f"p{i}_{cv.id}.{cv.fmt}")
+            _, other, _ = evaluate_cv(label, data=data)
+            assert fingerprint(other) == fingerprint(base), (cv.id, family, what)
+            seen.add(family)
+            checked += 1
+        if checked >= 60 and len(seen) == 4:
+            break
+    assert seen == {"protected_details", "location", "institution", "career_gap"}
