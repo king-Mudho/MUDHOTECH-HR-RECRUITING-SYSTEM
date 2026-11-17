@@ -57,6 +57,13 @@ jobs:
           export DEMO_PASSWORD="$(grep '^DEMO_PASSWORD=' ../.env | cut -d= -f2-)"
           npx playwright install --with-deps chromium
           npx playwright test
+      - name: OWASP ZAP baseline (passive scan of the running stack, P09-T09)
+        if: always()
+        run: |
+          mkdir -p zap && chmod 777 zap
+          cp ../infrastructure/security/zap-rules.tsv zap/
+          # -I: warnings are reported, only rules marked FAIL in zap-rules.tsv fail the job
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable             zap-baseline.py -t http://127.0.0.1:3000 -c zap-rules.tsv -r zap-report.html -I
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
@@ -84,8 +91,16 @@ jobs:
           uv run bandit -r apps ai_engine config -x "*/tests/*,*/migrations/*"
           uv export --frozen --no-hashes --no-dev > /tmp/requirements.txt
           uv run pip-audit -r /tmp/requirements.txt
-      - name: Semgrep
-        run: pipx run semgrep scan --config p/default --metrics=off --error --exclude frontend/node_modules --exclude "*.txt"
+      - name: Semgrep (default, Django, React, TypeScript, secrets rulesets)
+        run: >-
+          pipx run semgrep scan --metrics=off --error
+          --config p/default --config p/django --config p/react --config p/typescript --config p/secrets
+          --exclude frontend/node_modules --exclude "*.txt"
+      - name: detect-secrets (no new secrets against the committed baseline)
+        working-directory: backend
+        run: |
+          cd ..
+          uv run --project backend detect-secrets-hook --baseline .secrets.baseline $(git ls-files -- ':!*.lock' ':!frontend/package-lock.json')
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -93,6 +108,27 @@ jobs:
           scan-ref: .
           severity: CRITICAL,HIGH
           ignore-unfixed: true
+          exit-code: "1"
+      - name: Build images for scanning
+        run: |
+          docker build -t mhrs-backend:scan backend
+          docker build -t mhrs-frontend:scan frontend
+      - name: Trivy image scan (backend)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: image
+          image-ref: mhrs-backend:scan
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Trivy image scan (frontend)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: image
+          image-ref: mhrs-frontend:scan
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
 
   clamd:
     name: Antivirus integration (real ClamAV, EICAR)

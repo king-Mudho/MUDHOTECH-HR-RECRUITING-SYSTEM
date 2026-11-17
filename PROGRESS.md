@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-T09
+- **Current task:** P09-T10
 - **Last updated:** 2026-11-17
-- **Overall:** 123 / 193 tasks · 8 / 16 phases
+- **Overall:** 124 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -197,7 +197,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P09-T06 — Break-glass support access: request (reason, ≤ 4 h), platform approval, scoped middleware allowing read access, …
 - [x] P09-T07 — Evaluate & (if acceptable overhead < 10% on key queries) implement PostgreSQL RLS policies on major tenant tables …
 - [x] P09-T08 — Security headers (Django + Next.js middleware: CSP with nonces for Next scripts, HSTS, etc.), cookie settings audit, …
-- [ ] P09-T09 — Security tooling in CI: bandit, semgrep (django/react rulesets), pip-audit, npm audit (high+ fails), detect-secrets, …
+- [x] P09-T09 — Security tooling in CI: bandit, semgrep (django/react rulesets), pip-audit, npm audit (high+ fails), detect-secrets, …
 - [ ] P09-T10 — Manual security checklist `docs/security/ASVS_CHECKLIST.md` (L2 items relevant) completed with evidence links
 - [ ] P09-T11 — AI governance: `/admin/model-registry` UI, `docs/ai-governance/MODEL_CARD_screening_engine.md`, …
 - [ ] P09-T12 — DPIA `docs/dpia/DPIA.md` (processing description, necessity, risks, mitigations, residual risk, sign-off section for …
@@ -647,3 +647,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T06 | Break-glass support access: SupportAccessGrant (reason, <= 4 h), requested by platform support and approved by a different platform admin; org-context middleware gives an approved, unexpired grant read-only HR-manager visibility (writes 403 support_read_only), every request access-logged; organisation admins see grants, reasons and access counts and can revoke (/hr/settings/privacy); banner for all staff while active; auto-expiry; /admin/support-access UI | - |
 | 2026-11-17 | Impl | P09-T07 | PostgreSQL RLS (FORCE, policy tenant_isolation on 19 tenant tables) as second line of defence; HR requests with X-Org-Id set app.current_org and reset it; probe-role tests; overhead -13% (within noise, ADR-012) | Production DB role must be NOSUPERUSER NOBYPASSRLS (docs/10 §3.1) |
 | 2026-11-17 | Impl | P09-T08 | Security headers middleware (API CSP default-src none, COOP/CORP, Permissions-Policy, no-store when signed in); frontend CSP/HSTS (ADR-027); Django admin gated by ENABLE_DJANGO_ADMIN; passwords >= 12; shared csv_safe with guard test | Revisit nonce/hash CSP when Next.js supports it with Cache Components |
+| 2026-11-17 | Impl | P09-T09 | Nightly: semgrep (default/django/react/typescript/secrets), detect-secrets hook against a reviewed baseline, Trivy fs + backend/frontend images failing on HIGH/CRITICAL, OWASP ZAP baseline with rules file |  |
