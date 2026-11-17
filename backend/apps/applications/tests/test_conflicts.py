@@ -115,3 +115,17 @@ def test_staff_applications_are_for_hr_managers_only(world: Any) -> None:
     assert str(colleague.pk) not in listed(staff(team.recruiter, team.org), other_job)
     assert str(colleague.pk) in listed(staff(team.hr_manager, team.org), other_job)
     assert str(colleague.pk) in listed(staff(team.admin, team.org), other_job)
+
+
+# EC-REV-10: panelists never see AI scores (ADR-019 hide_ai_from_panelists; no applications.view)
+def test_panelists_cannot_see_ai_scores(world: Any) -> None:
+    team, job, _, short = world
+    panel = staff(team.panelist, team.org)
+    for path in (
+        f"/api/v1/hr/jobs/{job.pk}/applications/",
+        f"/api/v1/hr/applications/{short.pk}/evaluation/",
+        f"/api/v1/hr/applications/{short.pk}/evaluations/",
+        f"/api/v1/hr/jobs/{job.pk}/screening-analytics/",
+        "/api/v1/hr/dashboard/summary/",
+    ):
+        assert panel.get(path).status_code == 403, path

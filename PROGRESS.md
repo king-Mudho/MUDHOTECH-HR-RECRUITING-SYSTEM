@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 08 — Shortlist Review, HR Dashboard & Audit UI
-- **Current task:** P08-T12
+- **Current task:** P08-EXIT
 - **Last updated:** 2026-11-17
-- **Overall:** 113 / 193 tasks · 7 / 16 phases
+- **Overall:** 115 / 193 tasks · 7 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -184,8 +184,8 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P08-T09 — Role visibility: hiring manager sees shortlist only (EC-REV-09)
 - [x] P08-T10 — HR dashboard `/hr/dashboard`: KPI cards & queues per SRS M15, per-vacancy funnel, filters
 - [x] P08-T11 — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job …
-- [ ] P08-T12 — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors
-- [ ] P08-T13 — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing …
+- [x] P08-T12 — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors
+- [x] P08-T13 — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing …
 - [ ] P08-EXIT — All exit criteria verified with evidence
 
 ### Phase 09 — Privacy, Governance & Security Hardening  (`phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md`)
@@ -615,3 +615,5 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P08-T09 | Visibility in applications_visible_to: hiring managers see shortlisted-onward unless the job assignment grants sees_full_pool (EC-REV-09); declare-conflict action hides the application from the declarer, clears their assignment, audited (EC-REV-11); staff get 403 + audit on their own application and lose access to that vacancy's applications; staff applications visible to HR managers/admins only (EC-ACC-09/10); UI action | - |
 | 2026-11-17 | Impl | P08-T10 | GET hr/dashboard/summary (cards per FR-M15-01, AI band counts separate from human decisions, queues; filters department/vacancy/recruiter/date) + GET hr/jobs/{id}/funnel; /hr/dashboard page; reconciliation tests compare every card with direct queries | - |
 | 2026-11-17 | Impl | P08-T11 | GET hr/audit-events (filters, cursor) + CSV export (formula injection neutralised, audited) for auditors/admins; GET hr/applications/{id}/reconstruct (job version, rubric, evaluation versions with engine/thresholds/models/evidence refs, human decisions with reasons, shortlist decisions with AI band + overrides, verifications, reveals/conflicts, notifications) + PDF (PyMuPDF Story); auditors see PII redacted unless revealed (EC-PRV-06); /hr/settings/audit + reconstruction PDF button | - |
+| 2026-11-17 | Impl | P08-T12 | audit.log_view on every candidate PII/CV view (application detail, extraction panel, CV text, evaluations, reconstruction, shortlist detail, applicants list); list views may be sampled via ACCESS_LOG_LIST_SAMPLE_RATE, never for auditors, object views always; reconstruction lists who viewed | Partition access logs in Phase 09 |
+| 2026-11-17 | Impl | P08-T13 | Core scenario: in-process HTTP test (100 synthetic applications, real extraction + screening, filter, verify 2 claims, 1 clarification, approved shortlist of 10, 10 outcome emails after delay/quiet hours, accountability, reconstruction sample of 10) passing 3 consecutive runs; check_human_decisions command; seed_core_scenario + Playwright core-scenario.spec.ts in the nightly Docker job (worker-ai added) | Confirm the first nightly browser run |

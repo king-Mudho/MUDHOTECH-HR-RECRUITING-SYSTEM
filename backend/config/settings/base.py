@@ -347,6 +347,9 @@ EXTRACTION_MAX_PAGES = env.int("EXTRACTION_MAX_PAGES", default=30)
 # Start CV extraction when applications are submitted / documents accepted (P06-T11)
 RESUMES_AUTOSTART = env.bool("RESUMES_AUTOSTART", default=True)
 # Evaluate applications when their evidence is ready (P07-T09)
+# P08-T12: share of applicant-list views written to the access log (object views: always;
+# auditors: always)
+ACCESS_LOG_LIST_SAMPLE_RATE = env.float("ACCESS_LOG_LIST_SAMPLE_RATE", default=1.0)
 SCREENING_AUTOSTART = env.bool("SCREENING_AUTOSTART", default=True)
 
 # --- Health checks ---

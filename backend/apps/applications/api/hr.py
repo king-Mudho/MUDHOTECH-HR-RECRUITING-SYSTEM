@@ -238,7 +238,16 @@ class HRJobApplicationsView(generics.ListAPIView[Application]):
         ],
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        return super().get(request, *args, **kwargs)
+        from apps.audit import services as audit
+
+        response = super().get(request, *args, **kwargs)
+        audit.log_view(
+            request.membership,  # type: ignore[attr-defined]
+            ("job", kwargs.get("job_id")),
+            action="list_applicants",
+            listing=True,
+        )
+        return response
 
     def get_serializer(self, *args: Any, **kwargs: Any) -> Any:
         if getattr(self, "swagger_fake_view", False):

@@ -208,6 +208,18 @@ def bundle(membership: Membership, application_id: Any) -> dict[str, Any]:
             organisation_id=org, payload__application_id=str(app.pk)
         ).order_by("created_at")
     ]
+    from apps.audit.models import AccessLog
+
+    views = [
+        {"user": _person(v.user), "action": v.action, "at": v.created_at}
+        for v in AccessLog.objects.filter(
+            organisation_id=org,
+            target_type__in=["application", "applications.application"],
+            target_id=str(app.pk),
+        )
+        .select_related("user")
+        .order_by("-created_at")[:100]
+    ]
     snapshot = app.candidate_profile_snapshot or {}
     return {
         "generated_for": _person(membership.user),
@@ -249,4 +261,5 @@ def bundle(membership: Membership, application_id: Any) -> dict[str, Any]:
         "verifications": verifications,
         "access": sorted(access, key=lambda a: a["at"]),
         "notifications": notifications,
+        "views": views,
     }

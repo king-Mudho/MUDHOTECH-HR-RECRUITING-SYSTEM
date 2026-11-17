@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.services import authed_user
+from apps.audit import services as audit
 from apps.organisations.permissions import HasOrgAction
 from apps.resumes import hr
 
@@ -64,6 +65,7 @@ class HRExtractionView(APIView):
     @extend_schema(operation_id="hr_application_extraction", responses=HRExtractionSerializer)
     def get(self, request: Request, application_id: str) -> Response:
         view = hr.hr_view(request.membership, application_id)  # type: ignore[attr-defined]
+        audit.log_view(request.membership, ("application", application_id), action="extraction")  # type: ignore[attr-defined]
         return Response(HRExtractionSerializer(view).data)
 
 
@@ -120,4 +122,5 @@ class HREvidenceTextView(APIView):
         from apps.resumes.evidence_view import evidence_text
 
         body = evidence_text(request.membership, application_id)  # type: ignore[attr-defined]
+        audit.log_view(request.membership, ("application", application_id), action="cv_text")  # type: ignore[attr-defined]
         return Response(EvidenceTextSerializer(body).data)

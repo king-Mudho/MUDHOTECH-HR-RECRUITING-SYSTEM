@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.services import authed_user
+from apps.audit import services as audit
 from apps.core.exceptions import NotFoundError
 from apps.organisations.permissions import HasOrgAction
 
@@ -108,6 +109,7 @@ class ApplicationEvaluationView(APIView):
         body = selectors.current_evaluation(request.membership, application_id)  # type: ignore[attr-defined]
         if body is None:
             raise NotFoundError()
+        audit.log_view(request.membership, ("application", application_id), action="evaluation")  # type: ignore[attr-defined]
         return Response(s.EvaluationSerializer(body).data)
 
 
@@ -147,6 +149,7 @@ class ApplicationEvaluationVersionView(APIView):
     )
     def get(self, request: Request, application_id: str, version: int) -> Response:
         body = selectors.evaluation_version(request.membership, application_id, version)  # type: ignore[attr-defined]
+        audit.log_view(request.membership, ("application", application_id), action="evaluation")  # type: ignore[attr-defined]
         return Response(s.EvaluationSerializer(body).data)
 
 

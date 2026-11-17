@@ -160,6 +160,30 @@ def log_access(
     )
 
 
+def log_view(
+    membership: Any,
+    target: Model | tuple[str, Any],
+    *,
+    action: str = "view",
+    listing: bool = False,
+) -> AccessLog | None:
+    """P08-T12: every view of candidate PII or CV content is logged. Object views always;
+    list views may be sampled (``ACCESS_LOG_LIST_SAMPLE_RATE``) - never for auditors."""
+    import random
+
+    from django.conf import settings as django_settings
+
+    rate = float(getattr(django_settings, "ACCESS_LOG_LIST_SAMPLE_RATE", 1.0))
+    if listing and membership.role != "auditor" and rate < 1.0 and random.random() >= rate:  # noqa: S311
+        return None
+    return log_access(
+        user=membership.user,
+        target=target,
+        organisation=membership.organisation_id,
+        action=action,
+    )
+
+
 @dataclass(frozen=True)
 class ChainBreak:
     chain: str

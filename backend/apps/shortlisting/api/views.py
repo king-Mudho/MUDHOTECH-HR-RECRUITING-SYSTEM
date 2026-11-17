@@ -179,8 +179,11 @@ def _shortlist(s: Shortlist, *, entries: bool = False, user: Any = None) -> dict
 
 
 def _detail(membership: Any, shortlist_id: Any) -> Response:
+    from apps.audit import services as audit
+
     s = services.get_shortlist(membership, shortlist_id)
     body = _shortlist(s, entries=True, user=membership.user)
+    audit.log_view(membership, s, action="shortlist", listing=True)
     return Response(ShortlistDetailSerializer(body).data)
 
 

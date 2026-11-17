@@ -19,8 +19,8 @@ shortlist (with undo window); dashboards show operational truth; auditors can re
 - [x] **P08-T09** — Role visibility: hiring manager sees shortlist only (EC-REV-09); conflict-of-interest "declare conflict" action (EC-REV-11); staff cannot open own application (EC-ACC-09/10).
 - [x] **P08-T10** — HR dashboard `/hr/dashboard`: KPI cards & queues per SRS M15, per-vacancy funnel, filters; AI suggestions vs human decisions shown separately; reconciliation test (dashboard numbers == direct queries).
 - [x] **P08-T11** — Audit UI `/hr/settings/audit` (filters, export for auditors) + `GET /hr/applications/{id}/reconstruct` bundle (job version, rubric, evidence refs, evaluation versions, engine/model versions, human decisions with reasons, notifications sent) + PDF rendering of reconstruction.
-- [ ] **P08-T12** — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors.
-- [ ] **P08-T13** — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing completes → HR filters, verifies 2 claims, requests 1 clarification, approves shortlist of 10 → after delay, notifications in Mailpit (10 shortlisted, others per HR decision only).
+- [x] **P08-T12** — Access logging on every candidate PII/CV view (AccessLog) with sampling disabled for auditors.
+- [x] **P08-T13** — E2E "Core Scenario" test: seed Software Developer job → 100 synthetic applications submitted via API → processing completes → HR filters, verifies 2 claims, requests 1 clarification, approves shortlist of 10 → after delay, notifications in Mailpit (10 shortlisted, others per HR decision only).
 
 ## Edge cases
 EC-REV-01..11, EC-PRV-06 (auditor redaction), EC-JOB-17.

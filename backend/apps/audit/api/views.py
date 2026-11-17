@@ -128,6 +128,7 @@ class HRReconstructView(APIView):
         from apps.applications.reconstruct import bundle
 
         body = bundle(request.membership, application_id)  # type: ignore[attr-defined]
+        audit.log_view(request.membership, ("application", application_id), action="reconstruct")  # type: ignore[attr-defined]
         audit.record(
             actor=request.user,
             action="application.reconstructed",
@@ -150,6 +151,7 @@ class HRReconstructPdfView(APIView):
         from apps.applications.reconstruct_pdf import render
 
         body = bundle(request.membership, application_id)  # type: ignore[attr-defined]
+        audit.log_view(request.membership, ("application", application_id), action="reconstruct")  # type: ignore[attr-defined]
         audit.record(
             actor=request.user,
             action="application.reconstructed",
