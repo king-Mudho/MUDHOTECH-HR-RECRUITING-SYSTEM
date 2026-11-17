@@ -1,0 +1,19 @@
+# NFR-PERF-02 profile (P10-T06): the application tier capped at 4 vCPU / 8 GB, with the two
+# document worker processes doing the CPU-bound extraction. Use with:
+#   docker compose -f docker-compose.yml -f infrastructure/perf/compose.throughput.yml up -d ...
+services:
+  backend:
+    cpus: 0.5
+    mem_limit: 1g
+  worker-default:
+    cpus: 0.5
+    mem_limit: 1g
+  worker-documents:
+    cpus: 2.0
+    mem_limit: 3g
+  worker-ai:
+    cpus: 0.75
+    mem_limit: 2500m
+  beat:
+    cpus: 0.25
+    mem_limit: 512m

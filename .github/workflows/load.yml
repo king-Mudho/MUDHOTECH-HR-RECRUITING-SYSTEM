@@ -1,4 +1,5 @@
-# Load tests (P10-T05, NFR-PERF-01): job board 200 RPS, 100 and 1,000 submissions, HR list.
+# Load tests (P10-T05, NFR-PERF-01): job board 200 RPS, 100 and 1,000 submissions, HR list;
+# throughput (P10-T06, NFR-PERF-02): 100 CVs end to end on a 4 vCPU / 8 GB worker profile.
 # Weekly and on demand (too long for every push). Results: artifact "load-report".
 name: Load
 
@@ -8,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["loadtests/**", ".github/workflows/load.yml"]
+    paths: ["loadtests/**", "infrastructure/perf/**", ".github/workflows/load.yml"]
 
 permissions:
   contents: read
@@ -84,3 +85,35 @@ jobs:
       - name: Stack logs on failure
         if: failure()
         run: docker compose logs --no-color --tail 300
+
+  throughput:
+    name: Throughput - 100 CVs end to end on the 4 vCPU / 8 GB profile (P10-T06)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Start the stack with resource limits
+        run: |
+          cp .env.example .env
+          docker compose -f docker-compose.yml -f infrastructure/perf/compose.throughput.yml up -d --build postgres redis s3 mailpit backend worker-default worker-documents worker-ai beat
+          for i in $(seq 1 90); do curl -fsS http://127.0.0.1:8000/readyz && break; sleep 5; done
+          curl -fsS http://127.0.0.1:8000/readyz
+          docker compose exec -T backend python manage.py seed_demo
+      - name: 100 applications processed by the workers (target <= 15 min)
+        run: |
+          docker compose exec -T backend python manage.py run_pilot_benchmark --count 100 --timeout 900 --out /tmp/THROUGHPUT.md
+      - name: Collect the report
+        if: always()
+        run: docker compose cp backend:/tmp/THROUGHPUT.md backend/THROUGHPUT.md || touch backend/THROUGHPUT.md
+      - name: Resource usage
+        if: always()
+        run: docker stats --no-stream | tee -a backend/THROUGHPUT.md
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: throughput-report
+          path: backend/THROUGHPUT.md
+      - name: Worker logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 200 worker-documents worker-ai beat
+
