@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-T05
+- **Current task:** P09-T06
 - **Last updated:** 2026-11-17
-- **Overall:** 119 / 193 tasks · 8 / 16 phases
+- **Overall:** 120 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -193,7 +193,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P09-T02 — Rights requests: candidate `/candidate/privacy` (consents, request access/export, correction, deletion, objection, …
 - [x] P09-T03 — Export bundle generator (reports queue): JSON (profile, applications, answers, claims, evaluations summary, …
 - [x] P09-T04 — Deletion/anonymisation service: replace PII with tokens, delete S3 objects (all versions), keep minimal audit (ids, …
-- [ ] P09-T05 — Retention engine (beat daily): per-org `retention_months` after vacancy close for non-hired applications
+- [x] P09-T05 — Retention engine (beat daily): per-org `retention_months` after vacancy close for non-hired applications
 - [ ] P09-T06 — Break-glass support access: request (reason, ≤ 4 h), platform approval, scoped middleware allowing read access, …
 - [ ] P09-T07 — Evaluate & (if acceptable overhead < 10% on key queries) implement PostgreSQL RLS policies on major tenant tables …
 - [ ] P09-T08 — Security headers (Django + Next.js middleware: CSP with nonces for Next scripts, HSTS, etc.), cookie settings audit, …
@@ -643,3 +643,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T02 | Rights requests: candidate /candidate/privacy (consents with withdrawal, request form with password re-auth, scope one employer / account / all, own requests, statement after a declined correction EC-PRV-04) + email confirmation link before anyone acts; routing to org admins or platform admins; SLA due date from org policy (platform 30 d) and 6-hourly reminders 5 days before due; staff /hr/settings/privacy (start/hold/complete/decline with outcome text, requester notified) + legal holds UI; platform API for account-level requests | - |
 | 2026-11-17 | Impl | P09-T03 | Export bundle on confirmation of access/export requests (outbox -> reports queue, idempotent): ZIP in the private exports bucket with data.json (profile, applications, answers, AI-assisted evaluation summaries labelled as suggestions, status history with reasons, approved decisions, messages, consents), summary.pdf and the person's original documents; 24 h validity; 60 s presigned download for the owner only, audited + access-logged; requests cannot be completed before the export exists | - |
 | 2026-11-17 | Impl | P09-T04 | privacy.erasure: legal-hold check first (LegalHoldError -> request on_hold, EC-PRV-01), active applications withdrawn as the candidate (EC-PRV-02/ACC-13), snapshot/answers/clarification answers/messages/notes/extraction runs/evidence snippets/explanations/verification notes/notification payloads erased, files deleted from storage (EC-PRV-05); account-level: documents, CV previews, profile, email addresses removed, account anonymised and disabled; audit keeps counts only; deletion requests complete by erasing; verify_erasure command + residual_pii check | - |
+| 2026-11-17 | Impl | P09-T05 | privacy.retention: daily beat run anonymises non-hired applications of vacancies closed more than retention_months ago (holds and hired/active-stage records kept; already erased skipped = idempotent); weekly Monday dry run e-mails each org's admins a preview (retention_report); RetentionRun records counts; audited | - |

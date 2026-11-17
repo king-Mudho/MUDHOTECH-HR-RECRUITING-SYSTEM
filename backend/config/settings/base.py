@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 from kombu import Queue
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -256,6 +257,16 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.messaging.tasks.clarifications_due",
         "schedule": timedelta(minutes=15),
         "options": {"expires": 800},
+    },
+    "privacy-retention-daily": {
+        "task": "apps.privacy.tasks.retention_daily",
+        "schedule": crontab(hour=1, minute=30),
+        "options": {"expires": 3600 * 6},
+    },
+    "privacy-retention-preview": {
+        "task": "apps.privacy.tasks.retention_preview",
+        "schedule": crontab(hour=6, minute=0, day_of_week=1),
+        "options": {"expires": 3600 * 6},
     },
     "privacy-rights-reminders": {
         "task": "apps.privacy.tasks.rights_reminders",

@@ -29,3 +29,19 @@ def generate_export(request_id: str) -> str:
 @idempotent_consumer("privacy.export_on_confirm", events=["privacy.export_requested"])
 def on_export_requested(event: OutboxEvent) -> None:
     generate_export.delay(event.payload["request_id"])
+
+
+@shared_task(name="apps.privacy.tasks.retention_daily", base=BaseTask)
+def retention_daily() -> int:
+    """P09-T05: anonymise applications past the organisation's retention period."""
+    from . import retention
+
+    return len(retention.run_all(dry_run=False))
+
+
+@shared_task(name="apps.privacy.tasks.retention_preview", base=BaseTask)
+def retention_preview() -> int:
+    """Weekly dry run reported to organisation admins."""
+    from . import retention
+
+    return len(retention.run_all(dry_run=True))

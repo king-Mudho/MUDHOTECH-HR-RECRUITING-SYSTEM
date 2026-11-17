@@ -49,6 +49,8 @@ SAMPLES: dict[str, str] = {
     "request_type": "Export my data",
     "confirm_url": "https://mhrs.example/candidate/privacy/confirm?token=sample",
     "privacy_url": "https://mhrs.example/hr/settings/privacy",
+    "due_count": "42",
+    "held_count": "1",
     "new_applications": "12",
     "processing_done": "9",
     "dashboard_url": "https://mhrs.example/hr/dashboard",
@@ -157,6 +159,12 @@ _KINDS = [
         "staff",
         ("organisation_name", "request_reference", "due_date", "privacy_url"),
         urgent=True,
+    ),
+    NotificationKind(
+        "retention_report",
+        "Weekly preview of applications the retention policy will anonymise",
+        "staff",
+        ("organisation_name", "due_count", "held_count", "privacy_url"),
     ),
     NotificationKind(
         "recruiter_digest",

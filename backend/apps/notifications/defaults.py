@@ -183,6 +183,18 @@ and is not completed yet.
 [Open privacy requests]({{ privacy_url }})""",
         "Data request {{ request_reference }} is due by {{ due_date }}.",
     ),
+    "retention_report": DefaultTemplate(
+        "Retention preview for {{ organisation_name }}",
+        """Hello {{ recipient_name }},
+
+Under your retention policy, **{{ due_count }}** applications to vacancies that closed long ago
+will be anonymised in the coming days. {{ held_count }} are kept because of a legal hold.
+
+To keep something longer, place a legal hold before then.
+
+[Open privacy settings]({{ privacy_url }})""",
+        "{{ due_count }} old applications will be anonymised under your retention policy.",
+    ),
     "recruiter_digest": DefaultTemplate(
         "{{ new_applications }} new applications for {{ job_title }}",
         """Hello {{ recipient_name }},
