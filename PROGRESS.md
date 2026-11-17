@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-T02
+- **Current task:** P10-T03
 - **Last updated:** 2026-11-17
-- **Overall:** 129 / 193 tasks · 9 / 16 phases
+- **Overall:** 130 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -206,7 +206,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 10 — Quality Assurance, AI Validation & Pilot Readiness  (`phases/PHASE_10_QA_AI_VALIDATION_PILOT.md`)
 - [x] P10-T01 — EC coverage: run `scripts/ec_coverage.py`
-- [ ] P10-T02 — Full Playwright suite (desktop + mobile emulation) for: candidate apply journey, clarification, withdraw, HR job …
+- [x] P10-T02 — Full Playwright suite (desktop + mobile emulation) for: candidate apply journey, clarification, withdraw, HR job …
 - [ ] P10-T03 — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles
 - [ ] P10-T04 — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), …
 - [ ] P10-T05 — Load tests (Locust): 100 and 1,000 concurrent submissions
@@ -677,3 +677,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P09-T13 | Accessibility pass: axe sweep of candidate + HR core journey pages with keyboard walk (e2e/a11y-journeys.spec.ts, nightly), main-landmark guard test, jsdom axe check; fixed missing main landmark on 4 pages and focus obscured by sticky bar; AUDIT.md | NVDA spot check by a human tester before go-live; consistent help link (3.2.6) in Phase 10 UI polish |
 | 2026-11-17 | Close | P09-EXIT | Phase 09 closed: rights lifecycle E2E with verify_erasure clean; no high/critical findings (bandit, pip-audit, npm audit, detect-secrets; nightly semgrep/Trivy/ZAP); ASVS L2 checklist complete; DPIA, DPA template, model card, AI policy written; AI kill-switch verified; EC 12/12. Fixed during close: EC-ORG-10 organisation closure, public privacy/terms/accessibility pages (footer links 404ed), EC-PRV-05 test, robust RLS overhead check and core-scenario email count (both failed on a fresh CI-like DB) | Phase 10 started |
 | 2026-11-17 | Impl | P10-T01 | EC coverage for phases 01-09: 157/157 listed ids covered (ec_coverage.py --phase 01..09). Unassigned docs/07 ids belong to later phases: EC-INT/OFF (Phase 12), EC-BIL (billing), EC-OPS-03 (P10-T07); EC-OPS-05..10 are Phase 11 |  |
+| 2026-11-17 | Impl | P10-T02 | Playwright: journeys.spec (rights export with email confirmation + download, platform admin verifies a new org, key-page screenshots desktop+mobile uploaded as nightly artifact 'screens') on top of apply/jobs/auth/core-scenario/a11y specs; shared e2e helpers + hrContext; 38 tests x2 projects | Not runnable locally (RAM/ports) - check first nightly; visual baselines are screenshots for review (no pixel comparison until baselines are committed from a Linux run); shortlist undo stays API/component-tested |
