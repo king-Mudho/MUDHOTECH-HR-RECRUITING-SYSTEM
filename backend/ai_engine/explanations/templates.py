@@ -77,6 +77,14 @@ def _sentence_for(spec: CriterionSpec, result: CriterionResult) -> Sentence | No
         return None
     score = result.score or 0
     inferred = result.status == EvidenceStatus.INFERRED
+    if result.reason == "listed_only":  # EC-DOC-24: say so, whatever the calibrated score
+        return Sentence(
+            kind="partial",
+            criterion_id=spec.id,
+            text=f"{name} is listed among the skills: {quote(first)} ({where(first)}); "
+            "use in a role or project was not found.",
+            citations=(first,),
+        )
     if score >= 75:
         lead = "Likely evidence of" if inferred else "Evidence of"
         return Sentence(

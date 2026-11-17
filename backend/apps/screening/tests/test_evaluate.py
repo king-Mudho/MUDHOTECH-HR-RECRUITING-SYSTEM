@@ -44,7 +44,7 @@ def test_full_evaluation_is_stored_explained_and_moves_to_review(
         )
     }
     python = results[vacancy.criteria["python"].pk]
-    assert python.assessable and python.score in (50, 100)  # listed (50) or used in a role (100)
+    assert python.assessable and python.score in (75, 100)  # listed 75 (2026.11.2) / used 100
     assert python.evidence_status == "explicit"
     evidence = EvaluationEvidence.objects.for_org(read_app.organisation_id).filter(
         criterion_result=python

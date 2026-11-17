@@ -109,7 +109,8 @@ def test_sentences_cite_and_quote_evidence() -> None:
     explanation = explain(result, SPECS, EVIDENCE)  # type: ignore[arg-type]
     assert explanation.dropped == 0 and grounding_rate(explanation) == 1.0
     texts = {s.criterion_id: s for s in explanation.sentences}
-    assert texts["py"].kind == "partial"  # listed-only skill (50)
+    assert texts["py"].kind == "partial"  # listed-only skill: never presented as a strength
+    assert "listed among the skills" in texts["py"].text
     assert "“Built Python services” (CV p.2)" in texts["py"].text
     assert texts["rust"].kind == "gap"
     assert (

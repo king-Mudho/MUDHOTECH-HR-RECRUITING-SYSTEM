@@ -75,10 +75,12 @@ GRAPH = SkillGraph.build(
 
 
 def test_usage_decides_the_band() -> None:
-    """EC-DOC-24: listed only 50, mentioned in profile 75, used in a role/project 100."""
+    """EC-DOC-24: listed only and mentioned in the profile 75 (calibrated 2026.11.2), used in a
+    role/project 100 - a skill only listed never scores as high as one used."""
     c = criterion("Python", "Python")
-    assert match_skill(c, ev(skill("Python", "Python"))).score == 50
-    assert match_skill(c, ev(skill("Python", "Python", K.PROFILE))).score == 75
+    assert match_skill(c, ev(skill("Python", "Python"))).score == 75
+    mentioned = match_skill(c, ev(skill("Python", "Python", K.PROFILE)))
+    assert mentioned.score == 75 and mentioned.reason == "exact"  # not "listed_only"
     used = match_skill(c, ev(skill("Python", "Python", K.EXPERIENCE)))
     assert used.score == 100 and used.method == "exact" and used.status == EvidenceStatus.EXPLICIT
     project = match_skill(c, ev(skill("Python", "Python", K.PROJECTS)))
@@ -92,7 +94,7 @@ def test_alias_and_equivalents() -> None:
     alias = match_skill(
         criterion("Python", "Python"), ev(skill("python3", "Python", canonical="Python"))
     )
-    assert alias.method == "alias" and alias.score == 50
+    assert alias.method == "alias" and alias.score == 75
     either = criterion(
         "Django or similar web framework", "Django", equivalents=("Flask", "FastAPI")
     )
@@ -115,7 +117,7 @@ def test_relations_are_inferred_and_capped() -> None:
         ev(skill("Django REST Framework", "Django REST Framework")),
         graph=GRAPH,
     )
-    assert chain.method == "relation" and chain.score == 50  # listed only, still below the cap
+    assert chain.method == "relation" and chain.score == 75  # listed only, at the cap
     cloud = match_skill(
         criterion("Cloud computing", "Cloud computing"),
         ev(skill("Amazon EC2", "Amazon EC2", K.EXPERIENCE)),
@@ -247,4 +249,4 @@ def test_corpus_skill_criteria_agree_with_gold() -> None:
                     false_listed.append((cv["file"], item["id"]))
     assert met > 150 and met_found / met >= 0.98, (met, met_found)
     assert false_listed == []
-    assert all(m != "exact" or (s is not None and s > 50) for _, _, m, s in extra)  # mentions
+    assert all(m != "exact" or (s is not None and s >= 75) for _, _, m, s in extra)  # mentions

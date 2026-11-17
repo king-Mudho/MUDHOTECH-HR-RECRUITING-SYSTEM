@@ -134,9 +134,18 @@ JOBS = [
                 rubric_category="experience",
             ),
             _pref("skill", "Django"),
-            _pref("skill", "REST API design"),
-            _pref("competency", "Frontend collaboration", rubric_category="competency"),
-            _pref("skill", "Cloud deployment"),
+            _pref("skill", "REST API design", equivalents=["REST APIs", "RESTful APIs", "REST"]),
+            _pref(
+                "competency",
+                "Frontend collaboration",
+                rubric_category="competency",
+                equivalents=["React", "JavaScript", "TypeScript", "Vue"],
+            ),
+            _pref(
+                "skill",
+                "Cloud deployment",
+                equivalents=["AWS", "Azure", "Google Cloud", "Docker", "Kubernetes"],
+            ),
         ],
         questions=[
             _q(

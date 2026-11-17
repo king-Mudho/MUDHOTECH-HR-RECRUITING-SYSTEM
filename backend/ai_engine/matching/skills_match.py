@@ -155,13 +155,10 @@ def match_skill(
         method=best.method,
         confidence=round(best.confidence, 3),
         evidence=tuple(ref(evidence, h.claim) for h in cited),
+        # where the skill appears decides the reason, not the score (listed and mentioned may
+        # share a score band after calibration)
         reason="listed_only"
-        if best.score == config.skill_listed_only
-        and best.method
-        in (
-            "exact",
-            "alias",
-        )
+        if best.method in ("exact", "alias") and best.claim.section not in USED | MENTIONED
         else best.method,
     )
 
