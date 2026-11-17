@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** Mirrors the backend policy (FR-M01-06): min 10 chars, no composition rules. */
-export const PASSWORD_MIN = 10;
+export const PASSWORD_MIN = 12;
 
 const email = z.string().trim().min(1, "required").email("invalidEmail");
 const password = z.string().min(PASSWORD_MIN, "passwordTooShort");

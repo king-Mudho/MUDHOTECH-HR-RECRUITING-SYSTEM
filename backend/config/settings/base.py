@@ -78,6 +78,7 @@ MIDDLEWARE = [
     "apps.accounts.middleware.MfaEnforcementMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.core.security_headers.SecurityHeadersMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -127,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 10},
+        "OPTIONS": {"min_length": 12},  # ASVS 2.1.1
     },
     {"NAME": "apps.accounts.password_validation.BreachedPasswordValidator"},
 ]
@@ -150,6 +151,9 @@ SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = False  # the frontend reads it to send X-CSRFToken
 X_FRAME_OPTIONS = "DENY"
+# Django admin only where explicitly enabled (P09-T08); production keeps it off by default
+ENABLE_DJANGO_ADMIN = env.bool("ENABLE_DJANGO_ADMIN", default=False)
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 CSRF_FAILURE_VIEW = "apps.core.exceptions.csrf_failure"

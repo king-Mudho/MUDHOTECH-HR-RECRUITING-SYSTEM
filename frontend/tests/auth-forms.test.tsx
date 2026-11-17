@@ -179,8 +179,8 @@ describe("RegisterForm", () => {
     );
     wrap(<RegisterForm />);
     await userEvent.type(screen.getByLabelText(/Email address/), "a@example.test");
-    await userEvent.type(screen.getByLabelText(/^Password/), "password123");
-    await userEvent.type(screen.getByLabelText(/Confirm password/), "password123");
+    await userEvent.type(screen.getByLabelText(/^Password/), "password12345");
+    await userEvent.type(screen.getByLabelText(/Confirm password/), "password12345");
     await userEvent.click(screen.getByRole("checkbox"));
     await userEvent.click(screen.getByRole("button", { name: "Create account" }));
     expect(await screen.findAllByText(/data breach/)).not.toHaveLength(0);

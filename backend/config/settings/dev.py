@@ -1,6 +1,7 @@
 from .base import *
 
 DEBUG = env.bool("DEBUG", default=True)
+ENABLE_DJANGO_ADMIN = env.bool("ENABLE_DJANGO_ADMIN", default=True)
 TENANT_STRICT_MODE = env.bool("TENANT_STRICT_MODE", default=True)
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
     "rest_framework.renderers.JSONRenderer",

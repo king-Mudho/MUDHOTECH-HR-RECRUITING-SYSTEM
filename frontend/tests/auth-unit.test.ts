@@ -53,8 +53,8 @@ describe("schemas", () => {
   it("password confirmation mismatch points at confirm field", () => {
     const r = changePasswordSchema.safeParse({
       currentPassword: "x",
-      newPassword: "abcdefghij",
-      confirmPassword: "abcdefghik",
+      newPassword: "abcdefghijkl",
+      confirmPassword: "abcdefghijkm",
     });
     expect(r.error!.issues[0].path).toEqual(["confirmPassword"]);
   });
