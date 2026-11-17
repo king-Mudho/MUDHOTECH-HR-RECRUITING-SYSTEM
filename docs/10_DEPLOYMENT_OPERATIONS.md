@@ -28,6 +28,14 @@ Env vars (see `.env.example`): `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `ALLOWED_
 | Backups | RDS automated + weekly logical `pg_dump` to S3 (encrypted, 35-day lifecycle); S3 versioning |
 | CI/CD | GitHub Actions: build images → push to GHCR/ECR → SSH (or SSM Run Command) deploy → `docker compose pull && up -d` → migrate → smoke test → rollback on failure (previous tag) |
 
+### 3.1 Database roles (row-level security, ADR-012)
+The application **must connect as a non-superuser role without `BYPASSRLS`** (e.g. `mhrs_app`, owner of the
+schema objects is a separate migration role or the same role created with `NOSUPERUSER NOBYPASSRLS`).
+PostgreSQL superusers and `BYPASSRLS` roles ignore row-level security even with `FORCE`, so the second line of
+tenant defence would silently be off. On RDS the master user is `rds_superuser` (not a true superuser) and is
+subject to RLS; still create a dedicated `mhrs_app` role for the application. The local Docker database uses a
+superuser for convenience, so RLS is exercised in tests through a probe role (`apps/core/tests/test_rls.py`).
+
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
 1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 

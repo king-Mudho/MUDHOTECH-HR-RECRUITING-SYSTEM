@@ -63,7 +63,23 @@ class OrganisationContextMiddleware:
                         ),
                         status=423,
                     )
+                if header and request.path.startswith(CONTEXT_WRITE_GUARDED_PREFIXES):
+                    return self._with_rls(request, str(membership.organisation_id))
         return self.get_response(request)
+
+    def _with_rls(self, request: HttpRequest, org_id: str) -> HttpResponse:
+        """P09-T07 (ADR-012): staff requests with an explicit organisation set
+        ``app.current_org`` so PostgreSQL row-level security only shows that organisation's rows;
+        reset afterwards because connections are reused."""
+        from django.db import connection
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT set_config('app.current_org', %s, false)", [org_id])
+        try:
+            return self.get_response(request)
+        finally:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT set_config('app.current_org', '', false)")
 
     @staticmethod
     def _from_session(request: HttpRequest):  # type: ignore[no-untyped-def]
