@@ -297,6 +297,10 @@ from tests.tenancy.applicants_endpoints import APPLICANT_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(APPLICANT_ENDPOINTS)
 
+from tests.tenancy.privacy_endpoints import PRIVACY_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(PRIVACY_ENDPOINTS)
+
 
 def register(endpoint: Endpoint) -> Endpoint:
     REGISTRY.append(endpoint)

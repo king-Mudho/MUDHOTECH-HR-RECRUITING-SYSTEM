@@ -328,7 +328,8 @@
         "team": "Team",
         "policies": "Policies",
         "notifications": "Notifications",
-        "audit": "Audit trail"
+        "audit": "Audit trail",
+        "privacy": "Privacy requests"
       },
       "pendingVerification": "Your organisation is awaiting verification. You can prepare vacancies, but publishing is enabled after verification.",
       "suspended": "This organisation is suspended. Recruitment data is read-only.",
@@ -2083,5 +2084,115 @@
       "platform_support": "Platform support"
     },
     "more": "Load more"
+  },
+  "privacy": {
+    "title": "Privacy and your data",
+    "intro": "See what you agreed to, change your mind, and ask for a copy, a correction or deletion of your data. We confirm every request by email before acting on it.",
+    "purposes": {
+      "application_processing": "Processing my applications",
+      "ai_assisted_screening": "AI-assisted screening (a person decides)",
+      "talent_pool": "Keeping my details for future vacancies",
+      "marketing": "Marketing",
+      "sms": "SMS messages",
+      "whatsapp": "WhatsApp messages"
+    },
+    "types": {
+      "access": "See the data held about me",
+      "export": "Export my data",
+      "correction": "Correct my data",
+      "deletion": "Delete my data",
+      "objection_automated": "Object to automated processing",
+      "consent_withdrawal": "Withdraw a consent"
+    },
+    "status": {
+      "verifying": "Waiting for your email confirmation",
+      "received": "Received",
+      "in_progress": "In progress",
+      "on_hold": "On hold (legal hold)",
+      "completed": "Completed",
+      "declined": "Declined with reason"
+    },
+    "consents": {
+      "title": "Your consents",
+      "intro": "Withdrawing a consent applies from now on; it does not undo what was done before.",
+      "none": "No consents recorded yet.",
+      "given": "Given",
+      "notGiven": "Not given",
+      "withdrawnOn": "Withdrawn on {date}",
+      "withdraw": "Withdraw"
+    },
+    "new": {
+      "title": "Make a request",
+      "intro": "Requests go to the employer you choose, or to us for your account as a whole.",
+      "type": "What would you like?",
+      "scope": "Who should handle it?",
+      "scopePlatform": "MUDHOTECH HR RECRUITING SYSTEM (my account)",
+      "scopeAll": "My account and every employer I applied to",
+      "details": "Anything we should know (optional)",
+      "detailsCorrection": "What should be corrected?",
+      "password": "Your password",
+      "passwordHint": "To protect your data we ask for your password, then send you a confirmation email.",
+      "submit": "Send request",
+      "checkEmail": "Request recorded. Please open the confirmation link we emailed you.",
+      "failed": "We could not record your request. Please try again."
+    },
+    "requests": {
+      "title": "Your requests",
+      "none": "You have not made any requests.",
+      "due": "Answer due by {date}",
+      "statementLabel": "Add your own statement to the record",
+      "addStatement": "Add statement",
+      "yourStatement": "Your statement: {text}"
+    },
+    "confirm": {
+      "title": "Confirm your data request",
+      "missing": "This link is incomplete. Please use the link from your email.",
+      "working": "Confirming…",
+      "failed": "We could not confirm this request.",
+      "done": "{count, plural, one {Your request is confirmed and has been sent for handling.} other {Your # requests are confirmed and have been sent for handling.}}"
+    },
+    "staff": {
+      "title": "Privacy requests",
+      "forbidden": "Only organisation admins handle privacy requests.",
+      "requests": "Requests",
+      "noneTitle": "No requests",
+      "none": "There are no data requests for your organisation.",
+      "overdue": "Overdue",
+      "due": "Due {date}",
+      "from": "From {who}",
+      "resolution": "Outcome: {text}",
+      "statement": "Requester's statement: {text}",
+      "actions": {
+        "start": "Start",
+        "hold": "Put on legal hold",
+        "complete": "Mark completed",
+        "decline": "Decline with reason"
+      },
+      "dialog": {
+        "hold": "Put this request on hold",
+        "complete": "Complete this request",
+        "decline": "Decline this request",
+        "start": "Start"
+      },
+      "dialogHint": "The requester is told the outcome you write here.",
+      "failed": "The request could not be updated."
+    },
+    "holds": {
+      "title": "Legal holds",
+      "intro": "Data under a legal hold is never deleted or anonymised until the hold is released.",
+      "targetType": "Applies to",
+      "targetId": "Record id",
+      "reason": "Legal reason",
+      "place": "Place hold",
+      "none": "No legal holds.",
+      "release": "Release",
+      "released": "Released",
+      "targets": {
+        "application": "Application",
+        "candidate": "Candidate",
+        "job": "Vacancy"
+      },
+      "failed": "The hold could not be placed."
+    }
   }
 }

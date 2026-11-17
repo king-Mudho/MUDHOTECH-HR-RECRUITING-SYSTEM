@@ -1566,6 +1566,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/legal-holds/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_legal_holds"];
+        put?: never;
+        post: operations["hr_legal_hold_place"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/legal-holds/{hold_id}/release/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_legal_hold_release"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/notification-templates/": {
         parameters: {
             query?: never;
@@ -1646,6 +1678,38 @@ export interface paths {
         put?: never;
         /** @description Map each DRF action to an RBAC action in ``rbac.ORG_ACTIONS`` (deny by default). */
         post: operations["hr_notification_templates_revert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/privacy/requests/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_privacy_requests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/privacy/requests/{request_id}/action/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_privacy_request_action"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2423,6 +2487,135 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/privacy/requests/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_privacy_requests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/privacy/requests/{request_id}/action/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_privacy_request_action"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/consents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["privacy_consents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/consents/{consent_id}/withdraw/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Withdrawal is immediate and never retroactive (CDPA); the employer is told via audit. */
+        post: operations["privacy_consent_withdraw"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/employers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["privacy_employers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/requests/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["privacy_requests_list"];
+        put?: never;
+        post: operations["privacy_requests_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/requests/{request_id}/statement/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["privacy_request_statement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/requests/confirm/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["privacy_requests_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/sitemap.xml": {
         parameters: {
             query?: never;
@@ -2478,15 +2671,18 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
-         * @description * `assign_me` - assign_me
-         *     * `unassign` - unassign
-         *     * `tag` - tag
-         *     * `untag` - untag
-         *     * `clarification` - clarification
-         *     * `propose_shortlist` - propose_shortlist
+         * @description * `start` - start
+         *     * `hold` - hold
+         *     * `complete` - complete
+         *     * `decline` - decline
          * @enum {string}
          */
-        ActionEnum: "assign_me" | "unassign" | "tag" | "untag" | "clarification" | "propose_shortlist";
+        ActionActionEnum: "start" | "hold" | "complete" | "decline";
+        ActionRequest: {
+            action: components["schemas"]["ActionActionEnum"];
+            /** @default  */
+            resolution: string;
+        };
         ActiveOrg: {
             /** Format: uuid */
             organisation_id: string;
@@ -2697,8 +2893,18 @@ export interface components {
             end: number;
             count: number;
         };
+        /**
+         * @description * `assign_me` - assign_me
+         *     * `unassign` - unassign
+         *     * `tag` - tag
+         *     * `untag` - untag
+         *     * `clarification` - clarification
+         *     * `propose_shortlist` - propose_shortlist
+         * @enum {string}
+         */
+        BulkActionActionEnum: "assign_me" | "unassign" | "tag" | "untag" | "clarification" | "propose_shortlist";
         BulkActionRequest: {
-            action: components["schemas"]["ActionEnum"];
+            action: components["schemas"]["BulkActionActionEnum"];
             application_ids: string[];
             tags?: string[];
             questions?: components["schemas"]["BulkQuestionRequest"][];
@@ -2891,11 +3097,28 @@ export interface components {
          * @enum {string}
          */
         ConfidenceEnum: "high" | "medium" | "low";
+        ConfirmRequest: {
+            token: string;
+        };
         ConflictDeclared: {
             /** Format: uuid */
             application_id: string;
             /** Format: date-time */
             declared_at: string;
+        };
+        Consent: {
+            /** Format: uuid */
+            id: string;
+            purpose: string;
+            /** Format: uuid */
+            organisation_id: string | null;
+            organisation_name: string | null;
+            notice_version: string;
+            granted: boolean;
+            /** Format: date-time */
+            granted_at: string;
+            /** Format: date-time */
+            withdrawn_at: string | null;
         };
         /**
          * @description * `in_person` - in_person
@@ -2931,6 +3154,32 @@ export interface components {
             };
             remove: boolean;
         };
+        CreateRightsRequestRequest: {
+            type: components["schemas"]["CreateRightsRequestTypeEnum"];
+            scope: components["schemas"]["CreateRightsRequestScopeEnum"];
+            /** Format: uuid */
+            organisation_id?: string | null;
+            /** @default  */
+            details: string;
+            password: string;
+        };
+        /**
+         * @description * `organisation` - organisation
+         *     * `platform` - platform
+         *     * `all` - all
+         * @enum {string}
+         */
+        CreateRightsRequestScopeEnum: "organisation" | "platform" | "all";
+        /**
+         * @description * `access` - Access to my data
+         *     * `export` - Export my data
+         *     * `correction` - Correct my data
+         *     * `deletion` - Delete my data
+         *     * `objection_automated` - Object to automated processing
+         *     * `consent_withdrawal` - Withdraw consent
+         * @enum {string}
+         */
+        CreateRightsRequestTypeEnum: "access" | "export" | "correction" | "deletion" | "objection_automated" | "consent_withdrawal";
         CriteriaInputRequest: {
             lock_version?: number;
             criteria: components["schemas"]["CriterionInputRequest"][];
@@ -2939,7 +3188,7 @@ export interface components {
             /** Format: uuid */
             readonly id: string;
             readonly order: number;
-            readonly type: components["schemas"]["TypeEnum"];
+            readonly type: components["schemas"]["CriterionTypeEnum"];
             readonly importance: components["schemas"]["ImportanceEnum"];
             readonly title: string;
             readonly description: string;
@@ -2993,6 +3242,18 @@ export interface components {
             flags: string[];
             evidence: components["schemas"]["EvaluationEvidence"][];
         };
+        /**
+         * @description * `skill` - Skill
+         *     * `experience` - Experience
+         *     * `qualification` - Qualification
+         *     * `certification` - Certification
+         *     * `competency` - Competency
+         *     * `language` - Language
+         *     * `licence` - Licence
+         *     * `eligibility` - Eligibility
+         * @enum {string}
+         */
+        CriterionTypeEnum: "skill" | "experience" | "qualification" | "certification" | "competency" | "language" | "licence" | "eligibility";
         CsrfToken: {
             csrf_token: string;
         };
@@ -3137,6 +3398,11 @@ export interface components {
             end_date?: string | null;
             grade?: string;
             order?: number;
+        };
+        Employer: {
+            /** Format: uuid */
+            id: string;
+            name: string;
         };
         /**
          * @description * `full_time` - Full-time
@@ -3694,11 +3960,14 @@ export interface components {
          *     * `note_mention` - note_mention
          *     * `recruiter_digest` - recruiter_digest
          *     * `recruitment_paused` - recruitment_paused
+         *     * `rights_request_confirm` - rights_request_confirm
+         *     * `rights_request_due` - rights_request_due
+         *     * `rights_request_received` - rights_request_received
          *     * `rights_request_update` - rights_request_update
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "recruiter_digest" | "recruitment_paused" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
         /**
          * @description * `clarification` - clarification
          *     * `reupload` - reupload
@@ -3726,6 +3995,23 @@ export interface components {
             language: string;
             proficiency: components["schemas"]["LanguageProficiencyEnum"];
             order?: number;
+        };
+        LegalHold: {
+            /** Format: uuid */
+            readonly id: string;
+            target_type: components["schemas"]["TargetTypeEnum"];
+            /** Format: uuid */
+            target_id: string;
+            /** Format: date-time */
+            readonly placed_at: string;
+            /** Format: date-time */
+            readonly released_at: string | null;
+        };
+        LegalHoldRequest: {
+            target_type: components["schemas"]["TargetTypeEnum"];
+            /** Format: uuid */
+            target_id: string;
+            reason: string;
         };
         Links: {
             linkedin?: string;
@@ -4648,6 +4934,28 @@ export interface components {
         RevokedSessions: {
             revoked: number;
         };
+        RightsRequest: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            type: string;
+            status: string;
+            /** Format: uuid */
+            organisation_id: string | null;
+            organisation_name: string;
+            details: string;
+            resolution: string;
+            statement: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            verified_at: string | null;
+            /** Format: date-time */
+            due_at: string;
+            /** Format: date-time */
+            completed_at: string | null;
+            export_available: boolean;
+        };
         /**
          * @description * `org_admin` - Company admin
          *     * `hr_manager` - HR manager
@@ -4757,14 +5065,6 @@ export interface components {
             /** Format: date-time */
             publish_at: string;
         };
-        /**
-         * @description * `all` - All applications
-         *     * `pending` - Not yet evaluated
-         *     * `failed` - Failed
-         *     * `selected` - Selected applications
-         * @enum {string}
-         */
-        ScopeEnum: "all" | "pending" | "failed" | "selected";
         ScreeningAnalytics: {
             /** Format: uuid */
             job_id: string;
@@ -5008,6 +5308,31 @@ export interface components {
          * @enum {string}
          */
         SourceEnum: "manual" | "cv_import";
+        StaffRightsRequest: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            type: string;
+            status: string;
+            /** Format: uuid */
+            organisation_id: string | null;
+            organisation_name: string;
+            details: string;
+            resolution: string;
+            statement: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            verified_at: string | null;
+            /** Format: date-time */
+            due_at: string;
+            /** Format: date-time */
+            completed_at: string | null;
+            export_available: boolean;
+            requester: string | null;
+            handled_by: string | null;
+            overdue: boolean;
+        };
         StartRequest: {
             /** Format: uuid */
             job_id: string;
@@ -5017,12 +5342,23 @@ export interface components {
         };
         StartRunRequest: {
             /** @default pending */
-            scope: components["schemas"]["ScopeEnum"];
+            scope: components["schemas"]["StartRunScopeEnum"];
             application_ids?: string[];
             /** @default  */
             reason: string;
             /** @default false */
             use_current_version: boolean;
+        };
+        /**
+         * @description * `all` - All applications
+         *     * `pending` - Not yet evaluated
+         *     * `failed` - Failed
+         *     * `selected` - Selected applications
+         * @enum {string}
+         */
+        StartRunScopeEnum: "all" | "pending" | "failed" | "selected";
+        StatementRequest: {
+            statement: string;
         };
         SubmitRequest: {
             accept_privacy: boolean;
@@ -5050,6 +5386,13 @@ export interface components {
         TagsRequest: {
             tags: string[];
         };
+        /**
+         * @description * `application` - Application
+         *     * `candidate` - Candidate
+         *     * `job` - Vacancy
+         * @enum {string}
+         */
+        TargetTypeEnum: "application" | "candidate" | "job";
         Template: {
             /** Format: uuid */
             readonly id: string;
@@ -5092,18 +5435,6 @@ export interface components {
             reason_text: string;
             lock_version?: number | null;
         };
-        /**
-         * @description * `skill` - Skill
-         *     * `experience` - Experience
-         *     * `qualification` - Qualification
-         *     * `certification` - Certification
-         *     * `competency` - Competency
-         *     * `language` - Language
-         *     * `licence` - Licence
-         *     * `eligibility` - Eligibility
-         * @enum {string}
-         */
-        TypeEnum: "skill" | "experience" | "qualification" | "certification" | "competency" | "language" | "licence" | "eligibility";
         UnreadCount: {
             count: number;
         };
@@ -8192,6 +8523,71 @@ export interface operations {
             };
         };
     };
+    hr_legal_holds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalHold"][];
+                };
+            };
+        };
+    };
+    hr_legal_hold_place: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LegalHoldRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LegalHoldRequest"];
+                "multipart/form-data": components["schemas"]["LegalHoldRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalHold"];
+                };
+            };
+        };
+    };
+    hr_legal_hold_release: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hold_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalHold"];
+                };
+            };
+        };
+    };
     hr_notification_templates_list: {
         parameters: {
             query?: {
@@ -8348,6 +8744,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    hr_privacy_requests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffRightsRequest"][];
+                };
+            };
+        };
+    };
+    hr_privacy_request_action: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ActionRequest"];
+                "multipart/form-data": components["schemas"]["ActionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffRightsRequest"];
+                };
             };
         };
     };
@@ -9875,6 +10317,207 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_privacy_requests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffRightsRequest"][];
+                };
+            };
+        };
+    };
+    platform_privacy_request_action: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ActionRequest"];
+                "multipart/form-data": components["schemas"]["ActionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffRightsRequest"];
+                };
+            };
+        };
+    };
+    privacy_consents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"][];
+                };
+            };
+        };
+    };
+    privacy_consent_withdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                consent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"];
+                };
+            };
+        };
+    };
+    privacy_employers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Employer"][];
+                };
+            };
+        };
+    };
+    privacy_requests_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RightsRequest"][];
+                };
+            };
+        };
+    };
+    privacy_requests_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRightsRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CreateRightsRequestRequest"];
+                "multipart/form-data": components["schemas"]["CreateRightsRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RightsRequest"][];
+                };
+            };
+        };
+    };
+    privacy_request_statement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatementRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StatementRequest"];
+                "multipart/form-data": components["schemas"]["StatementRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RightsRequest"];
+                };
+            };
+        };
+    };
+    privacy_requests_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConfirmRequest"];
+                "multipart/form-data": components["schemas"]["ConfirmRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RightsRequest"][];
                 };
             };
         };

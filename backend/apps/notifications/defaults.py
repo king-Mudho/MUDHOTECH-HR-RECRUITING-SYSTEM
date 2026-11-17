@@ -150,6 +150,39 @@ Its status is now: **{{ request_status }}**.
 Please sign in to your account to see the details.""",
         "Your data request {{ request_reference }} is now: {{ request_status }}.",
     ),
+    "rights_request_confirm": DefaultTemplate(
+        "Please confirm your data request {{ request_reference }}",
+        """Hello {{ recipient_name }},
+
+We received a request from your account: **{{ request_type }}** (reference
+**{{ request_reference }}**).
+
+To protect your data we act only after you confirm it was you:
+[Confirm my request]({{ confirm_url }})
+
+If you did not make this request, ignore this email and consider changing your password.""",
+        "Please confirm your data request {{ request_reference }} from the link in your email.",
+    ),
+    "rights_request_received": DefaultTemplate(
+        "Data request {{ request_reference }} needs handling",
+        """Hello {{ recipient_name }},
+
+A candidate confirmed a data request with {{ organisation_name }}: **{{ request_type }}**
+(reference **{{ request_reference }}**). It is due by **{{ due_date }}**.
+
+[Open privacy requests]({{ privacy_url }})""",
+        "New data request {{ request_reference }} is due by {{ due_date }}.",
+    ),
+    "rights_request_due": DefaultTemplate(
+        "Data request {{ request_reference }} is due by {{ due_date }}",
+        """Hello {{ recipient_name }},
+
+Data request **{{ request_reference }}** with {{ organisation_name }} is due by **{{ due_date }}**
+and is not completed yet.
+
+[Open privacy requests]({{ privacy_url }})""",
+        "Data request {{ request_reference }} is due by {{ due_date }}.",
+    ),
     "recruiter_digest": DefaultTemplate(
         "{{ new_applications }} new applications for {{ job_title }}",
         """Hello {{ recipient_name }},

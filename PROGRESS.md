@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-T02
+- **Current task:** P09-T03
 - **Last updated:** 2026-11-17
-- **Overall:** 116 / 193 tasks · 8 / 16 phases
+- **Overall:** 117 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -190,7 +190,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 09 — Privacy, Governance & Security Hardening  (`phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md`)
 - [x] P09-T01 — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold
-- [ ] P09-T02 — Rights requests: candidate `/candidate/privacy` (consents, request access/export, correction, deletion, objection, …
+- [x] P09-T02 — Rights requests: candidate `/candidate/privacy` (consents, request access/export, correction, deletion, objection, …
 - [ ] P09-T03 — Export bundle generator (reports queue): JSON (profile, applications, answers, claims, evaluations summary, …
 - [ ] P09-T04 — Deletion/anonymisation service: replace PII with tokens, delete S3 objects (all versions), keep minimal audit (ids, …
 - [ ] P09-T05 — Retention engine (beat daily): per-org `retention_months` after vacancy close for non-hired applications
@@ -640,3 +640,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P08-T13 | Core scenario: in-process HTTP test (100 synthetic applications, real extraction + screening, filter, verify 2 claims, 1 clarification, approved shortlist of 10, 10 outcome emails after delay/quiet hours, accountability, reconstruction sample of 10) passing 3 consecutive runs; check_human_decisions command; seed_core_scenario + Playwright core-scenario.spec.ts in the nightly Docker job (worker-ai added) | Confirm the first nightly browser run |
 | 2026-11-17 | Close | P08-EXIT | Phase 08 closed (MVP feature-complete): core scenario 3/3 passes, 0 consequential transitions without a human, reconstruction sample of 10 complete, dashboard reconciliation, EC 13/13; tag v0.9.0-mvp. Browser core scenario wired into the nightly job | Phase 09 started |
 | 2026-11-17 | Impl | P09-T01 | apps.privacy: PrivacyNotice keeps every notice version's wording (EC-PRV-09; snapshot on use), RightsRequest (types per docs/03, statuses incl. on_hold for legal holds and 'declined' instead of 'rejected', encrypted details/resolution/statement, reference, verification, due date, export link), RetentionRun, LegalHold (tenant; place/release audited; is_held for application/candidate/vacancy) | - |
+| 2026-11-17 | Impl | P09-T02 | Rights requests: candidate /candidate/privacy (consents with withdrawal, request form with password re-auth, scope one employer / account / all, own requests, statement after a declined correction EC-PRV-04) + email confirmation link before anyone acts; routing to org admins or platform admins; SLA due date from org policy (platform 30 d) and 6-hourly reminders 5 days before due; staff /hr/settings/privacy (start/hold/complete/decline with outcome text, requester notified) + legal holds UI; platform API for account-level requests | - |

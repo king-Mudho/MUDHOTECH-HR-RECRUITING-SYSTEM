@@ -256,6 +256,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=15),
         "options": {"expires": 800},
     },
+    "privacy-rights-reminders": {
+        "task": "apps.privacy.tasks.rights_reminders",
+        "schedule": timedelta(hours=6),
+        "options": {"expires": 3000},
+    },
     "notifications-send-due": {
         "task": "apps.notifications.tasks.send_due",
         "schedule": timedelta(minutes=5),

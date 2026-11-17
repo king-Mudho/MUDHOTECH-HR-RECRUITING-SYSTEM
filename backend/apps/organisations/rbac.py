@@ -31,6 +31,8 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "members.reset_mfa": ADMIN,
     # governance (UI in Phase 08)
     "audit.view": frozenset({Role.ORG_ADMIN, Role.AUDITOR}),
+    # data-subject rights requests and legal holds (P09-T02)
+    "privacy.manage": ADMIN,
     # decision reconstruction (P08-T11): auditors read-only, PII redacted by default
     "applications.reconstruct": ADMIN_HR | {Role.AUDITOR},
     # recruiting (enforced from Phase 03 on; declared here so the matrix is complete)

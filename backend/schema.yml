@@ -3542,6 +3542,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedVersionSummaryList'
           description: ''
+  /api/v1/hr/legal-holds/:
+    get:
+      operationId: hr_legal_holds
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegalHold'
+          description: ''
+    post:
+      operationId: hr_legal_hold_place
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegalHoldRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LegalHoldRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LegalHoldRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+          description: ''
+  /api/v1/hr/legal-holds/{hold_id}/release/:
+    post:
+      operationId: hr_legal_hold_release
+      parameters:
+      - in: path
+        name: hold_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+          description: ''
   /api/v1/hr/notification-templates/:
     get:
       operationId: hr_notification_templates_list
@@ -3748,6 +3810,55 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/hr/privacy/requests/:
+    get:
+      operationId: hr_privacy_requests
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffRightsRequest'
+          description: ''
+  /api/v1/hr/privacy/requests/{request_id}/action/:
+    post:
+      operationId: hr_privacy_request_action
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRightsRequest'
+          description: ''
   /api/v1/hr/saved-views/:
     get:
       operationId: hr_saved_views
@@ -5619,6 +5730,214 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
           description: ''
+  /api/v1/platform/privacy/requests/:
+    get:
+      operationId: platform_privacy_requests
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffRightsRequest'
+          description: ''
+  /api/v1/platform/privacy/requests/{request_id}/action/:
+    post:
+      operationId: platform_privacy_request_action
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRightsRequest'
+          description: ''
+  /api/v1/privacy/consents/:
+    get:
+      operationId: privacy_consents
+      tags:
+      - privacy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consent'
+          description: ''
+  /api/v1/privacy/consents/{consent_id}/withdraw/:
+    post:
+      operationId: privacy_consent_withdraw
+      description: Withdrawal is immediate and never retroactive (CDPA); the employer
+        is told via audit.
+      parameters:
+      - in: path
+        name: consent_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - privacy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+          description: ''
+  /api/v1/privacy/employers/:
+    get:
+      operationId: privacy_employers
+      tags:
+      - privacy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employer'
+          description: ''
+  /api/v1/privacy/requests/:
+    get:
+      operationId: privacy_requests_list
+      tags:
+      - privacy
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RightsRequest'
+          description: ''
+    post:
+      operationId: privacy_requests_create
+      tags:
+      - privacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRightsRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateRightsRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateRightsRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RightsRequest'
+          description: ''
+  /api/v1/privacy/requests/{request_id}/statement/:
+    post:
+      operationId: privacy_request_statement
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - privacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StatementRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StatementRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RightsRequest'
+          description: ''
+  /api/v1/privacy/requests/confirm/:
+    post:
+      operationId: privacy_requests_confirm
+      tags:
+      - privacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConfirmRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RightsRequest'
+          description: ''
   /api/v1/sitemap.xml:
     get:
       operationId: jobs_sitemap
@@ -5684,22 +6003,29 @@ paths:
           description: ''
 components:
   schemas:
-    ActionEnum:
+    ActionActionEnum:
       enum:
-      - assign_me
-      - unassign
-      - tag
-      - untag
-      - clarification
-      - propose_shortlist
+      - start
+      - hold
+      - complete
+      - decline
       type: string
       description: |-
-        * `assign_me` - assign_me
-        * `unassign` - unassign
-        * `tag` - tag
-        * `untag` - untag
-        * `clarification` - clarification
-        * `propose_shortlist` - propose_shortlist
+        * `start` - start
+        * `hold` - hold
+        * `complete` - complete
+        * `decline` - decline
+    ActionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionActionEnum'
+        resolution:
+          type: string
+          default: ''
+          maxLength: 4000
+      required:
+      - action
     ActiveOrg:
       type: object
       properties:
@@ -6228,11 +6554,27 @@ components:
       - count
       - end
       - start
+    BulkActionActionEnum:
+      enum:
+      - assign_me
+      - unassign
+      - tag
+      - untag
+      - clarification
+      - propose_shortlist
+      type: string
+      description: |-
+        * `assign_me` - assign_me
+        * `unassign` - unassign
+        * `tag` - tag
+        * `untag` - untag
+        * `clarification` - clarification
+        * `propose_shortlist` - propose_shortlist
     BulkActionRequest:
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/ActionEnum'
+          $ref: '#/components/schemas/BulkActionActionEnum'
         application_ids:
           type: array
           items:
@@ -6702,6 +7044,15 @@ components:
         * `high` - high
         * `medium` - medium
         * `low` - low
+    ConfirmRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - token
     ConflictDeclared:
       type: object
       properties:
@@ -6714,6 +7065,41 @@ components:
       required:
       - application_id
       - declared_at
+    Consent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+        organisation_name:
+          type: string
+          nullable: true
+        notice_version:
+          type: string
+        granted:
+          type: boolean
+        granted_at:
+          type: string
+          format: date-time
+        withdrawn_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - granted
+      - granted_at
+      - id
+      - notice_version
+      - organisation_id
+      - organisation_name
+      - purpose
+      - withdrawn_at
     ConsentMethodEnum:
       enum:
       - in_person
@@ -6780,6 +7166,56 @@ components:
       - remove
       - status
       - values
+    CreateRightsRequestRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/CreateRightsRequestTypeEnum'
+        scope:
+          $ref: '#/components/schemas/CreateRightsRequestScopeEnum'
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+        details:
+          type: string
+          default: ''
+          maxLength: 4000
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 200
+      required:
+      - password
+      - scope
+      - type
+    CreateRightsRequestScopeEnum:
+      enum:
+      - organisation
+      - platform
+      - all
+      type: string
+      description: |-
+        * `organisation` - organisation
+        * `platform` - platform
+        * `all` - all
+    CreateRightsRequestTypeEnum:
+      enum:
+      - access
+      - export
+      - correction
+      - deletion
+      - objection_automated
+      - consent_withdrawal
+      type: string
+      description: |-
+        * `access` - Access to my data
+        * `export` - Export my data
+        * `correction` - Correct my data
+        * `deletion` - Delete my data
+        * `objection_automated` - Object to automated processing
+        * `consent_withdrawal` - Withdraw consent
     CriteriaInputRequest:
       type: object
       properties:
@@ -6804,7 +7240,7 @@ components:
           readOnly: true
         type:
           allOf:
-          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/CriterionTypeEnum'
           readOnly: true
         importance:
           allOf:
@@ -6970,6 +7406,26 @@ components:
       - score
       - title
       - type
+    CriterionTypeEnum:
+      enum:
+      - skill
+      - experience
+      - qualification
+      - certification
+      - competency
+      - language
+      - licence
+      - eligibility
+      type: string
+      description: |-
+        * `skill` - Skill
+        * `experience` - Experience
+        * `qualification` - Qualification
+        * `certification` - Certification
+        * `competency` - Competency
+        * `language` - Language
+        * `licence` - Licence
+        * `eligibility` - Eligibility
     CsrfToken:
       type: object
       properties:
@@ -7364,6 +7820,17 @@ components:
       required:
       - institution
       - qualification_text
+    Employer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
     EmploymentTypeEnum:
       enum:
       - full_time
@@ -8913,6 +9380,9 @@ components:
       - note_mention
       - recruiter_digest
       - recruitment_paused
+      - rights_request_confirm
+      - rights_request_due
+      - rights_request_received
       - rights_request_update
       - shortlisted
       type: string
@@ -8932,6 +9402,9 @@ components:
         * `note_mention` - note_mention
         * `recruiter_digest` - recruiter_digest
         * `recruitment_paused` - recruitment_paused
+        * `rights_request_confirm` - rights_request_confirm
+        * `rights_request_due` - rights_request_due
+        * `rights_request_received` - rights_request_received
         * `rights_request_update` - rights_request_update
         * `shortlisted` - shortlisted
     KindEnum:
@@ -8997,6 +9470,50 @@ components:
       required:
       - language
       - proficiency
+    LegalHold:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        target_type:
+          $ref: '#/components/schemas/TargetTypeEnum'
+        target_id:
+          type: string
+          format: uuid
+        placed_at:
+          type: string
+          format: date-time
+          readOnly: true
+        released_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - id
+      - placed_at
+      - released_at
+      - target_id
+      - target_type
+    LegalHoldRequest:
+      type: object
+      properties:
+        target_type:
+          $ref: '#/components/schemas/TargetTypeEnum'
+        target_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+      - target_id
+      - target_type
     Links:
       type: object
       properties:
@@ -11344,6 +11861,61 @@ components:
           type: integer
       required:
       - revoked
+    RightsRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+        organisation_name:
+          type: string
+        details:
+          type: string
+        resolution:
+          type: string
+        statement:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        due_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        export_available:
+          type: boolean
+      required:
+      - completed_at
+      - created_at
+      - details
+      - due_at
+      - export_available
+      - id
+      - organisation_id
+      - organisation_name
+      - reference
+      - resolution
+      - statement
+      - status
+      - type
+      - verified_at
     RoleEnum:
       enum:
       - org_admin
@@ -11585,18 +12157,6 @@ components:
           format: date-time
       required:
       - publish_at
-    ScopeEnum:
-      enum:
-      - all
-      - pending
-      - failed
-      - selected
-      type: string
-      description: |-
-        * `all` - All applications
-        * `pending` - Not yet evaluated
-        * `failed` - Failed
-        * `selected` - Selected applications
     ScreeningAnalytics:
       type: object
       properties:
@@ -12180,6 +12740,72 @@ components:
       description: |-
         * `manual` - Entered by the candidate
         * `cv_import` - Imported from a CV (confirmed by the candidate)
+    StaffRightsRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+        organisation_name:
+          type: string
+        details:
+          type: string
+        resolution:
+          type: string
+        statement:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        due_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        export_available:
+          type: boolean
+        requester:
+          type: string
+          nullable: true
+        handled_by:
+          type: string
+          nullable: true
+        overdue:
+          type: boolean
+      required:
+      - completed_at
+      - created_at
+      - details
+      - due_at
+      - export_available
+      - handled_by
+      - id
+      - organisation_id
+      - organisation_name
+      - overdue
+      - reference
+      - requester
+      - resolution
+      - statement
+      - status
+      - type
+      - verified_at
     StartRequest:
       type: object
       properties:
@@ -12199,7 +12825,7 @@ components:
       properties:
         scope:
           allOf:
-          - $ref: '#/components/schemas/ScopeEnum'
+          - $ref: '#/components/schemas/StartRunScopeEnum'
           default: pending
         application_ids:
           type: array
@@ -12214,6 +12840,27 @@ components:
         use_current_version:
           type: boolean
           default: false
+    StartRunScopeEnum:
+      enum:
+      - all
+      - pending
+      - failed
+      - selected
+      type: string
+      description: |-
+        * `all` - All applications
+        * `pending` - Not yet evaluated
+        * `failed` - Failed
+        * `selected` - Selected applications
+    StatementRequest:
+      type: object
+      properties:
+        statement:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - statement
     SubmitRequest:
       type: object
       properties:
@@ -12275,6 +12922,16 @@ components:
           maxItems: 20
       required:
       - tags
+    TargetTypeEnum:
+      enum:
+      - application
+      - candidate
+      - job
+      type: string
+      description: |-
+        * `application` - Application
+        * `candidate` - Candidate
+        * `job` - Vacancy
     Template:
       type: object
       properties:
@@ -12393,26 +13050,6 @@ components:
           nullable: true
       required:
       - to_status
-    TypeEnum:
-      enum:
-      - skill
-      - experience
-      - qualification
-      - certification
-      - competency
-      - language
-      - licence
-      - eligibility
-      type: string
-      description: |-
-        * `skill` - Skill
-        * `experience` - Experience
-        * `qualification` - Qualification
-        * `certification` - Certification
-        * `competency` - Competency
-        * `language` - Language
-        * `licence` - Licence
-        * `eligibility` - Eligibility
     UnreadCount:
       type: object
       properties:
