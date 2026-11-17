@@ -19,7 +19,7 @@ management, break-glass support access, AI governance artefacts, security header
 - [x] **P09-T09** — Security tooling in CI: bandit, semgrep (django/react rulesets), pip-audit, npm audit (high+ fails), detect-secrets, Trivy on images; OWASP ZAP baseline against staging-like compose in nightly.
 - [x] **P09-T10** — Manual security checklist `docs/security/ASVS_CHECKLIST.md` (L2 items relevant) completed with evidence links; fix all findings.
 - [x] **P09-T11** — AI governance: `/admin/model-registry` UI, `docs/ai-governance/MODEL_CARD_screening_engine.md`, `docs/ai-governance/AI_POLICY.md`, candidate-facing `/how-we-use-ai` finalised, AI kill-switch per org and platform (feature flags) with test that disabling AI routes all applications to manual review (`docs/runbooks/disable-ai.md`).
-- [ ] **P09-T12** — DPIA `docs/dpia/DPIA.md` (processing description, necessity, risks, mitigations, residual risk, sign-off section for owner/counsel) and DPA template `docs/legal/DPA_TEMPLATE.md` (controller=employer, processor=MudhoTech) — marked "for legal review" (D-08).
+- [x] **P09-T12** — DPIA `docs/dpia/DPIA.md` (processing description, necessity, risks, mitigations, residual risk, sign-off section for owner/counsel) and DPA template `docs/legal/DPA_TEMPLATE.md` (controller=employer, processor=MudhoTech) — marked "for legal review" (D-08).
 - [ ] **P09-T13** — Accessibility pass on candidate + HR core journeys: axe zero serious/critical, keyboard walkthrough, NVDA spot check notes in `docs/accessibility/AUDIT.md`.
 
 ## Edge cases
