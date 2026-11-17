@@ -27,7 +27,7 @@ jobs:
         run: |
           cp .env.example .env
           echo "LOAD_TEST=true" >> .env
-          docker compose up -d --build postgres redis s3 mailpit backend worker-default worker-documents worker-ai beat
+          docker compose -f docker-compose.yml -f infrastructure/perf/compose.load.yml up -d --build postgres redis s3 mailpit backend worker-default worker-documents worker-ai beat
           for i in $(seq 1 90); do curl -fsS $HOST/readyz && break; sleep 5; done
           curl -fsS $HOST/readyz
       - name: Seed demo data, 1,000 candidates and 100 applications for the HR list
@@ -76,7 +76,7 @@ jobs:
           from apps.applications.models import Application
           n = Application.objects.unscoped().filter(candidate_user__email__endswith='@load.test').exclude(status='draft').count()
           print(f'submitted applications from load users: {n}')
-          " | tee -a out/LOAD.md
+          " | tee -a out/LOAD.md | sed 's/^/::notice title=Accounting::/'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -104,7 +104,9 @@ jobs:
           docker compose exec -T backend python manage.py run_pilot_benchmark --count 100 --timeout 900 --out /tmp/THROUGHPUT.md
       - name: Collect the report
         if: always()
-        run: docker compose cp backend:/tmp/THROUGHPUT.md backend/THROUGHPUT.md || touch backend/THROUGHPUT.md
+        run: |
+          docker compose cp backend:/tmp/THROUGHPUT.md backend/THROUGHPUT.md || touch backend/THROUGHPUT.md
+          grep -E "^- Submitting|Every application|records found|Still waiting|median / max" backend/THROUGHPUT.md | sed 's/^/::notice title=Throughput::/' || true
       - name: Resource usage
         if: always()
         run: docker stats --no-stream | tee -a backend/THROUGHPUT.md

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 import sys
 from pathlib import Path
 
@@ -61,6 +62,15 @@ def main(argv: list[str] | None = None) -> int:
         with Path(args.report).open("a", encoding="utf-8") as fh:
             fh.write(text + "\n")
     sys.stdout.buffer.write(text.encode("utf-8"))
+    if os.environ.get("GITHUB_ACTIONS"):  # annotations are readable without downloading artifacts
+        for row in rows:
+            sys.stdout.write(
+                f"::notice title={args.title}::{row['Name']}: {row['Request Count']} req, "
+                f"{row['Failure Count']} failed, median {row['Median Response Time']} ms, "
+                f"p95 {row['95%']} ms, {float(row['Requests/s']):.1f} rps\n"
+            )
+        for problem in problems:
+            sys.stdout.write(f"::error title={args.title}::{problem}\n")
     if problems:
         sys.stderr.write("FAILED: " + "; ".join(problems) + "\n")
         return 1
