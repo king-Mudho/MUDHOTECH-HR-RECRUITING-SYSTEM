@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 09 — Privacy, Governance & Security Hardening
-- **Current task:** P09-T01
+- **Current task:** P09-T02
 - **Last updated:** 2026-11-17
-- **Overall:** 115 / 193 tasks · 8 / 16 phases
+- **Overall:** 116 / 193 tasks · 8 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -189,7 +189,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P08-EXIT — All exit criteria verified with evidence
 
 ### Phase 09 — Privacy, Governance & Security Hardening  (`phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md`)
-- [ ] P09-T01 — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold
+- [x] P09-T01 — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold
 - [ ] P09-T02 — Rights requests: candidate `/candidate/privacy` (consents, request access/export, correction, deletion, objection, …
 - [ ] P09-T03 — Export bundle generator (reports queue): JSON (profile, applications, answers, claims, evaluations summary, …
 - [ ] P09-T04 — Deletion/anonymisation service: replace PII with tokens, delete S3 objects (all versions), keep minimal audit (ids, …
@@ -508,6 +508,7 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | P08-T02 | Shortlist "reject" returns the proposal to draft with a reason instead of a terminal `rejected` status | The proposer fixes and resubmits the same proposal; "rejected" never refers to a candidate | - |
 | 2026-11-16 | P08-T06 | Evidence viewer highlights on the extracted text view for PDF and DOCX; pdf.js renders the original PDF (canvas, no scripting) only when identity is visible | The original file shows the applicant's name (blind review) and DOCX cannot be rendered safely; offsets of the stored text give exact highlights | - |
 | 2026-11-16 | P08-T05 | Applicants list moved from page-number to cursor pagination (with a total count); response is `{count, next_cursor, previous_cursor, results}` | EC-JOB-17 (5,000+ applicants) | - |
+| 2026-11-17 | P09-T01 | Rights request status `declined` (with the legal reason) instead of `rejected`; extra `on_hold` status for legal holds | Project wording rule (never "rejected"); EC-PRV-01 needs a visible hold state | - |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |
@@ -638,3 +639,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P08-T12 | audit.log_view on every candidate PII/CV view (application detail, extraction panel, CV text, evaluations, reconstruction, shortlist detail, applicants list); list views may be sampled via ACCESS_LOG_LIST_SAMPLE_RATE, never for auditors, object views always; reconstruction lists who viewed | Partition access logs in Phase 09 |
 | 2026-11-17 | Impl | P08-T13 | Core scenario: in-process HTTP test (100 synthetic applications, real extraction + screening, filter, verify 2 claims, 1 clarification, approved shortlist of 10, 10 outcome emails after delay/quiet hours, accountability, reconstruction sample of 10) passing 3 consecutive runs; check_human_decisions command; seed_core_scenario + Playwright core-scenario.spec.ts in the nightly Docker job (worker-ai added) | Confirm the first nightly browser run |
 | 2026-11-17 | Close | P08-EXIT | Phase 08 closed (MVP feature-complete): core scenario 3/3 passes, 0 consequential transitions without a human, reconstruction sample of 10 complete, dashboard reconciliation, EC 13/13; tag v0.9.0-mvp. Browser core scenario wired into the nightly job | Phase 09 started |
+| 2026-11-17 | Impl | P09-T01 | apps.privacy: PrivacyNotice keeps every notice version's wording (EC-PRV-09; snapshot on use), RightsRequest (types per docs/03, statuses incl. on_hold for legal holds and 'declined' instead of 'rejected', encrypted details/resolution/statement, reference, verification, due date, export link), RetentionRun, LegalHold (tenant; place/release audited; is_held for application/candidate/vacancy) | - |

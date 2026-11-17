@@ -8,7 +8,7 @@ Make the MVP compliant-by-design and hardened: rights workflows, retention/anony
 management, break-glass support access, AI governance artefacts, security headers, scanning and DPIA.
 
 ## Tasks
-- [ ] **P09-T01** — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold; privacy notice versioning per org (shown at application start; stored on submit) (EC-PRV-09).
+- [x] **P09-T01** — `apps.privacy` models: ConsentRecord (versioned notices), RightsRequest, RetentionRun, LegalHold; privacy notice versioning per org (shown at application start; stored on submit) (EC-PRV-09).
 - [ ] **P09-T02** — Rights requests: candidate `/candidate/privacy` (consents, request access/export, correction, deletion, objection, consent withdrawal); re-auth + email confirmation; routing to org(s) & platform; SLA due dates & reminders; staff handling UI `/hr/settings/privacy`.
 - [ ] **P09-T03** — Export bundle generator (reports queue): JSON (profile, applications, answers, claims, evaluations summary, messages, consents, decisions) + human-readable PDF + original documents ZIP; expiring link 24 h; audit (EC-PRV-03).
 - [ ] **P09-T04** — Deletion/anonymisation service: replace PII with tokens, delete S3 objects (all versions), keep minimal audit (ids, actions), cascade rules, legal-hold check (EC-PRV-01/02/05), account deletion (EC-ACC-13).
