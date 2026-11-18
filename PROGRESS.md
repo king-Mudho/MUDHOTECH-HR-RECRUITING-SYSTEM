@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-T10
+- **Current task:** P10-EXIT
 - **Last updated:** 2026-11-18
-- **Overall:** 137 / 193 tasks · 9 / 16 phases
+- **Overall:** 138 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -214,7 +214,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P10-T07 — Resilience/fault injection: kill workers mid-task, stop Redis during submissions, S3 errors, DB restart, duplicate …
 - [x] P10-T08 — Pilot dataset & script: `python manage.py run_pilot_benchmark` → creates vacancy, submits 100 applications, waits, …
 - [x] P10-T09 — UAT pack `docs/uat/UAT_SCRIPTS.md` for HR reviewers (step-by-step scenarios, expected results, sign-off table) and …
-- [ ] P10-T10 — Bug bash & fix all P0/P1 defects; log in `docs/reports/DEFECT_LOG.md`
+- [x] P10-T10 — Bug bash & fix all P0/P1 defects; log in `docs/reports/DEFECT_LOG.md`
 - [ ] P10-EXIT — All exit criteria verified with evidence
 
 ### Phase 11 — Production Deployment & Operations (→ v1.0 pilot live)  (`phases/PHASE_11_PRODUCTION_DEPLOYMENT.md`)
@@ -685,3 +685,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-18 | Impl | P10-T05 | Load: Locust scenarios + load.yml against the production-like stack (gunicorn gthread, pooled DB). Final run green: job board 210.6 RPS at P95 130-140 ms, HR list/dashboard P95 37-59 ms, 100/1,000 submission bursts 0 failures (1,100/1,100 recorded); 5,000-application list P95 <=264 ms in-process; query budgets (candidate list N+1 fixed). Found and fixed D-009 (ASGI connection exhaustion -> ADR-029), D-010 (pooled statement_timeout leak), public job board cache | Submission bursts on one shared runner have multi-second latency (capacity, not errors) - size production API hosts accordingly |
 | 2026-11-18 | Impl | P10-T07 | Resilience: load.yml job stops Redis during submissions, kills the document worker mid-task and restarts PostgreSQL while 60 applications are processed - 60/60 accounted, 0 waiting, 0 duplicate evaluations/status moves (green). Fixed D-011 (Redis outage failed every request -> ResilientRedisCache), D-012 (killed worker stranded work for 1 h -> recover_stuck_processing sweeper); pooled connections health-checked | Worst-case recovery after a killed worker is ~15-20 min by design; lower STUCK_AFTER if needed |
 | 2026-11-18 | Impl | P10-T09 | UAT scripts with sign-off (docs/uat/UAT_SCRIPTS.md) and four role guides; Playwright-generated screenshots from the nightly 'screens' artifact (synthetic data) embedded in the candidate guide (job board, AI notice, privacy page); journeys spec now also captures HR dashboard, vacancies, applicants, shortlist and privacy requests | Staff screenshots arrive with the next nightly (artifact needs a signed-in download); embed them in the recruiter/HR/admin guides |
+| 2026-11-18 | Impl | P10-T10 | Bug bash: 15 defects logged in docs/reports/DEFECT_LOG.md, all fixed (P0: D-009 API connection exhaustion, D-011 Redis outage; P1: D-001, D-003, D-008, D-010, D-012). Sweeps: check --deploy clean, no missing translation keys, no broken internal links (now CI guards); nightly Semgrep: no finding in application code | Confirm the e2e fixes (D-013/D-014) and the Trivy scans on the next nightly |
