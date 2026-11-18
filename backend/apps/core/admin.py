@@ -36,11 +36,56 @@ class FeatureFlagAdmin(admin.ModelAdmin):
     search_fields = ("key",)
 
 
+class UnresolvedFilter(admin.SimpleListFilter):
+    title = "state"
+    parameter_name = "state"
+
+    def lookups(self, request: HttpRequest, model_admin: Any) -> list[tuple[str, str]]:
+        return [("open", "Open"), ("resolved", "Resolved")]
+
+    def queryset(self, request: HttpRequest, queryset: QuerySet[Any]) -> QuerySet[Any]:
+        if self.value() == "open":
+            return queryset.filter(resolved_at__isnull=True)
+        if self.value() == "resolved":
+            return queryset.filter(resolved_at__isnull=False)
+        return queryset
+
+
 @admin.register(DeadLetter)
 class DeadLetterAdmin(admin.ModelAdmin):
-    list_display = ("task_name", "task_id", "created_at", "resolved_at")
-    list_filter = ("task_name",)
-    readonly_fields = ("task_name", "task_id", "args", "kwargs", "error", "traceback", "request_id")
+    """EC-OPS-07: inspect, retry (tasks are idempotent) or resolve failed tasks; audited."""
+
+    list_display = ("task_name", "task_id", "created_at", "resolved_at", "resolved_by")
+    list_filter = (UnresolvedFilter, "task_name")
+    readonly_fields = (
+        "task_name",
+        "task_id",
+        "args",
+        "kwargs",
+        "error",
+        "traceback",
+        "request_id",
+        "organisation_id",
+        "resolved_at",
+        "resolved_by",
+    )
+    actions = ("retry_selected", "resolve_selected")
+
+    @admin.action(description="Retry selected tasks (queue them again)")
+    def retry_selected(self, request: HttpRequest, queryset: QuerySet[DeadLetter]) -> None:
+        from .deadletters import retry
+
+        done = sum(retry(dl, request.user) for dl in queryset)
+        self.message_user(
+            request, f"{done} task(s) queued again; {queryset.count() - done} skipped."
+        )
+
+    @admin.action(description="Mark selected as resolved without retrying")
+    def resolve_selected(self, request: HttpRequest, queryset: QuerySet[DeadLetter]) -> None:
+        from .deadletters import resolve
+
+        done = sum(resolve(dl, request.user, "resolved in admin") for dl in queryset)
+        self.message_user(request, f"{done} dead letter(s) resolved.")
 
 
 @admin.register(IdempotencyKey)

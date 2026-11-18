@@ -14,7 +14,7 @@
 - [x] **P11-T05** — `deploy.sh` (pull, migrate, collectstatic, rolling restart, smoke, rollback) + `.github/workflows/deploy-staging.yml` (auto on main) and `deploy-prod.yml` (manual approval, tag-based).
 - [x] **P11-T06** — Backups: RDS automated + `backup.sh` logical dump to S3 weekly; `restore.sh`; **restore drill** on staging documented in `docs/runbooks/restore-database.md` with timings (RPO/RTO evidence).
 - [x] **P11-T07** — Monitoring/alerting per `docs/10 §8`: Sentry release tracking, CloudWatch alarms, uptime checks, queue-depth exporter or periodic check task posting metrics; on-call contact config.
-- [ ] **P11-T08** — Runbooks in `docs/runbooks/` (all listed in `docs/10 §6`).
+- [x] **P11-T08** — Runbooks in `docs/runbooks/` (all listed in `docs/10 §6`).
 - [ ] **P11-T09** — Staging environment live with synthetic seed; full E2E smoke against staging URL; ZAP baseline against staging.
 - [ ] **P11-T10** — Production go-live checklist `docs/deployment/GO_LIVE_CHECKLIST.md` (gates from Phase 10, D-08 legal sign-off, DNS, TLS A+ (SSL Labs), SES out of sandbox, admin MFA, secrets rotated from defaults, backups verified, monitoring firing test alerts) → owner executes/approves.
 - [ ] **P11-T11** — HR onboarding/training material: short walkthrough doc + recorded-script outline; pilot support process.
