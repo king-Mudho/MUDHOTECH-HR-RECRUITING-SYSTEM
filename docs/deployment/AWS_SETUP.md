@@ -231,6 +231,7 @@ All runtime configuration lives under `/mhrs/<env>/` (Standard tier, free). `dep
 | `CLAMAV_HOST`, `CLAMAV_PORT`, `DOCUMENT_SCANNER` | String | `clamav`, `3310`, `clamd` |
 | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` | SecureString | §9 |
 | `SENTRY_ENVIRONMENT` | String | `staging` / `production` |
+| `OPS_METRICS_NAMESPACE` | String | `MHRS/staging` / `MHRS/production` (ops metrics → CloudWatch, P11-T07) |
 | `MHRS_DOMAIN`, `MHRS_ENVIRONMENT` | String | `<domain>`, `staging` / `production` (nginx) |
 | `LLM_PROVIDER` | String | `none` (D-06; an LLM needs an owner decision + DPA) |
 | `TENANT_STRICT_MODE` | String | `true` |

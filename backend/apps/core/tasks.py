@@ -84,6 +84,14 @@ def relay_outbox() -> dict[str, int]:
     return {"published": result.published, "failed": result.failed}
 
 
+@shared_task(name="apps.core.tasks.publish_ops_metrics", base=BaseTask, max_retries=0)
+def publish_ops_metrics() -> dict[str, Any]:
+    """Queue depths, backlog age, dead letters, email failures, ClamAV age (P11-T07)."""
+    from .ops_metrics import run
+
+    return run()
+
+
 @shared_task(name="apps.core.tasks.purge_expired_idempotency_keys", base=BaseTask)
 def purge_expired_idempotency_keys() -> int:
     from .models import IdempotencyKey

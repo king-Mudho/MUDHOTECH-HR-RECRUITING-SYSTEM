@@ -30,6 +30,12 @@
             "retention_in_days": 30
           },
           {
+            "file_path": "/var/log/mhrs/nginx/access.json",
+            "log_group_name": "/mhrs/__ENV__/nginx",
+            "log_stream_name": "{instance_id}",
+            "retention_in_days": 30
+          },
+          {
             "file_path": "/var/log/mhrs/*.log",
             "log_group_name": "/mhrs/__ENV__/host",
             "log_stream_name": "{instance_id}-ops",

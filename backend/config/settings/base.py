@@ -268,6 +268,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(seconds=2),
         "options": {"expires": 10},
     },
+    "ops-metrics": {
+        "task": "apps.core.tasks.publish_ops_metrics",
+        "schedule": timedelta(minutes=1),
+        "options": {"expires": 50},
+    },
     "idempotency-cleanup": {
         "task": "apps.core.tasks.purge_expired_idempotency_keys",
         "schedule": timedelta(hours=1),
@@ -433,6 +438,10 @@ LOGGING = {
         "urllib3": {"level": "WARNING"},
     },
 }
+
+# Operational metrics for CloudWatch alarms (apps/core/ops_metrics.py, P11-T07); empty = log only
+OPS_METRICS_NAMESPACE = env("OPS_METRICS_NAMESPACE", default="")
+OPS_METRICS_REGION = env("OPS_METRICS_REGION", default=env("S3_REGION", default="af-south-1"))
 
 SENTRY_DSN = env("SENTRY_DSN", default="")
 if SENTRY_DSN:  # pragma: no cover

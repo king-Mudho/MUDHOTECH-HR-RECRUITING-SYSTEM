@@ -107,5 +107,7 @@ if [[ $MODE == upload ]]; then
   log "uploaded to $dest$(basename "$file") (lifecycle: 35 days)"
 fi
 metric 1
+# read by infrastructure/monitoring/host-checks.sh -> BackupAgeHours (alarm after 8 days without success)
+[[ $MODE == upload ]] && date +%s >"$LOG_DIR/last-backup-success"
 log "backup finished in $((SECONDS - started))s"
 echo "$file"

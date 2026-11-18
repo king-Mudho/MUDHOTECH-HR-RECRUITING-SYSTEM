@@ -25,7 +25,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$WORK/le/live/mhrs" "$WORK/local/upstreams" "$WORK/static" "$WORK/certbot"
+mkdir -p "$WORK/le/live/mhrs" "$WORK/local/upstreams" "$WORK/static" "$WORK/certbot" "$WORK/nginxlog"
 echo 'server backend:8000 resolve max_fails=0;' >"$WORK/local/upstreams/backend.conf"
 echo 'server frontend:3000 resolve max_fails=0;' >"$WORK/local/upstreams/frontend.conf"
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=hr.mhrs.test" \
@@ -102,6 +102,7 @@ services:
       - "$(host "$WORK/le"):/etc/letsencrypt:ro"
       - "$(host "$WORK/static"):/srv/static:ro"
       - "$(host "$WORK/certbot"):/var/www/certbot:ro"
+      - "$(host "$WORK/nginxlog"):/var/log/mhrs-nginx"
     depends_on:
       backend: { condition: service_healthy }
       frontend: { condition: service_healthy }

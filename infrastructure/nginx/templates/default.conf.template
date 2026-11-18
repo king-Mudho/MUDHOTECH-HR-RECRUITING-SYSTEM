@@ -16,6 +16,9 @@ log_format mhrs_json escape=json
   '"upstream":"$upstream_addr","host":"$host","user_agent":"$http_user_agent"}';
 # $uri (not $request_uri): query strings may carry tokens and personal data, so they are not logged
 access_log /var/log/nginx/access.log mhrs_json;
+# the same lines to a host file (/var/log/mhrs/nginx) that the CloudWatch agent ships as plain JSON, so the
+# 5xx-rate alarm can use a JSON metric filter (Docker's own log files wrap and escape each line)
+access_log /var/log/mhrs-nginx/access.json mhrs_json buffer=32k flush=5s;
 
 # rate limits (docs/10 §5). Only state-changing auth calls are limited: an empty key is not counted,
 # so the SPA's session checks (GET) are never throttled.

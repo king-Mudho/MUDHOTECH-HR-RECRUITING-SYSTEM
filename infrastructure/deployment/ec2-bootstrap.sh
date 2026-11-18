@@ -130,7 +130,7 @@ if [[ -n $DEPLOY_SSH_KEY ]]; then
   chmod 600 "/home/$DEPLOY_USER/.ssh/authorized_keys"
 fi
 # ACME webroot (served by nginx on port 80) and host-side logs (deploy.sh, backup.sh)
-install -d -m 0755 /var/www/certbot /var/log/mhrs
+install -d -m 0755 /var/www/certbot /var/log/mhrs /var/log/mhrs/nginx
 
 log "Host-specific nginx files (/etc/mhrs/nginx)"
 install -d -m 0755 /etc/mhrs /etc/mhrs/nginx
@@ -214,6 +214,9 @@ CW_CONFIG=/opt/aws/amazon-cloudwatch-agent/etc/mhrs.json
 sed "s/__ENV__/${MHRS_ENVIRONMENT}/g" "$REPO_DIR/infrastructure/monitoring/cloudwatch-agent.json" >"$CW_CONFIG"
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c "file:$CW_CONFIG"
 
+log "Host checks every 15 minutes (certificate expiry, container health, backup age -> CloudWatch)"
+bash "$REPO_DIR/infrastructure/monitoring/host-checks.sh" --install-timer
+
 log "Log rotation for host-side MHRS logs (deploy, backups)"
 cat >/etc/logrotate.d/mhrs <<'EOF'
 /var/log/mhrs/*.log {
@@ -224,6 +227,15 @@ cat >/etc/logrotate.d/mhrs <<'EOF'
   missingok
   notifempty
   create 0640 mhrs mhrs
+}
+/var/log/mhrs/nginx/access.json {
+  daily
+  rotate 14
+  compress
+  delaycompress
+  missingok
+  notifempty
+  copytruncate
 }
 EOF
 chown "$DEPLOY_USER:$DEPLOY_USER" /var/log/mhrs

@@ -54,6 +54,7 @@ services:
       - /etc/mhrs/nginx:/etc/nginx/local:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro
+      - /var/log/mhrs/nginx:/var/log/mhrs-nginx
       - static:/srv/static:ro
     depends_on:
       frontend: { condition: service_healthy }

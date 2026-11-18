@@ -197,3 +197,19 @@ Candidates sometimes reply to notification emails. The application never reads t
 
 ## 8. SLOs & alerts
 Submission availability 99.5%; alert when: 5xx rate > 2% over 5 min; queue depth `documents` > 500 or oldest task > 15 min; dead letters > 10; disk > 80%; cert expiry < 14 days; ClamAV DB > 48 h old; email failure rate > 5%.
+
+**As built (P11-T07).** Every alarm notifies the SNS topic `mhrs-<env>-alerts` (on-call email subscription;
+`infrastructure/monitoring/alarms.sh` creates/updates all of them idempotently; `alarms.sh --test` fires one end to end).
+
+| Source | Metrics (namespace `MHRS/<env>`) | Alarm |
+|---|---|---|
+| `apps/core/ops_metrics.py` (beat, every minute; CloudWatch when `OPS_METRICS_NAMESPACE` is set, else a log line) | `QueueDepth[Queue]`, `ProcessingBacklogAgeSeconds`, `OutboxLagSeconds`, `DeadLettersOpen`, `EmailFailureRatePercent`, `EmailsProcessedLastHour`, `ClamavSignatureAgeHours`, `OpsMetricSourceErrors` | documents queue > 500; oldest unfinished application > 15 min; outbox lag > 5 min; dead letters > 10 (EC-OPS-07); email failures > 5 %/h; ClamAV signatures > 48 h (EC-OPS-09, missing = breaching); no metrics for 10 min (beat/worker down); a metric source failing |
+| nginx access log → `/var/log/mhrs/nginx/access.json` → CloudWatch agent → log group `/mhrs/<env>/nginx` + metric filters | `Requests`, `Server5xx` | 5xx rate > 2 % over 5 min (metric math, only with ≥ 50 requests) |
+| `infrastructure/monitoring/host-checks.sh` (systemd timer, 15 min) | `CertDaysLeft`, `UnhealthyContainers`, `ContainersRunning`, `BackupAgeHours` | certificate < 14 days; any unhealthy/restarting container; no successful backup for 8 days |
+| `backup.sh` | `BackupSucceeded` | a backup run failed |
+| CloudWatch agent | `mem_used_percent`, `disk_used_percent[path]` | memory > 90 %; `/` or `/var/lib/docker` > 80 % (EC-OPS-08) |
+| AWS | EC2 status/CPU, RDS CPU/storage/connections, SES bounce/complaint rate | status check → also EC2 *recover*; CPU > 85 %/80 %; < 10 GB free; > 200 connections; bounces > 4 %, complaints > 0.08 % |
+
+Sentry: backend events carry `release` = the image tag (`MHRS_VERSION`) and `environment` (`SENTRY_ENVIRONMENT`),
+so a regression is tied to the deploy that introduced it. Uptime: an external HTTPS check of `/healthz` every
+minute (Route 53 health check or an uptime service, owner's choice) alerting the same on-call address.

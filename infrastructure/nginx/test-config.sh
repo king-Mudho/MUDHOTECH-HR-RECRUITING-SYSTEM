@@ -10,7 +10,7 @@ trap 'rm -rf "$WORK"' EXIT
 # Git Bash on Windows: docker needs Windows paths; no MSYS path rewriting of /CN=... or /etc/...
 host() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else echo "$1"; fi; }
 export MSYS_NO_PATHCONV=1
-mkdir -p "$WORK/le/live/mhrs" "$WORK/local/upstreams" "$WORK/static" "$WORK/certbot"
+mkdir -p "$WORK/le/live/mhrs" "$WORK/local/upstreams" "$WORK/static" "$WORK/certbot" "$WORK/nginxlog"
 echo 'server backend:8000 resolve max_fails=0;' >"$WORK/local/upstreams/backend.conf"
 echo 'server frontend:3000 resolve max_fails=0;' >"$WORK/local/upstreams/frontend.conf"
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=mhrs.test" \
@@ -28,6 +28,7 @@ for env in staging production; do
     -v "$(host "$PWD/templates"):/etc/nginx/templates:ro" -v "$(host "$PWD/snippets"):/etc/nginx/snippets:ro" \
     -v "$(host "$WORK/local"):/etc/nginx/local:ro" -v "$(host "$WORK/le"):/etc/letsencrypt:ro" \
     -v "$(host "$WORK/static"):/srv/static:ro" -v "$(host "$WORK/certbot"):/var/www/certbot:ro" \
+    -v "$(host "$WORK/nginxlog"):/var/log/mhrs-nginx" \
     "$IMAGE" sh -c '
       set -e
       out=$(/docker-entrypoint.sh nginx -t 2>&1) || { echo "$out"; exit 1; }
