@@ -1,19 +1,35 @@
 # Base images and CI actions are pinned to exact versions/SHAs; Dependabot proposes the bumps.
+# Major image upgrades (Python 3.13, Node 26, Redis 8, ...) are deliberate decisions with an ADR, so only
+# minor/patch updates are proposed for images. nginx: stable (even minor) line only, so patch updates.
 version: 2
 updates:
   - package-ecosystem: docker
     directory: /backend
     schedule: { interval: monthly }
     labels: [dependencies, docker]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
   - package-ecosystem: docker
     directory: /frontend
     schedule: { interval: monthly }
     labels: [dependencies, docker]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker-compose
     directory: /
     schedule: { interval: monthly }
     labels: [dependencies, docker]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: nginx
+        update-types: ["version-update:semver-minor"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: monthly }
     labels: [dependencies, ci]
+    groups:
+      actions:
+        patterns: ["*"]

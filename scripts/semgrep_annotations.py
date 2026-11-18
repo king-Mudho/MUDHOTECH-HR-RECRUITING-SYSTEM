@@ -1,6 +1,6 @@
 """Turn a Semgrep JSON report into GitHub annotations; exit 1 when there are findings.
 
-    semgrep scan ... --json -o semgrep.json; python scripts/semgrep_annotations.py semgrep.json
+semgrep scan ... --json -o semgrep.json; python scripts/semgrep_annotations.py semgrep.json
 """
 
 from __future__ import annotations
