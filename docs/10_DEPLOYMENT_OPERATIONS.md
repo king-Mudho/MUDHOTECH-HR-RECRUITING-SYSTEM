@@ -36,6 +36,13 @@ tenant defence would silently be off. On RDS the master user is `rds_superuser` 
 subject to RLS; still create a dedicated `mhrs_app` role for the application. The local Docker database uses a
 superuser for convenience, so RLS is exercised in tests through a probe role (`apps/core/tests/test_rls.py`).
 
+### 3.2 Application server and connection pool (ADR-029)
+The API runs as **gunicorn WSGI with threaded workers** (`docker/entrypoint-prod.sh`: `GUNICORN_WORKERS`
+default 3, `GUNICORN_THREADS` default 8). Database connections are pooled per process (psycopg pool via Django:
+`DB_POOL_MIN` 1, `DB_POOL_MAX` 10, `DB_POOL_TIMEOUT` 10 s; `DB_POOL=false` falls back to persistent connections).
+Celery workers keep one persistent connection per process (no pool: they fork). Keep `web workers × DB_POOL_MAX + Celery processes + headroom` below PostgreSQL
+`max_connections` (RDS db.t4g.medium ≈ 400; the default container 100): e.g. 3 × 10 + 7 + 20 = 57.
+
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
 1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 

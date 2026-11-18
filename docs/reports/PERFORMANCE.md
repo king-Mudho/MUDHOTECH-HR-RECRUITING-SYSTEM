@@ -49,16 +49,34 @@ Scenarios and pass rules: `loadtests/README.md`. CI: `.github/workflows/load.yml
 (400 users, ≥ 200 RPS), 100 concurrent submissions, HR applicants list (20 users), 1,000 concurrent
 submissions; results in the `load-report` artifact (`out/LOAD.md`).
 
-**Status:** the scenarios could not run on the development machine (0.5 GB free RAM; the full
-stack plus Locust does not fit). The workflow runs on the first push of `loadtests/` and weekly;
-record its P95 table here from the artifact.
+**Run 1 (2026-11-18, gunicorn + uvicorn ASGI workers, as production was configured): failed.**
+Job board: 21,000 requests, **69 % HTTP 500**, P95 4.6 s, 117 RPS; logins failed, so the candidate
+and HR scenarios could not proceed. Root cause (reproduced locally): under ASGI Django's persistent
+connections are not reused across requests - one worker held 57 PostgreSQL connections after 600
+requests, so four workers exhausted `max_connections` - and every synchronous view ran on one thread
+per worker. Fix: ADR-029 (gunicorn WSGI threaded workers + psycopg connection pool; connections
+stayed at 11 under the same local load). Defect D-009 (P0).
+
+**Run 2 (after ADR-029):** see the table below (from the Load workflow annotations).
 
 | Run | Users | Aggregate RPS | Worst list/detail P95 | Failures | Result |
 |---|---|---|---|---|---|
-| Job board | 400 | _first CI run_ | | | |
+| Job board | 400 | _pending_ | | | |
 | 100 submissions | 100 | | | | |
 | HR applicants list | 20 | | | | |
 | 1,000 submissions | 1,000 | | | | |
+
+### 2.1 Throughput (P10-T06) - passed
+
+`load.yml` job *throughput*: the stack capped at 4 vCPU / 8 GB (`infrastructure/perf/compose.throughput.yml`),
+100 applications from the whole synthetic corpus through the real workers (`run_pilot_benchmark`):
+
+| Run | Submitting | Processing after the last submission | Submission → evaluation (median / max) | Accounted for |
+|---|---|---|---|---|
+| 2026-11-17 | 54.5 s | 65.0 s | 48.1 s / 67.5 s | 100 / 100 |
+| 2026-11-18 | 59.6 s | 65.0 s | 53.0 s / 66.9 s | 100 / 100 |
+
+About 2 minutes end to end against the NFR-PERF-02 target of 15 minutes.
 
 ## 3. Notes
 

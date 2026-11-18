@@ -1,6 +1,5 @@
-# Load tests (P10-T05): serve the API the way production does (gunicorn + uvicorn workers,
-# docker/entrypoint-prod.sh flags) instead of Django's development server, which is single-process
-# and would only measure itself. Use with:
+# Load tests (P10-T05): serve the API the way production does (docker/entrypoint-prod.sh:
+# gunicorn, WSGI, threaded workers, ADR-029) instead of Django's development server. Use with:
 #   docker compose -f docker-compose.yml -f infrastructure/perf/compose.load.yml up -d ...
 services:
   backend:
@@ -9,6 +8,8 @@ services:
       - -c
       - >-
         python manage.py migrate --noinput &&
-        exec gunicorn config.asgi:application --worker-class uvicorn.workers.UvicornWorker
-        --bind 0.0.0.0:8000 --workers 4 --timeout 60 --graceful-timeout 30
+        exec gunicorn config.wsgi:application --worker-class gthread
+        --bind 0.0.0.0:8000 --workers 4 --threads 8 --timeout 60 --graceful-timeout 30
         --max-requests 2000 --max-requests-jitter 200
+  # Celery workers keep persistent connections (no pool, settings RUNNING_CELERY); 4 web workers x 10
+  # pooled connections + 4 worker processes stay well below the container's max_connections (100).

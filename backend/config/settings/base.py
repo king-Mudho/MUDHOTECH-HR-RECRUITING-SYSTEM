@@ -1,5 +1,6 @@
 """Base settings shared by every environment. Secrets come from the environment (django-environ)."""
 
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -104,8 +105,25 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default="postgres://mhrs:mhrs@localhost:15432/mhrs"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = False
-DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
-DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+# Connection pooling (P10-T05): the API runs under ASGI (gunicorn + uvicorn workers), where Django's
+# persistent connections are not reused across requests - one uvicorn worker held 57 connections
+# after 600 requests and the load test exhausted PostgreSQL (500s). psycopg's pool caps
+# connections per process; Django requires CONN_MAX_AGE = 0 with a pool. Size: web processes x
+# DB_POOL_MAX + worker processes x DB_POOL_MAX must stay below max_connections (docs/10).
+# Celery's prefork workers handle one task per process and fork after start-up, so they keep
+# plain persistent connections (a pool opened in the parent would be shared by forked children).
+RUNNING_CELERY = Path(sys.argv[0]).name.startswith("celery") if sys.argv else False
+DB_POOL = env.bool("DB_POOL", default=not RUNNING_CELERY)
+if DB_POOL:
+    DATABASES["default"]["CONN_MAX_AGE"] = 0
+    DATABASES["default"].setdefault("OPTIONS", {})["pool"] = {
+        "min_size": env.int("DB_POOL_MIN", default=1),
+        "max_size": env.int("DB_POOL_MAX", default=10),
+        "timeout": env.int("DB_POOL_TIMEOUT", default=10),
+    }
+else:
+    DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6380/0")

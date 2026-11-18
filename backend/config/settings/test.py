@@ -28,3 +28,8 @@ S3_ACCESS_KEY = "testing"
 S3_SECRET_KEY = "testing"  # nosec B105 - moto (in-memory S3) in tests
 S3_REGION = "us-east-1"
 LOGGING["root"]["level"] = "WARNING"  # type: ignore[index]
+
+# Tests use plain connections (pytest-django manages them per test); pooling is covered by the
+# load test against the real ASGI server.
+DATABASES["default"].get("OPTIONS", {}).pop("pool", None)
+DATABASES["default"]["CONN_MAX_AGE"] = 0

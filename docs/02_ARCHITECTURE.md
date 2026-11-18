@@ -16,7 +16,7 @@ extracted to a separate service later without rewrites.
                  └───────────────┬──────────────┘
                                  │
                  ┌───────────────▼──────────────┐      ┌───────────────┐
-                 │ Django + DRF (gunicorn/uvicorn)│────▶│ PostgreSQL 16 │ (+pgvector, pg_trgm)
+                 │ Django + DRF (gunicorn gthread)│────▶│ PostgreSQL 16 │ (+pgvector, pg_trgm)
                  │ auth · orgs · jobs · apps ·   │      └───────────────┘
                  │ screening · shortlist · audit │      ┌───────────────┐
                  │ outbox writer                 │────▶│ S3 / MinIO    │ (private, SSE, presigned)
@@ -38,7 +38,7 @@ extracted to a separate service later without rewrites.
 |---|---|---|
 | Reverse proxy | Nginx | TLS (Certbot), gzip/brotli, `client_max_body_size 30m` (only for fallback upload path), security headers, rate limit zones for `/api/v1/auth/*` |
 | Frontend | Next.js, TS, Tailwind, shadcn/ui | RSC for public pages (SEO), client components for wizards/dashboards; TanStack Query for client data |
-| API | Django 5.2 LTS, DRF, drf-spectacular | ASGI via uvicorn workers under gunicorn; session auth (allauth headless) + CSRF |
+| API | Django 5.2 LTS, DRF, drf-spectacular | WSGI via gunicorn threaded workers (ADR-029; all views are synchronous); psycopg connection pool; session auth (allauth headless) + CSRF |
 | DB | PostgreSQL 16 | UUID PKs, tenant indexes, FTS, pgvector for skill/role embeddings |
 | Broker/cache | Redis 7 | Celery broker (DB 0), cache & rate limits (DB 1), locks (DB 2) |
 | Workers | Celery 5 | Queues: `default`, `documents`, `ai`, `notifications`, `reports`; `worker_prefetch_multiplier=1`, `acks_late=True`, `task_reject_on_worker_lost=True`, soft/hard time limits |
