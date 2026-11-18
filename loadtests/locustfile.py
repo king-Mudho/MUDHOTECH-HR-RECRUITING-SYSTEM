@@ -17,10 +17,11 @@ from __future__ import annotations
 import itertools
 import os
 import uuid
+from datetime import date
 from pathlib import Path
 from typing import Any
 
-from locust import HttpUser, between, task
+from locust import HttpUser, between, constant_throughput, task
 
 PASSWORD = os.environ.get("DEMO_PASSWORD", "")
 HR_EMAIL = os.environ.get("LOAD_HR_EMAIL", "hr@mudhotech-demo.test")
@@ -58,9 +59,9 @@ class _Session(HttpUser):
 
 
 class JobBoardUser(HttpUser):
-    """Anonymous visitors (target 200 RPS reads across many users)."""
+    """Anonymous visitors: each sends one request per second, so N users = N RPS (target 200)."""
 
-    wait_time = between(0.5, 1.5)
+    wait_time = constant_throughput(1.0)
     weight = 5
     job_ids: list[str] = []
 
@@ -75,7 +76,7 @@ class JobBoardUser(HttpUser):
 
     @task(2)
     def search(self) -> None:
-        self.client.get("/api/v1/jobs/?search=developer", name="jobs search")
+        self.client.get("/api/v1/jobs/?q=developer", name="jobs search")
 
     @task(3)
     def detail(self) -> None:
@@ -94,8 +95,10 @@ class CandidateSubmitter(_Session):
     def on_start(self) -> None:
         self.email = f"load{next(_users):04d}@load.test"
         self.signed_in = self.sign_in(self.email)
-        body = self.client.get(f"/api/v1/jobs/?search={JOB_TITLE}", name="jobs search").json()
-        self.job_id = body["results"][0]["id"] if body.get("results") else None
+        # the public search parameter is "q"; pick the vacancy by its exact title
+        body = self.client.get(f"/api/v1/jobs/?q={JOB_TITLE}", name="jobs search").json()
+        exact = [j for j in body.get("results", []) if j.get("title") == JOB_TITLE]
+        self.job_id = exact[0]["id"] if exact else None
 
     @task
     def apply(self) -> None:
@@ -159,7 +162,9 @@ class CandidateSubmitter(_Session):
             value = options[0]["value"] if isinstance(options[0], dict) else options[0]
         elif kind in ("multi_choice", "multiple_choice") and options:
             value = [options[0]["value"] if isinstance(options[0], dict) else options[0]]
-        elif kind == "file":
+        elif kind == "date":
+            value = date.today().isoformat()
+        elif kind in ("file", "file_upload"):
             value = None
         return {"key": q["key"], "value": value}
 

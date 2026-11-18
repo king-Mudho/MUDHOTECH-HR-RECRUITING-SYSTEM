@@ -1,5 +1,7 @@
 # Load tests (P10-T05): serve the API the way production does (docker/entrypoint-prod.sh:
-# gunicorn, WSGI, threaded workers, ADR-029) instead of Django's development server. Use with:
+# gunicorn, WSGI, threaded workers, ADR-029) instead of Django's development server. Worker
+# recycling (--max-requests) is off here: Locust connects directly and would see the closed
+# keep-alive sockets that Nginx retries in production. Use with:
 #   docker compose -f docker-compose.yml -f infrastructure/perf/compose.load.yml up -d ...
 services:
   backend:
@@ -10,6 +12,5 @@ services:
         python manage.py migrate --noinput &&
         exec gunicorn config.wsgi:application --worker-class gthread
         --bind 0.0.0.0:8000 --workers 4 --threads 8 --timeout 60 --graceful-timeout 30
-        --max-requests 2000 --max-requests-jitter 200
   # Celery workers keep persistent connections (no pool, settings RUNNING_CELERY); 4 web workers x 10
   # pooled connections + 4 worker processes stay well below the container's max_connections (100).
