@@ -54,8 +54,11 @@ async function mailCount(request: APIRequestContext, query: string): Promise<num
   return ((await res.json()).messages_count as number) ?? 0;
 }
 
-test("core scenario: 100 applicants to an approved shortlist of ten", async ({ page }) => {
+test("core scenario: 100 applicants to an approved shortlist of ten", async ({ page }, info) => {
   test.skip(!PASSWORD, "DEMO_PASSWORD not set");
+  // the scenario approves the one seeded shortlist, so it can only run once per stack: on a second
+  // project the shortlist is already approved and (correctly) cannot be proposed again
+  test.skip(info.project.name !== "chromium", "changes shared state - runs once (desktop)");
   await signIn(page, HR);
   const { org, job } = await hrContext(page);
   await waitForProcessing(page.request, org, job);
@@ -126,4 +129,30 @@ test("core scenario: 100 applicants to an approved shortlist of ten", async ({ p
   expect(
     await mailCount(page.request, 'to:"core-scenario.test" subject:"Update on your application"'),
   ).toBe(0);
+});
+
+test("review workspace on a phone: evidence and claim actions are usable", async ({
+  page,
+}, info) => {
+  test.skip(!PASSWORD, "DEMO_PASSWORD not set");
+  test.skip(info.project.name !== "mobile", "phone layout check");
+  await signIn(page, HR);
+  const { org, job } = await hrContext(page);
+  await waitForProcessing(page.request, org, job);
+
+  await page.goto(`/hr/jobs/${job}/applications`);
+  await page.getByRole("button", { name: "Recommended" }).click();
+  await page.locator("tbody tr").first().getByRole("link").first().click();
+  await expect(page.getByRole("heading", { name: "Evidence" })).toBeVisible();
+  // D-016: on narrow screens the evidence text must not cover the claim buttons. A trial click runs
+  // every actionability check (visible, stable, enabled, receives the pointer) without clicking,
+  // so this test changes nothing and can run alongside the desktop scenario.
+  const confirm = page.getByRole("button", { name: "Confirm" }).first();
+  await confirm.scrollIntoViewIfNeeded();
+  await confirm.click({ trial: true });
+  // nothing on the page is wider than the phone (no sideways scrolling)
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
 });
