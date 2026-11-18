@@ -148,13 +148,20 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Production compose is valid
+        run: |
+          touch .env
+          MHRS_TAG=ci docker compose -f docker-compose.prod.yml config -q
+          MHRS_TAG=ci docker compose -f docker-compose.prod.yml --profile ops config -q
       - name: Build backend
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: backend
           file: backend/Dockerfile
           push: false
-          build-args: UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+          build-args: |
+            UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+            MHRS_VERSION=${{ github.sha }}
           tags: mhrs-backend:ci
           load: true
       - name: Build worker
@@ -163,15 +170,57 @@ jobs:
           context: backend
           file: backend/Dockerfile.worker
           push: false
-          build-args: UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+          build-args: |
+            UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+            MHRS_VERSION=${{ github.sha }}
           tags: mhrs-worker:ci
+          load: true
       - name: Build frontend
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: frontend
           target: runtime
           push: false
+          build-args: MHRS_VERSION=${{ github.sha }}
           tags: mhrs-frontend:ci
+          load: true
+      - name: Images run as uid 10001 without build tools
+        run: |
+          for img in mhrs-backend:ci mhrs-worker:ci mhrs-frontend:ci; do
+            test "$(docker run --rm --entrypoint id "$img" -u)" = "10001" || { echo "::error::$img does not run as uid 10001"; exit 1; }
+            if docker run --rm --entrypoint sh "$img" -c 'command -v uv'; then echo "::error::$img ships uv"; exit 1; fi
+          done
+          docker run --rm --entrypoint python mhrs-backend:ci -c "import django, gunicorn, psycopg_pool; print(django.get_version())"
+          docker run --rm --entrypoint python mhrs-worker:ci -c "import os, sentence_transformers; assert os.environ['HF_HUB_OFFLINE'] == '1'"
+          docker run --rm --entrypoint tesseract mhrs-worker:ci --version | head -1
+          docker image ls --format '{{.Repository}}:{{.Tag}} {{.Size}}' | grep ':ci'
+      - name: SBOM (syft, SPDX JSON)
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          image: mhrs-backend:ci
+          format: spdx-json
+          output-file: sbom-backend.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          image: mhrs-worker:ci
+          format: spdx-json
+          output-file: sbom-worker.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          image: mhrs-frontend:ci
+          format: spdx-json
+          output-file: sbom-frontend.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sbom
+          path: sbom-*.spdx.json
+          retention-days: 90
       - name: Trivy scan (backend image)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:

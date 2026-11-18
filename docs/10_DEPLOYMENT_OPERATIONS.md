@@ -43,6 +43,41 @@ default 3, `GUNICORN_THREADS` default 8). Database connections are pooled per pr
 Celery workers keep one persistent connection per process (no pool: they fork). Keep `web workers × DB_POOL_MAX + Celery processes + headroom` below PostgreSQL
 `max_connections` (RDS db.t4g.medium ≈ 400; the default container 100): e.g. 3 × 10 + 7 + 20 = 57.
 
+### 3.3 Production images and compose (P11-T01)
+| Image | Dockerfile | Contents |
+|---|---|---|
+| `mhrs-backend` | `backend/Dockerfile` | API (gunicorn gthread, §3.2), beat, flower, one-off `migrate` |
+| `mhrs-worker` | `backend/Dockerfile.worker` | Celery workers + Tesseract/poppler + the baked local embedding model (offline) |
+| `mhrs-frontend` | `frontend/Dockerfile` (`runtime` target) | Next.js standalone server |
+
+- **Multi-stage:** a `builder` stage resolves the locked environment with uv (`--no-dev` for production builds);
+  the `runtime` stage carries only `/opt/venv` (+ the model cache for workers) and the source. uv is not in the
+  runtime image.
+- **Non-root:** every runtime runs as uid/gid `10001` (`app`). In `docker-compose.prod.yml` application containers
+  also drop all Linux capabilities and set `no-new-privileges`; the frontend runs with a read-only root filesystem.
+- **Pinned bases:** `python:3.12.16-slim-trixie`, `node:24.22.3-alpine3.24`, `nginx:1.30.7-alpine3.24`,
+  `redis:7.4.12-alpine3.22`, `clamav/clamav:1.5.4`, uv `0.13.9`. Dependabot (`.github/dependabot.yml`) proposes
+  monthly bumps; never use `latest`. Application services take `MHRS_TAG` (required, the release tag).
+- **Version:** builds pass `MHRS_VERSION` (git SHA or tag); it is an OCI label and the Sentry `release`.
+- **SBOM:** CI generates SPDX JSON SBOMs with syft for all three images (artifact `sbom`, 90 days) and scans the
+  backend image with Trivy; releases attach the SBOMs (P11-T12).
+- **Health and limits** (t3.xlarge, 16 GB): every service has a healthcheck, `restart: unless-stopped`, rotated
+  JSON logs (5 × 20 MB) and CPU/memory limits (total ≈ 10.5 GB; flower is on the `ops` profile).
+
+| Service | Memory | Healthcheck |
+|---|---|---|
+| nginx | 128 MB | `nginx -t` |
+| redis | 512 MB (`maxmemory` 384 MB, `noeviction`) | `redis-cli ping` |
+| clamav | 1.5 GB | `clamdcheck.sh` (5 min start period for signatures) |
+| backend | 1.5 GB | `GET /healthz` |
+| worker-default / -documents / -ai | 1 GB / 1.5 GB / 2.5 GB | `celery inspect ping` addressed to itself |
+| beat | 256 MB | schedule file rewritten in the last 10 minutes |
+| frontend | 768 MB | `GET /robots.txt` |
+
+Workers get a 120 s warm-shutdown grace period (tasks are `acks_late`, so anything cut off is re-delivered).
+Django static files are collected into the `static` volume and served by nginx from `/srv/static`.
+`backend/tests/integration/test_prod_compose.py` enforces these rules.
+
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
 1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 

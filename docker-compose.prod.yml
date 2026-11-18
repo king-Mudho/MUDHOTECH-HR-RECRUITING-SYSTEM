@@ -1,77 +1,199 @@
-# MUDHOTECH HR RECRUITING SYSTEM - production compose (skeleton; completed in Phase 11).
-# Single EC2 host for the pilot (docs/10 §3): nginx, frontend, backend, workers, beat, clamav, redis.
-# PostgreSQL = Amazon RDS, object storage = S3, email = SES. Secrets rendered into .env by deploy.sh
-# from SSM Parameter Store.
-#   docker compose -f docker-compose.prod.yml --env-file .env up -d
+# MUDHOTECH HR RECRUITING SYSTEM - production compose (docs/10 §3, ADR-029).
+# Single EC2 host for the pilot (t3.xlarge, 4 vCPU / 16 GB): nginx, frontend, backend, workers, beat,
+# clamav, redis (+ flower on the `ops` profile). PostgreSQL = Amazon RDS, object storage = S3,
+# email = SES. Secrets are rendered into .env by infrastructure/deployment/deploy.sh from SSM.
+#
+#   MHRS_TAG=v1.0.0 docker compose -f docker-compose.prod.yml --env-file .env up -d
+#
+# Memory limits add up to ~10.5 GB, leaving room for the OS, the CloudWatch agent and page cache.
+# Every long-running service has a healthcheck, a restart policy, bounded logs and resource limits;
+# application containers run as uid 10001 with no Linux capabilities and no privilege escalation.
+# backend/tests/integration/test_prod_compose.py enforces these rules.
 name: mhrs
 
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "20m", max-file: "5" }
+
+x-hardened: &hardened
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
+
 x-backend: &backend
-  image: ${MHRS_BACKEND_IMAGE:-ghcr.io/mudhotech/mhrs-backend}:${MHRS_TAG:-latest}
+  <<: *hardened
+  image: ${MHRS_BACKEND_IMAGE:-ghcr.io/mudhotech/mhrs-backend}:${MHRS_TAG:?set MHRS_TAG to the release tag}
   env_file: [.env]
   environment:
     DJANGO_SETTINGS_MODULE: config.settings.prod
+    MHRS_VERSION: ${MHRS_TAG}
   restart: unless-stopped
-  logging:
-    driver: json-file
-    options: { max-size: "20m", max-file: "5" }
+  logging: *logging
+  depends_on:
+    redis: { condition: service_healthy }
 
 x-worker: &worker
   <<: *backend
-  image: ${MHRS_WORKER_IMAGE:-ghcr.io/mudhotech/mhrs-worker}:${MHRS_TAG:-latest}
+  image: ${MHRS_WORKER_IMAGE:-ghcr.io/mudhotech/mhrs-worker}:${MHRS_TAG:?set MHRS_TAG to the release tag}
+  # warm shutdown: let running tasks finish (acks_late re-delivers anything cut off)
   stop_grace_period: 120s
+  stop_signal: SIGTERM
 
 services:
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:1.30.7-alpine3.24
     ports: ["80:80", "443:443"]
     volumes:
-      - ./infrastructure/nginx:/etc/nginx/conf.d:ro
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infrastructure/nginx/snippets:/etc/nginx/snippets:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on: [frontend, backend]
+      - /var/www/certbot:/var/www/certbot:ro
+      - static:/srv/static:ro
+    depends_on:
+      frontend: { condition: service_healthy }
+      backend: { condition: service_healthy }
     restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "nginx", "-t", "-q"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 128M }
 
   redis:
-    image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    image: redis:7.4.12-alpine3.22
+    # broker + result backend + cache: never evict (a lost broker message is a lost task)
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "384mb", "--maxmemory-policy", "noeviction"]
     volumes: [redis-data:/data]
     restart: unless-stopped
+    logging: *logging
+    security_opt: ["no-new-privileges:true"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 512M }
 
   clamav:
-    image: clamav/clamav:stable
+    image: clamav/clamav:1.5.4
     volumes: [clamav-data:/var/lib/clamav]
     restart: unless-stopped
+    logging: *logging
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      # the image's own check (clamd answers PING); signatures load in 1-2 minutes on first start
+      test: ["CMD", "clamdcheck.sh"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 1536M }
 
   backend:
     <<: *backend
-    depends_on:
-      redis: { condition: service_healthy }
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      MHRS_VERSION: ${MHRS_TAG}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-8}
+    volumes: [static:/app/staticfiles]
+    stop_grace_period: 40s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits: { cpus: "2.00", memory: 1536M }
 
   worker-default:
     <<: *worker
-    command: ["celery", "-A", "config", "worker", "-Q", "default,notifications,reports", "-c", "2", "-n", "default@%h", "--max-tasks-per-child", "200"]
+    command: ["celery", "-A", "config", "worker", "-Q", "default,notifications,reports", "-c", "2", "-n", "default@%h", "--max-tasks-per-child", "200", "-l", "info"]
+    healthcheck: &worker-health
+      test: ["CMD-SHELL", "celery -A config inspect ping --timeout 10 | grep -q \"@$$(hostname): OK\""]
+      interval: 60s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 1G }
 
   worker-documents:
     <<: *worker
-    command: ["celery", "-A", "config", "worker", "-Q", "documents", "-c", "2", "-n", "documents@%h", "--max-tasks-per-child", "100"]
+    command: ["celery", "-A", "config", "worker", "-Q", "documents", "-c", "2", "-n", "documents@%h", "--max-tasks-per-child", "100", "-l", "info"]
+    healthcheck: *worker-health
+    deploy:
+      resources:
+        limits: { cpus: "1.50", memory: 1536M }
 
   worker-ai:
     <<: *worker
-    command: ["celery", "-A", "config", "worker", "-Q", "ai", "-c", "2", "-n", "ai@%h", "--max-tasks-per-child", "100"]
+    command: ["celery", "-A", "config", "worker", "-Q", "ai", "-c", "2", "-n", "ai@%h", "--max-tasks-per-child", "100", "-l", "info"]
+    healthcheck: *worker-health
+    deploy:
+      resources:
+        limits: { cpus: "2.00", memory: 2560M }
 
   beat:
     <<: *backend
     command: ["celery", "-A", "config", "beat", "-l", "info", "--schedule", "/tmp/celerybeat-schedule"]
+    stop_grace_period: 10s
+    healthcheck:
+      # beat rewrites its schedule file at least every 3 minutes (the outbox relay runs every 2 s)
+      test: ["CMD", "python", "-c", "import glob,os,sys,time; f=glob.glob('/tmp/celerybeat-schedule*'); sys.exit(0 if f and time.time()-max(map(os.path.getmtime,f))<600 else 1)"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits: { cpus: "0.25", memory: 256M }
 
   frontend:
-    image: ${MHRS_FRONTEND_IMAGE:-ghcr.io/mudhotech/mhrs-frontend}:${MHRS_TAG:-latest}
+    <<: *hardened
+    image: ${MHRS_FRONTEND_IMAGE:-ghcr.io/mudhotech/mhrs-frontend}:${MHRS_TAG:?set MHRS_TAG to the release tag}
     env_file: [.env]
     environment:
       API_INTERNAL_URL: http://backend:8000
     restart: unless-stopped
+    logging: *logging
+    read_only: true
+    tmpfs: ["/tmp:size=64m", "/app/.next/cache:size=256m,uid=10001,gid=10001"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/robots.txt >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 768M }
+
+  flower:
+    <<: *backend
+    profiles: [ops]
+    # reached only through nginx (basic auth + IP allow-list); never published on the host
+    command: ["celery", "-A", "config", "flower", "--port=5555", "--url_prefix=flower", "--persistent=False"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5555/flower/healthcheck"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits: { cpus: "0.25", memory: 256M }
 
 volumes:
   redis-data:
   clamav-data:
+  static:

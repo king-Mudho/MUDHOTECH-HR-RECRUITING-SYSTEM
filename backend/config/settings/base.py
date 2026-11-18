@@ -438,7 +438,13 @@ SENTRY_DSN = env("SENTRY_DSN", default="")
 if SENTRY_DSN:  # pragma: no cover
     import sentry_sdk
 
-    sentry_sdk.init(dsn=SENTRY_DSN, send_default_pii=False, traces_sample_rate=0.05)
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        send_default_pii=False,
+        traces_sample_rate=0.05,
+        release=env("MHRS_VERSION", default="dev"),
+        environment=env("SENTRY_ENVIRONMENT", default="production"),
+    )
 
 # --- Authentication: django-allauth headless (ADR-004, docs/02 §5.5) ---
 AUTHENTICATION_BACKENDS = [
