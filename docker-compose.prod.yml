@@ -63,7 +63,7 @@ services:
         limits: { cpus: "0.50", memory: 128M }
 
   redis:
-    image: redis:7.4.12-alpine3.22
+    image: redis:8.4.8-alpine3.22
     # broker + result backend + cache: never evict (a lost broker message is a lost task)
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "384mb", "--maxmemory-policy", "noeviction"]
     volumes: [redis-data:/data]
