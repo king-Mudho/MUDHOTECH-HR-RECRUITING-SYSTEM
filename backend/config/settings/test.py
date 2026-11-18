@@ -33,3 +33,7 @@ LOGGING["root"]["level"] = "WARNING"  # type: ignore[index]
 # load test against the real ASGI server.
 DATABASES["default"].get("OPTIONS", {}).pop("pool", None)
 DATABASES["default"]["CONN_MAX_AGE"] = 0
+
+# Public API response cache off by default in tests (tests change jobs and read them back at once);
+# apps/jobs/tests/test_public_cache.py switches it on.
+PUBLIC_API_CACHE_SECONDS = 0

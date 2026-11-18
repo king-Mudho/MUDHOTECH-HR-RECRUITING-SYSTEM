@@ -10,6 +10,7 @@ class JobsConfig(AppConfig):
         from apps.organisations.permissions import register_assignment_checker
         from apps.organisations.services import register_reassignment_provider
 
+        from . import public_cache  # noqa: F401 - registers cache invalidation signals
         from .assignments import is_assigned, needs_reassignment
 
         register_assignment_checker(is_assigned)

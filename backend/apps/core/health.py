@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
 
 from django.conf import settings
-from django.db import connection
+from django.db import connection, transaction
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
@@ -19,8 +19,10 @@ _executor = ThreadPoolExecutor(max_workers=6, thread_name_prefix="readyz")
 def check_database() -> None:
     timeout_ms = int(settings.HEALTHCHECK_TIMEOUT_SECONDS * 1000)
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT set_config('statement_timeout', %s, false)", [str(timeout_ms)])
+        # transaction-local: with the connection pool (ADR-029) a session-level setting would stay
+        # on the pooled connection and cancel slow statements in later requests
+        with transaction.atomic(), connection.cursor() as cursor:
+            cursor.execute("SELECT set_config('statement_timeout', %s, true)", [str(timeout_ms)])
             cursor.execute("SELECT 1")
             cursor.fetchone()
     finally:

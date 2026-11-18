@@ -128,6 +128,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6380/0")
 CACHE_URL = env("CACHE_URL", default="redis://localhost:6380/1")
+# Anonymous public job board API responses (apps/jobs/public_cache.py; 0 disables)
+PUBLIC_API_CACHE_SECONDS = env.int("PUBLIC_API_CACHE_SECONDS", default=30)
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",

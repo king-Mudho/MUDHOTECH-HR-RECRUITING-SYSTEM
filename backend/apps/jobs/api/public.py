@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 
 from apps.core.exceptions import DomainError, NotFoundError
 from apps.core.pagination import StandardPagination
-from apps.jobs import selectors
+from apps.jobs import public_cache, selectors
 from apps.jobs.models import Job, JobStatus
 from apps.jobs.search import plain_text
 
@@ -256,7 +256,7 @@ class PublicJobListView(ListAPIView):
         ],
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        return super().get(request, *args, **kwargs)
+        return public_cache.cached(request, lambda: super(PublicJobListView, self).get(request))
 
 
 def _lookup(slug_or_id: str) -> Job | Response:
@@ -279,6 +279,9 @@ class PublicJobDetailView(APIView):
 
     @extend_schema(operation_id="jobs_public_retrieve", responses=PublicJobDetailSerializer)
     def get(self, request: Request, slug: str) -> Response:
+        return public_cache.cached(request, lambda: self._build(slug))
+
+    def _build(self, slug: str) -> Response:
         job = _lookup(slug)
         if isinstance(job, Response):
             return job
