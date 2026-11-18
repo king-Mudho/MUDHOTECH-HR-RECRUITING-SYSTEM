@@ -5,7 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
+## [1.0.0] - release candidate (the date is set when the tag is pushed after the go-live checklist)
+Pilot release: production deployment and operations on AWS. See `docs/releases/v1.0.0.md`.
+
 ### Added
+- Phase 11 production deployment & operations: multi-stage, pinned, non-root production images with
+  healthchecks, resource limits and SBOMs; production compose; nginx site for staging and production
+  (TLS 1.2/1.3, HSTS preload, rate limits, operator allow-list, JSON access logs) with Certbot automation;
+  EC2 bootstrap for Ubuntu 24.04; AWS setup guide; `deploy.sh` with zero-downtime rolling restarts,
+  smoke tests and automatic rollback (rehearsed in CI); staging and production pipelines (production
+  promotes the staging-tested images after approval); weekly logical backups with a verified restore
+  script and runbook; operational metrics, host checks and CloudWatch alarm definitions; all operations
+  runbooks; `rotate_field_keys` for encryption-key rotation; dead-letter retry/resolve in the admin;
+  staging profile with Mailpit and staging E2E + ZAP checks; go-live checklist; HR onboarding material
+  and pilot support process.
+- Phase 10 quality, AI validation & pilot readiness: extraction/screening/calibration benchmarks and the
+  AI validation report; fairness benchmark (1,095 perturbations, no result changed); load, throughput and
+  resilience tests (Locust) with the performance report; Playwright journeys on desktop and phone with
+  axe; UAT scripts; user guides with screenshots; bug bash (defect log D-001…D-020).
 - Phase 09 privacy, governance & security hardening: data-subject rights requests with export bundles,
   erasure with legal holds and erasure verification, retention engine, break-glass support access,
   PostgreSQL row-level security, security headers and CSP, nightly security scanning, ASVS L2 checklist,
@@ -13,8 +30,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
   review), accessibility pass, organisation closure, public privacy notice, terms and accessibility pages.
 
 ### Changed
+- The API runs on gunicorn with threaded WSGI workers and a per-process PostgreSQL connection pool
+  (ADR-029); the cache degrades to misses when Redis is unavailable; work lost with a killed worker is
+  recovered automatically.
+- Sentry events carry the release (image tag) and environment.
 - Minimum password length is now 12 characters.
 - The Django admin is only mounted when `ENABLE_DJANGO_ADMIN` is set (on in development).
+
+### Fixed
+- Phone layout of the HR review workspace (evidence no longer covers the claim actions, D-016).
 
 ## [0.9.0-mvp] - 2026-11-17
 MVP feature-complete.
