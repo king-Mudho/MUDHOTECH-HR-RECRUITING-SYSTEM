@@ -69,6 +69,11 @@ first with **zero failed requests**:
 | 100 submissions (burst: all within 5 s) | 100 | 900 | 0 | reads 2.2-3.2 s, submit 6.6 s | - | ✅ no failures; latency recorded |
 | 1,000 submissions (burst) | 1,000 | 9,000 | 0 | reads 11-49 s, submit 35 s | - | ✅ no failures; **1,100/1,100 submissions recorded** |
 
+**Final run (2026-11-18, `8f62bae`, all checks green):** job board **210.6 RPS, P95 130-140 ms**,
+35,607 requests, 0 failures; HR applicants list and dashboard **P95 37-59 ms**, 0 failures; 100 and
+1,000 submission bursts 0 failures, **1,100/1,100 submissions recorded**; throughput 100 CVs in
+~2.5 min. **NFR-PERF-01 met at pilot load; NFR-PERF-02 met.**
+
 How to read the burst rows: Locust, PostgreSQL, Redis, S3, the API and four Celery workers share one
 4-vCPU CI runner, and every candidate starts within seconds, so the runner is saturated by design.
 Nothing was lost or failed; latency under a burst like this is a capacity question for production
@@ -85,6 +90,7 @@ met with a wide margin (job board ~200 RPS at P95 170 ms; HR list P95 < 60 ms).
 | 2026-11-17 | 54.5 s | 65.0 s | 48.1 s / 67.5 s | 100 / 100 |
 | 2026-11-18 | 59.6 s | 65.0 s | 53.0 s / 66.9 s | 100 / 100 |
 | 2026-11-18 (run 4) | 48.5 s | 60.0 s | 48.1 s / 57.9 s | 100 / 100 |
+| 2026-11-18 (final) | 69.9 s | 75.0 s | 55.4 s / 75.7 s | 100 / 100 |
 
 About 2 minutes end to end against the NFR-PERF-02 target of 15 minutes.
 
