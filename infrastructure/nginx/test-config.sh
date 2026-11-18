@@ -10,7 +10,9 @@ trap 'rm -rf "$WORK"' EXIT
 # Git Bash on Windows: docker needs Windows paths; no MSYS path rewriting of /CN=... or /etc/...
 host() { if command -v cygpath >/dev/null; then cygpath -w "$1"; else echo "$1"; fi; }
 export MSYS_NO_PATHCONV=1
-mkdir -p "$WORK/le/live/mhrs" "$WORK/local" "$WORK/static" "$WORK/certbot"
+mkdir -p "$WORK/le/live/mhrs" "$WORK/local/upstreams" "$WORK/static" "$WORK/certbot"
+echo 'server backend:8000 resolve max_fails=0;' >"$WORK/local/upstreams/backend.conf"
+echo 'server frontend:3000 resolve max_fails=0;' >"$WORK/local/upstreams/frontend.conf"
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=mhrs.test" \
   -keyout "$(host "$WORK/le/live/mhrs/privkey.pem")" -out "$(host "$WORK/le/live/mhrs/fullchain.pem")" 2>/dev/null
 cp "$WORK/le/live/mhrs/fullchain.pem" "$WORK/le/live/mhrs/chain.pem"

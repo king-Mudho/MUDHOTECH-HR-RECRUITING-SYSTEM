@@ -1,0 +1,124 @@
+# Staging: every green CI run on main builds the images (tag sha-<commit>), pushes them to GHCR and deploys
+# them to the staging host with infrastructure/deployment/deploy.sh (P11-T05, docs/10 §4).
+#
+# Owner setup (GitHub -> Settings -> Environments -> "staging"): secrets STAGING_HOST (DNS name or IP),
+# STAGING_SSH_KEY (private key of the `mhrs` deploy user's key pair) and STAGING_SSH_KNOWN_HOSTS
+# (`ssh-keyscan -t ed25519 <host>` output). Until they exist the deploy job is skipped with a notice;
+# images are still built and pushed.
+name: Deploy (staging)
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  images:
+    name: Build and push images
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      sha: ${{ steps.meta.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - id: meta
+        run: |
+          sha=$(git rev-parse HEAD)
+          {
+            echo "sha=$sha"
+            echo "tag=sha-$sha"
+            echo "prefix=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+          } >>"$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Backend image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: backend
+          file: backend/Dockerfile
+          push: true
+          sbom: true
+          provenance: mode=max
+          build-args: |
+            UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+            MHRS_VERSION=${{ steps.meta.outputs.tag }}
+          tags: ${{ steps.meta.outputs.prefix }}/mhrs-backend:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+      - name: Worker image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: backend
+          file: backend/Dockerfile.worker
+          push: true
+          sbom: true
+          provenance: mode=max
+          build-args: |
+            UV_SYNC_ARGS=--frozen --no-install-project --no-dev
+            MHRS_VERSION=${{ steps.meta.outputs.tag }}
+          tags: ${{ steps.meta.outputs.prefix }}/mhrs-worker:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,scope=worker,mode=max
+      - name: Frontend image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: frontend
+          target: runtime
+          push: true
+          sbom: true
+          provenance: mode=max
+          build-args: MHRS_VERSION=${{ steps.meta.outputs.tag }}
+          tags: ${{ steps.meta.outputs.prefix }}/mhrs-frontend:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,scope=frontend,mode=max
+
+  deploy:
+    name: Deploy to staging
+    needs: images
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+    env:
+      HOST: ${{ secrets.STAGING_HOST }}
+      SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+      KNOWN_HOSTS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+      TAG: ${{ needs.images.outputs.tag }}
+      SHA: ${{ needs.images.outputs.sha }}
+    steps:
+      - name: Deploy over SSH
+        run: |
+          if [ -z "$HOST" ] || [ -z "$SSH_KEY" ] || [ -z "$KNOWN_HOSTS" ]; then
+            echo "::notice title=Staging deploy skipped::STAGING_HOST / STAGING_SSH_KEY / STAGING_SSH_KNOWN_HOSTS are not configured yet (owner step, docs/deployment/AWS_SETUP.md)."
+            exit 0
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" >~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" >~/.ssh/known_hosts
+          # check out the release first so the deploy script itself is the released version
+          ssh -i ~/.ssh/deploy -o BatchMode=yes -o StrictHostKeyChecking=yes "mhrs@$HOST" \
+            "set -e; cd /opt/mhrs && git fetch --quiet origin && git -c advice.detachedHead=false checkout --quiet --detach $SHA && infrastructure/deployment/deploy.sh $TAG"
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/deploy

@@ -42,13 +42,27 @@ gzip_min_length 1024;
 gzip_types text/plain text/css text/xml application/json application/javascript application/xml
            application/rss+xml image/svg+xml application/manifest+json;
 
+# Upstream servers come from /etc/nginx/local/upstreams/{backend,frontend}.conf, normally the compose service
+# name (`server backend:8000 resolve;`). During a rolling deploy deploy.sh points them at the new container,
+# reloads nginx gracefully, stops the old container, then points them back at the service name - so nginx
+# never sends a request to a container that is going away. Names are re-resolved through Docker's DNS
+# (`resolve`, open-source nginx >= 1.27.3), which also covers container restarts.
+resolver 127.0.0.11 valid=5s ipv6=off;
+resolver_timeout 2s;
+
+# Idle upstream connections are closed by nginx (4 s) before the app servers close them (gunicorn
+# --keep-alive 5, Node's default 5 s), so nginx never reuses a connection the server is dropping.
 upstream mhrs_frontend {
-  server frontend:3000;
+  zone mhrs_frontend 64k;
+  include /etc/nginx/local/upstreams/frontend.conf;
   keepalive 32;
+  keepalive_timeout 4s;
 }
 upstream mhrs_backend {
-  server backend:8000;
+  zone mhrs_backend 64k;
+  include /etc/nginx/local/upstreams/backend.conf;
   keepalive 32;
+  keepalive_timeout 4s;
 }
 
 # ---- port 80: ACME challenges + redirect to HTTPS ------------------------------------------------

@@ -145,6 +145,16 @@ install -d -m 0755 /etc/mhrs /etc/mhrs/nginx
 } >/etc/mhrs/nginx/ops-allowlist.conf
 # flower basic auth: empty until the owner adds a user (htpasswd -B /etc/mhrs/nginx/flower.htpasswd ops)
 [[ -f /etc/mhrs/nginx/flower.htpasswd ]] || install -m 0644 /dev/null /etc/mhrs/nginx/flower.htpasswd
+# nginx upstreams: deploy.sh (as the deploy user) switches them during rolling deploys
+install -d -o "$DEPLOY_USER" -g "$DEPLOY_USER" -m 0755 /etc/mhrs/nginx/upstreams
+for svc in backend:8000 frontend:3000; do
+  f="/etc/mhrs/nginx/upstreams/${svc%%:*}.conf"
+  [[ -f $f ]] || printf '# managed by deploy.sh
+server %s resolve max_fails=0;
+' "$svc" >"$f"
+  chown "$DEPLOY_USER:$DEPLOY_USER" "$f"
+done
+echo "$MHRS_ENVIRONMENT" >/etc/mhrs/environment
 
 log "SSH hardening + firewall (ufw) + fail2ban"
 cat >/etc/ssh/sshd_config.d/90-mhrs.conf <<'EOF'

@@ -99,6 +99,32 @@ to re-run (e.g. to change the operator allow-list).
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
 1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 
+**As built (P11-T05).**
+
+| Step | `deploy.sh <tag>` (as `mhrs` in `/opt/mhrs`; `flock` prevents parallel runs) |
+|---|---|
+| 1. Config | `/mhrs/<env>/` from SSM → `.env` (0600, values single-quoted so Compose never interpolates `$` in secrets; multi-line or quoted values refused; `GHCR_READ_TOKEN` is used for `docker login` only and never reaches containers). Environment from `/etc/mhrs/environment` (bootstrap) |
+| 2. Code | `git checkout --detach <tag>` (compose file, nginx templates, scripts are versioned with the images) |
+| 3. Images | `docker compose pull` of `ghcr.io/<owner>/mhrs-{backend,worker,frontend}:<tag>` + pinned infra images |
+| 4. Schema | one-off containers: `migrate` (expand-only), `load_taxonomy`, `embed_skills` (worker image), `check --deploy` |
+| 5. Roll | **backend, frontend side by side:** the new container starts next to the old one (`--scale 2 --no-recreate`); when healthy, nginx's upstream file (`/etc/mhrs/nginx/upstreams/<svc>.conf`) is pointed at the new container and nginx reloads gracefully; the old container is stopped (40 s drain) and removed; the upstream goes back to the service name. A new container that never becomes healthy is removed and the old one keeps serving. **Workers** restart in place with warm shutdown (120 s, `acks_late`), **beat** last, **nginx** re-renders its template and reloads gracefully |
+| 6. Smoke | `/readyz` inside the backend; `/healthz`, `/jobs`, `/login`, `/api/v1/jobs/` through nginx with the real certificate. Failure → automatic redeploy of the previous release with `--skip-migrate` |
+| 7. Record | `releases/current`, `releases/previous`, `releases/history`; `docker image prune` (images older than 7 days, EC-OPS-08) |
+
+`deploy.sh rollback` redeploys `releases/previous` without migrations; `deploy.sh status` shows both and the running
+images. **Rehearsal:** `infrastructure/deployment/test-rolling-deploy.sh` runs nginx with the production template and
+stand-in servers with gunicorn's shutdown semantics, rolls both services under continuous traffic and fails on any
+non-200 (CI infra job; locally ~230 requests, 0 failures). Upstream keepalive: nginx closes idle connections after
+4 s, before gunicorn (`--keep-alive 5`) and Node (5 s) do.
+
+**Pipelines.** `deploy-staging.yml`: after every green CI run on `main` it builds and pushes the three images as
+`sha-<commit>` (BuildKit SBOM + provenance attestations, GHA cache) and deploys them to staging over SSH; the deploy
+job is skipped with a notice until the owner adds the `staging` environment secrets (`STAGING_HOST`,
+`STAGING_SSH_KEY`, `STAGING_SSH_KNOWN_HOSTS`). `deploy-prod.yml`: a `vX.Y.Z` tag (or a manual run with a tag)
+**re-tags the staging images of that commit** — production only ever runs bits that ran on staging; it refuses a
+commit that was never deployed to staging — then deploys after the `production` environment's required reviewer
+approves. Rollback in production = run the workflow manually with the previous tag (or `deploy.sh rollback`).
+
 ## 5. Nginx
 `/` → frontend:3000; `/api/` → backend:8000; `/healthz`; gzip/brotli; `client_max_body_size 30m`; rate limit zones `auth` (10r/m) & `search` (60r/m); security headers; HTTP/2; deny dotfiles; access logs JSON.
 

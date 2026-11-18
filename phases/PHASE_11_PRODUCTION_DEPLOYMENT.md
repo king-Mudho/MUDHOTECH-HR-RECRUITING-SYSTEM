@@ -11,7 +11,7 @@
 - [x] **P11-T02** — Nginx config per `docs/10 §5` + Certbot automation script; staging and prod server blocks.
 - [x] **P11-T03** — `infrastructure/deployment/ec2-bootstrap.sh` (Ubuntu 24.04: updates, unattended-upgrades, docker engine + compose plugin, chrony, ufw (80/443, 22 restricted), fail2ban, CloudWatch agent, swap, log rotation, deploy user).
 - [x] **P11-T04** — `docs/deployment/AWS_SETUP.md` step-by-step: VPC/SG, EC2 + IAM instance role (S3, SES, SSM read), RDS PostgreSQL 16 (pgvector), S3 buckets (block public access, SSE, versioning, lifecycle), SES domain + DKIM/SPF/DMARC + SNS bounce topic, SSM parameters list, Sentry projects, budgets/alarms.
-- [ ] **P11-T05** — `deploy.sh` (pull, migrate, collectstatic, rolling restart, smoke, rollback) + `.github/workflows/deploy-staging.yml` (auto on main) and `deploy-prod.yml` (manual approval, tag-based).
+- [x] **P11-T05** — `deploy.sh` (pull, migrate, collectstatic, rolling restart, smoke, rollback) + `.github/workflows/deploy-staging.yml` (auto on main) and `deploy-prod.yml` (manual approval, tag-based).
 - [ ] **P11-T06** — Backups: RDS automated + `backup.sh` logical dump to S3 weekly; `restore.sh`; **restore drill** on staging documented in `docs/runbooks/restore-database.md` with timings (RPO/RTO evidence).
 - [ ] **P11-T07** — Monitoring/alerting per `docs/10 §8`: Sentry release tracking, CloudWatch alarms, uptime checks, queue-depth exporter or periodic check task posting metrics; on-call contact config.
 - [ ] **P11-T08** — Runbooks in `docs/runbooks/` (all listed in `docs/10 §6`).

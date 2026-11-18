@@ -1,0 +1,94 @@
+# Production: a version tag (vX.Y.Z) promotes the images that were built and deployed to staging for that
+# commit (same bits, re-tagged), then deploys them after a manual approval (P11-T05, docs/10 §4).
+#
+# Owner setup (GitHub -> Settings -> Environments -> "production"): required reviewers (the owner),
+# deployment branch/tag rule `v*`, and secrets PROD_HOST, PROD_SSH_KEY, PROD_SSH_KNOWN_HOSTS.
+# Releasing:  git tag -a v1.0.0 -m "v1.0.0" && git push origin v1.0.0   (after staging is green)
+name: Deploy (production)
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to deploy (e.g. v1.0.0); rollback = deploy the previous tag"
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Promote staging images to the release tag
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      sha: ${{ steps.meta.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - id: meta
+        env:
+          INPUT_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          [[ $INPUT_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "::error::not a release tag: $INPUT_TAG"; exit 1; }
+          {
+            echo "tag=$INPUT_TAG"
+            echo "sha=$(git rev-parse HEAD)"
+            echo "prefix=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+          } >>"$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Re-tag sha-<commit> as the release (only images that went through staging)
+        env:
+          PREFIX: ${{ steps.meta.outputs.prefix }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          SHA: ${{ steps.meta.outputs.sha }}
+        run: |
+          for img in mhrs-backend mhrs-worker mhrs-frontend; do
+            src="$PREFIX/$img:sha-$SHA"
+            docker buildx imagetools inspect "$src" >/dev/null 2>&1 \
+              || { echo "::error::$src does not exist - deploy this commit to staging first (Deploy (staging) workflow)"; exit 1; }
+            docker buildx imagetools create --tag "$PREFIX/$img:$TAG" "$src"
+          done
+
+  deploy:
+    name: Deploy to production
+    needs: promote
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ vars.PROD_URL }}
+    env:
+      HOST: ${{ secrets.PROD_HOST }}
+      SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+      KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+      TAG: ${{ needs.promote.outputs.tag }}
+    steps:
+      - name: Deploy over SSH
+        run: |
+          if [ -z "$HOST" ] || [ -z "$SSH_KEY" ] || [ -z "$KNOWN_HOSTS" ]; then
+            echo "::error title=Production not configured::PROD_HOST / PROD_SSH_KEY / PROD_SSH_KNOWN_HOSTS are missing (owner step)."
+            exit 1
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" >~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" >~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -o BatchMode=yes -o StrictHostKeyChecking=yes "mhrs@$HOST" \
+            "set -e; cd /opt/mhrs && git fetch --quiet --tags origin && git -c advice.detachedHead=false checkout --quiet --detach $TAG && infrastructure/deployment/deploy.sh $TAG"
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/deploy

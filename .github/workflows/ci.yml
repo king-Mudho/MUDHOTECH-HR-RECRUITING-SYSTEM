@@ -156,6 +156,10 @@ jobs:
         run: bash infrastructure/nginx/test-config.sh
       - name: ShellCheck (deployment, nginx, helper scripts)
         run: shellcheck --severity=warning infrastructure/*/*.sh scripts/*.sh
+      - name: actionlint (workflow syntax and expressions)
+        run: docker run --rm -v "$PWD:/repo:ro" -w /repo rhysd/actionlint:1.7.7 -no-color -oneline -shellcheck=
+      - name: Rolling deploy rehearsal (zero failed requests while backend + frontend roll)
+        run: bash infrastructure/deployment/test-rolling-deploy.sh
 
   images:
     name: Build images

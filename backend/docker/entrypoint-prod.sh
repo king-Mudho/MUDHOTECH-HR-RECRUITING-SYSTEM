@@ -11,5 +11,6 @@ exec gunicorn config.wsgi:application \
   --threads "${GUNICORN_THREADS:-8}" \
   --timeout "${GUNICORN_TIMEOUT:-60}" \
   --graceful-timeout 30 \
+  --keep-alive 5 \
   --max-requests 2000 --max-requests-jitter 200 \
   --access-logfile - --forwarded-allow-ips "*"
