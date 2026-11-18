@@ -67,7 +67,7 @@ To switch: point `DATABASE_URL` (SSM) at `.../mhrs_restore_20261118` and redeplo
 
 1. `restore.sh` output (or the same queries by hand): migrations > 0, organisations / users / jobs / applications /
    documents / audit events plausible against the last known numbers, latest audit event ≈ the restore point,
-   `rls_forced_tables` = 19, `owner_is_superuser` = false.
+   `rls_forced_tables` equal to the source database (24 since P12-T01: 19 + 5 interview tables), `owner_is_superuser` = false.
 2. Audit hash chain intact:
    `docker compose -f docker-compose.prod.yml run --rm -e DATABASE_URL='<new url as mhrs_app>' backend python manage.py verify_audit_chain`
 3. After the switch: `deploy.sh` smoke tests pass; sign in as a test HR user; open one application with evidence;

@@ -5,10 +5,11 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-EXIT
+- **Current phase:** 12 — Interviews, Offers & Hiring
+- **Current task:** P12-T02
+- **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-18
-- **Overall:** 148 / 193 tasks · 9 / 16 phases
+- **Overall:** 149 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -24,7 +25,7 @@
 | 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ✅ Done | 2026-11-17 |
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | 🟦 In progress | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | 🟦 In progress | |
-| 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ⬜ Not started | |
+| 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | 🟦 In progress | |
 | 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ⬜ Not started | |
 | 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ⬜ Not started | |
 | 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | ⬜ Not started | |
@@ -234,7 +235,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [ ] P11-EXIT — All exit criteria verified with evidence
 
 ### Phase 12 — Interviews, Offers & Hiring  (`phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md`)
-- [ ] P12-T01 — `apps.interviews` models: Interview, InterviewSlot, InterviewPanelist, Scorecard (+ scorecard templates derived from …
+- [x] P12-T01 — `apps.interviews` models: Interview, InterviewSlot, InterviewPanelist, Scorecard (+ scorecard templates derived from …
 - [ ] P12-T02 — Scheduling services: create interview (mode, stage, panel), offer slots, candidate self-booking (row-locked slots), …
 - [ ] P12-T03 — Scorecards: per-criterion 1–5 with evidence notes, overall recommendation
 - [ ] P12-T04 — `apps.offers`: Offer, OfferApproval, HireRecord
@@ -698,3 +699,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-18 | Impl | P11-T09 (prepared, not ticked) | Staging tooling: Mailpit service on compose profile `staging` (+ nginx /mailpit/ with basic auth, staging snippet only), nginx rate limits configurable per environment (MHRS_AUTH_RATE / MHRS_SEARCH_RATE; production defaults unchanged), deploy.sh pulls/starts the active profile's services, E2E specs send Mailpit basic auth (MAILPIT_AUTH) and can skip the one-shot core scenario (E2E_SKIP_CORE), seed-staging.sh (refuses non-staging hosts), .github/workflows/staging-checks.yml (Playwright desktop+phone + ZAP baseline against STAGING_URL after each staging deploy; skipped until configured), docs/deployment/STAGING.md (bring-up + acceptance table) | STOP: staging needs the owner's AWS account, domain and GitHub environment secrets |
 | 2026-11-18 | Impl | P11-T10 | docs/deployment/GO_LIVE_CHECKLIST.md: sections A quality/security gates (the seven Phase 10 exit criteria + release CI), B legal D-08 (counsel sign-off, POTRAZ, DPO, signed DPAs, notices, breach deadlines, cross-border, DPIA), C infrastructure (AWS_SETUP §11, bootstrap, DNS/CAA, TLS A+, SES out of sandbox + DKIM/SPF/DMARC, no-reply rule, secrets rotated from defaults, mhrs_app NOBYPASSRLS, no staging services), D access (admin MFA, bootstrap secrets removed, production environment reviewer), E backups (PITR, weekly dump verified, staging restore drill within RPO/RTO, key copy), F monitoring (alarms + test alert, ops metrics, uptime, Sentry), G release/cut-over (tag -> approved production deploy, smoke, pilot orgs, onboarding, rollback rehearsal), H owner decision with exceptions table | Owner executes and signs (P11 exit) |
 | 2026-11-18 | Impl | P11-T11 | docs/training/HR_ONBOARDING.md: 60-minute hands-on session on staging (roles, prep checklist, five rules, agenda mapped to the role guides, per-attendee exercise checklist) and a 5-video recorded-script outline; docs/training/PILOT_SUPPORT.md: channels and hours, severities S1-S4 with response targets, handling steps without personal data, break-glass support access as built, support never decides about candidates, rights requests, weekly pilot review, pilot exit | Record the videos on staging once it is live |
+| 2026-11-18 | Impl | P12-T01 | apps.interviews: ScorecardTemplate (criteria JSON derived from the published version's rated criteria - eligibility excluded - plus HR competencies; locked_at once used), Interview (stage, mode, location/link, duration, UTC times + IANA timezone, status proposed/scheduled/completed/cancelled/no_show, ICS sequence, reminder stamps, lock_version; checks: valid times, scheduled has a time), InterviewSlot (one booked slot per interview - partial unique, unique start), InterviewPanelist (membership, lead/member, unique), Scorecard (scores JSON, encrypted criterion notes + notes, overall 1-5, recommendation; unique per panelist; submitted requires overall + recommendation). RLS forced on all 5 tables (migration 0002). services.template_from_job (audited). Admin (cross-tenant mixin, no assessment content in lists). 7 tests | Erasure/retention must cover interview scorecards and notes (P12-T03/T06); restore runbook now expects 24 RLS tables |
