@@ -78,6 +78,24 @@ Workers get a 120 s warm-shutdown grace period (tasks are `acks_late`, so anythi
 Django static files are collected into the `static` volume and served by nginx from `/srv/static`.
 `backend/tests/integration/test_prod_compose.py` enforces these rules.
 
+### 3.4 Host bootstrap (P11-T03)
+`sudo [variables] bash infrastructure/deployment/ec2-bootstrap.sh` prepares a fresh Ubuntu 24.04 instance and is safe
+to re-run (e.g. to change the operator allow-list).
+
+| Area | What it sets |
+|---|---|
+| Updates | full upgrade, then `unattended-upgrades` for **security origins only** with automatic reboot at 03:30 UTC (Docker Engine is upgraded in a deploy window) |
+| Time | chrony preferring the Amazon Time Sync Service `169.254.169.123`; host TZ UTC (EC-OPS-06) |
+| Docker | Engine + compose/buildx plugins from Docker's apt repository; `daemon.json`: rotated JSON logs (5 × 20 MB), `live-restore`, `no-new-privileges`, no userland proxy |
+| Firewall | ufw deny-by-default; 80/443 open; 22 only from `SSH_ALLOW_CIDR` (empty = closed, use SSM Session Manager). The security group is the outer boundary |
+| SSH | no root login, keys only, 3 tries; fail2ban `sshd` jail (5 failures / 10 min → 1 h ban) |
+| Memory | `SWAP_SIZE_GB` swap file (default 4), `vm.swappiness=10`, `vm.overcommit_memory=1` (Redis) |
+| Kernel | rp_filter, no ICMP redirects, syncookies, `somaxconn 1024` |
+| Monitoring | CloudWatch agent with `infrastructure/monitoring/cloudwatch-agent.json`: namespace `MHRS/<env>` (memory, swap, disk `/` + `/var/lib/docker`, iowait/steal), log groups `/mhrs/<env>/containers` (30 days) and `/mhrs/<env>/host` (90 days) |
+| Tools | AWS CLI v2 (snap), certbot, `htpasswd`, `psql` 16 |
+| Users | `mhrs` deploy user in the `docker` group, key from `DEPLOY_SSH_KEY`; `/opt/mhrs` (app), `/var/log/mhrs` (logrotate weekly × 8), `/var/www/certbot` |
+| nginx host files | `/etc/mhrs/nginx/ops-allowlist.conf` from `OPS_ALLOW_IPS` (always ends `deny all;`), empty `flower.htpasswd` |
+
 ## 4. Deployment procedure (`infrastructure/deployment/deploy.sh`)
 1. Pull new image tags. 2. Run `migrate` in one-off container (expand-only migrations), then `load_taxonomy` and, in a worker container, `embed_skills` (only new or other-model skill vectors are computed; ADR-025). 3. `collectstatic`. 4. Rolling restart: backend → frontend → workers (warm shutdown, `--max-tasks-per-child`), beat last. 5. Smoke: `/readyz`, public jobs page, login page. 6. Tag release; record in `CHANGELOG.md`. Rollback: previous image tags + (if needed) backward-compatible schema means no DB rollback.
 
