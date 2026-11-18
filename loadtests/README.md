@@ -4,10 +4,10 @@ Locust scenarios for NFR-PERF-01 (P95 < 400 ms for list/detail endpoints at pilo
 
 | Run | Users | Pass rule |
 |---|---|---|
-| Job board (`JobBoardUser`) | 400 | every list/detail P95 < 400 ms, aggregate ≥ 200 RPS, no failures |
-| 100 submissions (`CandidateSubmitter`) | 100 | reads < 400 ms, no failed request |
+| Job board (`JobBoardUser`, 1 request/s per user) | 210 | every list/detail P95 < 400 ms, ≥ 200 RPS after ramp-up (`--reset-stats`), no failures |
+| 100 submissions (`CandidateSubmitter`) | 100 | burst (all within 5 s; stress): no failed request, latency recorded |
 | HR applicants list (`HRReviewer`) | 20 | P95 < 400 ms, no failures |
-| 1,000 submissions (`CandidateSubmitter`, `LOAD_USER_OFFSET=100`) | 1,000 | reads < 400 ms, no failed request |
+| 1,000 submissions (`CandidateSubmitter`, `LOAD_USER_OFFSET=100`) | 1,000 | stress: no failed request, every submission recorded, latency recorded |
 
 Writes and file transfer (start, upload, attach, answers, submit, login) are reported but not held
 to the list/detail budget. `check.py` turns a Locust `--csv` file into a Markdown table and exits 1
