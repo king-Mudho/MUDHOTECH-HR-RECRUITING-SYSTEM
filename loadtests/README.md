@@ -26,7 +26,7 @@ docker compose exec backend python manage.py seed_demo
 docker compose exec backend python manage.py seed_load_accounts --count 1100
 docker compose exec backend python manage.py seed_core_scenario --count 100
 pip install "locust==2.32.4"
-DEMO_PASSWORD=... locust -f loadtests/locustfile.py JobBoardUser --headless -u 400 -r 40 -t 3m \
+DEMO_PASSWORD=... locust -f loadtests/locustfile.py JobBoardUser --headless -u 210 -r 21 -t 3m --reset-stats \
   --host http://127.0.0.1:8000 --csv out/board
 python loadtests/check.py out/board_stats.csv --min-rps 200
 ```

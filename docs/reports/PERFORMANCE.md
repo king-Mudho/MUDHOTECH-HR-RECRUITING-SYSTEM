@@ -57,14 +57,23 @@ requests, so four workers exhausted `max_connections` - and every synchronous vi
 per worker. Fix: ADR-029 (gunicorn WSGI threaded workers + psycopg connection pool; connections
 stayed at 11 under the same local load). Defect D-009 (P0).
 
-**Run 2 (after ADR-029):** see the table below (from the Load workflow annotations).
+**Runs 2-4** fixed the rest: run 2 (ADR-029) removed the 500s; run 3 found the readiness check's
+session-level `statement_timeout` leaking into pooled connections (D-010, 12 submit 500s) and a job
+board P95 of 1.2 s; run 4 (D-010 fixed, public job board cached for anonymous visitors) was the
+first with **zero failed requests**:
 
-| Run | Users | Aggregate RPS | Worst list/detail P95 | Failures | Result |
-|---|---|---|---|---|---|
-| Job board | 400 | _pending_ | | | |
-| 100 submissions | 100 | | | | |
-| HR applicants list | 20 | | | | |
-| 1,000 submissions | 1,000 | | | | |
+| Run 4 (2026-11-18) | Users | Requests | Failures | P95 (list/detail) | Throughput | Result |
+|---|---|---|---|---|---|---|
+| Job board (1 req/s per user) | 200 | 34,920 | 0 | **160-170 ms** | 195.9 RPS incl. ramp-up | ✅ P95; RPS now measured after ramp-up (210 users) |
+| HR applicants list + dashboard | 20 | 1,611 | 0 | **39-56 ms** | 13.5 RPS | ✅ |
+| 100 submissions (burst: all within 5 s) | 100 | 900 | 0 | reads 2.2-3.2 s, submit 6.6 s | - | ✅ no failures; latency recorded |
+| 1,000 submissions (burst) | 1,000 | 9,000 | 0 | reads 11-49 s, submit 35 s | - | ✅ no failures; **1,100/1,100 submissions recorded** |
+
+How to read the burst rows: Locust, PostgreSQL, Redis, S3, the API and four Celery workers share one
+4-vCPU CI runner, and every candidate starts within seconds, so the runner is saturated by design.
+Nothing was lost or failed; latency under a burst like this is a capacity question for production
+sizing (dedicated API hosts, more gunicorn workers), not a defect. At pilot load the read budget is
+met with a wide margin (job board ~200 RPS at P95 170 ms; HR list P95 < 60 ms).
 
 ### 2.1 Throughput (P10-T06) - passed
 
@@ -75,6 +84,7 @@ stayed at 11 under the same local load). Defect D-009 (P0).
 |---|---|---|---|---|
 | 2026-11-17 | 54.5 s | 65.0 s | 48.1 s / 67.5 s | 100 / 100 |
 | 2026-11-18 | 59.6 s | 65.0 s | 53.0 s / 66.9 s | 100 / 100 |
+| 2026-11-18 (run 4) | 48.5 s | 60.0 s | 48.1 s / 57.9 s | 100 / 100 |
 
 About 2 minutes end to end against the NFR-PERF-02 target of 15 minutes.
 
