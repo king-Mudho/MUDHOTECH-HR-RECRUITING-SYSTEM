@@ -224,7 +224,7 @@ All runtime configuration lives under `/mhrs/<env>/` (Standard tier, free). `dep
 | `REDIS_URL`, `CELERY_BROKER_URL` | String | `redis://redis:6379/0` |
 | `CACHE_URL` / `CELERY_RESULT_BACKEND` | String | `redis://redis:6379/1` / `redis://redis:6379/3` |
 | `S3_REGION` | String | `af-south-1` (leave `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` unset: instance role) |
-| `S3_BUCKET_QUARANTINE` … `S3_BUCKET_PUBLIC` | String | the bucket names from §4 |
+| `S3_BUCKET_QUARANTINE` … `S3_BUCKET_PUBLIC`, `S3_BUCKET_BACKUPS` | String | the bucket names from §4 (backups: `backup.sh`) |
 | `EMAIL_URL` | SecureString | SES SMTP URL (§5) |
 | `DEFAULT_FROM_EMAIL`, `SUPPORT_EMAIL` | String | `MUDHOTECH HR RECRUITING SYSTEM <no-reply@<domain>>`, `support@<domain>` |
 | `SES_SNS_TOPIC_ARNS`, `AWS_SES_REGION`, `AWS_SES_CONFIGURATION_SET` | String | §5 |

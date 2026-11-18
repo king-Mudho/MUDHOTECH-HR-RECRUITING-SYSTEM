@@ -7,7 +7,7 @@ Follow-up (incident record, audit, communication)**. Never paste personal data o
 | Runbook | Status | Written in |
 |---|---|---|
 | `processing-backlog.md` — scale workers, inspect dead letters, retry | planned | Phase 06/10 |
-| `restore-database.md` — RDS PITR / `pg_restore`, verification queries | planned | Phase 11 |
+| `restore-database.md` — RDS PITR / `pg_restore`, verification queries, drill log | written | Phase 11 (P11-T06) |
 | `incident-data-leak.md` — contain, assess, notify (CDPA / POTRAZ) | planned | Phase 09 |
 | `credential-compromise.md` — rotate secrets, revoke sessions | planned | Phase 09 |
 | `malware-detected.md` — quarantine handling, candidate messaging | planned | Phase 04 |
