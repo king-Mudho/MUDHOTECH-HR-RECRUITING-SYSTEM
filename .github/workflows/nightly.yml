@@ -61,7 +61,7 @@ jobs:
         if: always()
         run: |
           mkdir -p zap && chmod 777 zap
-          cp ../infrastructure/security/zap-rules.tsv zap/
+          cp infrastructure/security/zap-rules.tsv zap/  # step runs from the repository root
           # -I: warnings are reported, only rules marked FAIL in zap-rules.tsv fail the job
           docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable             zap-baseline.py -t http://127.0.0.1:3000 -c zap-rules.tsv -r zap-report.html -I
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

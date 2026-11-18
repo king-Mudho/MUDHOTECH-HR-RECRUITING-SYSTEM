@@ -11,7 +11,12 @@ type Me = {
  * membership like the HR UI does (the nightly failed on this before).
  */
 export async function hrContext(page: Page): Promise<{ org: string; job: string }> {
-  const me = (await (await page.request.get("/api/v1/me/")).json()) as Me;
+  const meRes = await page.request.get("/api/v1/me/");
+  const body = await meRes.text();
+  if (!meRes.ok()) throw new Error(`/api/v1/me/ failed: ${meRes.status()} ${body.slice(0, 300)}`);
+  const me = JSON.parse(body) as Partial<Me>;
+  if (!Array.isArray(me.memberships))
+    throw new Error(`Unexpected /api/v1/me/: ${body.slice(0, 300)}`);
   const org = me.active_organisation_id ?? me.memberships[0]?.organisation_id;
   if (!org) throw new Error("The signed-in user has no organisation membership");
   const res = await page.request.get("/api/v1/hr/jobs/?search=Software%20Developer", {

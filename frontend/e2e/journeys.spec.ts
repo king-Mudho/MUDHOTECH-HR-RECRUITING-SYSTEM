@@ -12,6 +12,8 @@
  *
  * Needs `seed_demo` + `seed_core_scenario` and DEMO_PASSWORD (nightly workflow).
  */
+import path from "node:path";
+
 import { expect, test } from "@playwright/test";
 
 import {
@@ -23,6 +25,9 @@ import {
   signIn,
   uniqueEmail,
 } from "./helpers";
+
+/** Screenshots for review and the user guides; uploaded by the nightly as the "screens" artifact. */
+const screen = (name: string) => path.join(process.cwd(), "test-results", "screens", name);
 
 const CANDIDATE = "candidate002@core-scenario.test";
 const PLATFORM_ADMIN = "admin@mhrs-demo.test";
@@ -60,7 +65,7 @@ test("candidate exports their data after confirming by email", async ({ page, re
     )
     .toBeGreaterThan(0);
   await page.screenshot({
-    path: info.outputPath("../screens/candidate-privacy.png"),
+    path: screen("candidate-privacy.png"),
     fullPage: true,
   });
 });
@@ -85,7 +90,7 @@ test("platform admin verifies a new organisation", async ({ browser, request }, 
   const dialog = admin.getByRole("dialog");
   await dialog.getByRole("button", { name: "Verify" }).click();
   await expect(row.getByText("Active")).toBeVisible({ timeout: 20_000 });
-  await admin.screenshot({ path: info.outputPath("../screens/admin-organisations.png") });
+  await admin.screenshot({ path: screen("admin-organisations.png") });
 });
 
 test("key pages render for screenshots", async ({ page }, info) => {
@@ -98,7 +103,7 @@ test("key pages render for screenshots", async ({ page }, info) => {
     await open(page, path);
     await expect(page.locator("main").first()).toBeVisible();
     await page.screenshot({
-      path: info.outputPath(`../screens/${info.project.name}-${file}.png`),
+      path: screen(`${info.project.name}-${file}.png`),
       fullPage: true,
     });
   }
