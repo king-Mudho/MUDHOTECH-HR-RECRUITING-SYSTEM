@@ -2,7 +2,7 @@ import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
 export const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 export const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? "";
-export const E2E_PASSWORD = "lantern-orchard-velvet-27";
+export const E2E_PASSWORD = "lantern-orchard-velvet-27"; // pragma: allowlist secret - synthetic test password
 
 export function uniqueEmail(prefix: string): string {
   return `${prefix}.${Date.now()}.${Math.floor(Math.random() * 1e6)}@e2e.mhrs.test`;

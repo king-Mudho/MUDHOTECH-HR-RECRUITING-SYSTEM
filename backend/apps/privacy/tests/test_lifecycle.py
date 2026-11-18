@@ -27,7 +27,7 @@ from apps.privacy import export
 from apps.privacy.models import RightsRequest
 
 pytestmark = pytest.mark.django_db
-PASSWORD = "lantern-orchard-velvet-27"
+PASSWORD = "lantern-orchard-velvet-27"  # pragma: allowlist secret - synthetic test password
 EMAIL = "tendai.chuma@example.test"
 
 
@@ -76,9 +76,8 @@ def test_export_then_deletion_leaves_no_personal_data(
     base = {"scope": "organisation", "organisation_id": str(team.org.pk), "password": PASSWORD}
 
     # 1. export: wrong password refused, then request -> email confirmation -> bundle -> download
-    assert me.post(
-        "/api/v1/privacy/requests/", {**base, "type": "export", "password": "nope"}, format="json"
-    ).status_code in (400, 403)
+    wrong = {**base, "type": "export", "password": "nope"}  # pragma: allowlist secret
+    assert me.post("/api/v1/privacy/requests/", wrong, format="json").status_code in (400, 403)
     created = me.post("/api/v1/privacy/requests/", {**base, "type": "export"}, format="json")
     assert created.status_code == 201
     export_id = created.json()[0]["id"]

@@ -13,7 +13,7 @@ from apps.platform.demo_seed import seed as seed_demo
 
 # real commits: the pipeline dispatches work from on_commit callbacks
 pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.slow]
-PASSWORD = "Synthetic-Demo-Seed-2026"
+PASSWORD = "Synthetic-Demo-Seed-2026"  # pragma: allowlist secret - synthetic test password
 
 
 def test_pilot_accounts_for_every_application(s3: Any, settings: Any, tmp_path: Path) -> None:

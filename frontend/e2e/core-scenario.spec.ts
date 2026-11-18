@@ -20,7 +20,9 @@ const PASSWORD = process.env.DEMO_PASSWORD ?? "";
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 const HR = "hr@mudhotech-demo.test";
 
-test.describe.configure({ mode: "serial", timeout: 15 * 60_000 });
+// no retries: the scenario changes state (an approved shortlist cannot be proposed again), so a
+// retry could only time out and hide the first failure
+test.describe.configure({ mode: "serial", timeout: 15 * 60_000, retries: 0 });
 
 async function signIn(page: Page, email: string) {
   await page.goto("/login?next=/hr/dashboard");
@@ -104,7 +106,8 @@ test("core scenario: 100 applicants to an approved shortlist of ten", async ({ p
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("checkbox", { name: /Leave .* in review/ }).check();
   await dialog.getByRole("button", { name: "Approve" }).click();
-  await expect(page.getByText("Approved", { exact: true })).toBeVisible();
+  // "Approved" is both the status badge and the confirmation alert's title
+  await expect(page.getByRole("alert").getByText("Approved", { exact: true })).toBeVisible();
 
   // after the delay: ten outcome emails to synthetic candidates, no "not selected" ones
   await expect

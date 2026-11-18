@@ -106,7 +106,10 @@ jobs:
         working-directory: backend
         run: |
           cd ..
-          uv run --project backend detect-secrets-hook --baseline .secrets.baseline $(git ls-files -- ':!*.lock' ':!frontend/package-lock.json')
+          FILES=$(git ls-files -- ':!*.lock' ':!frontend/package-lock.json')
+          # the first run may only refresh line numbers of known entries (and exit non-zero); a
+          # genuinely new secret fails the second run too
+          uv run --project backend detect-secrets-hook --baseline .secrets.baseline $FILES             || uv run --project backend detect-secrets-hook --baseline .secrets.baseline $FILES
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
