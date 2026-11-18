@@ -24,7 +24,9 @@ RUN mkdir -p public && npm run build
 
 FROM ${NODE_IMAGE} AS runtime
 ARG MHRS_VERSION=dev
-LABEL org.opencontainers.image.title="mhrs-frontend" \n      org.opencontainers.image.vendor="MudhoTech Solutions (Pvt) Ltd" \n      org.opencontainers.image.version="${MHRS_VERSION}"
+LABEL org.opencontainers.image.title="mhrs-frontend" \
+      org.opencontainers.image.vendor="MudhoTech Solutions (Pvt) Ltd" \
+      org.opencontainers.image.version="${MHRS_VERSION}"
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0 MHRS_VERSION=${MHRS_VERSION}
 RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app

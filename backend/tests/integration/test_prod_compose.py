@@ -107,6 +107,8 @@ def test_workers_shut_down_warm_and_backend_serves_static_to_nginx() -> None:
 @pytest.mark.parametrize("dockerfile", DOCKERFILES, ids=lambda p: f"{p.parent.name}/{p.name}")
 def test_dockerfiles_are_multistage_pinned_and_non_root(dockerfile: Path) -> None:
     text = dockerfile.read_text(encoding="utf-8")
+    # a literal "\n" where a line continuation was meant breaks the build (CI #120)
+    assert "\\n " not in text.replace("\\\n", ""), "literal \\n in a Dockerfile instruction"
     stages = re.findall(r"^FROM\s+(\S+)(?:\s+AS\s+(\S+))?", text, flags=re.MULTILINE)
     assert len(stages) >= 2, "expected a multi-stage build"
     for arg in re.findall(r"^ARG\s+\w+_IMAGE=(\S+)", text, flags=re.MULTILINE):

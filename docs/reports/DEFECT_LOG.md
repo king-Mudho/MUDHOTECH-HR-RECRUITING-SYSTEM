@@ -28,6 +28,9 @@ Bug-bash sweeps (2026-11-18): `manage.py check --deploy` with production setting
 | D-016 | 2026-11-18 | Core scenario (mobile) | On phone widths the HR review workspace let long evidence text widen its grid column, so the evidence viewer overlapped the claims list and the "Confirm" (verify claim) button could not be tapped | P2 | Fixed - grid children get `min-w-0`, evidence text breaks long words; nightly #13 caught it | this commit |
 | D-017 | 2026-11-18 | Security CI | detect-secrets flagged password field labels in `frontend/messages/en.json` (i18n strings, not secrets) | P3 | Fixed - message catalogues excluded in the baseline filter | this commit |
 | D-018 | 2026-11-18 | E2E (nightly) | Mobile core scenario timed out waiting for "Desired shortlist size" (nightly #14; the D-016 fix let it get that far) | P3 | Fixed - test bug: the scenario approves the one seeded shortlist, so after the desktop run the mobile run correctly found it approved. The stateful scenario now runs once (desktop); a read-only phone test covers the review workspace (trial click on "Confirm" + no sideways scrolling). Also: nightly #14 Trivy filesystem step failed in 10 s while a local scan of the same tree is clean (0 findings) - recheck on the next nightly | this commit |
+| D-019 | 2026-11-18 | CI images | Frontend image build failed (`can't find = in "\n"`): a literal `
+` instead of a line continuation in the runtime `LABEL` (P11-T01 edit). Backend/worker images built fine | P2 | Fixed - continuation restored; `docker buildx build --check` clean for all three Dockerfiles; test_prod_compose guards against literal `
+` in instructions. Also found: CI on main had been red since #104 (unformatted scripts/semgrep_annotations.py) - fixed in 8d8cfa9 | this commit |
 
 ## Follow-ups (not defects)
 
