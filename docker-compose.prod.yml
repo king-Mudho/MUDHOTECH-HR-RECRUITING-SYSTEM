@@ -40,7 +40,7 @@ x-worker: &worker
 
 services:
   nginx:
-    image: nginx:1.30.7-alpine3.24
+    image: nginx:1.31-alpine3.24
     ports: ["80:80", "443:443"]
     volumes:
       - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d:ro
