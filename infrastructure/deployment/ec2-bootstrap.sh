@@ -145,6 +145,8 @@ install -d -m 0755 /etc/mhrs /etc/mhrs/nginx
 } >/etc/mhrs/nginx/ops-allowlist.conf
 # flower basic auth: empty until the owner adds a user (htpasswd -B /etc/mhrs/nginx/flower.htpasswd ops)
 [[ -f /etc/mhrs/nginx/flower.htpasswd ]] || install -m 0644 /dev/null /etc/mhrs/nginx/flower.htpasswd
+# staging only: basic auth for /mailpit/ (staging E2E reads verification emails); empty = closed
+[[ -f /etc/mhrs/nginx/mailpit.htpasswd ]] || install -m 0644 /dev/null /etc/mhrs/nginx/mailpit.htpasswd
 # nginx upstreams: deploy.sh (as the deploy user) switches them during rolling deploys
 install -d -o "$DEPLOY_USER" -g "$DEPLOY_USER" -m 0755 /etc/mhrs/nginx/upstreams
 for svc in backend:8000 frontend:3000; do

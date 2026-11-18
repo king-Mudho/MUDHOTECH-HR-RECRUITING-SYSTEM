@@ -32,6 +32,7 @@ openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=hr.mhrs.test" \
   -keyout "$(host "$WORK/le/live/mhrs/privkey.pem")" -out "$(host "$WORK/le/live/mhrs/fullchain.pem")" 2>/dev/null
 printf 'deny all;\n' >"$WORK/local/ops-allowlist.conf"
 : >"$WORK/local/flower.htpasswd"
+: >"$WORK/local/mailpit.htpasswd"
 chmod -R a+rX "$WORK"
 
 # stand-in app server with gunicorn's shutdown semantics: answers every path with its release; on SIGTERM
@@ -94,7 +95,7 @@ services:
   nginx:
     image: $NGINX_IMAGE
     ports: ["127.0.0.1:$PORT:443"]
-    environment: { MHRS_DOMAIN: hr.mhrs.test, MHRS_ENVIRONMENT: staging, NGINX_ENVSUBST_FILTER: "^MHRS_" }
+    environment: { MHRS_DOMAIN: hr.mhrs.test, MHRS_ENVIRONMENT: staging, NGINX_ENVSUBST_FILTER: "^MHRS_", MHRS_AUTH_RATE: 10r/m, MHRS_SEARCH_RATE: 6000r/m }
     volumes:
       - "$(host "$ROOT/infrastructure/nginx/templates"):/etc/nginx/templates:ro"
       - "$(host "$ROOT/infrastructure/nginx/snippets"):/etc/nginx/snippets:ro"

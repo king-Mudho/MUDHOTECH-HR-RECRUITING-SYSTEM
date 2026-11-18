@@ -26,8 +26,10 @@ map $request_method $mhrs_auth_key {
   POST    $binary_remote_addr;
   default "";
 }
-limit_req_zone $mhrs_auth_key      zone=auth:10m   rate=10r/m;
-limit_req_zone $binary_remote_addr zone=search:10m rate=60r/m;
+# rates come from the environment (compose defaults: auth 10r/m, search 60r/m); staging raises them so the
+# E2E suite, which signs in many times from one runner IP, is not throttled
+limit_req_zone $mhrs_auth_key      zone=auth:10m   rate=${MHRS_AUTH_RATE};
+limit_req_zone $binary_remote_addr zone=search:10m rate=${MHRS_SEARCH_RATE};
 limit_req_status 429;
 limit_conn_zone $binary_remote_addr zone=perip:10m;
 

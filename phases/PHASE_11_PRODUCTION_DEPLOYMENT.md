@@ -16,6 +16,7 @@
 - [x] **P11-T07** — Monitoring/alerting per `docs/10 §8`: Sentry release tracking, CloudWatch alarms, uptime checks, queue-depth exporter or periodic check task posting metrics; on-call contact config.
 - [x] **P11-T08** — Runbooks in `docs/runbooks/` (all listed in `docs/10 §6`).
 - [ ] **P11-T09** — Staging environment live with synthetic seed; full E2E smoke against staging URL; ZAP baseline against staging.
+  - _Prepared 2026-11-18: `docs/deployment/STAGING.md`, `seed-staging.sh`, `staging-checks.yml`, Mailpit profile. Waiting on the owner (AWS, domain, GitHub environment) - STOP condition._
 - [ ] **P11-T10** — Production go-live checklist `docs/deployment/GO_LIVE_CHECKLIST.md` (gates from Phase 10, D-08 legal sign-off, DNS, TLS A+ (SSL Labs), SES out of sandbox, admin MFA, secrets rotated from defaults, backups verified, monitoring firing test alerts) → owner executes/approves.
 - [ ] **P11-T11** — HR onboarding/training material: short walkthrough doc + recorded-script outline; pilot support process.
 - [ ] **P11-T12** — Tag `v1.0.0`; CHANGELOG; release notes.

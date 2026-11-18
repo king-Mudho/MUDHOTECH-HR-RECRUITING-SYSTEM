@@ -19,11 +19,13 @@ cp "$WORK/le/live/mhrs/fullchain.pem" "$WORK/le/live/mhrs/chain.pem"
 printf 'allow 127.0.0.1;\ndeny all;\n' >"$WORK/local/ops-allowlist.conf"
 # shellcheck disable=SC2016  # a literal (dummy) htpasswd hash
 printf 'ops:$apr1$test$000000000000000000000.\n' >"$WORK/local/flower.htpasswd"
+cp "$WORK/local/flower.htpasswd" "$WORK/local/mailpit.htpasswd"
 chmod -R a+rX "$WORK"
 
 for env in staging production; do
   docker run --rm \
     -e MHRS_DOMAIN=hr.mhrs.test -e MHRS_ENVIRONMENT="$env" -e NGINX_ENVSUBST_FILTER='^MHRS_' \
+    -e MHRS_AUTH_RATE=10r/m -e MHRS_SEARCH_RATE=60r/m \
     --add-host frontend:127.0.0.1 --add-host backend:127.0.0.1 \
     -v "$(host "$PWD/templates"):/etc/nginx/templates:ro" -v "$(host "$PWD/snippets"):/etc/nginx/snippets:ro" \
     -v "$(host "$WORK/local"):/etc/nginx/local:ro" -v "$(host "$WORK/le"):/etc/letsencrypt:ro" \
@@ -36,6 +38,7 @@ for env in staging production; do
       conf=/etc/nginx/conf.d/default.conf
       grep -q "server_name hr.mhrs.test;" $conf      # rendered from the template (stock site replaced)
       grep -q "env-'"$env"'.conf" $conf
+      grep -q "zone=auth:10m   rate=10r/m;" $conf     # rate rendered from MHRS_AUTH_RATE
       grep -q "\$request_uri" $conf                    # nginx variables survive envsubst
       test "$(ls /etc/nginx/conf.d)" = "default.conf"'
   echo "nginx config OK ($env)"

@@ -1,0 +1,116 @@
+# Staging checks (P11-T09): after every successful staging deploy (and on demand) run the full Playwright suite
+# (desktop + phone, axe) against the staging URL and an OWASP ZAP baseline (passive) scan of it.
+#
+# Owner setup, GitHub -> Settings -> Environments -> "staging":
+#   variable STAGING_URL          https://staging.hr.example.co.zw
+#   secret   DEMO_PASSWORD        the staging demo password (seed-staging.sh)
+#   secret   STAGING_MAILPIT_AUTH user:password matching /etc/mhrs/nginx/mailpit.htpasswd on the staging host
+# Until STAGING_URL exists the jobs are skipped with a notice.
+name: Staging checks
+
+on:
+  workflow_run:
+    workflows: ["Deploy (staging)"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      core_scenario:
+        description: "Also run the core scenario (needs a fresh seed: it approves the seeded shortlist)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-checks
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: E2E (Playwright + axe) against staging
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: staging
+    env:
+      E2E_BASE_URL: ${{ vars.STAGING_URL }}
+      MAILPIT_URL: ${{ vars.STAGING_URL }}/mailpit
+      MAILPIT_AUTH: ${{ secrets.STAGING_MAILPIT_AUTH }}
+      DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+      E2E_SKIP_CORE: ${{ inputs.core_scenario && '0' || '1' }}
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Staging configured?
+        id: cfg
+        run: |
+          if [ -z "$E2E_BASE_URL" ]; then
+            echo "::notice title=Staging checks skipped::set the STAGING_URL variable on the staging environment (owner step)."
+            echo "ready=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >>"$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Staging is up
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          for _ in $(seq 1 30); do curl -fsS --max-time 10 "$E2E_BASE_URL/healthz" && exit 0; sleep 10; done
+          echo "::error::$E2E_BASE_URL/healthz did not answer"; exit 1
+      - name: Playwright
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always() && steps.cfg.outputs.ready == 'true'
+        with:
+          name: staging-playwright-report
+          path: frontend/playwright-report
+          retention-days: 30
+
+  zap:
+    name: OWASP ZAP baseline against staging
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: staging
+    env:
+      TARGET: ${{ vars.STAGING_URL }}
+    steps:
+      - name: Staging configured?
+        id: cfg
+        run: |
+          if [ -z "$TARGET" ]; then
+            echo "::notice title=ZAP skipped::STAGING_URL is not set yet (owner step)."
+            echo "ready=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >>"$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.cfg.outputs.ready == 'true'
+      - name: ZAP baseline (passive scan, spider ~1 min)
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          mkdir -p zap && chmod 777 zap
+          cp infrastructure/security/zap-rules.tsv zap/
+          # only rules marked FAIL in zap-rules.tsv fail the job; everything is in the report
+          docker run --rm -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t "$TARGET" -c zap-rules.tsv -r zap-report.html -J zap-report.json -I
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always() && steps.cfg.outputs.ready == 'true'
+        with:
+          name: staging-zap-report
+          path: zap/zap-report.*
+          retention-days: 30

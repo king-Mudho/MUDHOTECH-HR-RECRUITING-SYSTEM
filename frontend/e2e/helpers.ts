@@ -1,6 +1,12 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
 export const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
+
+/** Staging puts Mailpit behind basic auth (MAILPIT_AUTH="user:password"); local/CI Mailpit has none. */
+export function mailpitHeaders(): Record<string, string> {
+  const auth = process.env.MAILPIT_AUTH;
+  return auth ? { Authorization: `Basic ${Buffer.from(auth).toString("base64")}` } : {};
+}
 export const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? "";
 export const E2E_PASSWORD = "lantern-orchard-velvet-27"; // pragma: allowlist secret - synthetic test password
 
@@ -17,10 +23,13 @@ export async function linkFromMail(
   for (let attempt = 0; attempt < 60; attempt++) {
     const search = await request.get(`${MAILPIT}/api/v1/search`, {
       params: { query: `to:"${to}"` },
+      headers: mailpitHeaders(),
     });
     const { messages } = (await search.json()) as { messages: { ID: string }[] };
     for (const m of messages ?? []) {
-      const msg = await request.get(`${MAILPIT}/api/v1/message/${m.ID}`);
+      const msg = await request.get(`${MAILPIT}/api/v1/message/${m.ID}`, {
+        headers: mailpitHeaders(),
+      });
       const text = ((await msg.json()) as { Text: string }).Text;
       const match = text.match(pattern);
       if (match) return match[0];

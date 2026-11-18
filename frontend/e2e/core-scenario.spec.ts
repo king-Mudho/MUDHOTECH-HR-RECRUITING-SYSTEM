@@ -15,6 +15,7 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
 import { hrContext } from "./hr-context";
+import { mailpitHeaders } from "./helpers";
 
 const PASSWORD = process.env.DEMO_PASSWORD ?? "";
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
@@ -50,7 +51,9 @@ async function waitForProcessing(request: APIRequestContext, org: string, job: s
 }
 
 async function mailCount(request: APIRequestContext, query: string): Promise<number> {
-  const res = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(query)}`);
+  const res = await request.get(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(query)}`, {
+    headers: mailpitHeaders(),
+  });
   return ((await res.json()).messages_count as number) ?? 0;
 }
 
@@ -59,6 +62,8 @@ test("core scenario: 100 applicants to an approved shortlist of ten", async ({ p
   // the scenario approves the one seeded shortlist, so it can only run once per stack: on a second
   // project the shortlist is already approved and (correctly) cannot be proposed again
   test.skip(info.project.name !== "chromium", "changes shared state - runs once (desktop)");
+  // a long-lived stack (staging) can run it once per fresh seed: E2E_SKIP_CORE=1 skips it
+  test.skip(process.env.E2E_SKIP_CORE === "1", "E2E_SKIP_CORE=1");
   await signIn(page, HR);
   const { org, job } = await hrContext(page);
   await waitForProcessing(page.request, org, job);

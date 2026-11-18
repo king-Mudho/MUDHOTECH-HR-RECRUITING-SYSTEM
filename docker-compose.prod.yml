@@ -46,6 +46,8 @@ services:
       # rendered into /etc/nginx/conf.d/mhrs.conf at start (infrastructure/nginx/templates)
       MHRS_DOMAIN: ${MHRS_DOMAIN:?set MHRS_DOMAIN (e.g. hr.example.co.zw)}
       MHRS_ENVIRONMENT: ${MHRS_ENVIRONMENT:-production}
+      MHRS_AUTH_RATE: ${MHRS_AUTH_RATE:-10r/m}       # docs/10 §5
+      MHRS_SEARCH_RATE: ${MHRS_SEARCH_RATE:-60r/m}
       NGINX_ENVSUBST_FILTER: "^MHRS_"
     volumes:
       - ./infrastructure/nginx/templates:/etc/nginx/templates:ro
@@ -186,6 +188,29 @@ services:
     deploy:
       resources:
         limits: { cpus: "1.00", memory: 768M }
+
+  mailpit:
+    # STAGING ONLY (COMPOSE_PROFILES=staging): catches all staging email (synthetic data) so the full
+    # end-to-end suite can read verification links; reached at /mailpit/ through nginx with basic auth.
+    # Production sends through SES and never runs this profile.
+    <<: *hardened
+    image: axllent/mailpit:v1.34.0
+    profiles: [staging]
+    environment:
+      MP_WEBROOT: /mailpit/
+      MP_MAX_MESSAGES: "5000"
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "0.25", memory: 128M }
 
   flower:
     <<: *backend

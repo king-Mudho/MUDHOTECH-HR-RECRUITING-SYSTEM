@@ -7,6 +7,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { settleForAxe } from "./a11y";
+import { mailpitHeaders } from "./helpers";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:8025";
 const PASSWORD = "lantern-orchard-velvet-27";
@@ -24,10 +25,13 @@ async function linkFromMail(
   for (let attempt = 0; attempt < 40; attempt++) {
     const search = await request.get(`${MAILPIT}/api/v1/search`, {
       params: { query: `to:"${to}"` },
+      headers: mailpitHeaders(),
     });
     const { messages } = (await search.json()) as { messages: { ID: string }[] };
     for (const m of messages ?? []) {
-      const msg = await request.get(`${MAILPIT}/api/v1/message/${m.ID}`);
+      const msg = await request.get(`${MAILPIT}/api/v1/message/${m.ID}`, {
+        headers: mailpitHeaders(),
+      });
       const text = ((await msg.json()) as { Text: string }).Text;
       const match = text.match(pattern);
       if (match) return match[0];

@@ -210,14 +210,16 @@ deploy() {
   render_env "$env" "$tag"
   registry_login "$env"
   checkout "$tag"
-  [[ ${SKIP_PULL:-0} == 1 ]] || dc pull --quiet backend worker-default worker-documents worker-ai beat frontend nginx redis clamav
+  [[ ${SKIP_PULL:-0} == 1 ]] || dc pull --quiet
 
   # nginx upstreams default to the compose service names (rolls switch them temporarily)
   [[ -f $UPSTREAM_DIR/backend.conf ]] || set_upstream backend backend
   [[ -f $UPSTREAM_DIR/frontend.conf ]] || set_upstream frontend frontend
 
   # infrastructure services first (no-op when unchanged)
-  dc up -d --no-deps redis clamav
+  # (+ mailpit when COMPOSE_PROFILES=staging is set in SSM)
+  mapfile -t infra < <(dc config --services | grep -x -E 'redis|clamav|mailpit')
+  dc up -d --no-deps "${infra[@]}"
 
   if [[ $skip_migrate != --skip-migrate ]]; then
     log "migrations (expand-only) and reference data"

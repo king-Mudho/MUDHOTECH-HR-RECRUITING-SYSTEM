@@ -137,8 +137,8 @@ start (`envsubst` of `MHRS_DOMAIN` and `MHRS_ENVIRONMENT` only, `NGINX_ENVSUBST_
 |---|---|
 | port 80 | ACME webroot `/.well-known/acme-challenge/`, `/healthz`, everything else 301 → HTTPS |
 | unknown `Host` on 443 | connection closed (444) |
-| `/api/v1/auth/` | `auth` zone: **POST only**, 10/min per IP, burst 5 (session GETs are never throttled) |
-| `/api/v1/jobs/`, `/jobs` | `search` zone: 60/min per IP, burst 30 |
+| `/api/v1/auth/` | `auth` zone: **POST only**, 10/min per IP (`MHRS_AUTH_RATE`; staging raises it for E2E), burst 5 (session GETs are never throttled) |
+| `/api/v1/jobs/`, `/jobs` | `search` zone: 60/min per IP (`MHRS_SEARCH_RATE`), burst 30 |
 | `/django-admin/`, `/api/docs/`, `/api/schema/`, `/readyz` | operator IP allow-list (`/etc/mhrs/nginx/ops-allowlist.conf`) |
 | `/flower/` | allow-list + basic auth (`/etc/mhrs/nginx/flower.htpasswd`); flower runs on the `ops` profile |
 | `/static/` | Django static files from the shared volume, 7-day cache |
