@@ -47,5 +47,6 @@ class Command(BaseCommand):
             raise CommandError(str(exc)) from exc
         self.stdout.write(text)
         waiting = acc["statuses"].get("submitted", 0) + acc["statuses"].get("processing", 0)
-        if acc["missing"] or result.timed_out or waiting:
+        duplicates = acc["duplicate_evaluations"] or acc["duplicate_moves"]
+        if acc["missing"] or result.timed_out or waiting or duplicates:
             raise CommandError("Not every application was accounted for (see the report).")

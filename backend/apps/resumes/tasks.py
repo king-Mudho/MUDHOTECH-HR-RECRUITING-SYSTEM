@@ -66,3 +66,11 @@ def parse_resume_preview(parse_id: str) -> str:
     from . import candidate
 
     return candidate.run_preview(parse_id)
+
+
+@shared_task(name="apps.resumes.tasks.recover_stuck_processing", base=BaseTask, acks_late=True)
+def recover_stuck_processing() -> dict[str, int]:
+    """Beat, every 5 minutes: re-dispatch work lost with a killed worker (EC-OPS-04)."""
+    from .recovery import recover
+
+    return recover()

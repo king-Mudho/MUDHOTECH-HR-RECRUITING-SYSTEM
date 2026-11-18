@@ -116,6 +116,9 @@ RUNNING_CELERY = Path(sys.argv[0]).name.startswith("celery") if sys.argv else Fa
 DB_POOL = env.bool("DB_POOL", default=not RUNNING_CELERY)
 if DB_POOL:
     DATABASES["default"]["CONN_MAX_AGE"] = 0
+    # with health checks Django passes check=ConnectionPool.check_connection: pooled connections
+    # are validated on checkout, so a PostgreSQL restart costs no failed request (EC-OPS-03)
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
     DATABASES["default"].setdefault("OPTIONS", {})["pool"] = {
         "min_size": env.int("DB_POOL_MIN", default=1),
         "max_size": env.int("DB_POOL_MAX", default=10),
@@ -132,10 +135,12 @@ CACHE_URL = env("CACHE_URL", default="redis://localhost:6380/1")
 PUBLIC_API_CACHE_SECONDS = env.int("PUBLIC_API_CACHE_SECONDS", default=30)
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        # degrades to "no cache" when Redis is down so the API keeps working (EC-OPS-01)
+        "BACKEND": "apps.core.cache.ResilientRedisCache",
         "LOCATION": CACHE_URL,
         "TIMEOUT": 300,
         "KEY_PREFIX": "mhrs",
+        "OPTIONS": {"socket_connect_timeout": 0.5, "socket_timeout": 0.5},
     }
 }
 
@@ -271,6 +276,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.jobs.tasks.publish_scheduled_jobs",
         "schedule": timedelta(minutes=1),
         "options": {"expires": 50},
+    },
+    "resumes-recover-stuck-processing": {  # EC-OPS-04: work lost with a killed worker
+        "task": "apps.resumes.tasks.recover_stuck_processing",
+        "schedule": timedelta(minutes=5),
+        "options": {"expires": 240},
     },
     "applications-sweep-stale-drafts": {
         "task": "apps.applications.tasks.sweep_stale_drafts",

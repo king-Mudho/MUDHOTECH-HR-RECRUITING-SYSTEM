@@ -132,14 +132,22 @@ def submit(job: Job, count: int, password: str) -> PilotResult:
 
 
 def _waiting(job_id: str) -> int:
-    return Application.objects.unscoped().filter(job_id=job_id, status__in=WAITING).count()
+    """Applications still in flight; a database restart (fault injection) counts as "still
+    waiting" so the benchmark rides it out like a client would."""
+    from django.db import OperationalError, connection
+
+    try:
+        return Application.objects.unscoped().filter(job_id=job_id, status__in=WAITING).count()
+    except OperationalError:
+        connection.close()
+        return -1
 
 
 def wait(result: PilotResult, *, inline: bool, timeout: float, poll: float = 5.0) -> None:
     from apps.core.outbox import relay_batch
 
     start = clock.perf_counter()
-    while _waiting(result.job_id):
+    while _waiting(result.job_id) != 0:
         if clock.perf_counter() - start > timeout:
             result.timed_out = True
             break
@@ -185,7 +193,29 @@ def accounting(result: PilotResult) -> dict[str, Any]:
         )
         key = f"{role} ({suitability})" if suitability else role
         by_role.setdefault(key, Counter())[a.ai_band or "none"] += 1
+    from django.db.models import Count
+
+    from apps.applications.models import ApplicationStatusEvent
+
+    # duplicates a redelivered or re-dispatched task could cause (runs and notifications are
+    # already unique in the database): the same input evaluated twice, or a repeated status move
+    duplicate_evaluations = (
+        evaluations.values("application_id", "input_hash")
+        .annotate(n=Count("id"))
+        .filter(n__gt=1)
+        .count()
+    )
+    duplicate_moves = (
+        ApplicationStatusEvent.objects.unscoped()
+        .filter(application__job_id=result.job_id, to_status="under_review")
+        .values("application_id")
+        .annotate(n=Count("id"))
+        .filter(n__gt=1)
+        .count()
+    )
     return {
+        "duplicate_evaluations": duplicate_evaluations,
+        "duplicate_moves": duplicate_moves,
         "by_role": by_role,
         "submitted": len(result.submitted),
         "records": len(found),
@@ -225,7 +255,13 @@ def _semantic_on() -> bool:
 def report(result: PilotResult, acc: dict[str, Any], *, inline: bool) -> str:
     total = acc["records"]
     waiting = acc["statuses"].get("submitted", 0) + acc["statuses"].get("processing", 0)
-    ok = acc["records"] == acc["submitted"] and not acc["missing"] and not result.timed_out
+    ok = (
+        acc["records"] == acc["submitted"]
+        and not acc["missing"]
+        and not result.timed_out
+        and not acc["duplicate_evaluations"]
+        and not acc["duplicate_moves"]
+    )
     lines = [
         f"# Pilot benchmark — {result.started:%Y-%m-%d}",
         "",
@@ -260,6 +296,8 @@ def report(result: PilotResult, acc: dict[str, Any], *, inline: bool) -> str:
             if acc["median_s"] is not None
             else "- |"
         ),
+        f"| Duplicate evaluations (same input twice) | {acc['duplicate_evaluations']} |",
+        f"| Duplicate status moves to under review | {acc['duplicate_moves']} |",
         f"| **Every application accounted for** | **{'yes' if ok else 'NO'}** |",
         "",
         "## Status",

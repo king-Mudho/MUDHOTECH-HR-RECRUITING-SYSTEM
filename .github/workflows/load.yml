@@ -1,5 +1,6 @@
 # Load tests (P10-T05, NFR-PERF-01): job board 200 RPS, 100 and 1,000 submissions, HR list;
-# throughput (P10-T06, NFR-PERF-02): 100 CVs end to end on a 4 vCPU / 8 GB worker profile.
+# throughput (P10-T06, NFR-PERF-02): 100 CVs end to end on a 4 vCPU / 8 GB worker profile;
+# resilience (P10-T07): faults injected while applications are processed.
 # Weekly and on demand (too long for every push). Results: artifact "load-report".
 name: Load
 
@@ -125,4 +126,31 @@ jobs:
       - name: Worker logs on failure
         if: failure()
         run: docker compose logs --no-color --tail 200 worker-documents worker-ai beat
+
+  resilience:
+    name: Resilience - Redis down, worker killed, PostgreSQL restarted (P10-T07)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      COMPOSE_FILES: -f docker-compose.yml -f infrastructure/perf/compose.load.yml
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Start the stack (production-like API)
+        run: |
+          cp .env.example .env
+          docker compose $COMPOSE_FILES up -d --build postgres redis s3 mailpit backend worker-default worker-documents worker-ai beat
+          for i in $(seq 1 90); do curl -fsS http://127.0.0.1:8000/readyz && break; sleep 5; done
+          curl -fsS http://127.0.0.1:8000/readyz
+          docker compose $COMPOSE_FILES exec -T backend python manage.py seed_demo
+      - name: Inject faults while 60 applications are processed
+        run: bash loadtests/resilience.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: resilience-report
+          path: RESILIENCE.md
+          if-no-files-found: ignore
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 150 backend worker-documents worker-ai beat
 

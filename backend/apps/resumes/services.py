@@ -211,7 +211,9 @@ def _reusable_run(document: Document, app: Application) -> ExtractionRun | None:
 
 
 @transaction.atomic
+@transaction.atomic
 def _copy_run(source: ExtractionRun, run: ExtractionRun) -> None:
+    _clear_leftovers(run)
     for name in ("status", "error_code", "flags", "parser_used", "language", "quality_score"):
         setattr(run, name, getattr(source, name))
     run.page_count, run.claim_count, run.taxonomy_version = (
@@ -247,11 +249,18 @@ def _copy_run(source: ExtractionRun, run: ExtractionRun) -> None:
     )
 
 
+def _clear_leftovers(run: ExtractionRun) -> None:
+    """Outputs of a run that never finished (evaluations only ever use finished runs)."""
+    DocumentText.objects.for_org(run.organisation_id).filter(run=run).delete()
+    ExtractedClaim.objects.for_org(run.organisation_id).filter(run=run).delete()
+
+
 @transaction.atomic
 def _store(run: ExtractionRun, result: ExtractionResult, taxonomy_version: str) -> None:
     run = ExtractionRun.objects.for_org(run.organisation_id).select_for_update().get(pk=run.pk)
     if run.usable:
         return
+    _clear_leftovers(run)  # a retry after a lost worker must not collide with partial output
     run.status = result.status.value
     run.error_code = result.error_code or ""
     run.flags = sorted(flag.value for flag in result.flags)
