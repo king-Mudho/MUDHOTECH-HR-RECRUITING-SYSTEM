@@ -25,6 +25,7 @@ import {
   signIn,
   uniqueEmail,
 } from "./helpers";
+import { hrContext } from "./hr-context";
 
 /** Screenshots for review and the user guides; uploaded by the nightly as the "screens" artifact. */
 const screen = (name: string) => path.join(process.cwd(), "test-results", "screens", name);
@@ -112,5 +113,22 @@ test("key pages render for screenshots", async ({ page }, info) => {
       path: screen(`${info.project.name}-${file}.png`),
       fullPage: true,
     });
+  }
+});
+
+test("staff pages for the user guides", async ({ page }, info) => {
+  test.skip(info.project.name !== "chromium", "desktop screenshots only");
+  await signIn(page, "hr@mudhotech-demo.test", DEMO_PASSWORD, "/hr/dashboard");
+  const { job } = await hrContext(page);
+  for (const [route, file] of [
+    ["/hr/dashboard", "hr-dashboard"],
+    ["/hr/jobs", "hr-jobs"],
+    [`/hr/jobs/${job}/applications`, "hr-applicants"],
+    [`/hr/jobs/${job}/shortlist`, "hr-shortlist"],
+    ["/hr/settings/privacy", "hr-privacy-requests"],
+  ] as const) {
+    await open(page, route);
+    await expect(page.locator("main").first()).toBeVisible({ timeout: 20_000 });
+    await page.screenshot({ path: screen(`${file}.png`), fullPage: true });
   }
 });

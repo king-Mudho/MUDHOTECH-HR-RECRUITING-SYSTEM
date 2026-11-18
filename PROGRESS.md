@@ -6,9 +6,9 @@
 
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
-- **Current task:** P10-T09
+- **Current task:** P10-T10
 - **Last updated:** 2026-11-18
-- **Overall:** 136 / 193 tasks · 9 / 16 phases
+- **Overall:** 137 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -213,7 +213,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P10-T06 — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record
 - [x] P10-T07 — Resilience/fault injection: kill workers mid-task, stop Redis during submissions, S3 errors, DB restart, duplicate …
 - [x] P10-T08 — Pilot dataset & script: `python manage.py run_pilot_benchmark` → creates vacancy, submits 100 applications, waits, …
-- [ ] P10-T09 — UAT pack `docs/uat/UAT_SCRIPTS.md` for HR reviewers (step-by-step scenarios, expected results, sign-off table) and …
+- [x] P10-T09 — UAT pack `docs/uat/UAT_SCRIPTS.md` for HR reviewers (step-by-step scenarios, expected results, sign-off table) and …
 - [ ] P10-T10 — Bug bash & fix all P0/P1 defects; log in `docs/reports/DEFECT_LOG.md`
 - [ ] P10-EXIT — All exit criteria verified with evidence
 
@@ -684,3 +684,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-18 | Impl | P10-T06 | Throughput: load.yml job runs 100 synthetic applications through the real workers on a 4 vCPU / 8 GB profile (compose.throughput.yml): ~2 min end to end (submit 55-60 s, processing done 65 s later; submission->evaluation median 48-53 s, max 67 s), 100/100 accounted for, twice - target 15 min | Worker concurrency defaults kept (documents -c 2, ai -c 1); 1,000-in-2h rerun after ADR-029 |
 | 2026-11-18 | Impl | P10-T05 | Load: Locust scenarios + load.yml against the production-like stack (gunicorn gthread, pooled DB). Final run green: job board 210.6 RPS at P95 130-140 ms, HR list/dashboard P95 37-59 ms, 100/1,000 submission bursts 0 failures (1,100/1,100 recorded); 5,000-application list P95 <=264 ms in-process; query budgets (candidate list N+1 fixed). Found and fixed D-009 (ASGI connection exhaustion -> ADR-029), D-010 (pooled statement_timeout leak), public job board cache | Submission bursts on one shared runner have multi-second latency (capacity, not errors) - size production API hosts accordingly |
 | 2026-11-18 | Impl | P10-T07 | Resilience: load.yml job stops Redis during submissions, kills the document worker mid-task and restarts PostgreSQL while 60 applications are processed - 60/60 accounted, 0 waiting, 0 duplicate evaluations/status moves (green). Fixed D-011 (Redis outage failed every request -> ResilientRedisCache), D-012 (killed worker stranded work for 1 h -> recover_stuck_processing sweeper); pooled connections health-checked | Worst-case recovery after a killed worker is ~15-20 min by design; lower STUCK_AFTER if needed |
+| 2026-11-18 | Impl | P10-T09 | UAT scripts with sign-off (docs/uat/UAT_SCRIPTS.md) and four role guides; Playwright-generated screenshots from the nightly 'screens' artifact (synthetic data) embedded in the candidate guide (job board, AI notice, privacy page); journeys spec now also captures HR dashboard, vacancies, applicants, shortlist and privacy requests | Staff screenshots arrive with the next nightly (artifact needs a signed-in download); embed them in the recruiter/HR/admin guides |
