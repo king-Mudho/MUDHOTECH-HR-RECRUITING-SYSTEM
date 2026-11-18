@@ -4164,6 +4164,11 @@ export interface components {
          *     * `document_rejected_reupload` - document_rejected_reupload
          *     * `draft_abandoned` - draft_abandoned
          *     * `draft_deadline_reminder` - draft_deadline_reminder
+         *     * `interview_booked` - interview_booked
+         *     * `interview_cancelled` - interview_cancelled
+         *     * `interview_invitation` - interview_invitation
+         *     * `interview_reminder` - interview_reminder
+         *     * `interview_rescheduled` - interview_rescheduled
          *     * `invitation_staff` - invitation_staff
          *     * `new_message` - new_message
          *     * `not_selected` - not_selected
@@ -4179,7 +4184,7 @@ export interface components {
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;

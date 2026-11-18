@@ -9753,6 +9753,11 @@ components:
       - document_rejected_reupload
       - draft_abandoned
       - draft_deadline_reminder
+      - interview_booked
+      - interview_cancelled
+      - interview_invitation
+      - interview_reminder
+      - interview_rescheduled
       - invitation_staff
       - new_message
       - not_selected
@@ -9777,6 +9782,11 @@ components:
         * `document_rejected_reupload` - document_rejected_reupload
         * `draft_abandoned` - draft_abandoned
         * `draft_deadline_reminder` - draft_deadline_reminder
+        * `interview_booked` - interview_booked
+        * `interview_cancelled` - interview_cancelled
+        * `interview_invitation` - interview_invitation
+        * `interview_reminder` - interview_reminder
+        * `interview_rescheduled` - interview_rescheduled
         * `invitation_staff` - invitation_staff
         * `new_message` - new_message
         * `not_selected` - not_selected

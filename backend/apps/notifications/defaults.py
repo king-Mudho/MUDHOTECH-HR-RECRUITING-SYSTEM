@@ -262,4 +262,75 @@ message is only shown in your account.
 [Read the message]({{ message_url }})""",
         "New message from {{ sender_name }} about {{ job_title }}.",
     ),
+    "interview_invitation": DefaultTemplate(
+        "Interview invitation: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} invites you to a **{{ interview_stage }}** for **{{ job_title }}**.
+
+- When: {{ interview_when }}
+- How: {{ interview_mode }}
+- Where: {{ interview_where }}
+
+If you were offered several times, choose the one that suits you in your account. You can also
+add the interview to your calendar or ask for another time there.
+
+[See the interview details]({{ interview_url }})""",
+        "{{ organisation_name }} invited you to an interview for {{ job_title }}.",
+    ),
+    "interview_booked": DefaultTemplate(
+        "Interview booked: {{ job_title }} ({{ reference }})",
+        """Hello {{ recipient_name }},
+
+The candidate for application **{{ reference }}** ({{ job_title }}) booked the
+**{{ interview_stage }}** for {{ interview_when }}.
+
+[Open the interview]({{ interview_url }})""",
+        "Interview booked for {{ reference }}: {{ interview_when }}.",
+    ),
+    "interview_reminder": DefaultTemplate(
+        "Reminder: your interview for {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+This is a reminder of your **{{ interview_stage }}** with {{ organisation_name }} for
+**{{ job_title }}**.
+
+- When: {{ interview_when }}
+- How: {{ interview_mode }}
+- Where: {{ interview_where }}
+
+[See the interview details]({{ interview_url }})""",
+        "Reminder: interview for {{ job_title }}, {{ interview_when }}.",
+    ),
+    "interview_rescheduled": DefaultTemplate(
+        "New time for your interview: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} moved your **{{ interview_stage }}** for **{{ job_title }}**.
+
+- New time: {{ interview_when }}
+- How: {{ interview_mode }}
+- Where: {{ interview_where }}
+
+Note from the employer: {{ reason }}
+
+Please update your calendar from your account.
+
+[See the interview details]({{ interview_url }})""",
+        "Your interview for {{ job_title }} moved to {{ interview_when }}.",
+    ),
+    "interview_cancelled": DefaultTemplate(
+        "Interview cancelled: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} cancelled the **{{ interview_stage }}** for **{{ job_title }}** planned for
+{{ interview_when }}.
+
+Note from the employer: {{ reason }}
+
+Your application is still open unless you hear otherwise; any update will appear in your account.
+
+[View your application]({{ application_url }})""",
+        "The interview for {{ job_title }} on {{ interview_when }} was cancelled.",
+    ),
 }

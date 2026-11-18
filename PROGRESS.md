@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 12 — Interviews, Offers & Hiring
-- **Current task:** P12-T02
+- **Current task:** P12-T03
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-18
-- **Overall:** 149 / 193 tasks · 9 / 16 phases
+- **Overall:** 150 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -236,7 +236,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 12 — Interviews, Offers & Hiring  (`phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md`)
 - [x] P12-T01 — `apps.interviews` models: Interview, InterviewSlot, InterviewPanelist, Scorecard (+ scorecard templates derived from …
-- [ ] P12-T02 — Scheduling services: create interview (mode, stage, panel), offer slots, candidate self-booking (row-locked slots), …
+- [x] P12-T02 — Scheduling services: create interview (mode, stage, panel), offer slots, candidate self-booking (row-locked slots), …
 - [ ] P12-T03 — Scorecards: per-criterion 1–5 with evidence notes, overall recommendation
 - [ ] P12-T04 — `apps.offers`: Offer, OfferApproval, HireRecord
 - [ ] P12-T05 — Hiring close-out: hire record, prompt to close vacancy when openings filled, bulk final notifications to remaining …
@@ -700,3 +700,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-18 | Impl | P11-T10 | docs/deployment/GO_LIVE_CHECKLIST.md: sections A quality/security gates (the seven Phase 10 exit criteria + release CI), B legal D-08 (counsel sign-off, POTRAZ, DPO, signed DPAs, notices, breach deadlines, cross-border, DPIA), C infrastructure (AWS_SETUP §11, bootstrap, DNS/CAA, TLS A+, SES out of sandbox + DKIM/SPF/DMARC, no-reply rule, secrets rotated from defaults, mhrs_app NOBYPASSRLS, no staging services), D access (admin MFA, bootstrap secrets removed, production environment reviewer), E backups (PITR, weekly dump verified, staging restore drill within RPO/RTO, key copy), F monitoring (alarms + test alert, ops metrics, uptime, Sentry), G release/cut-over (tag -> approved production deploy, smoke, pilot orgs, onboarding, rollback rehearsal), H owner decision with exceptions table | Owner executes and signs (P11 exit) |
 | 2026-11-18 | Impl | P11-T11 | docs/training/HR_ONBOARDING.md: 60-minute hands-on session on staging (roles, prep checklist, five rules, agenda mapped to the role guides, per-attendee exercise checklist) and a 5-video recorded-script outline; docs/training/PILOT_SUPPORT.md: channels and hours, severities S1-S4 with response targets, handling steps without personal data, break-glass support access as built, support never decides about candidates, rights requests, weekly pilot review, pilot exit | Record the videos on staging once it is live |
 | 2026-11-18 | Impl | P12-T01 | apps.interviews: ScorecardTemplate (criteria JSON derived from the published version's rated criteria - eligibility excluded - plus HR competencies; locked_at once used), Interview (stage, mode, location/link, duration, UTC times + IANA timezone, status proposed/scheduled/completed/cancelled/no_show, ICS sequence, reminder stamps, lock_version; checks: valid times, scheduled has a time), InterviewSlot (one booked slot per interview - partial unique, unique start), InterviewPanelist (membership, lead/member, unique), Scorecard (scores JSON, encrypted criterion notes + notes, overall 1-5, recommendation; unique per panelist; submitted requires overall + recommendation). RLS forced on all 5 tables (migration 0002). services.template_from_job (audited). Admin (cross-tenant mixin, no assessment content in lists). 7 tests | Erasure/retention must cover interview scorecards and notes (P12-T03/T06); restore runbook now expects 24 RLS tables |
+| 2026-11-18 | Impl | P12-T02 | apps/interviews/scheduling.py: create_interview (fixed time -> scheduled, or up to 12 offered slots -> proposed; validated mode/address/timezone/future times/active same-org panel; first interview transitions shortlisted -> interview via the state machine; audited; invitation notification), book_slot (candidate-only, interview + slots row-locked, past slots refused; lead/creator told in-app; two concurrent bookings -> exactly one wins, tested with threads), reschedule/cancel (reason >= 5 chars, ICS SEQUENCE +1, reminders re-armed, notifications), mark_no_show/mark_completed (only after start; no-show never changes the application, EC-INT-03), panel_conflicts (EC-INT-01 warning returned, never blocks), send_due_reminders + beat task every 5 min (24 h and 1 h, once per schedule, 24 h skipped at short notice), format_when shows the arranged IANA zone + UTC offset (EC-INT-02). apps/interviews/ics.py: RFC 5545 with VTIMEZONE + TZID, stable UID, SEQUENCE, METHOD CANCEL/STATUS CANCELLED, escaping, 75-octet folding, CRLF. Notification kinds interview_invitation/booked/reminder/rescheduled/cancelled with default templates; schema + api.d.ts regenerated. 19 tests | Final template wording + offer kinds in P12-T09; ICS download endpoint in P12-T06 |

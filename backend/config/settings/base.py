@@ -257,6 +257,7 @@ CELERY_TASK_ROUTES = {
     "apps.screening.*": {"queue": "ai"},
     "apps.notifications.*": {"queue": "notifications"},
     "apps.messaging.*": {"queue": "notifications"},
+    "apps.interviews.*": {"queue": "notifications"},
     "apps.analytics.*": {"queue": "reports"},
     "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }
@@ -297,6 +298,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.messaging.tasks.clarifications_due",
         "schedule": timedelta(minutes=15),
         "options": {"expires": 800},
+    },
+    "interview-reminders": {
+        "task": "apps.interviews.tasks.send_interview_reminders",
+        "schedule": timedelta(minutes=5),
+        "options": {"expires": 240},
     },
     "privacy-retention-daily": {
         "task": "apps.privacy.tasks.retention_daily",
