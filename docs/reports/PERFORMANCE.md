@@ -94,6 +94,26 @@ met with a wide margin (job board ~200 RPS at P95 170 ms; HR list P95 < 60 ms).
 
 About 2 minutes end to end against the NFR-PERF-02 target of 15 minutes.
 
+## 2.2 Resilience (P10-T07, EC-OPS-01..04) - passed
+
+`load.yml` job *resilience* (`loadtests/resilience.sh`), production-like stack, 2026-11-18 (`3544351`):
+60 synthetic applications submitted and processed by the real workers while faults were injected.
+
+| Fault | When | Covered by |
+|---|---|---|
+| Redis stopped for 25 s (EC-OPS-01) | during submissions | `ResilientRedisCache` (D-011), outbox in PostgreSQL |
+| Document worker container killed (EC-OPS-04) | mid-extraction | `acks_late` + `recover_stuck_processing` sweeper (D-012) |
+| PostgreSQL restarted (EC-OPS-03) | during processing | health-checked pooled connections, task retries |
+| Duplicate delivery | redelivered / re-dispatched tasks | idempotent consumers, input-hash evaluations |
+
+Result: **60/60 applications accounted for, 0 waiting, 0 duplicate evaluations, 0 duplicate status
+moves** (the job fails otherwise). Submitting took 35.8 s; processing finished 1,150 s later - the
+work on the killed worker was recovered by the sweeper once it passed the 15-minute threshold,
+which is the designed worst case (without it: up to 1 hour, the Redis visibility timeout).
+In-process tests cover the same paths: `test_outbox.py` (broker down, concurrent relays, duplicate
+events), `test_edge_cases.py` (S3 down, EC-OPS-02), `test_cache_resilience.py`, `test_recovery.py`,
+`test_health.py`.
+
 ## 3. Notes
 
 - `LOAD_TEST=true` (development settings only) relaxes per-IP limits because one Locust host
