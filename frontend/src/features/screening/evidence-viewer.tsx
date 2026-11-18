@@ -120,7 +120,7 @@ export function EvidenceViewer({
   }, [firstActive]);
 
   return (
-    <section aria-labelledby="evidence-viewer" className="rounded-lg border p-4">
+    <section aria-labelledby="evidence-viewer" className="min-w-0 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="evidence-viewer" className="text-lg font-semibold">
           {t("title")}
@@ -168,13 +168,13 @@ export function EvidenceViewer({
           {mode === "pdf" && doc.original_available ? (
             <PdfPages documentId={doc.document_id} />
           ) : (
-            <div className="max-h-[70vh] overflow-auto rounded border p-3">
+            <div className="max-h-[70vh] overflow-auto overscroll-contain rounded border p-3">
               {doc.pages.map((page) => (
                 <article key={page.number} aria-label={t("pageAria", { page: page.number })}>
                   <h3 className="text-muted-foreground mb-1 text-xs font-medium">
                     {t("page", { page: page.number })}
                   </h3>
-                  <p className="mb-4 font-mono text-xs leading-5 whitespace-pre-wrap">
+                  <p className="mb-4 font-mono text-xs leading-5 break-words whitespace-pre-wrap">
                     {segments(
                       page.text,
                       doc.highlights.filter((h) => h.page === page.number),

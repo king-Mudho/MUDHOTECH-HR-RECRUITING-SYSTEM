@@ -72,7 +72,7 @@ export function ReviewWorkspace({ appId, jobId }: { appId: string; jobId: string
           {t("position", { index: position.index + 1, total: position.total })}
         </p>
       ) : null}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <EvidenceViewer appId={appId} activeCriterion={active} criterionTitles={titles} />
         <EvaluationPanel appId={appId} active={active} onSelect={setActive} onLoaded={onLoaded} />
       </div>
