@@ -7,8 +7,8 @@
 ## Current pointer
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
 - **Current task:** P10-T05
-- **Last updated:** 2026-11-17
-- **Overall:** 133 / 193 tasks · 9 / 16 phases
+- **Last updated:** 2026-11-18
+- **Overall:** 134 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -210,7 +210,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P10-T03 — AI validation: expand corpus to ≥ 150 labelled CVs across 5 roles
 - [x] P10-T04 — Fairness: counterfactual suite at scale (≥ 500 perturbations), proxy-variable review (institution, location, gaps), …
 - [ ] P10-T05 — Load tests (Locust): 100 and 1,000 concurrent submissions
-- [ ] P10-T06 — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record
+- [x] P10-T06 — Throughput: 100 CVs end-to-end ≤ 15 min on 4 vCPU/8 GB profile (docker resource limits) — record
 - [ ] P10-T07 — Resilience/fault injection: kill workers mid-task, stop Redis during submissions, S3 errors, DB restart, duplicate …
 - [x] P10-T08 — Pilot dataset & script: `python manage.py run_pilot_benchmark` → creates vacancy, submits 100 applications, waits, …
 - [ ] P10-T09 — UAT pack `docs/uat/UAT_SCRIPTS.md` for HR reviewers (step-by-step scenarios, expected results, sign-off table) and …
@@ -681,3 +681,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-17 | Impl | P10-T08 | run_pilot_benchmark: new vacancy from the demo spec, 100 synthetic applications (all 5 roles incl. corrupt/encrypted/scanned/injection), inline or worker mode, accounting report docs/reports/PILOT_BENCHMARK.md: 100/100 accounted, 94 under review, 6 processing_error (unreadable CVs, kept for HR), bands by CV role | D-008 (P1): 4/7 suitable developer CVs in lower match on the demo rubric - fix in P10-T03 calibration; host run had no semantic model/OCR - rerun in the worker image |
 | 2026-11-17 | Impl | P10-T03 | AI validation: 150-CV labelled corpus (5 roles); extraction + screening benchmarks meet every docs/09 §5 target with engine 0.3.1 / config 2026.11.2; calibration sweep (corpus + skills-heavy vacancy rubrics, listed-only score, evaluation + extraction semantic thresholds); ADR-028 (listed 75, extraction semantic 0.65); D-008 fixed and confirmed by pilot rerun; AI_VALIDATION_REPORT.md with missed-qualified analysis and failure taxonomy; nightly calibration step | Real-world calibration needs HR-labelled real applications; OCR results from the worker image (nightly) |
 | 2026-11-17 | Impl | P10-T04 | Fairness: run_fairness_benchmark - 1,095 perturbations over 135 CVs (identity 540, protected details 135, rural location 270, peer institution 89, career gap 61) all identical; nightly --check + CI sample test; proxy review (town, institution, gaps, foreign qualifications, languages, experience/age) in AI_VALIDATION_REPORT §6; fixed: verified foreign qualifications now count like local ones (was a lasting 75 'needs verification') | Real-world proxy monitoring needs aggregate voluntary data (later phase); HR-authored language essentials remain a residual risk |
+| 2026-11-18 | Impl | P10-T06 | Throughput: load.yml job runs 100 synthetic applications through the real workers on a 4 vCPU / 8 GB profile (compose.throughput.yml): ~2 min end to end (submit 55-60 s, processing done 65 s later; submission->evaluation median 48-53 s, max 67 s), 100/100 accounted for, twice - target 15 min | Worker concurrency defaults kept (documents -c 2, ai -c 1); 1,000-in-2h rerun after ADR-029 |
