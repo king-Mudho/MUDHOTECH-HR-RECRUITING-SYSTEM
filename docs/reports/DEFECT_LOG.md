@@ -6,6 +6,8 @@ users · **P2** a journey degraded, workaround exists · **P3** cosmetic / tooli
 
 Go-live gate: no open P0/P1.
 
+Bug-bash sweeps (2026-11-18): `manage.py check --deploy` with production settings - no issues; translation keys used in code vs `messages/en.json` - none missing (500+ checked); internal links vs routes - none broken (100+); both now guarded by `frontend/tests/static-guards.test.ts`.
+
 | ID | Found | Area | Description | Severity | Status | Fix |
 |---|---|---|---|---|---|---|
 | D-001 | 2026-11-17 | Public site | Footer links `/privacy`, `/terms`, `/accessibility` returned 404; the platform privacy notice (backup expiry, EC-PRV-10) was not published | P1 | Fixed | `1d4cd28`; guard `tests/legal-pages.test.ts` |
@@ -20,6 +22,9 @@ Go-live gate: no open P0/P1.
 | D-010 | 2026-11-18 | API server | Load run 3: 1 in 100 and 11 in 1,000 submissions returned 500. The readiness check set `statement_timeout` at session level; with the new connection pool (D-009) the setting stayed on the pooled connection and cancelled slow statements in later requests (a submit waiting on the reference-counter lock) | P1 | Fixed - transaction-local setting + regression test `apps/core/tests/test_health.py`; server-error summary added to the Load workflow | `apps/core/health.py` |
 | D-011 | 2026-11-18 | Resilience | Redis outage would fail every API request (EC-OPS-01): the Django cache raised on connection errors and every request reads it (rate-limit throttles, feature flags, public cache) - submissions included | P0 | Fixed - `apps.core.cache.ResilientRedisCache` degrades to a cache miss with 0.5 s socket timeouts; `apps/core/tests/test_cache_resilience.py` | `config/settings/base.py` |
 | D-012 | 2026-11-18 | Resilience | A killed worker container left applications in *processing* for up to an hour (EC-OPS-04): Redis redelivers unacknowledged tasks only after the 1-hour visibility timeout, and nothing swept stuck work | P1 | Fixed - `recover_stuck_processing` beat task (every 5 min, work stuck > 15 min) + retries clear partial output; `apps/resumes/tests/test_recovery.py` | `apps/resumes/recovery.py` |
+| D-013 | 2026-11-18 | E2E (nightly) | Nightly screenshots were never produced (Playwright refuses output paths outside the test folder) and the ZAP step copied its rules from a wrong relative path | P3 | Fixed (confirm on next nightly) | `620c555` |
+| D-014 | 2026-11-18 | E2E (nightly) | Core-scenario spec: `/api/v1/me/` returned an error body for the HR session (memberships undefined) on the nightly stack; the same helper passed in the accessibility spec | P2 | Open - helper now reports status and body; diagnose from the next nightly | `620c555` |
+| D-015 | 2026-11-18 | Security CI | Nightly Semgrep step failed with no visible finding (logs need authentication; local run ran out of memory) | P2 | Open - findings now emitted as annotations; triage on the next nightly | `e47bdb9` |
 
 ## Follow-ups (not defects)
 
