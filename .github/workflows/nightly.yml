@@ -35,7 +35,7 @@ jobs:
           docker compose exec -T backend python manage.py seed_demo
           # P08-T13 core scenario: 100 synthetic applications, 1-minute notification delay
           docker compose exec -T backend python manage.py seed_core_scenario --count 100 --delay-minutes 1
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
           cache: npm
