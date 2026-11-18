@@ -12,6 +12,7 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
+from django.db import connection
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User
@@ -58,6 +59,12 @@ def seed(job: Any) -> None:
         app.active_key = active_key_for(app)
         apps.append(app)
     Application.objects.unscoped().bulk_create(apps, batch_size=1000)
+    # Production tables have planner statistics (autovacuum analyses them). Right after a bulk
+    # insert they may not, and the planner can pick a plan 10x slower (CI #125: 4.7 s for the
+    # default sort). Analyse explicitly so the test measures the realistic plan.
+    with connection.cursor() as cur:
+        cur.execute("ANALYZE applications_application")
+        cur.execute("ANALYZE accounts_user")
 
 
 def p95(times: list[float]) -> float:
