@@ -43,7 +43,8 @@ export async function signIn(page: Page, email: string, password: string, next: 
   await page.getByLabel(/Email address/).fill(email);
   await page.getByLabel(/^Password/).fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(new RegExp(next.replace(/[/?]/g, "\\$&")), { timeout: 20_000 });
+  // a predicate rather than a RegExp built from a variable (semgrep detect-non-literal-regexp)
+  await page.waitForURL((url) => url.pathname.startsWith(next.split("?")[0]), { timeout: 20_000 });
 }
 
 export async function registerAndVerify(page: Page, request: APIRequestContext, email: string) {

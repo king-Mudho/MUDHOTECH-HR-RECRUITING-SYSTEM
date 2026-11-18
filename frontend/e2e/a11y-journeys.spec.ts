@@ -27,7 +27,7 @@ async function signIn(page: Page, email: string, next: string) {
   await page.getByLabel(/Email address/).fill(email);
   await page.getByLabel(/^Password/).fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(new RegExp(next.replace(/\//g, "\\/")), { timeout: 20_000 });
+  await page.waitForURL((url) => url.pathname.startsWith(next), { timeout: 20_000 });
 }
 
 async function axe(page: Page, label: string): Promise<string[]> {

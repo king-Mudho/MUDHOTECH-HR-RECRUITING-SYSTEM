@@ -24,7 +24,7 @@ Bug-bash sweeps (2026-11-18): `manage.py check --deploy` with production setting
 | D-012 | 2026-11-18 | Resilience | A killed worker container left applications in *processing* for up to an hour (EC-OPS-04): Redis redelivers unacknowledged tasks only after the 1-hour visibility timeout, and nothing swept stuck work | P1 | Fixed - `recover_stuck_processing` beat task (every 5 min, work stuck > 15 min) + retries clear partial output; `apps/resumes/tests/test_recovery.py` | `apps/resumes/recovery.py` |
 | D-013 | 2026-11-18 | E2E (nightly) | Nightly screenshots were never produced (Playwright refuses output paths outside the test folder) and the ZAP step copied its rules from a wrong relative path | P3 | Fixed (confirm on next nightly) | `620c555` |
 | D-014 | 2026-11-18 | E2E (nightly) | Core-scenario spec: `/api/v1/me/` returned an error body for the HR session (memberships undefined) on the nightly stack; the same helper passed in the accessibility spec | P2 | Open - helper now reports status and body; diagnose from the next nightly | `620c555` |
-| D-015 | 2026-11-18 | Security CI | Nightly Semgrep step failed with no visible finding (logs need authentication; local run ran out of memory) | P2 | Open - findings now emitted as annotations; triage on the next nightly | `e47bdb9` |
+| D-015 | 2026-11-18 | Security CI | Nightly Semgrep step failed with no visible finding (logs need authentication; local run ran out of memory) | P3 | Fixed - nightly #11 showed the only findings: 2 warnings (`detect-non-literal-regexp`) in e2e test helpers building a RegExp from the redirect path; replaced by URL predicates. No finding in application code | `e47bdb9`, this commit |
 
 ## Follow-ups (not defects)
 
