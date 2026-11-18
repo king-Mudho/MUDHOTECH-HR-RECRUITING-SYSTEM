@@ -107,6 +107,16 @@ def _erase_application(app: Any, counts: Counter[str]) -> None:
     HumanVerification.objects.for_org(org).filter(application=app).update(
         corrected_payload="", note=""
     )
+    # interview feedback written about the person (P12): notes go, numeric ratings stay so the
+    # organisation's interview statistics remain consistent (they no longer identify anyone)
+    from apps.interviews.models import Interview, Scorecard
+
+    counts["scorecards"] += (
+        Scorecard.objects.for_org(org)
+        .filter(interview__application=app)
+        .update(criterion_notes="", notes="")
+    )
+    Interview.objects.for_org(org).filter(application=app).update(status_reason="")
     for link in (
         ApplicationDocument.objects.for_org(org).filter(application=app).select_related("document")
     ):

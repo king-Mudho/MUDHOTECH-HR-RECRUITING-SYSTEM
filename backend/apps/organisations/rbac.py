@@ -50,6 +50,11 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "shortlist.approve": ADMIN_HR,
     # notifications (Phase 05)
     "notifications.manage": ADMIN_HR,
+    # interviews (Phase 12): arranging them; seeing every interview of the vacancies one can see;
+    # consolidated scorecards. Rating is open to any staff member named on the panel (not a role).
+    "interviews.manage": RECRUITING,
+    "interviews.view_all": RECRUITING | {Role.HIRING_MANAGER},
+    "interviews.feedback": RECRUITING | {Role.HIRING_MANAGER},
 }
 
 
