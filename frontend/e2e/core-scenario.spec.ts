@@ -28,7 +28,8 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel(/Email address/).fill(email);
   await page.getByLabel(/^Password/).fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(/\/hr\/dashboard/, { timeout: 20_000 });
+  // the login URL itself contains "/hr/dashboard" (?next=...), so match the path, not the URL
+  await page.waitForURL((url) => url.pathname.startsWith("/hr/dashboard"), { timeout: 20_000 });
 }
 
 async function waitForProcessing(request: APIRequestContext, org: string, job: string) {

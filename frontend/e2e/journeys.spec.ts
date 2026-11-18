@@ -89,7 +89,13 @@ test("platform admin verifies a new organisation", async ({ browser, request }, 
   await row.getByRole("button", { name: "Verify" }).click();
   const dialog = admin.getByRole("dialog");
   await dialog.getByRole("button", { name: "Verify" }).click();
-  await expect(row.getByText("Active")).toBeVisible({ timeout: 20_000 });
+  // the list opens on "Pending verification": a verified organisation leaves it
+  await expect(row).toHaveCount(0, { timeout: 20_000 });
+  const filters = admin.getByRole("group", { name: "Filter by status" });
+  await filters.getByRole("button", { name: "Active", exact: true }).click();
+  await expect(admin.getByRole("row").filter({ hasText: name }).getByText("Active")).toBeVisible({
+    timeout: 20_000,
+  });
   await admin.screenshot({ path: screen("admin-organisations.png") });
 });
 
