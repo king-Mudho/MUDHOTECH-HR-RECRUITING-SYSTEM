@@ -56,3 +56,6 @@ dumps/
 # --- Local scratch ---
 _to_delete/
 _tmp_*/
+
+# nginx config test scratch
+infrastructure/nginx/.cfgtest.*

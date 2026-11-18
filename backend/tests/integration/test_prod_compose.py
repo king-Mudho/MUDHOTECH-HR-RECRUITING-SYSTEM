@@ -95,7 +95,12 @@ def test_workers_shut_down_warm_and_backend_serves_static_to_nginx() -> None:
     for name in ("worker-default", "worker-documents", "worker-ai"):
         assert services[name]["stop_grace_period"] == "120s", name
     assert "static:/app/staticfiles" in services["backend"]["volumes"]
-    assert "static:/srv/static:ro" in services["nginx"]["volumes"]
+    nginx = services["nginx"]
+    assert "static:/srv/static:ro" in nginx["volumes"]
+    # the site is rendered from the template; host-specific allow-list/htpasswd stay off the repo
+    assert "./infrastructure/nginx/templates:/etc/nginx/templates:ro" in nginx["volumes"]
+    assert "/etc/mhrs/nginx:/etc/nginx/local:ro" in nginx["volumes"]
+    assert nginx["environment"]["NGINX_ENVSUBST_FILTER"] == "^MHRS_"
     assert services["frontend"]["environment"]["API_INTERNAL_URL"] == "http://backend:8000"
 
 

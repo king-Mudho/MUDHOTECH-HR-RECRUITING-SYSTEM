@@ -8,7 +8,7 @@
 - **Current phase:** 10 — Quality Assurance, AI Validation & Pilot Readiness
 - **Current task:** P10-EXIT
 - **Last updated:** 2026-11-18
-- **Overall:** 139 / 193 tasks · 9 / 16 phases
+- **Overall:** 140 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -219,7 +219,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 11 — Production Deployment & Operations (→ v1.0 pilot live)  (`phases/PHASE_11_PRODUCTION_DEPLOYMENT.md`)
 - [x] P11-T01 — Production images: multi-stage, non-root, healthchecks, pinned bases, SBOM (syft) 
-- [ ] P11-T02 — Nginx config per `docs/10 §5` + Certbot automation script
+- [x] P11-T02 — Nginx config per `docs/10 §5` + Certbot automation script
 - [ ] P11-T03 — `infrastructure/deployment/ec2-bootstrap.sh` (Ubuntu 24.04: updates, unattended-upgrades, docker engine + compose …
 - [ ] P11-T04 — `docs/deployment/AWS_SETUP.md` step-by-step: VPC/SG, EC2 + IAM instance role (S3, SES, SSM read), RDS PostgreSQL 16 …
 - [ ] P11-T05 — `deploy.sh` (pull, migrate, collectstatic, rolling restart, smoke, rollback) + …
@@ -687,3 +687,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-18 | Impl | P10-T09 | UAT scripts with sign-off (docs/uat/UAT_SCRIPTS.md) and four role guides; Playwright-generated screenshots from the nightly 'screens' artifact (synthetic data) embedded in the candidate guide (job board, AI notice, privacy page); journeys spec now also captures HR dashboard, vacancies, applicants, shortlist and privacy requests | Staff screenshots arrive with the next nightly (artifact needs a signed-in download); embed them in the recruiter/HR/admin guides |
 | 2026-11-18 | Impl | P10-T10 | Bug bash: 15 defects logged in docs/reports/DEFECT_LOG.md, all fixed (P0: D-009 API connection exhaustion, D-011 Redis outage; P1: D-001, D-003, D-008, D-010, D-012). Sweeps: check --deploy clean, no missing translation keys, no broken internal links (now CI guards); nightly Semgrep: no finding in application code | Confirm the e2e fixes (D-013/D-014) and the Trivy scans on the next nightly |
 | 2026-11-18 | Impl | P11-T01 | Production images: multi-stage backend/worker (uv only in builder, venv + baked model copied into runtime), frontend runtime stage; bases pinned to exact versions (python 3.12.16-slim-trixie, node 24.22.3-alpine3.24, nginx 1.30.7, redis 7.4.12, clamav 1.5.4, uv 0.13.9) + Dependabot; uid 10001; MHRS_VERSION label + Sentry release; docker-compose.prod.yml: healthchecks, restart, rotated logs, CPU/memory limits (~10.5 GB on t3.xlarge), cap_drop ALL + no-new-privileges, read-only frontend, required MHRS_TAG, static volume for nginx, flower on ops profile; CI: compose config check, uid/no-uv image checks, syft SPDX SBOMs (artifact). test_prod_compose.py enforces the rules; docs/10 §3.3. API stays gunicorn gthread (ADR-029 supersedes the gunicorn+uvicorn wording) | First CI images run validates the builds (not built locally: host RAM); nginx conf dirs come in P11-T02 |
+| 2026-11-18 | Impl | P11-T02 | Nginx: one template (infrastructure/nginx/templates/default.conf.template, envsubst MHRS_DOMAIN/MHRS_ENVIRONMENT only) for staging + production (env snippets: staging noindex); port 80 ACME + 301; unknown Host closed; TLS 1.2/1.3 ECDHE AEAD, HTTP/2, HSTS preload, no OCSP (LE retired it); auth zone POST-only 10/min burst 5, search zone 60/min burst 30; ops allow-list (/etc/mhrs/nginx) for django-admin, api docs/schema, readyz; flower allow-list + basic auth; static volume; JSON logs without query strings; upstream keepalive. certbot.sh issue/renew/status (host certbot, standalone first issue then webroot, deploy hook reloads nginx, certbot.timer). test-config.sh renders both envs in the pinned image and fails on errors/warnings (CI). Local smoke found and fixed: ^~ /api/ bypassed the docs/schema allow-list | Real certificate issuance needs the domain (D-09) - owner step; brotli not in the official image (gzip only) |

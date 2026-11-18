@@ -84,6 +84,36 @@ Django static files are collected into the `static` volume and served by nginx f
 ## 5. Nginx
 `/` → frontend:3000; `/api/` → backend:8000; `/healthz`; gzip/brotli; `client_max_body_size 30m`; rate limit zones `auth` (10r/m) & `search` (60r/m); security headers; HTTP/2; deny dotfiles; access logs JSON.
 
+**As built (P11-T02).** `infrastructure/nginx/templates/default.conf.template` is rendered by the official image at
+start (`envsubst` of `MHRS_DOMAIN` and `MHRS_ENVIRONMENT` only, `NGINX_ENVSUBST_FILTER=^MHRS_`) into
+`conf.d/default.conf`, replacing the stock site. Staging and production use the same template; the
+`env-staging.conf` / `env-production.conf` snippet adds per-environment directives (staging: `X-Robots-Tag: noindex`).
+
+| Path | Behaviour |
+|---|---|
+| port 80 | ACME webroot `/.well-known/acme-challenge/`, `/healthz`, everything else 301 → HTTPS |
+| unknown `Host` on 443 | connection closed (444) |
+| `/api/v1/auth/` | `auth` zone: **POST only**, 10/min per IP, burst 5 (session GETs are never throttled) |
+| `/api/v1/jobs/`, `/jobs` | `search` zone: 60/min per IP, burst 30 |
+| `/django-admin/`, `/api/docs/`, `/api/schema/`, `/readyz` | operator IP allow-list (`/etc/mhrs/nginx/ops-allowlist.conf`) |
+| `/flower/` | allow-list + basic auth (`/etc/mhrs/nginx/flower.htpasswd`); flower runs on the `ops` profile |
+| `/static/` | Django static files from the shared volume, 7-day cache |
+| `/_next/static/` | content-hashed assets, 1-year cache |
+| dotfiles | 404 |
+
+- **TLS:** TLS 1.2/1.3, ECDHE AEAD suites, session tickets off, HTTP/2, HSTS 1 year + `includeSubDomains` + `preload`.
+  No OCSP stapling (Let's Encrypt retired OCSP in 2025). The certificate lineage is always `mhrs`
+  (`/etc/letsencrypt/live/mhrs/`).
+- **Headers:** nginx owns HSTS, `nosniff` and `X-Request-ID` (passed upstream as the request id); CSP and the other
+  headers come from the apps (tested with the code). `server_tokens off`.
+- **Logs:** JSON (`mhrs_json`) with `$uri`, never the query string (tokens / personal data).
+- **Brotli:** not in the official image; gzip only (a custom build is not worth it for the pilot).
+- **Certificates:** `sudo infrastructure/deployment/certbot.sh issue <domain> <email>` (host certbot; first issue
+  standalone with nginx stopped, then renewals switch to webroot), `certbot.timer` renews twice a day and a deploy
+  hook reloads nginx; `certbot.sh status` shows expiry. Runbook: `docs/runbooks/certificate-renewal.md`.
+- **Validation:** `infrastructure/nginx/test-config.sh` renders both environments in the pinned image and fails on any
+  `nginx -t` error or warning (CI images job).
+
 ## 6. Operations runbooks (`docs/runbooks/`)
 - `processing-backlog.md` — scale workers, inspect dead letters, retry.
 - `restore-database.md` — RDS PITR / pg_restore steps; verification queries.

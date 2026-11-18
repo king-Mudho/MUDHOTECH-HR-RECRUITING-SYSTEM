@@ -151,8 +151,11 @@ jobs:
       - name: Production compose is valid
         run: |
           touch .env
-          MHRS_TAG=ci docker compose -f docker-compose.prod.yml config -q
-          MHRS_TAG=ci docker compose -f docker-compose.prod.yml --profile ops config -q
+          export MHRS_TAG=ci MHRS_DOMAIN=hr.mhrs.test
+          docker compose -f docker-compose.prod.yml config -q
+          docker compose -f docker-compose.prod.yml --profile ops config -q
+      - name: Nginx config (staging + production renders, pinned image, no warnings)
+        run: bash infrastructure/nginx/test-config.sh
       - name: Build backend
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:

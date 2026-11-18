@@ -42,9 +42,16 @@ services:
   nginx:
     image: nginx:1.30.7-alpine3.24
     ports: ["80:80", "443:443"]
+    environment:
+      # rendered into /etc/nginx/conf.d/mhrs.conf at start (infrastructure/nginx/templates)
+      MHRS_DOMAIN: ${MHRS_DOMAIN:?set MHRS_DOMAIN (e.g. hr.example.co.zw)}
+      MHRS_ENVIRONMENT: ${MHRS_ENVIRONMENT:-production}
+      NGINX_ENVSUBST_FILTER: "^MHRS_"
     volumes:
-      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infrastructure/nginx/templates:/etc/nginx/templates:ro
       - ./infrastructure/nginx/snippets:/etc/nginx/snippets:ro
+      # host-specific: ops-allowlist.conf + flower.htpasswd (created by ec2-bootstrap.sh)
+      - /etc/mhrs/nginx:/etc/nginx/local:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro
       - static:/srv/static:ro
