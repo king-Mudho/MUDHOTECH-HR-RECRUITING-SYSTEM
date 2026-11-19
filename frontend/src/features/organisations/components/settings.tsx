@@ -609,6 +609,7 @@ export function PolicySettings() {
           retention_months: t("retention_months"),
           notification_delay_minutes: t("notification_delay_minutes"),
           rights_request_sla_days: t("rights_request_sla_days"),
+          offer_approvals_required: t("offer_approvals_required"),
         }}
         submitCount={form.formState.submitCount}
       />
@@ -656,6 +657,14 @@ export function PolicySettings() {
               max={90}
               error={e.rights_request_sla_days}
               {...form.register("rights_request_sla_days", num)}
+            />
+            <TextField
+              label={t("offer_approvals_required")}
+              type="number"
+              min={1}
+              max={5}
+              error={e.offer_approvals_required}
+              {...form.register("offer_approvals_required", num)}
             />
           </div>
           <SelectField

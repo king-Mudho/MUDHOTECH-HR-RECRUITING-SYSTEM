@@ -57,6 +57,11 @@ export const policySchema = z.object({
     .min(0, "outOfRange")
     .max(1440, "outOfRange"),
   hide_ai_from_panelists: z.boolean(),
+  offer_approvals_required: z
+    .number({ message: "required" })
+    .int()
+    .min(1, "outOfRange")
+    .max(5, "outOfRange"),
   rights_request_sla_days: z
     .number({ message: "required" })
     .int()

@@ -185,6 +185,12 @@ class FeedbackCriterionSerializer(serializers.Serializer):
     disagreement = serializers.BooleanField()
 
 
+class PanelOptionSerializer(serializers.Serializer):
+    membership_id = serializers.UUIDField()
+    name = serializers.CharField()
+    role = serializers.CharField()
+
+
 class ScorecardOutstandingSerializer(serializers.Serializer):
     membership_id = serializers.UUIDField()
     name = serializers.CharField()

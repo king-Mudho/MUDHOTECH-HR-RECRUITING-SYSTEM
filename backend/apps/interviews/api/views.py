@@ -199,6 +199,27 @@ class InterviewListView(APIView):
         return pager.get_paginated_response(s.InterviewSerializer(rows, many=True).data)
 
 
+class PanelOptionsView(APIView):
+    """Active staff who can sit on a panel (recruiters arranging interviews cannot list members)."""
+
+    permission_classes = [HasOrgAction("interviews.manage")]
+
+    @extend_schema(
+        operation_id="hr_interview_panel_options", responses=s.PanelOptionSerializer(many=True)
+    )
+    def get(self, request: Request) -> Response:
+        membership: Membership = request.membership  # type: ignore[attr-defined]
+        rows = (
+            Membership.objects.for_org(membership.organisation_id)
+            .filter(status=Membership.Status.ACTIVE)
+            .exclude(role="auditor")
+            .select_related("user")
+            .order_by("user__first_name", "user__last_name", "user__email")
+        )
+        body = [{"membership_id": m.pk, "name": _person(m.user), "role": m.role} for m in rows]
+        return Response(s.PanelOptionSerializer(body, many=True).data)
+
+
 class ApplicationInterviewsView(APIView):
     def get_permissions(self) -> list[Any]:
         action = "interviews.view_all" if self.request.method == "GET" else "interviews.manage"

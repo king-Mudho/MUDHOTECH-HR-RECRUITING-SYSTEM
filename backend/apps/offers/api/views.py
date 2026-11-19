@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.db.models import QuerySet
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -237,13 +237,15 @@ OfferWithdrawView = _action(
 
 
 class OfferLetterView(APIView):
+    """The issued letter as a PDF, streamed through the API (same origin: no bucket CORS needed)."""
+
     permission_classes = [HasOrgAction("offers.view")]
 
     @extend_schema(
         operation_id="hr_offer_letter",
-        responses={302: OpenApiResponse(description="Redirect to a 60-second presigned URL")},
+        responses={(200, "application/pdf"): OpenApiResponse(description="Offer letter PDF")},
     )
-    def get(self, request: Request, offer_id: str) -> Any:
+    def get(self, request: Request, offer_id: str) -> HttpResponse:
         o = _offer(request.membership, offer_id)  # type: ignore[attr-defined]
         doc = o.letter_document
         if doc is None:
@@ -251,14 +253,10 @@ class OfferLetterView(APIView):
         audit.log_access(
             user=authed_user(request), target=doc, organisation=o.organisation_id, action="download"
         )
-        response = HttpResponseRedirect(
-            storage.presign_get(
-                "documents",
-                doc.storage_key,
-                ttl=storage.GET_TTL_SECONDS,
-                filename=doc.original_filename,
-            )
+        response = HttpResponse(
+            storage.get_bytes("documents", doc.storage_key), content_type="application/pdf"
         )
+        response["Content-Disposition"] = f'attachment; filename="offer-letter-{o.pk}.pdf"'
         response["Cache-Control"] = "no-store"
         return response
 

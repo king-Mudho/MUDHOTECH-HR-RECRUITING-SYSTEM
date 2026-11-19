@@ -21,6 +21,9 @@ import { downloadWithOrg } from "@/lib/download";
 import { APPLICATION_VIEWERS, useHRApplication } from "./api";
 import { ApplicantsTable } from "./applicants";
 import { DeclareConflict } from "./declare-conflict";
+import { ApplicationInterviewsPanel } from "@/features/interviews/components";
+import { ApplicationOffersPanel } from "@/features/offers/components";
+
 import { ExtractionPanel } from "./extraction-panel";
 import { ActionsPanel, ClarificationsPanel, MessagesPanel, NotesPanel } from "./panels";
 import { RevealIdentity } from "./reveal-identity";
@@ -122,6 +125,8 @@ export function HRApplicationView({ id }: { id: string }) {
         <DeclareConflict applicationId={a.id} jobId={a.job.id} />
       </div>
       <ActionsPanel app={a} />
+      <ApplicationInterviewsPanel applicationId={a.id} jobId={a.job.id} status={a.status} />
+      <ApplicationOffersPanel applicationId={a.id} status={a.status} />
 
       <section aria-labelledby="hr-contact" className="rounded-lg border p-4">
         <h2 id="hr-contact" className="text-lg font-semibold">

@@ -5,6 +5,11 @@ from . import views as v
 urlpatterns = [
     path("hr/interviews/", v.InterviewListView.as_view(), name="hr-interviews"),
     path(
+        "hr/interviews/panel-options/",
+        v.PanelOptionsView.as_view(),
+        name="hr-interview-panel-options",
+    ),
+    path(
         "hr/applications/<uuid:application_id>/interviews/",
         v.ApplicationInterviewsView.as_view(),
         name="hr-application-interviews",

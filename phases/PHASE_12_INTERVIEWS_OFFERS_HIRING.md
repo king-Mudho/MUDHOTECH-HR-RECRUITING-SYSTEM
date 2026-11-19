@@ -10,7 +10,7 @@
 - [x] **P12-T04** — `apps.offers`: Offer, OfferApproval, HireRecord; approval chain; letter template (DOCX/PDF generation via HTML→PDF (WeasyPrint)), issue via portal, candidate accept (typed name + checkbox + timestamp + IP truncated) / decline with reason, expiry task (EC-OFF-02), withdraw; block issue without approvals (EC-OFF-01); openings counter & over-acceptance warning (EC-OFF-03); accept-then-withdraw (EC-OFF-04).
 - [x] **P12-T05** — Hiring close-out: hire record, prompt to close vacancy when openings filled, bulk final notifications to remaining candidates **only after human confirmation** with reasons.
 - [x] **P12-T06** — APIs + permission matrix + cross-tenant tests for all new endpoints.
-- [ ] **P12-T07** — Frontend HR: `/hr/interviews` calendar/list (day/week), schedule dialog, panel management, scorecard form, consolidated feedback; `/hr/offers` list, offer builder, approvals, letter preview.
+- [x] **P12-T07** — Frontend HR: `/hr/interviews` calendar/list (day/week), schedule dialog, panel management, scorecard form, consolidated feedback; `/hr/offers` list, offer builder, approvals, letter preview.
 - [ ] **P12-T08** — Frontend candidate: interview invitations (book slot, add to calendar, reschedule request), offer view (accept/decline), timeline updates.
 - [ ] **P12-T09** — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, offer_issued, offer_expiring, offer_accepted (HR), offer_declined (HR), hired_welcome (optional).
 - [ ] **P12-T10** — Funnel extended to interviews/offers/hires on dashboard.

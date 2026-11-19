@@ -80,6 +80,14 @@ def issued_setup(ctx: Ctx) -> None:
     _offer(ctx, "issued")
 
 
+def issued_letter_setup(ctx: Ctx) -> None:
+    from apps.core import storage
+
+    _offer(ctx, "issued")
+    letter = ctx.objects["offer"].letter_document
+    storage.put_bytes("documents", letter.storage_key, b"%PDF-1.4 test", "application/pdf")
+
+
 def accepted_setup(ctx: Ctx) -> None:
     _offer(ctx, "accepted")
 
@@ -199,8 +207,8 @@ OFFER_ENDPOINTS: list[Endpoint] = [
         "get",
         lambda c: _o(c, "letter/"),
         "offers.view",
-        issued_setup,
-        success=302,
+        issued_letter_setup,
+        needs_s3=True,
     ),
     ep(
         "hr-offer-hire",

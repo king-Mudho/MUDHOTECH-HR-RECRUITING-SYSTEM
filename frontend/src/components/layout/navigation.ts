@@ -14,6 +14,8 @@ export const CANDIDATE_NAV: NavItem[] = [
 export const HR_NAV: NavItem[] = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: "dashboard" },
   { href: "/hr/jobs", labelKey: "jobs", icon: "jobs" },
+  { href: "/hr/interviews", labelKey: "interviews", icon: "interviews" },
+  { href: "/hr/offers", labelKey: "offers", icon: "offers" },
   { href: "/hr/settings", labelKey: "settings", icon: "settings" },
 ];
 

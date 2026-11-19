@@ -19,4 +19,6 @@ export type NavIcon =
   | "flags"
   | "health"
   | "deadLetters"
-  | "audit";
+  | "audit"
+  | "interviews"
+  | "offers";

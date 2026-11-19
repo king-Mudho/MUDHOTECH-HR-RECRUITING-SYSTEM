@@ -2720,6 +2720,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/Scorecard'
           description: ''
+  /api/v1/hr/interviews/panel-options/:
+    get:
+      operationId: hr_interview_panel_options
+      description: Active staff who can sit on a panel (recruiters arranging interviews
+        cannot list members).
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PanelOption'
+          description: ''
   /api/v1/hr/jobs/:
     get:
       operationId: hr_jobs_list
@@ -4522,6 +4540,8 @@ paths:
   /api/v1/hr/offers/{offer_id}/letter/:
     get:
       operationId: hr_offer_letter
+      description: 'The issued letter as a PDF, streamed through the API (same origin:
+        no bucket CORS needed).'
       parameters:
       - in: path
         name: offer_id
@@ -4534,8 +4554,8 @@ paths:
       security:
       - cookieAuth: []
       responses:
-        '302':
-          description: Redirect to a 60-second presigned URL
+        '200':
+          description: Offer letter PDF
   /api/v1/hr/offers/{offer_id}/return/:
     post:
       operationId: hr_offer_return
@@ -12633,6 +12653,20 @@ components:
       description: |-
         * `lead` - Lead
         * `member` - Member
+    PanelOption:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+      required:
+      - membership_id
+      - name
+      - role
     PanelView:
       type: object
       properties:

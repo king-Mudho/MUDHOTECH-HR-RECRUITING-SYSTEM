@@ -5,6 +5,8 @@ import {
   BarChart3,
   Briefcase,
   Building2,
+  CalendarDays,
+  FileSignature,
   FileText,
   Flag,
   Inbox,
@@ -41,6 +43,8 @@ const ICONS: Record<NavIcon, LucideIcon> = {
   health: Activity,
   deadLetters: TriangleAlert,
   audit: ScrollText,
+  interviews: CalendarDays,
+  offers: FileSignature,
 };
 
 export function isActive(pathname: string, href: string): boolean {

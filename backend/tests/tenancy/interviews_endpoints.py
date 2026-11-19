@@ -71,6 +71,13 @@ def full_card(c: Ctx) -> dict[str, Any]:
 
 INTERVIEW_ENDPOINTS: list[Endpoint] = [
     ep(
+        "hr-interview-panel-options",
+        "get",
+        lambda c: "/api/v1/hr/interviews/panel-options/",
+        "interviews.manage",
+        targets_object=False,
+    ),
+    ep(
         "hr-interviews",
         "get",
         lambda c: "/api/v1/hr/interviews/",

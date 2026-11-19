@@ -207,6 +207,7 @@ describe("PolicySettings", () => {
     blind_mask_institutions: false,
     notification_delay_minutes: 15,
     hide_ai_from_panelists: true,
+    offer_approvals_required: 1,
     rights_request_sla_days: 30,
   };
 

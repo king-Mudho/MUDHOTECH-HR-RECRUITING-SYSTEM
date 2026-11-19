@@ -1282,6 +1282,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/interviews/panel-options/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Active staff who can sit on a panel (recruiters arranging interviews cannot list members). */
+        get: operations["hr_interview_panel_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/": {
         parameters: {
             query?: never;
@@ -2027,6 +2044,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description The issued letter as a PDF, streamed through the API (same origin: no bucket CORS needed). */
         get: operations["hr_offer_letter"];
         put?: never;
         post?: never;
@@ -5443,6 +5461,12 @@ export interface components {
          * @enum {string}
          */
         PanelMemberInRoleEnum: "lead" | "member";
+        PanelOption: {
+            /** Format: uuid */
+            membership_id: string;
+            name: string;
+            role: string;
+        };
         PanelView: {
             interview: components["schemas"]["Interview"];
             documents: components["schemas"]["PanelDocument"][];
@@ -9107,6 +9131,25 @@ export interface operations {
             };
         };
     };
+    hr_interview_panel_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PanelOption"][];
+                };
+            };
+        };
+    };
     hr_jobs_list: {
         parameters: {
             query?: {
@@ -10536,8 +10579,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Redirect to a 60-second presigned URL */
-            302: {
+            /** @description Offer letter PDF */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
