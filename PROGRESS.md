@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 13 — Consent-Based Talent Pool, Advanced Analytics & Exports
-- **Current task:** P13-T04
+- **Current task:** P13-T05
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 161 / 193 tasks · 10 / 16 phases
+- **Overall:** 162 / 193 tasks · 10 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -251,7 +251,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P13-T01 — `apps.talentpool`: TalentPoolEntry linked to ConsentRecord (purpose `talent_pool`, per organisation, duration …
 - [x] P13-T02 — Talent search (HR): FTS + skill/qualification filters over consented profiles only (org-scoped)
 - [x] P13-T03 — Analytics selectors/materialised views (refresh nightly + on-demand): time-to-review, time-to-shortlist, …
-- [ ] P13-T04 — Optional voluntary diversity monitoring module (default OFF
+- [x] P13-T04 — Optional voluntary diversity monitoring module (default OFF
 - [ ] P13-T05 — Reports UI `/hr/reports` with charts (accessible, table alternatives
 - [ ] P13-T06 — Exports (reports queue): XLSX (openpyxl) / CSV / PDF
 - [ ] P13-T07 — AI quality monitoring: scheduled `ai_quality_reports`
@@ -731,3 +731,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P13-T01 | apps.talentpool: TalentPoolEntry (RLS) tied to a talent_pool ConsentRecord per employer (only employers applied to), 12-month period (TALENT_POOL_MONTHS), rejoin = reconfirmation, leave withdraws consent, delete removes entry+tags, daily reminders 30 days before + expiry, erasure removes entries; opt-in checkbox at submit (join_talent_pool, candidate only) and Talent pools section on /candidate/privacy; candidate API list/join/leave; tests | HR search in T02 |
 | 2026-11-19 | Impl | P13-T02 | HR talent search /hr/talent-pool: PostgreSQL FTS (websearch) over headline/skills/titles/qualifications/summary + skill (all must match), min qualification rank and tag filters, only consented active members of the own org; profile-fact cards (no documents); tags; invite to apply for a published vacancy (TalentPoolInvite, RLS, notification talent_pool_invitation, no duplicate, not if already applied); RBAC talentpool.search/invite; registry endpoints (cross-tenant + matrix); views logged | none |
 | 2026-11-19 | Impl | P13-T03 | apps.analytics: live selectors (time to review/shortlist/hire, funnel reached + conversion, UTM sources with shortlisted, questionnaire unfinished-by-step + per-question drop-off for a vacancy, extraction failure/OCR/partial rates and times, AI-human override/agreement by band and vacancy + claim verification override rate, clarification response rate); AnalyticsSnapshot (RLS) for the default 90-day view refreshed nightly (reports queue) and on demand; GET /hr/reports/recruitment + POST refresh (reports.view = admin/HR manager); reconciliation tests; registry endpoints | Snapshot table instead of PostgreSQL materialised views (MVs bypass RLS) |
+| 2026-11-19 | Impl | P13-T04 | not built by design: owner has not enabled it (task is conditional); ADR-031 + open decision D-10 record the default (off/absent) and the constraints if enabled later | Owner decision D-10 if diversity monitoring is wanted |
