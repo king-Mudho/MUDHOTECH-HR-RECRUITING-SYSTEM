@@ -462,6 +462,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Application'
           description: ''
+  /api/v1/billing/paynow/result/:
+    post:
+      operationId: billing_paynow_result
+      description: |-
+        Paynow's result URL (server to server). Always answers 200 so Paynow stops retrying; the
+        message only changes anything after hash verification and a confirming poll (EC-BIL-01).
+      tags:
+      - billing
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/candidate/actions/:
     get:
       operationId: candidate_actions_list
@@ -2425,6 +2438,39 @@ paths:
                 items:
                   $ref: '#/components/schemas/Invoice'
           description: ''
+  /api/v1/hr/billing/invoices/{invoice_id}/pay/:
+    post:
+      operationId: hr_billing_invoice_pay
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PayRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayResult'
+          description: ''
   /api/v1/hr/billing/invoices/{invoice_id}/pdf/:
     get:
       operationId: hr_billing_invoice_pdf
@@ -2442,6 +2488,27 @@ paths:
       responses:
         '200':
           description: Invoice PDF
+  /api/v1/hr/billing/payments/{payment_id}/:
+    get:
+      operationId: hr_billing_payment
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
   /api/v1/hr/claims/{claim_id}/verify/:
     post:
       operationId: hr_claim_verify
@@ -7012,6 +7079,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AIDrift'
+          description: ''
+  /api/v1/platform/billing/invoices/{invoice_id}/manual-payment/:
+    post:
+      operationId: platform_billing_manual_payment
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ManualPaymentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
           description: ''
   /api/v1/platform/dead-letters/:
     get:
@@ -12607,6 +12707,7 @@ components:
       - offer_issued
       - offer_withdrawn
       - organisation_closed
+      - payment_received
       - recruiter_digest
       - recruitment_paused
       - retention_report
@@ -12647,6 +12748,7 @@ components:
         * `offer_issued` - offer_issued
         * `offer_withdrawn` - offer_withdrawn
         * `organisation_closed` - organisation_closed
+        * `payment_received` - payment_received
         * `recruiter_digest` - recruiter_digest
         * `recruitment_paused` - recruitment_paused
         * `retention_report` - retention_report
@@ -12880,6 +12982,20 @@ components:
           format: binary
       required:
       - logo
+    ManualPaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - amount
+      - reference
     Me:
       type: object
       properties:
@@ -13114,6 +13230,16 @@ components:
           maxItems: 3
       required:
       - body
+    MethodEnum:
+      enum:
+      - card
+      - ecocash
+      - onemoney
+      type: string
+      description: |-
+        * `card` - card
+        * `ecocash` - ecocash
+        * `onemoney` - onemoney
     MfaStatus:
       type: object
       properties:
@@ -14657,6 +14783,68 @@ components:
             type: string
             maxLength: 40
           maxItems: 10
+    PayRequestRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/MethodEnum'
+        phone:
+          type: string
+          default: ''
+          maxLength: 20
+      required:
+      - method
+    PayResult:
+      type: object
+      properties:
+        payment:
+          $ref: '#/components/schemas/Payment'
+        redirect_url:
+          type: string
+        instructions:
+          type: string
+      required:
+      - instructions
+      - payment
+      - redirect_url
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        method:
+          type: string
+        status:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          type: string
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - amount
+      - created_at
+      - currency
+      - id
+      - invoice_id
+      - method
+      - paid_at
+      - reference
+      - status
     PlatformErrors:
       type: object
       properties:

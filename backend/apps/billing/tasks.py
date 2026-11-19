@@ -34,3 +34,10 @@ def issue_due_invoices() -> int:
     from . import invoicing
 
     return invoicing.run_monthly()
+
+
+@shared_task(name="apps.billing.tasks.poll_payments", base=BaseTask)
+def poll_payments() -> dict[str, int]:
+    from . import payments
+
+    return payments.poll_due()

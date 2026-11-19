@@ -232,6 +232,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/paynow/result/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Paynow's result URL (server to server). Always answers 200 so Paynow stops retrying; the
+         *     message only changes anything after hash verification and a confirming poll (EC-BIL-01).
+         */
+        post: operations["billing_paynow_result"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/actions/": {
         parameters: {
             query?: never;
@@ -1122,6 +1142,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/billing/invoices/{invoice_id}/pay/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_billing_invoice_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/billing/invoices/{invoice_id}/pdf/": {
         parameters: {
             query?: never;
@@ -1130,6 +1166,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["hr_billing_invoice_pdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/billing/payments/{payment_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_billing_payment"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3189,6 +3241,22 @@ export interface paths {
         get: operations["platform_ai_quality"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/billing/invoices/{invoice_id}/manual-payment/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_billing_manual_payment"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5585,6 +5653,7 @@ export interface components {
          *     * `offer_issued` - offer_issued
          *     * `offer_withdrawn` - offer_withdrawn
          *     * `organisation_closed` - organisation_closed
+         *     * `payment_received` - payment_received
          *     * `recruiter_digest` - recruiter_digest
          *     * `recruitment_paused` - recruitment_paused
          *     * `retention_report` - retention_report
@@ -5597,7 +5666,7 @@ export interface components {
          *     * `talent_pool_reconfirm` - talent_pool_reconfirm
          * @enum {string}
          */
-        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "invoice_issued" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
+        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "invoice_issued" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "payment_received" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -5671,6 +5740,11 @@ export interface components {
         LogoUploadRequest: {
             /** Format: binary */
             logo: string;
+        };
+        ManualPaymentRequest: {
+            /** Format: decimal */
+            amount: string;
+            reference: string;
         };
         Me: {
             /** Format: uuid */
@@ -5755,6 +5829,13 @@ export interface components {
             body: string;
             attachment_ids?: string[];
         };
+        /**
+         * @description * `card` - card
+         *     * `ecocash` - ecocash
+         *     * `onemoney` - onemoney
+         * @enum {string}
+         */
+        MethodEnum: "card" | "ecocash" | "onemoney";
         MfaStatus: {
             required: boolean;
             enabled: boolean;
@@ -6429,6 +6510,32 @@ export interface components {
         };
         PatchedTalentTagsRequest: {
             tags?: string[];
+        };
+        PayRequestRequest: {
+            method: components["schemas"]["MethodEnum"];
+            /** @default  */
+            phone: string;
+        };
+        PayResult: {
+            payment: components["schemas"]["Payment"];
+            redirect_url: string;
+            instructions: string;
+        };
+        Payment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            reference: string;
+            method: string;
+            status: string;
+            /** Format: decimal */
+            amount: string;
+            currency: string;
+            /** Format: date-time */
+            paid_at: string | null;
+            /** Format: date-time */
+            created_at: string;
         };
         PlatformErrors: {
             dead_letters_open: number;
@@ -8187,6 +8294,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Application"];
                 };
+            };
+        };
+    };
+    billing_paynow_result: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -9952,6 +10077,33 @@ export interface operations {
             };
         };
     };
+    hr_billing_invoice_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PayRequestRequest"];
+                "multipart/form-data": components["schemas"]["PayRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayResult"];
+                };
+            };
+        };
+    };
     hr_billing_invoice_pdf: {
         parameters: {
             query?: never;
@@ -9969,6 +10121,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    hr_billing_payment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
             };
         };
     };
@@ -13756,6 +13929,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AIDrift"];
+                };
+            };
+        };
+    };
+    platform_billing_manual_payment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualPaymentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ManualPaymentRequest"];
+                "multipart/form-data": components["schemas"]["ManualPaymentRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
                 };
             };
         };

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from rest_framework import serializers
 
+from apps.core.serializers import StrictSerializer
+
 
 class BillingPlanSerializer(serializers.Serializer):
     code = serializers.CharField()
@@ -63,3 +65,31 @@ class InvoiceSerializer(serializers.Serializer):
     issued_at = serializers.DateTimeField(allow_null=True)
     due_at = serializers.DateTimeField(allow_null=True)
     paid_at = serializers.DateTimeField(allow_null=True)
+
+
+class PayRequestSerializer(StrictSerializer):
+    method = serializers.ChoiceField(choices=["card", "ecocash", "onemoney"])
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, default="")
+
+
+class PaymentSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    reference = serializers.CharField()
+    method = serializers.CharField()
+    status = serializers.CharField()
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    currency = serializers.CharField()
+    paid_at = serializers.DateTimeField(allow_null=True)
+    created_at = serializers.DateTimeField()
+
+
+class PayResultSerializer(serializers.Serializer):
+    payment = PaymentSerializer()
+    redirect_url = serializers.CharField(allow_blank=True)
+    instructions = serializers.CharField(allow_blank=True)
+
+
+class ManualPaymentSerializer(StrictSerializer):
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    reference = serializers.CharField(max_length=100)

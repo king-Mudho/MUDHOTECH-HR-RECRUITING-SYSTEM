@@ -335,6 +335,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=40),
         "options": {"expires": 3000},
     },
+    "billing-payments-poll": {
+        "task": "apps.billing.tasks.poll_payments",
+        "schedule": timedelta(minutes=1),
+        "options": {"expires": 50},
+    },
     "billing-invoices-daily": {
         "task": "apps.billing.tasks.issue_due_invoices",
         "schedule": crontab(hour=5, minute=0),
@@ -456,6 +461,20 @@ BILLING_SELLER_TAX_NUMBER = env("BILLING_SELLER_TAX_NUMBER", default="")
 BILLING_TAX_RATE = env("BILLING_TAX_RATE", default="0")  # e.g. "0.15" for 15 % VAT
 BILLING_TAX_LABEL = env("BILLING_TAX_LABEL", default="VAT")
 BILLING_DUE_DAYS = env.int("BILLING_DUE_DAYS", default=14)
+# P14-T06 Paynow: one integration per currency; live ids/keys are owner-supplied (STOP condition)
+PAYNOW_BASE_URL = env("PAYNOW_BASE_URL", default="https://www.paynow.co.zw/interface")
+PAYNOW_INTEGRATIONS = {
+    "USD": {
+        "id": env("PAYNOW_USD_INTEGRATION_ID", default=""),
+        "key": env("PAYNOW_USD_INTEGRATION_KEY", default=""),
+    },
+    "ZWG": {
+        "id": env("PAYNOW_ZWG_INTEGRATION_ID", default=""),
+        "key": env("PAYNOW_ZWG_INTEGRATION_KEY", default=""),
+    },
+}
+PAYNOW_RESULT_URL_BASE = env("PAYNOW_RESULT_URL_BASE", default=FRONTEND_URL)
+PAYNOW_TIMEOUT_SECONDS = env.int("PAYNOW_TIMEOUT_SECONDS", default=15)
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)

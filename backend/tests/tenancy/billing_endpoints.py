@@ -22,6 +22,22 @@ def invoice_setup(ctx: Ctx) -> None:
     )
 
 
+def payment_setup(ctx: Ctx) -> None:
+    from apps.billing.models import Payment
+
+    invoice_setup(ctx)
+    invoice = ctx.objects["invoice"]
+    ctx.objects["payment"] = Payment.objects.create(
+        organisation_id=invoice.organisation_id,
+        invoice=invoice,
+        provider="paynow",
+        method="card",
+        reference=f"{invoice.number}-1",
+        amount=invoice.amount,
+        currency=invoice.currency,
+    )
+
+
 BILLING_ENDPOINTS: list[Endpoint] = [
     Endpoint(
         "hr-billing",
@@ -48,6 +64,28 @@ BILLING_ENDPOINTS: list[Endpoint] = [
         "billing.view",
         org_header=True,
         setup=invoice_setup,
+        needs_s3=True,
+    ),
+    # Paynow is not configured in tests: permitted roles get 503 "payments_unavailable" (after
+    # the invoice lookup, so another organisation's invoice is still a 404)
+    Endpoint(
+        "hr-billing-invoice-pay",
+        "post",
+        lambda c: f"/api/v1/hr/billing/invoices/{c.objects['invoice'].pk}/pay/",
+        "billing.manage",
+        success=503,
+        org_header=True,
+        setup=invoice_setup,
+        needs_s3=True,
+        data=lambda c: {"method": "card"},
+    ),
+    Endpoint(
+        "hr-billing-payment",
+        "get",
+        lambda c: f"/api/v1/hr/billing/payments/{c.objects['payment'].pk}/",
+        "billing.view",
+        org_header=True,
+        setup=payment_setup,
         needs_s3=True,
     ),
 ]

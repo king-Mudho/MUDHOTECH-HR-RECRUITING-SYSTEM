@@ -450,6 +450,16 @@ billing page, or pay by bank transfer quoting the invoice number.
 [Open plan & billing]({{ billing_url }})""",
         "Invoice {{ invoice_number }} ({{ amount }}) is due by {{ due_date }}.",
     ),
+    "payment_received": DefaultTemplate(
+        "Payment received for invoice {{ invoice_number }}",
+        """Hello {{ recipient_name }},
+
+Thank you. We received {{ amount }} for invoice **{{ invoice_number }}**
+(payment reference {{ payment_reference }}). This email is your receipt.
+
+[Open plan & billing]({{ billing_url }})""",
+        "Payment of {{ amount }} received for invoice {{ invoice_number }}.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},

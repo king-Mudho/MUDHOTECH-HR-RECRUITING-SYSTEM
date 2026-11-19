@@ -43,6 +43,7 @@ SAMPLES: dict[str, str] = {
     "invoice_number": "MHRS-2026-000042",
     "amount": "USD 49.00",
     "billing_url": "https://mhrs.example/hr/settings/billing",
+    "payment_reference": "1234567",
     "job_url": "https://mhrs.example/jobs/software-developer",
     "document_name": "cv.pdf",
     "reason": "This file didn't pass our security check.",
@@ -354,6 +355,12 @@ _KINDS = [
         "A new invoice for the organisation's subscription (organisation admins)",
         "staff",
         ("organisation_name", "invoice_number", "amount", "due_date", "billing_url"),
+    ),
+    NotificationKind(
+        "payment_received",
+        "Receipt for a payment (organisation admins)",
+        "staff",
+        ("organisation_name", "invoice_number", "amount", "payment_reference", "billing_url"),
     ),
     NotificationKind(
         "hired_welcome",
