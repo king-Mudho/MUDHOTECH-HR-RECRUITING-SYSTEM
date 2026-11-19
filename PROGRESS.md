@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 14 — Platform Administration, Subscriptions & Billing
-- **Current task:** P14-T09
+- **Current task:** P14-EXIT
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 174 / 193 tasks · 11 / 16 phases
+- **Overall:** 175 / 193 tasks · 11 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -267,7 +267,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P14-T06 — Paynow integration (official Python SDK or REST): web checkout (cards) + mobile express checkout (EcoCash/OneMoney)
 - [x] P14-T07 — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible …
 - [x] P14-T08 — Org billing UI `/hr/settings/billing` (plan, usage, invoices, pay now, change plan) and admin plan management
-- [ ] P14-T09 — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed)
+- [x] P14-T09 — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed)
 - [ ] P14-EXIT — All exit criteria verified with evidence
 
 ### Phase 15 — External Integrations & Localisation  (`phases/PHASE_15_INTEGRATIONS_LOCALISATION.md`)
@@ -760,3 +760,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P14-T06 | Paynow over its HTTP protocol (no SDK; urllib, https only): web checkout (card) + mobile express (EcoCash/OneMoney, ZW numbers to 07XXXXXXXX), SHA-512 signed requests and verified replies, result URL (public, CSRF exempt, always 200) verifies the hash then confirms via poll URL before marking paid (EC-BIL-01), beat polling every minute with backoff up to 15 min then pending_manual_check (EC-BIL-02), idempotent apply (duplicates ignored, amount mismatch -> manual check), invoice settled + payment_received receipt + subscription reactivated/plan change applied, manual bank payments by platform admins; per-currency integration settings (empty = 'not available yet'); tests with a fake Paynow | Live Paynow integration id/key (owner) - test-mode run once supplied |
 | 2026-11-19 | Impl | P14-T07 | billing.lifecycle.sweep (daily): reminder 3 days before due, overdue -> past_due with 7-day grace, grace over -> read_only (staff writes refused in the org permission class with billing_read_only, reads and billing pay endpoint still allowed; candidate/public endpoints unaffected; vacancies stay published until their deadline - EC-BIL-04), trial reminder 5 days before end, trial end -> grace -> read_only; reactivation on payment (on_invoice_paid); notifications invoice_due_soon/invoice_overdue/trial_ending/trial_ended/subscription_read_only; idempotent; tests | none |
 | 2026-11-19 | Impl | P14-T08 | /hr/settings/billing: plan + status card (trial end, renewal, grace, read-only), invoices (PDF download, Pay now: EcoCash/OneMoney with phone and live status polling, or card via Paynow redirect; return from Paynow shows the status), usage meters + history, change plan (USD/ZWG, invoice first and plan starts when paid, Enterprise = contact); backend POST /hr/billing/change-plan (voids an earlier unpaid choice) and platform plan management GET/POST /platform/billing/plans (prices, limits, public/active, subscriber counts, audited); /admin/plans page; tests (fixed a payment-status refetch loop found by the test) | Not browser-verified locally (host RAM) |
+| 2026-11-19 | Impl | P14-T09 | Paynow test double (signed replies, poll state): valid/invalid hash, duplicates, pending->paid by poll, failed, cancelled, spoofed/replayed callbacks, amount mismatch, backoff -> manual check, not configured, manual bank payments (test_payments.py); plus entitlements, metering, invoicing, lifecycle and plan tests; exit E2E tests/integration/test_phase14_billing.py: trial limits -> trial end -> grace -> read-only (candidates still apply) -> choose Growth -> EcoCash via Paynow + verified callback -> active, higher limit applies | none |

@@ -14,7 +14,7 @@
 - [x] **P14-T06** — Paynow integration (official Python SDK or REST): web checkout (cards) + mobile express checkout (EcoCash/OneMoney); result URL handler with hash verification (EC-BIL-01), server-side polling of poll_url with backoff (EC-BIL-02), idempotent payment application, receipts; manual payment recording by platform admin (bank transfer).
 - [x] **P14-T07** — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible until their deadline (EC-BIL-04), reactivation on payment.
 - [x] **P14-T08** — Org billing UI `/hr/settings/billing` (plan, usage, invoices, pay now, change plan) and admin plan management.
-- [ ] **P14-T09** — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed).
+- [x] **P14-T09** — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed).
 
 ## Exit criteria
 - [ ] Trial → paid via Paynow test mode works end to end; entitlements enforced; candidate flows never blocked by billing.
