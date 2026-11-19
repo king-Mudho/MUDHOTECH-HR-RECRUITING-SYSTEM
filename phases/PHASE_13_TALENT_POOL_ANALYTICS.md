@@ -11,7 +11,7 @@
 - [x] **P13-T05** — Reports UI `/hr/reports` with charts (accessible, table alternatives; follow dataviz guidance), date/department/vacancy filters, drill-down.
 - [x] **P13-T06** — Exports (reports queue): XLSX (openpyxl) / CSV / PDF; permission-checked, formula-injection-safe, PII minimisation options (blind export), expiring links (15 min), audit (EC-PRV-08).
 - [x] **P13-T07** — AI quality monitoring: scheduled `ai_quality_reports`; alert to HR manager when vacancy override rate > 30% (suggest rubric review); platform-level drift indicators (parse failure trends, score distribution shifts by engine version).
-- [ ] **P13-T08** — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data.
+- [x] **P13-T08** — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data.
 
 ## Exit criteria
 - [ ] Talent pool consent boundaries proven by tests; reports reconcile; exports secure and logged.

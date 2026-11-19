@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 13 — Consent-Based Talent Pool, Advanced Analytics & Exports
-- **Current task:** P13-T08
+- **Current task:** P13-EXIT
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 165 / 193 tasks · 10 / 16 phases
+- **Overall:** 166 / 193 tasks · 10 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -255,7 +255,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P13-T05 — Reports UI `/hr/reports` with charts (accessible, table alternatives
 - [x] P13-T06 — Exports (reports queue): XLSX (openpyxl) / CSV / PDF
 - [x] P13-T07 — AI quality monitoring: scheduled `ai_quality_reports`
-- [ ] P13-T08 — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data
+- [x] P13-T08 — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data
 - [ ] P13-EXIT — All exit criteria verified with evidence
 
 ### Phase 14 — Platform Administration, Subscriptions & Billing  (`phases/PHASE_14_PLATFORM_ADMIN_BILLING.md`)
@@ -735,3 +735,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P13-T05 | /hr/reports (HR manager/admin): date/department/vacancy filters, refresh now, snapshot/live note; timing stat tiles (median + count + p90), funnel with conversion, sources, completion by step + per-question drop-off for a vacancy, AI agreement/override by band and vacancy (drill-down sets the vacancy filter, >30% flagged 'review the rubric', AI notice), CV processing and clarification tiles; single-series bars inside real tables (accessible table view by construction, values printed, theme hue); nav item; Vitest | Not browser-verified locally (host RAM); check on staging |
 | 2026-11-19 | Impl | P13-T06 | ExportJob (RLS) requested via POST /hr/exports (reports.export = admin/HR manager), built on the reports queue from the outbox: applicants of a vacancy (visibility + conflicts respected, blind option drops names/contacts, AI band labelled) or the recruitment report; CSV (BOM) / XLSX (openpyxl) / PDF (PyMuPDF Story, escaped); every text cell through csv_safe (EC-PRV-08, also XLSX); files 24 h then deleted (hourly sweep), POST download returns a 15-minute presigned link; requested/downloaded audited; export panel on /hr/reports with polling; tests + registry endpoints | none |
 | 2026-11-19 | Impl | P13-T07 | apps/screening/monitoring.py: daily override alerts per vacancy (30-day window, >30% with >=10 decisions, HR managers + admins, deduped per week, audited, advice only; notification ai_override_alert); weekly platform drift indicators stored as the platform AIQualityReport row (parse failure rate per week, score/band distribution per engine version, shift flags between the two latest versions, audited when flagged); GET /api/v1/platform/ai/quality/ (platform staff); manage.py ai_quality_report; beat entries on the reports queue; tests | Platform admin UI for drift indicators (admin area) - API only for now |
+| 2026-11-19 | Impl | P13-T08 | tests/integration/test_phase13_boundaries.py: cross-employer consent boundary end to end (join only applied employers, other employer never finds the person by skill or name, no CV id/filename/email in results, CV download refused, leave/erasure end membership) + report export without personal data + report funnel reconciles with the dashboard funnel; plus the T01-T07 suites (consent, search, analytics reconciliation, exports escaping/permissions, monitoring) | none |
