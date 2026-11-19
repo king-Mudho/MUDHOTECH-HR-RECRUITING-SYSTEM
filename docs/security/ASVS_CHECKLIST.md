@@ -165,3 +165,26 @@ Production npm audit gate (`frontend/scripts/audit.mjs`): high/critical advisori
 listed in `frontend/audit-allowlist.json` with a reason and a review date; an expired entry fails
 again. Accepted 2026-11-17 until 2026-12-15: GHSA-fc5q-39xc-vjpf (picomatch ReDoS) - only loaded by
 next-intl's message-extraction watcher, which MHRS does not use, and no patched release exists.
+
+## Re-review for v1.1/v1.2 (P16-T02, 2026-11-19)
+
+New attack surface since Phase 09 and how it is controlled:
+
+| Surface | ASVS | Control | Evidence |
+|---|---|---|---|
+| Paynow result URL (unauthenticated callback) | 13.1, 1.14 | SHA-512 hash verified with the integration key, then the status re-read from Paynow's poll URL before anything is paid; poll URL host pinned; amount must match; idempotent | `apps/billing/tests/test_payments.py` (spoofed/replayed callbacks, mismatch) |
+| Outbound webhooks | 12.6 (SSRF), 6.2 | https only, host must resolve to public addresses (checked on create and at send), HMAC-SHA256 + timestamp, secret encrypted and shown once, ids/statuses only | `apps/integrations/tests/test_webhooks_api.py` |
+| Public API keys | 2.10, 4.1 | random 256-bit secrets, SHA-256 hash only, constant-time compare, scopes, revocation, per-key rate limit, no PII scopes | `test_webhooks_api.py::test_public_api_scopes_and_feeds` |
+| Inbound SMS / WhatsApp webhooks | 13.1 | shared-secret header (SMS), `X-Hub-Signature-256` HMAC (Meta); only STOP and receipts are acted on | `apps/integrations/tests/test_messaging.py` |
+| Staff SSO | 2.x, 3.x | no sign-up via SSO, provider-verified email, org domain allow-list, MHRS MFA still enforced | `apps/accounts/tests/test_sso.py` |
+| Integration credentials | 6.4 | `EncryptedTextField`, write-only API (masked hint), rotation, audit | `test_framework.py::test_credentials_encrypted_at_rest` |
+| Exports | 5.3 (injection), 8.3 | formula neutralisation in CSV and XLSX, HTML-escaped PDF, 15-minute presigned links, files deleted after 24 h, audited, admin/HR manager only | `apps/analytics/tests/test_exports.py` |
+| Billing read-only / entitlements | 4.1 | enforced server-side in the org permission class; candidate endpoints untouched | `apps/billing/tests/test_lifecycle.py`, `test_entitlements.py` |
+| New tenant tables | 4.2 | RLS policies in migrations; endpoints in the cross-tenant suite and role matrix | `backend/tests/tenancy/*_endpoints.py` |
+
+Dependencies: `pip-audit --strict` and `npm audit --omit=dev` report no known vulnerabilities
+(2026-11-19); Bandit (`-ll`) clean; Semgrep and ZAP run in the nightly / staging checks.
+
+Owner/staging items (not verifiable in the repository): ZAP full scan on staging, secrets rotation at
+go-live, IAM least-privilege review of the AWS account, external penetration test
+(`docs/security/PENTEST_READINESS.md`).
