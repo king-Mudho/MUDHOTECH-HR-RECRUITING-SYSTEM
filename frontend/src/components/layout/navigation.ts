@@ -20,11 +20,14 @@ export const HR_NAV: NavItem[] = [
   { href: "/hr/settings", labelKey: "settings", icon: "settings" },
 ];
 
-// Platform users, feature flags, system health, dead letters and platform audit logs are not
-// built yet (DEFECT_LOG D-002); they use Django admin / Flower / ops tooling until then.
 export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/dashboard", labelKey: "dashboard", icon: "dashboard" },
   { href: "/admin/organisations", labelKey: "organisations", icon: "organisations" },
+  { href: "/admin/users", labelKey: "users", icon: "users" },
+  { href: "/admin/feature-flags", labelKey: "featureFlags", icon: "flags" },
+  { href: "/admin/taxonomy", labelKey: "taxonomy", icon: "jobs" },
+  { href: "/admin/dead-letters", labelKey: "deadLetters", icon: "deadLetters" },
+  { href: "/admin/system", labelKey: "systemHealth", icon: "health" },
   { href: "/admin/support-access", labelKey: "supportAccess", icon: "audit" },
   { href: "/admin/model-registry", labelKey: "modelRegistry", icon: "flags" },
 ];

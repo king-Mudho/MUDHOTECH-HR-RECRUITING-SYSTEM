@@ -125,7 +125,9 @@ def load_taxonomy(directory: Path | None = None, *, force: bool = False) -> Load
 
 
 def current_version() -> str:
-    latest = TaxonomyVersion.objects.order_by("-published_at").first()
+    latest = (
+        TaxonomyVersion.objects.filter(published_at__isnull=False).order_by("-published_at").first()
+    )
     return latest.version if latest else ""
 
 

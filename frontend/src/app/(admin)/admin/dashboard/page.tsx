@@ -1,11 +1,13 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export default async function DashboardPage() {
-  const t = await getTranslations("areas");
-  return (
-    <main id="main-content" className="flex-1 p-6">
-      <h1 className="text-2xl font-semibold">{t("adminTitle")}</h1>
-      <p className="text-muted-foreground mt-2">{t("comingSoon")}</p>
-    </main>
-  );
+import { AdminDashboard } from "@/features/admin/console";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.console.dashboard");
+  return { title: t("title"), robots: { index: false } };
+}
+
+export default function Page() {
+  return <AdminDashboard />;
 }

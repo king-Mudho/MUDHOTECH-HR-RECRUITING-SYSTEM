@@ -3147,6 +3147,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/dead-letters/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_dead_letters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/dead-letters/{dead_letter_id}/resolve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_dead_letter_resolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/dead-letters/{dead_letter_id}/retry/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_dead_letter_retry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/flags/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_flags"];
+        put?: never;
+        post: operations["platform_flag_set"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform/organisations/": {
         parameters: {
             query?: never;
@@ -3195,6 +3259,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/organisations/{organisation_id}/detail/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_organisation_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform/organisations/{organisation_id}/reactivate/": {
         parameters: {
             query?: never;
@@ -3237,6 +3317,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["platform_organisations_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/overview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_overview"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3317,6 +3413,198 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["platform_support_access_revoke"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/system/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_system"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_taxonomy"];
+        put?: never;
+        post: operations["platform_taxonomy_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/aliases/{alias_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["platform_taxonomy_alias_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/qualification-aliases/{alias_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["platform_taxonomy_qualification_alias_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/qualifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_taxonomy_qualifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/qualifications/{level_id}/aliases/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_taxonomy_qualification_alias_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/relations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_taxonomy_relation_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/relations/{relation_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["platform_taxonomy_relation_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/skills/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_taxonomy_skills"];
+        put?: never;
+        post: operations["platform_taxonomy_skill_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/skills/{skill_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["platform_taxonomy_skill_update"];
+        trace?: never;
+    };
+    "/api/v1/platform/taxonomy/skills/{skill_id}/aliases/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["platform_taxonomy_alias_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_users"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3550,6 +3838,9 @@ export interface components {
             /** Format: date-time */
             until: string | null;
             reason: string;
+        };
+        AliasInRequest: {
+            alias: string;
         };
         AnswerItemRequest: {
             key: string;
@@ -4217,6 +4508,30 @@ export interface components {
         CsrfToken: {
             csrf_token: string;
         };
+        CuratedAlias: {
+            /** Format: uuid */
+            id: string;
+            alias: string;
+        };
+        CuratedQualificationLevel: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            name: string;
+            rank: number;
+            framework: string;
+            aliases: components["schemas"]["CuratedAlias"][];
+        };
+        CuratedSkill: {
+            /** Format: uuid */
+            id: string;
+            canonical_name: string;
+            category: string;
+            is_active: boolean;
+            taxonomy_version: string;
+            aliases: components["schemas"]["CuratedAlias"][];
+            relations: components["schemas"]["RelationOut"][];
+        };
         CustomSkillCreateRequest: {
             canonical_name: string;
             category: components["schemas"]["CategoryEnum"];
@@ -4279,6 +4594,24 @@ export interface components {
             ai_suggestions: components["schemas"]["DashboardAI"];
             human_decisions: components["schemas"]["DashboardHuman"];
             queues: components["schemas"]["DashboardQueues"];
+        };
+        DayCount: {
+            /** Format: date */
+            day: string;
+            count: number;
+        };
+        DeadLetter: {
+            /** Format: uuid */
+            readonly id: string;
+            task_name: string;
+            error: string;
+            /** Format: uuid */
+            organisation_id?: string | null;
+            request_id?: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            resolved_at?: string | null;
         };
         DecisionReason: {
             readonly code: string;
@@ -4589,6 +4922,18 @@ export interface components {
             min: number | null;
             max: number | null;
             disagreement: boolean;
+        };
+        FlagOverride: {
+            /** Format: uuid */
+            organisation_id: string;
+            organisation_name: string;
+            enabled: boolean;
+        };
+        FlagSetRequest: {
+            key: string;
+            enabled: boolean;
+            /** Format: uuid */
+            organisation_id?: string | null;
         };
         /**
          * @description * `csv` - csv
@@ -5456,6 +5801,12 @@ export interface components {
             enabled: boolean | null;
             reason: string;
         };
+        OrgUsage: {
+            active_vacancies: number;
+            applications_this_month: number;
+            ai_evaluations_this_month: number;
+            storage_bytes: number;
+        };
         Organisation: {
             /** Format: uuid */
             readonly id: string;
@@ -5969,8 +6320,41 @@ export interface components {
             decisions?: components["schemas"]["ShortlistDecisionRequest"][];
             lock_version?: number | null;
         };
+        PatchedSkillUpdateRequest: {
+            canonical_name?: string;
+            category?: components["schemas"]["CategoryEnum"];
+            is_active?: boolean;
+        };
         PatchedTalentTagsRequest: {
             tags?: string[];
+        };
+        PlatformErrors: {
+            dead_letters_open: number;
+            dead_letters_24h: number;
+            extraction_runs_24h: number;
+            /** Format: double */
+            extraction_failure_rate_24h: number | null;
+        };
+        PlatformFlag: {
+            key: string;
+            description: string;
+            overrides: components["schemas"]["FlagOverride"][];
+            global: boolean | null;
+        };
+        PlatformOrgDetail: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+            status: string;
+            /** Format: date-time */
+            verified_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            members_by_role: {
+                [key: string]: number;
+            };
+            usage: components["schemas"]["OrgUsage"];
         };
         PlatformOrganisation: {
             /** Format: uuid */
@@ -5992,6 +6376,17 @@ export interface components {
             readonly verified_by_email: string | null;
             readonly member_count: number;
         };
+        PlatformOverview: {
+            tenants: {
+                [key: string]: number;
+            };
+            active_vacancies: number;
+            applications_per_day: components["schemas"]["DayCount"][];
+            error_rates: components["schemas"]["PlatformErrors"];
+            health: {
+                [key: string]: unknown;
+            };
+        };
         PlatformReasonRequest: {
             reason?: string;
         };
@@ -6004,6 +6399,18 @@ export interface components {
         PlatformRoleEnum: "none" | "platform_admin" | "platform_support";
         PlatformSuspendReasonRequest: {
             reason: string;
+        };
+        PlatformUser: {
+            /** Format: uuid */
+            id: string;
+            /** Format: email */
+            email: string;
+            name: string;
+            platform_role: string;
+            is_active: boolean;
+            memberships: number;
+            /** Format: date-time */
+            last_login: string | null;
         };
         Policy: {
             /** @description Optimistic lock (lock_version). */
@@ -6171,6 +6578,10 @@ export interface components {
                 [key: string]: unknown;
             };
             options: components["schemas"]["PublicOption"][];
+        };
+        PublishRequest: {
+            /** @default  */
+            notes: string;
         };
         /**
          * @description * `cv` - CV / résumé
@@ -6349,6 +6760,29 @@ export interface components {
          * @enum {string}
          */
         RegistryEntryKindEnum: "embedding" | "ner" | "llm" | "rules";
+        /**
+         * @description * `broader` - Broader
+         *     * `narrower` - Narrower
+         *     * `related` - Related
+         *     * `implies` - Implies
+         * @enum {string}
+         */
+        RelationEnum: "broader" | "narrower" | "related" | "implies";
+        RelationInRequest: {
+            /** Format: uuid */
+            from_skill: string;
+            /** Format: uuid */
+            to_skill: string;
+            relation: components["schemas"]["RelationEnum"];
+        };
+        RelationOut: {
+            /** Format: uuid */
+            id: string;
+            relation: string;
+            /** Format: uuid */
+            to_skill_id: string;
+            to_skill_name: string;
+        };
         Rendered: {
             subject: string;
             text: string;
@@ -6388,6 +6822,9 @@ export interface components {
             /** Format: date-time */
             starts_at?: string | null;
             slots?: string[];
+        };
+        ResolveRequest: {
+            reason: string;
         };
         Resume: {
             /** Format: uuid */
@@ -6862,6 +7299,11 @@ export interface components {
             readonly aliases: string[];
             readonly is_custom: boolean;
         };
+        SkillCreateRequest: {
+            name: string;
+            category: components["schemas"]["CategoryEnum"];
+            aliases?: string[];
+        };
         /**
          * @description * `manual` - Entered by the candidate
          *     * `cv_import` - Imported from a CV (confirmed by the candidate)
@@ -6954,6 +7396,14 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        System: {
+            checks: {
+                [key: string]: unknown;
+            };
+            health: {
+                [key: string]: unknown;
+            };
+        };
         TagsRequest: {
             tags: string[];
         };
@@ -7027,6 +7477,20 @@ export interface components {
          * @enum {string}
          */
         TargetTypeEnum: "application" | "candidate" | "job";
+        TaxonomyStatus: {
+            current_version: string;
+            /** Format: date-time */
+            published_at: string | null;
+            unpublished_changes: boolean;
+            skills: number;
+            versions: components["schemas"]["TaxonomyVersionRow"][];
+        };
+        TaxonomyVersionRow: {
+            version: string;
+            /** Format: date-time */
+            published_at: string | null;
+            notes: string;
+        };
         Template: {
             /** Format: uuid */
             readonly id: string;
@@ -13112,6 +13576,119 @@ export interface operations {
             };
         };
     };
+    platform_dead_letters: {
+        parameters: {
+            query?: {
+                all?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeadLetter"][];
+                };
+            };
+        };
+    };
+    platform_dead_letter_resolve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dead_letter_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResolveRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResolveRequest"];
+                "multipart/form-data": components["schemas"]["ResolveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeadLetter"];
+                };
+            };
+        };
+    };
+    platform_dead_letter_retry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dead_letter_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeadLetter"];
+                };
+            };
+        };
+    };
+    platform_flags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformFlag"][];
+                };
+            };
+        };
+    };
+    platform_flag_set: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FlagSetRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["FlagSetRequest"];
+                "multipart/form-data": components["schemas"]["FlagSetRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformFlag"][];
+                };
+            };
+        };
+    };
     platform_organisations_list: {
         parameters: {
             query?: {
@@ -13197,6 +13774,27 @@ export interface operations {
             };
         };
     };
+    platform_organisation_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organisation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgDetail"];
+                };
+            };
+        };
+    };
     platform_organisations_reactivate: {
         parameters: {
             query?: never;
@@ -13277,6 +13875,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlatformOrganisation"];
+                };
+            };
+        };
+    };
+    platform_overview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOverview"];
                 };
             };
         };
@@ -13409,6 +14026,323 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Grant"];
+                };
+            };
+        };
+    };
+    platform_system: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["System"];
+                };
+            };
+        };
+    };
+    platform_taxonomy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxonomyStatus"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PublishRequest"];
+                "multipart/form-data": components["schemas"]["PublishRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxonomyStatus"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_alias_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alias_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_taxonomy_qualification_alias_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alias_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_taxonomy_qualifications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedQualificationLevel"][];
+                };
+            };
+        };
+    };
+    platform_taxonomy_qualification_alias_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                level_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AliasInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AliasInRequest"];
+                "multipart/form-data": components["schemas"]["AliasInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedAlias"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_relation_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RelationInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RelationInRequest"];
+                "multipart/form-data": components["schemas"]["RelationInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationOut"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_relation_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                relation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    platform_taxonomy_skills: {
+        parameters: {
+            query?: {
+                inactive?: boolean;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedSkill"][];
+                };
+            };
+        };
+    };
+    platform_taxonomy_skill_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SkillCreateRequest"];
+                "multipart/form-data": components["schemas"]["SkillCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedSkill"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_skill_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSkillUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedSkillUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedSkillUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedSkill"];
+                };
+            };
+        };
+    };
+    platform_taxonomy_alias_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AliasInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AliasInRequest"];
+                "multipart/form-data": components["schemas"]["AliasInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuratedAlias"];
+                };
+            };
+        };
+    };
+    platform_users: {
+        parameters: {
+            query?: {
+                /** @description At least 3 characters */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformUser"][];
                 };
             };
         };

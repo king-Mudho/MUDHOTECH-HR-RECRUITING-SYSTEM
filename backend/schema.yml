@@ -6966,6 +6966,124 @@ paths:
               schema:
                 $ref: '#/components/schemas/AIDrift'
           description: ''
+  /api/v1/platform/dead-letters/:
+    get:
+      operationId: platform_dead_letters
+      parameters:
+      - in: query
+        name: all
+        schema:
+          type: boolean
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeadLetter'
+          description: ''
+  /api/v1/platform/dead-letters/{dead_letter_id}/resolve/:
+    post:
+      operationId: platform_dead_letter_resolve
+      parameters:
+      - in: path
+        name: dead_letter_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadLetter'
+          description: ''
+  /api/v1/platform/dead-letters/{dead_letter_id}/retry/:
+    post:
+      operationId: platform_dead_letter_retry
+      parameters:
+      - in: path
+        name: dead_letter_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadLetter'
+          description: ''
+  /api/v1/platform/flags/:
+    get:
+      operationId: platform_flags
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlatformFlag'
+          description: ''
+    post:
+      operationId: platform_flag_set
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlagSetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlagSetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlagSetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlatformFlag'
+          description: ''
   /api/v1/platform/organisations/:
     get:
       operationId: platform_organisations_list
@@ -7075,6 +7193,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
           description: ''
+  /api/v1/platform/organisations/{organisation_id}/detail/:
+    get:
+      operationId: platform_organisation_detail
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgDetail'
+          description: ''
   /api/v1/platform/organisations/{organisation_id}/reactivate/:
     post:
       operationId: platform_organisations_reactivate
@@ -7174,6 +7313,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlatformOrganisation'
+          description: ''
+  /api/v1/platform/overview/:
+    get:
+      operationId: platform_overview
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOverview'
           description: ''
   /api/v1/platform/privacy/requests/:
     get:
@@ -7306,6 +7459,321 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Grant'
+          description: ''
+  /api/v1/platform/system/:
+    get:
+      operationId: platform_system
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/System'
+          description: ''
+  /api/v1/platform/taxonomy/:
+    get:
+      operationId: platform_taxonomy
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxonomyStatus'
+          description: ''
+    post:
+      operationId: platform_taxonomy_publish
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxonomyStatus'
+          description: ''
+  /api/v1/platform/taxonomy/aliases/{alias_id}/:
+    delete:
+      operationId: platform_taxonomy_alias_remove
+      parameters:
+      - in: path
+        name: alias_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/platform/taxonomy/qualification-aliases/{alias_id}/:
+    delete:
+      operationId: platform_taxonomy_qualification_alias_remove
+      parameters:
+      - in: path
+        name: alias_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/platform/taxonomy/qualifications/:
+    get:
+      operationId: platform_taxonomy_qualifications
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CuratedQualificationLevel'
+          description: ''
+  /api/v1/platform/taxonomy/qualifications/{level_id}/aliases/:
+    post:
+      operationId: platform_taxonomy_qualification_alias_add
+      parameters:
+      - in: path
+        name: level_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuratedAlias'
+          description: ''
+  /api/v1/platform/taxonomy/relations/:
+    post:
+      operationId: platform_taxonomy_relation_add
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelationInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RelationInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RelationInRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationOut'
+          description: ''
+  /api/v1/platform/taxonomy/relations/{relation_id}/:
+    delete:
+      operationId: platform_taxonomy_relation_remove
+      parameters:
+      - in: path
+        name: relation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/platform/taxonomy/skills/:
+    get:
+      operationId: platform_taxonomy_skills
+      parameters:
+      - in: query
+        name: inactive
+        schema:
+          type: boolean
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CuratedSkill'
+          description: ''
+    post:
+      operationId: platform_taxonomy_skill_create
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SkillCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SkillCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuratedSkill'
+          description: ''
+  /api/v1/platform/taxonomy/skills/{skill_id}/:
+    patch:
+      operationId: platform_taxonomy_skill_update
+      parameters:
+      - in: path
+        name: skill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuratedSkill'
+          description: ''
+  /api/v1/platform/taxonomy/skills/{skill_id}/aliases/:
+    post:
+      operationId: platform_taxonomy_alias_add
+      parameters:
+      - in: path
+        name: skill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AliasInRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuratedAlias'
+          description: ''
+  /api/v1/platform/users/:
+    get:
+      operationId: platform_users
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: At least 3 characters
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlatformUser'
           description: ''
   /api/v1/privacy/consents/:
     get:
@@ -7694,6 +8162,15 @@ components:
       - active
       - reason
       - until
+    AliasInRequest:
+      type: object
+      properties:
+        alias:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - alias
     AnswerItemRequest:
       type: object
       properties:
@@ -9337,6 +9814,72 @@ components:
           type: string
       required:
       - csrf_token
+    CuratedAlias:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        alias:
+          type: string
+      required:
+      - alias
+      - id
+    CuratedQualificationLevel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        rank:
+          type: integer
+        framework:
+          type: string
+        aliases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CuratedAlias'
+      required:
+      - aliases
+      - code
+      - framework
+      - id
+      - name
+      - rank
+    CuratedSkill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        canonical_name:
+          type: string
+        category:
+          type: string
+        is_active:
+          type: boolean
+        taxonomy_version:
+          type: string
+        aliases:
+          type: array
+          items:
+            $ref: '#/components/schemas/CuratedAlias'
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelationOut'
+      required:
+      - aliases
+      - canonical_name
+      - category
+      - id
+      - is_active
+      - relations
+      - taxonomy_version
     CustomSkillCreateRequest:
       type: object
       properties:
@@ -9507,6 +10050,49 @@ components:
       - cards
       - human_decisions
       - queues
+    DayCount:
+      type: object
+      properties:
+        day:
+          type: string
+          format: date
+        count:
+          type: integer
+      required:
+      - count
+      - day
+    DeadLetter:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        task_name:
+          type: string
+          maxLength: 200
+        error:
+          type: string
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+        request_id:
+          type: string
+          maxLength: 128
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - error
+      - id
+      - task_name
     DecisionReason:
       type: object
       properties:
@@ -10292,6 +10878,36 @@ components:
       - max
       - min
       - title
+    FlagOverride:
+      type: object
+      properties:
+        organisation_id:
+          type: string
+          format: uuid
+        organisation_name:
+          type: string
+        enabled:
+          type: boolean
+      required:
+      - enabled
+      - organisation_id
+      - organisation_name
+    FlagSetRequest:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 100
+        enabled:
+          type: boolean
+        organisation_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - enabled
+      - key
     FormatEnum:
       enum:
       - csv
@@ -12678,6 +13294,22 @@ components:
       required:
       - enabled
       - reason
+    OrgUsage:
+      type: object
+      properties:
+        active_vacancies:
+          type: integer
+        applications_this_month:
+          type: integer
+        ai_evaluations_this_month:
+          type: integer
+        storage_bytes:
+          type: integer
+      required:
+      - active_vacancies
+      - ai_evaluations_this_month
+      - applications_this_month
+      - storage_bytes
     Organisation:
       type: object
       properties:
@@ -13812,6 +14444,17 @@ components:
         lock_version:
           type: integer
           nullable: true
+    PatchedSkillUpdateRequest:
+      type: object
+      properties:
+        canonical_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        is_active:
+          type: boolean
     PatchedTalentTagsRequest:
       type: object
       properties:
@@ -13821,6 +14464,77 @@ components:
             type: string
             maxLength: 40
           maxItems: 10
+    PlatformErrors:
+      type: object
+      properties:
+        dead_letters_open:
+          type: integer
+        dead_letters_24h:
+          type: integer
+        extraction_runs_24h:
+          type: integer
+        extraction_failure_rate_24h:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - dead_letters_24h
+      - dead_letters_open
+      - extraction_failure_rate_24h
+      - extraction_runs_24h
+    PlatformFlag:
+      type: object
+      properties:
+        key:
+          type: string
+        description:
+          type: string
+        overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlagOverride'
+        global:
+          type: boolean
+          nullable: true
+      required:
+      - description
+      - global
+      - key
+      - overrides
+    PlatformOrgDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        status:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        members_by_role:
+          type: object
+          additionalProperties:
+            type: integer
+        usage:
+          $ref: '#/components/schemas/OrgUsage'
+      required:
+      - created_at
+      - id
+      - members_by_role
+      - name
+      - slug
+      - status
+      - usage
+      - verified_at
     PlatformOrganisation:
       type: object
       properties:
@@ -13886,6 +14600,30 @@ components:
       - verified_at
       - verified_by_email
       - website
+    PlatformOverview:
+      type: object
+      properties:
+        tenants:
+          type: object
+          additionalProperties:
+            type: integer
+        active_vacancies:
+          type: integer
+        applications_per_day:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayCount'
+        error_rates:
+          $ref: '#/components/schemas/PlatformErrors'
+        health:
+          type: object
+          additionalProperties: {}
+      required:
+      - active_vacancies
+      - applications_per_day
+      - error_rates
+      - health
+      - tenants
     PlatformReasonRequest:
       type: object
       properties:
@@ -13911,6 +14649,35 @@ components:
           maxLength: 1000
       required:
       - reason
+    PlatformUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        platform_role:
+          type: string
+        is_active:
+          type: boolean
+        memberships:
+          type: integer
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - email
+      - id
+      - is_active
+      - last_login
+      - memberships
+      - name
+      - platform_role
     Policy:
       type: object
       properties:
@@ -14436,6 +15203,13 @@ components:
       - required
       - section
       - type
+    PublishRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          default: ''
+          maxLength: 2000
     PurposeEnum:
       enum:
       - cv
@@ -14876,6 +15650,51 @@ components:
         * `ner` - Named-entity model
         * `llm` - Language model
         * `rules` - Rules engine
+    RelationEnum:
+      enum:
+      - broader
+      - narrower
+      - related
+      - implies
+      type: string
+      description: |-
+        * `broader` - Broader
+        * `narrower` - Narrower
+        * `related` - Related
+        * `implies` - Implies
+    RelationInRequest:
+      type: object
+      properties:
+        from_skill:
+          type: string
+          format: uuid
+        to_skill:
+          type: string
+          format: uuid
+        relation:
+          $ref: '#/components/schemas/RelationEnum'
+      required:
+      - from_skill
+      - relation
+      - to_skill
+    RelationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        relation:
+          type: string
+        to_skill_id:
+          type: string
+          format: uuid
+        to_skill_name:
+          type: string
+      required:
+      - id
+      - relation
+      - to_skill_id
+      - to_skill_name
     Rendered:
       type: object
       properties:
@@ -14982,6 +15801,15 @@ components:
             type: string
             format: date-time
           maxItems: 12
+      required:
+      - reason
+    ResolveRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
       required:
       - reason
     Resume:
@@ -16120,6 +16948,25 @@ components:
       - id
       - is_custom
       - slug
+    SkillCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        aliases:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 150
+          maxItems: 20
+      required:
+      - category
+      - name
     SourceEnum:
       enum:
       - manual
@@ -16325,6 +17172,18 @@ components:
       - engine
       - questions
       - requires_acceptance
+    System:
+      type: object
+      properties:
+        checks:
+          type: object
+          additionalProperties: {}
+        health:
+          type: object
+          additionalProperties: {}
+      required:
+      - checks
+      - health
     TagsRequest:
       type: object
       properties:
@@ -16494,6 +17353,44 @@ components:
         * `application` - Application
         * `candidate` - Candidate
         * `job` - Vacancy
+    TaxonomyStatus:
+      type: object
+      properties:
+        current_version:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        unpublished_changes:
+          type: boolean
+        skills:
+          type: integer
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxonomyVersionRow'
+      required:
+      - current_version
+      - published_at
+      - skills
+      - unpublished_changes
+      - versions
+    TaxonomyVersionRow:
+      type: object
+      properties:
+        version:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+      required:
+      - notes
+      - published_at
+      - version
     Template:
       type: object
       properties:

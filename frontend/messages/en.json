@@ -50,7 +50,8 @@
     "modelRegistry": "AI governance",
     "interviews": "Interviews",
     "offers": "Offers",
-    "talentPool": "Talent pool"
+    "talentPool": "Talent pool",
+    "taxonomy": "Skills taxonomy"
   },
   "footer": {
     "privacy": "Privacy",
@@ -461,6 +462,105 @@
       "closeTitle": "Close {name}?",
       "closeBody": "This cannot be undone. Open vacancies close, staff become read-only and candidates with applications in progress are told. Data is kept until the organisation's retention period ends and is then anonymised.",
       "error": "The action could not be completed. Please try again."
+    },
+    "console": {
+      "dashboard": {
+        "title": "Platform dashboard",
+        "intro": "Tenants, activity and health across the platform. Aggregates only.",
+        "tenants": "Organisations",
+        "activeVacancies": "Published vacancies",
+        "deadLetters": "Open dead letters",
+        "parseFailures": "CV read failures (24 h)",
+        "byStatus": "Organisations by status",
+        "perDay": "Applications per day (last 14 days)",
+        "queues": "Queues and background work"
+      },
+      "org": {
+        "title": "Organisation",
+        "back": "All organisations",
+        "status": "Status: {status}",
+        "verified": "verified",
+        "unverified": "not verified",
+        "vacancies": "Published vacancies",
+        "applications": "Applications this month",
+        "evaluations": "AI evaluations this month",
+        "storage": "Storage used",
+        "members": "Active members by role"
+      },
+      "users": {
+        "title": "Users",
+        "intro": "Find an account by email or name. Only minimal details are shown.",
+        "search": "Email or name",
+        "go": "Search",
+        "hint": "Type at least 3 characters.",
+        "none": "No accounts found",
+        "email": "Email",
+        "name": "Name",
+        "role": "Platform role",
+        "memberships": "Organisations",
+        "lastLogin": "Last sign-in",
+        "inactive": "inactive"
+      },
+      "flags": {
+        "title": "Feature flags",
+        "intro": "Platform-wide defaults and per-organisation overrides. Changes are audited.",
+        "default": "default",
+        "on": "on",
+        "off": "off",
+        "turnOn": "Turn on for all",
+        "turnOff": "Turn off for all",
+        "key": "Flag key",
+        "organisation": "Organisation id (blank = everyone)",
+        "enable": "Enable",
+        "failed": "That didn't work. Please try again."
+      },
+      "deadLetters": {
+        "title": "Dead letters",
+        "intro": "Background tasks that failed after all retries. Retry once the cause is fixed, or mark resolved.",
+        "showResolved": "Show resolved",
+        "none": "Nothing waiting",
+        "noneBody": "No failed background tasks.",
+        "resolved": "resolved",
+        "retry": "Retry",
+        "resolve": "Mark resolved",
+        "request": "Request {id}"
+      },
+      "system": {
+        "title": "System health",
+        "intro": "Live checks of the database, cache and storage, and queue depths. Refreshes every 30 seconds.",
+        "checks": "Checks",
+        "ok": "OK",
+        "error": "Error",
+        "queues": "Queues and background work"
+      },
+      "taxonomy": {
+        "title": "Skills taxonomy",
+        "intro": "Curate the platform skills, aliases and qualification names. Screening keeps using the published version until you publish a new one.",
+        "version": "Published version {version}",
+        "skillsCount": "{count, plural, one {# active skill} other {# active skills}}",
+        "publishedOn": "published {date}",
+        "unpublished": "There are changes that are not published yet.",
+        "notes": "What changed",
+        "publish": "Publish new version",
+        "publishHelp": "Existing evaluations keep the version they used. New skills need embeddings (run embed_skills in a worker) for meaning-based matching.",
+        "search": "Find a skill or alias",
+        "go": "Search",
+        "newSkill": "New skill",
+        "category": "Category",
+        "add": "Add skill",
+        "failed": "That didn't work. Please try again.",
+        "none": "No skills found",
+        "noneBody": "Try another name or alias.",
+        "inactive": "inactive",
+        "deactivate": "Deactivate",
+        "activate": "Activate",
+        "aliasesOf": "Aliases of {name}",
+        "removeAlias": "Remove alias {alias}",
+        "newAlias": "New alias for {name}",
+        "aliasPlaceholder": "Add an alias",
+        "addAlias": "Add",
+        "qualifications": "Qualification names"
+      }
     }
   },
   "jobs": {
