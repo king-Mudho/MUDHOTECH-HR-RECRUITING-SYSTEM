@@ -181,6 +181,7 @@ describe("ApplyWizard", () => {
     expect(JSON.parse(String((call![1] as RequestInit).body))).toEqual({
       accept_privacy: true,
       objects_to_automated_processing: false,
+      join_talent_pool: false,
     });
     expect(screen.getByRole("link", { name: "Track your application" })).toHaveAttribute(
       "href",
