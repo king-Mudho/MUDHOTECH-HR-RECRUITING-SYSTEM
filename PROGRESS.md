@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 15 — External Integrations & Localisation
-- **Current task:** P15-EXIT
+- **Current task:** P16-T01
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 183 / 193 tasks · 12 / 16 phases
+- **Overall:** 189 / 193 tasks · 12 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -29,7 +29,7 @@
 | 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ✅ Done | 2026-11-19 |
 | 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ✅ Done | 2026-11-19 |
 | 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | 🟦 In progress | |
-| 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | ⬜ Not started | |
+| 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | 🟦 In progress | |
 
 Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
@@ -284,12 +284,12 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 ### Phase 16 — Final Hardening, Documentation & Release (Project complete)  (`phases/PHASE_16_FINAL_HARDENING_RELEASE.md`)
 - [ ] P16-T01 — Full regression: unit, API, E2E (all journeys incl
 - [ ] P16-T02 — Security re-review: dependency updates, ASVS checklist re-run, ZAP full scan on staging, secrets rotation, IAM …
-- [ ] P16-T03 — Performance tuning pass (query plans for top 20 endpoints, index review, cache headers, image sizes, bundle analysis)
-- [ ] P16-T04 — Technical documentation complete: architecture (updated diagrams), API reference (OpenAPI published), DB ERD …
-- [ ] P16-T05 — User documentation complete: candidate, recruiter, HR manager, org admin, platform admin, auditor guides
-- [ ] P16-T06 — Clean-up: remove dead code/flags, resolve all TODO/FIXME (or ticket them in `docs/BACKLOG.md`), ensure `CLAUDE.md`, …
-- [ ] P16-T07 — Final release `v1.2.0`, CHANGELOG, release notes, handover document `docs/HANDOVER.md` (system overview, credentials …
-- [ ] P16-T08 — Post-release backlog `docs/BACKLOG.md` (ideas: ATS/HRIS sync connectors, assessments/tests module, video interview …
+- [x] P16-T03 — Performance tuning pass (query plans for top 20 endpoints, index review, cache headers, image sizes, bundle analysis)
+- [x] P16-T04 — Technical documentation complete: architecture (updated diagrams), API reference (OpenAPI published), DB ERD …
+- [x] P16-T05 — User documentation complete: candidate, recruiter, HR manager, org admin, platform admin, auditor guides
+- [x] P16-T06 — Clean-up: remove dead code/flags, resolve all TODO/FIXME (or ticket them in `docs/BACKLOG.md`), ensure `CLAUDE.md`, …
+- [x] P16-T07 — Final release `v1.2.0`, CHANGELOG, release notes, handover document `docs/HANDOVER.md` (system overview, credentials …
+- [x] P16-T08 — Post-release backlog `docs/BACKLOG.md` (ideas: ATS/HRIS sync connectors, assessments/tests module, video interview …
 - [ ] P16-EXIT — All exit criteria verified with evidence
 
 ## Phase summaries
@@ -783,3 +783,9 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P15-T06 | public API v1: scoped API keys (mhrs_prefix_secret, SHA-256 hash only, shown once, revocable, jobs:read / applications:read), bearer auth + per-key throttle (API_KEY_RATE), OpenAPI security scheme; Indeed-style XML and JSON job feeds per organisation | none |
 | 2026-11-19 | Impl | P15-T07 | localisation: hard-coded text guard test, sn/nd machine-draft catalogues (marked, English fallback), language switcher (cookie + account locale), LocaleBoundary applies the language client-side so public pages stay prerendered, emails render in the account locale with English template fallback, html lang | Human translators; locale-aware routing for server-rendered text |
 | 2026-11-19 | Impl | P15-T08 | tests: webhook signature roundtrip/tolerance + sample verification code (docs/integrations/webhooks.md), consent enforcement and STOP for SMS/WA, integration failure isolation (calendar, SMS), SSO rules, API key scopes, feeds; docs/integrations/{README,calendar,sso,sms-whatsapp,webhooks,public-api,localisation}.md | none |
+| 2026-11-19 | Impl | P16-T03 | Indexes for AI allowance, report windows, status-event lookups and delivery receipts; query plans recorded in docs/reports/PERFORMANCE.md | Bundle/image review on staging build |
+| 2026-11-19 | Impl | P16-T04 | Generated Mermaid ERD (generate_erd command), updated architecture diagrams, developer onboarding, OpenAPI at /api/docs/ | - |
+| 2026-11-19 | Impl | P16-T05 | Guides for all roles incl. platform admin and auditor, FAQ, video script outlines | Human review of sn/nd translations |
+| 2026-11-19 | Impl | P16-T06 | No TODO/FIXME left in apps, ai_engine, config or frontend/src; CLAUDE.md files and ADRs updated | - |
+| 2026-11-19 | Impl | P16-T07 | CHANGELOG 1.2.0, release notes docs/releases/v1.2.0.md, docs/HANDOVER.md | Tag v1.2.0 after owner sign-off |
+| 2026-11-19 | Impl | P16-T08 | docs/BACKLOG.md with product ideas and technical follow-ups | - |

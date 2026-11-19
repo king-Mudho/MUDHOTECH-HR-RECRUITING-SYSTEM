@@ -5,7 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
+## [1.2.0] - release candidate (dated when the tag is pushed after owner sign-off)
+
 ### Added
+- Phase 15 integrations: Google/Microsoft 365 calendar sync for interviews; staff single sign-on
+  (no sign-up via SSO, organisation domain allow-list, MFA still enforced); opt-in SMS and WhatsApp
+  updates with STOP handling; signed outbound webhooks with SSRF guard; scoped, hashed read-only API
+  keys and job feeds; Shona and Ndebele draft catalogues with a language switcher.
+- Phase 16: generated ERD, updated architecture diagrams, developer onboarding, platform admin and
+  auditor guides, FAQ, video outlines, handover and backlog; v1.1/v1.2 security re-review and
+  penetration test readiness pack; indexes for reports, AI allowance and delivery receipts.
 - Phase 14 platform administration & billing: platform console (dashboard, organisations, users,
   feature flags, taxonomy curation and publishing, dead letters, system health, plans & pricing);
   subscriptions with a 30-day trial and plan limits that never block candidates; usage metering;
