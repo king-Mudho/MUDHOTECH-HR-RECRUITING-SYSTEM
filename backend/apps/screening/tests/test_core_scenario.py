@@ -182,6 +182,12 @@ def test_core_scenario(vacancy: Any, act: Any, settings: Any, monkeypatch: Any) 
     assert all(n.scheduled_for.isoformat() >= notify_after[:19] for n in outcome)  # not before
     # after the delay (and after quiet hours, when the run happens at night)
     later = max(n.scheduled_for for n in outcome) + timedelta(minutes=1)
+    # a delay that ends inside quiet hours (approval shortly before 20:00) waits for the morning
+    first = outcome.select_related("recipient_user").first()
+    assert first is not None
+    morning = delivery.quiet_until(first.recipient_user, first.key, later)
+    if morning is not None:
+        later = morning + timedelta(minutes=1)
     monkeypatch.setattr(delivery, "now", lambda: later)
     send_due()
     shortlisted = {
