@@ -6,6 +6,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 ## [Unreleased]
 
 ### Added
+- Phase 14 platform administration & billing: platform console (dashboard, organisations, users,
+  feature flags, taxonomy curation and publishing, dead letters, system health, plans & pricing);
+  subscriptions with a 30-day trial and plan limits that never block candidates; usage metering;
+  monthly invoices (USD/ZWG, tax fields, PDF); Paynow payments (EcoCash, OneMoney, cards) with
+  verified callbacks; manual bank payments; reminders, grace period and read-only mode with
+  reactivation on payment; plan & billing page for organisation admins.
 - Phase 13 talent pool, analytics & exports: consent-based talent pool per employer (opt-in at
   application end or on the privacy page, reconfirmation, expiry, leave/delete) with HR talent
   search and invitations; recruitment reports (time to review/shortlist/hire, funnel conversion,

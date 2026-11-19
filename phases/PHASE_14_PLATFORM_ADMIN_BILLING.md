@@ -17,4 +17,18 @@
 - [x] **P14-T09** — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed).
 
 ## Exit criteria
-- [ ] Trial → paid via Paynow test mode works end to end; entitlements enforced; candidate flows never blocked by billing.
+- [x] Trial → paid via Paynow test mode works end to end; entitlements enforced; candidate flows never blocked by billing.
+
+## Exit evidence (2026-11-19)
+- Trial -> paid: `backend/tests/integration/test_phase14_billing.py` - trial limits block a third
+  vacancy, trial end -> 7-day grace -> read-only (candidate still submits), Growth chosen, EcoCash
+  payment through Paynow (test double speaking Paynow's signed protocol; result URL hash verified
+  and confirmed by poll) -> subscription active, higher limit applies.
+- Paynow behaviour: `apps/billing/tests/test_payments.py` (valid/invalid hash, duplicates,
+  pending -> paid, failed, cancelled, spoofed/replayed callbacks, amount mismatch, 15-minute
+  polling window -> manual check, not configured, manual bank payments).
+- Entitlements: `test_entitlements.py` (publish/schedule/resume, seats, screening runs, staff
+  uploads; candidate submissions at the limit and while read-only succeed).
+- Full backend suite 2985 passed, 2 skipped on a fresh database; CI green (run 44598967647 on 4e5de83, after fixing an evening-only core-scenario test and a Bandit B310 finding).
+- Live Paynow test mode needs the owner's integration id/key (STOP condition) - the protocol is
+  implemented against Paynow's documented fields; run one sandbox payment once keys exist.

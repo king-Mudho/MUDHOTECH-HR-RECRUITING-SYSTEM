@@ -5,11 +5,11 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 14 — Platform Administration, Subscriptions & Billing
-- **Current task:** P14-EXIT
+- **Current phase:** 15 — External Integrations & Localisation
+- **Current task:** P15-T01
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 175 / 193 tasks · 11 / 16 phases
+- **Overall:** 175 / 193 tasks · 12 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -27,8 +27,8 @@
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | 🟦 In progress | |
 | 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ✅ Done | 2026-11-19 |
 | 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ✅ Done | 2026-11-19 |
-| 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | 🟦 In progress | |
-| 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | ⬜ Not started | |
+| 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ✅ Done | 2026-11-19 |
+| 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | 🟦 In progress | |
 | 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | ⬜ Not started | |
 
 Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
@@ -268,7 +268,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P14-T07 — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible …
 - [x] P14-T08 — Org billing UI `/hr/settings/billing` (plan, usage, invoices, pay now, change plan) and admin plan management
 - [x] P14-T09 — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed)
-- [ ] P14-EXIT — All exit criteria verified with evidence
+- [x] P14-EXIT — All exit criteria verified with evidence
 
 ### Phase 15 — External Integrations & Localisation  (`phases/PHASE_15_INTEGRATIONS_LOCALISATION.md`)
 - [ ] P15-T01 — `apps.integrations` framework: provider registry, encrypted credentials per org, health status, credential rotation, …
@@ -535,6 +535,19 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 - **Follow-ups:** reports and talent pool pages not browser-verified locally (check on staging);
   platform admin UI for drift indicators (API only).
 
+### Phase 14 — Platform Administration, Subscriptions & Billing (closed 2026-11-19)
+- **Built:** platform console (dashboard, organisation detail, users, feature flags, taxonomy
+  curation with versioned publishing, dead letters, system health, plans & pricing); `apps.billing`
+  (plans seeded per D-13, subscriptions with 30-day trial, entitlements on staff actions that never
+  block candidates, usage metering, monthly invoices with price snapshot / tax fields / PDF, Paynow
+  web + mobile payments with verified callbacks and polling, manual bank payments, dunning with
+  7-day grace -> read-only and reactivation on payment, plan changes); `/hr/settings/billing`.
+- **Deviations:** Paynow implemented over its HTTP protocol (no SDK); AI evaluations over the
+  monthly allowance route to human review instead of blocking; storage limit applies to staff
+  uploads only; `BILLING_ENFORCE` switch (off in the general test settings).
+- **Follow-ups:** owner Paynow keys + one live test-mode payment; billing pages not browser-verified
+  locally.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -761,3 +774,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P14-T07 | billing.lifecycle.sweep (daily): reminder 3 days before due, overdue -> past_due with 7-day grace, grace over -> read_only (staff writes refused in the org permission class with billing_read_only, reads and billing pay endpoint still allowed; candidate/public endpoints unaffected; vacancies stay published until their deadline - EC-BIL-04), trial reminder 5 days before end, trial end -> grace -> read_only; reactivation on payment (on_invoice_paid); notifications invoice_due_soon/invoice_overdue/trial_ending/trial_ended/subscription_read_only; idempotent; tests | none |
 | 2026-11-19 | Impl | P14-T08 | /hr/settings/billing: plan + status card (trial end, renewal, grace, read-only), invoices (PDF download, Pay now: EcoCash/OneMoney with phone and live status polling, or card via Paynow redirect; return from Paynow shows the status), usage meters + history, change plan (USD/ZWG, invoice first and plan starts when paid, Enterprise = contact); backend POST /hr/billing/change-plan (voids an earlier unpaid choice) and platform plan management GET/POST /platform/billing/plans (prices, limits, public/active, subscriber counts, audited); /admin/plans page; tests (fixed a payment-status refetch loop found by the test) | Not browser-verified locally (host RAM) |
 | 2026-11-19 | Impl | P14-T09 | Paynow test double (signed replies, poll state): valid/invalid hash, duplicates, pending->paid by poll, failed, cancelled, spoofed/replayed callbacks, amount mismatch, backoff -> manual check, not configured, manual bank payments (test_payments.py); plus entitlements, metering, invoicing, lifecycle and plan tests; exit E2E tests/integration/test_phase14_billing.py: trial limits -> trial end -> grace -> read-only (candidates still apply) -> choose Growth -> EcoCash via Paynow + verified callback -> active, higher limit applies | none |
+| 2026-11-19 | Close | P14-EXIT | Phase 14 closed: trial -> paid via Paynow test double E2E, entitlements, candidate safety; full backend suite 2985 passed, 2 skipped on a fresh database; CI green (run 44598967647 on 4e5de83, after fixing an evening-only core-scenario test and a Bandit B310 finding) | Owner Paynow keys |
