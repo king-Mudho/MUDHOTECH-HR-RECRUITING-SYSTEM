@@ -5,11 +5,11 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 12 — Interviews, Offers & Hiring
-- **Current task:** P12-EXIT
+- **Current phase:** 13 — Consent-Based Talent Pool, Advanced Analytics & Exports
+- **Current task:** P13-T01
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 158 / 193 tasks · 9 / 16 phases
+- **Overall:** 158 / 193 tasks · 10 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -25,8 +25,8 @@
 | 09 | [Privacy, Governance & Security Hardening](phases/PHASE_09_PRIVACY_GOVERNANCE_SECURITY.md) | MVP | 13 | ✅ Done | 2026-11-17 |
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | 🟦 In progress | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | 🟦 In progress | |
-| 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | 🟦 In progress | |
-| 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ⬜ Not started | |
+| 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ✅ Done | 2026-11-19 |
+| 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | 🟦 In progress | |
 | 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ⬜ Not started | |
 | 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | ⬜ Not started | |
 | 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | ⬜ Not started | |
@@ -245,7 +245,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P12-T08 — Frontend candidate: interview invitations (book slot, add to calendar, reschedule request), offer view …
 - [x] P12-T09 — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, …
 - [x] P12-T10 — Funnel extended to interviews/offers/hires on dashboard
-- [ ] P12-EXIT — All exit criteria verified with evidence
+- [x] P12-EXIT — All exit criteria verified with evidence
 
 ### Phase 13 — Consent-Based Talent Pool, Advanced Analytics & Exports  (`phases/PHASE_13_TALENT_POOL_ANALYTICS.md`)
 - [ ] P13-T01 — `apps.talentpool`: TalentPoolEntry linked to ConsentRecord (purpose `talent_pool`, per organisation, duration …
@@ -504,6 +504,22 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   organisation are kept by retention (KEEP_STATUSES) until a person decides them; the new nightly
   security steps and the a11y journey spec need their first nightly run checked.
 
+### Phase 12 — Interviews, Offers & Hiring (closed 2026-11-19)
+- **Built:** `apps.interviews` (scorecard templates from job criteria, interviews with fixed time or
+  proposed slots, row-locked self-booking, reschedule/cancel/no-show/complete, panel conflict
+  warnings, ICS in UTC with TZID, 24 h / 1 h reminders, independent scorecards with consolidated HR
+  view, AI hidden from panelists by policy); `apps.offers` (offer drafts, approval chain sized by
+  `offer_approvals_required`, PDF letter, issue, typed-name e-acceptance with truncated IP, decline,
+  expiry, withdraw, openings counter and over-acceptance warning, hire record, confirmed close-out);
+  `offer -> not_selected` as a human decision (ADR-030); notification kinds incl. `hired_welcome`;
+  HR pages (interviews calendar/detail, offers list/detail, close-out) and candidate sections
+  (book slot, calendar file, accept/decline offer); funnel through interviewed/offered/hired.
+- **Evidence:** see the phase file's exit evidence (API E2E, EC 8/8, CI green, 2794 backend tests).
+- **Deviations:** offer letter rendered with PyMuPDF (no WeasyPrint system deps); HR letter
+  streamed by the API instead of a presigned redirect (no bucket CORS needed); funnel stages
+  counted as "ever reached" so the funnel never widens.
+- **Follow-ups:** Playwright hiring journey on staging; HR UI not browser-verified locally.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -711,3 +727,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P12-T08 | candidate interviews (book slot, ICS, reschedule via messages) and offer (terms, letter, typed-name e-acceptance, decline) on the application page; anchors #interviews/#offer; helper tests | none |
 | 2026-11-19 | Impl | P12-T09 | reviewed all interview/offer templates (added in T02-T04); added optional hired_welcome (candidate, sent by record_hire, deduped per application) + test | none |
 | 2026-11-19 | Impl | P12-T10 | job funnel extended: shortlisted/interviewed/offered/hired counted as ever-reached (monotonic), offers declined, openings filled; dashboard shows them; cross-tenant 404 test. Also: two cross-tenant tests now use the in-memory S3 fixture | none |
+| 2026-11-19 | Close | P12-EXIT | Phase 12 closed: API E2E shortlist->hire->close-out, EC-INT/OFF 8/8, CI green (run 44468820772), full backend suite 2794 passed | Browser hiring journey on staging |

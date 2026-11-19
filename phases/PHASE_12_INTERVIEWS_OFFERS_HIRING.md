@@ -19,5 +19,20 @@
 EC-INT-01..04, EC-OFF-01..04.
 
 ## Exit criteria
-- [ ] E2E: shortlisted → interview booked → scorecards → offer approved → issued → accepted → hired; vacancy closed.
-- [ ] EC-INT-01..04 and EC-OFF-01..04 tested.
+- [x] E2E: shortlisted → interview booked → scorecards → offer approved → issued → accepted → hired; vacancy closed.
+- [x] EC-INT-01..04 and EC-OFF-01..04 tested.
+
+## Exit evidence (2026-11-19)
+- E2E: `backend/tests/integration/test_phase12_hiring_flow.py` drives the HTTP API with the role
+  that does each step: scorecard template from the vacancy, interview with two proposed times and a
+  two-person panel, candidate books a slot and downloads the ICS, both panelists submit scorecards,
+  HR sees consolidated feedback, offer drafted -> issue refused before approval (EC-OFF-01) ->
+  submitted -> approved -> issued, candidate accepts with typed name, recruiter notified, HR records
+  the hire (welcome message, close prompt), vacancy closed, confirmed close-out tells the remaining
+  applicants, funnel shows interviewed/offered/hired = 1. CI green on 5724406 (run 44468820772);
+  full local backend suite 2794 passed, 2 skipped.
+- Edge cases: `python scripts/ec_coverage.py --phase 12` -> 8/8 covered (scheduling, scorecard,
+  offer tests).
+- UI: HR and candidate screens covered by Vitest (helpers, role/state actions, validation); a
+  browser journey for hiring is deferred to staging (the full stack does not fit the dev machine and
+  an unverified spec would destabilise the shared nightly stack).

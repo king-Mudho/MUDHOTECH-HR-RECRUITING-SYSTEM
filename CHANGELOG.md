@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
+### Added
+- Phase 12 interviews, offers & hiring: interview scheduling with candidate self-booking, calendar
+  files, reminders, panel conflict warnings and no-show handling; independent scorecards with a
+  consolidated view; offers with approval chain, PDF letter, electronic acceptance, expiry and
+  withdrawal; hire records, vacancy close prompt and confirmed close-out messages; HR interview and
+  offer pages; candidate interview booking and offer response; dashboard funnel through hires.
+
 ## [1.0.0] - release candidate (the date is set when the tag is pushed after the go-live checklist)
 Pilot release: production deployment and operations on AWS. See `docs/releases/v1.0.0.md`.
 
