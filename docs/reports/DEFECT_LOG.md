@@ -32,6 +32,7 @@ Bug-bash sweeps (2026-11-18): `manage.py check --deploy` with production setting
 | D-020 | 2026-11-18 | CI backend | `test_applicants_list_p95_with_5000_applications` failed once (CI #125): default sort P95 4.7 s vs 400 ms budget, other orders 0.1-1.3 s. Not a regression (no change near the endpoint): the test bulk-inserted 5,000 rows and timed queries before autovacuum analysed them, so the planner could choose a far slower plan | P3 | Fixed - test bug: explicit `ANALYZE` after seeding (production tables always have statistics); locally P95 63-180 ms on two runs | this commit |
 ` instead of a line continuation in the runtime `LABEL` (P11-T01 edit). Backend/worker images built fine | P2 | Fixed - continuation restored; `docker buildx build --check` clean for all three Dockerfiles; test_prod_compose guards against literal `
 ` in instructions. Also found: CI on main had been red since #104 (unformatted scripts/semgrep_annotations.py) - fixed in 8d8cfa9 | this commit |
+| D-021 | 2026-11-19 | Security CI | Nightly Semgrep failed on four findings (read from the job annotations): Dependabot without a cooldown, `workflow_run` checkouts in the staging deploy/check workflows, Mailpit proxy location without `internal` | P3 | Fixed | 7-day Dependabot cooldown; the other three reviewed and annotated `nosemgrep` with the reason (push-to-main only; basic-auth staging Mailpit reached by GitHub runners) - `c9b2100` |
 
 ## Follow-ups (not defects)
 

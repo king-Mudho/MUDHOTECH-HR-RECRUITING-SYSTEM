@@ -17,4 +17,18 @@
 - [x] **P15-T08** — Tests: webhook signature verification sample code in docs; consent enforcement for SMS/WA; integration failure isolation.
 
 ## Exit criteria
-- [ ] Each integration works in sandbox/mocked mode with docs in `docs/integrations/*.md`; failures isolated.
+- [x] Each integration works in sandbox/mocked mode with docs in `docs/integrations/*.md`; failures isolated.
+
+## Exit evidence (2026-11-19)
+- Sandbox/mocked: `apps/integrations/tests` - framework (encrypted write-only credentials, health,
+  rotation, audit, tenant isolation), calendar sync (create/update/cancel, free/busy warnings),
+  SMS/WhatsApp (opt-in, templates, STOP over SMS and signed WhatsApp webhook, receipts, metering),
+  webhooks (signature, once-only, retries -> failed, replay, minimal payload, SSRF guard), public API
+  (scopes, revocation, forged keys) and feeds; SSO rules in `apps/accounts/tests/test_sso.py`;
+  `frontend/tests/{integrations,i18n}.test.tsx`.
+- Failures isolated: calendar and SMS provider errors leave the interview and the email copy
+  untouched and are recorded on the connection; webhooks and messaging run from the outbox after
+  commit.
+- Docs: `docs/integrations/{README,calendar,sso,sms-whatsapp,webhooks,public-api,localisation}.md`
+  (owner setup steps; webhook signature verification code in Python and Node).
+- Full backend suite 3058 passed, 2 skipped on a fresh database (24 min 43 s); CI run 44604411745 on 3f1058a green (backend, frontend, infrastructure, API contract, images); frontend 196 tests and production build pass.

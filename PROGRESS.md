@@ -5,11 +5,11 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 15 — External Integrations & Localisation
+- **Current phase:** 16 — Final Hardening, Documentation & Release (Project complete)
 - **Current task:** P16-T01
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 189 / 193 tasks · 12 / 16 phases
+- **Overall:** 189 / 193 tasks · 13 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -28,7 +28,7 @@
 | 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ✅ Done | 2026-11-19 |
 | 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ✅ Done | 2026-11-19 |
 | 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ✅ Done | 2026-11-19 |
-| 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | 🟦 In progress | |
+| 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | ✅ Done | 2026-11-19 |
 | 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | 🟦 In progress | |
 
 Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
@@ -279,7 +279,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P15-T06 — Public API v1 (API keys, scoped: `jobs:read`, `applications:read`), rate limited, documented OpenAPI subset
 - [x] P15-T07 — Localisation: externalise all strings (lint for hard-coded text), add `sn` (Shona) and `nd` (Ndebele) message …
 - [x] P15-T08 — Tests: webhook signature verification sample code in docs
-- [ ] P15-EXIT — All exit criteria verified with evidence
+- [x] P15-EXIT — All exit criteria verified with evidence
 
 ### Phase 16 — Final Hardening, Documentation & Release (Project complete)  (`phases/PHASE_16_FINAL_HARDENING_RELEASE.md`)
 - [ ] P16-T01 — Full regression: unit, API, E2E (all journeys incl
@@ -548,6 +548,19 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 - **Follow-ups:** owner Paynow keys + one live test-mode payment; billing pages not browser-verified
   locally.
 
+### Phase 15 — External Integrations & Localisation (closed 2026-11-19)
+- **Built:** `apps.integrations` (provider registry, encrypted connections with health and rotation,
+  sandbox adapters), Google/Microsoft calendar sync with free/busy conflict warnings, staff SSO for
+  members of organisations that enable it, opt-in SMS (generic aggregator, ADR-032) and WhatsApp Cloud
+  API with STOP handling and metering, signed outbound webhooks with retries/replay, scoped API keys,
+  public API and XML/JSON job feeds, Shona/Ndebele machine-draft catalogues with a language switcher
+  and per-locale emails; integrations settings page.
+- **Deviations:** the chosen language is applied client-side (server rendering stays English so
+  public pages remain prerendered under Cache Components); SSO buttons behind
+  `NEXT_PUBLIC_SSO_ENABLED`; D-14 defaulted by ADR-032.
+- **Follow-ups (owner):** OAuth apps, SMS aggregator, WhatsApp Business + approved templates, human
+  translation; in-app calendar OAuth consent.
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -789,3 +802,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P16-T06 | No TODO/FIXME left in apps, ai_engine, config or frontend/src; CLAUDE.md files and ADRs updated | - |
 | 2026-11-19 | Impl | P16-T07 | CHANGELOG 1.2.0, release notes docs/releases/v1.2.0.md, docs/HANDOVER.md | Tag v1.2.0 after owner sign-off |
 | 2026-11-19 | Impl | P16-T08 | docs/BACKLOG.md with product ideas and technical follow-ups | - |
+| 2026-11-19 | Close | P15-EXIT | Phase 15 closed: integrations sandbox/mocked with docs, failures isolated; full backend suite 3058 passed, 2 skipped on a fresh database (24 min 43 s); CI run 44604411745 on 3f1058a green (backend, frontend, infrastructure, API contract, images) | Owner provider accounts; translators |
