@@ -2422,6 +2422,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/BillingOverview'
           description: ''
+  /api/v1/hr/billing/change-plan/:
+    post:
+      operationId: hr_billing_change_plan
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePlanRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePlanRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePlanRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
   /api/v1/hr/billing/invoices/:
     get:
       operationId: hr_billing_invoices
@@ -7113,6 +7139,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
           description: ''
+  /api/v1/platform/billing/plans/:
+    get:
+      operationId: platform_plans
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanAdmin'
+          description: ''
+    post:
+      operationId: platform_plan_save
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanAdminRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlanAdminRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlanAdminRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanAdmin'
+          description: ''
   /api/v1/platform/dead-letters/:
     get:
       operationId: platform_dead_letters
@@ -9316,6 +9383,27 @@ components:
           minimum: 0
       required:
       - name
+    ChangePlanCurrencyEnum:
+      enum:
+      - USD
+      - ZWG
+      type: string
+      description: |-
+        * `USD` - USD
+        * `ZWG` - ZWG
+    ChangePlanRequest:
+      type: object
+      properties:
+        plan:
+          type: string
+          minLength: 1
+          maxLength: 40
+        currency:
+          allOf:
+          - $ref: '#/components/schemas/ChangePlanCurrencyEnum'
+          default: USD
+      required:
+      - plan
     ChannelEnum:
       enum:
       - email
@@ -14855,6 +14943,110 @@ components:
       - paid_at
       - reference
       - status
+    PlanAdmin:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 40
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 80
+        description:
+          type: string
+          default: ''
+          maxLength: 300
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            nullable: true
+        price_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        price_zwg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        is_trial:
+          type: boolean
+          default: false
+        is_public:
+          type: boolean
+          default: true
+        active:
+          type: boolean
+          default: true
+        order:
+          type: integer
+          minimum: 0
+          default: 0
+        subscribers:
+          type: integer
+          readOnly: true
+      required:
+      - code
+      - limits
+      - name
+      - price_usd
+      - price_zwg
+      - subscribers
+    PlanAdminRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          default: ''
+          maxLength: 300
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            nullable: true
+        price_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        price_zwg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        is_trial:
+          type: boolean
+          default: false
+        is_public:
+          type: boolean
+          default: true
+        active:
+          type: boolean
+          default: true
+        order:
+          type: integer
+          minimum: 0
+          default: 0
+      required:
+      - code
+      - limits
+      - name
+      - price_usd
+      - price_zwg
     PlatformErrors:
       type: object
       properties:

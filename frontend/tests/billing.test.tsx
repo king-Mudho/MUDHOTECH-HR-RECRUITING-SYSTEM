@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { planBody } from "@/features/admin/console";
 import { BillingRoute, usageShare } from "@/features/billing/components";
 import messages from "../messages/en.json";
 
@@ -127,5 +129,122 @@ describe("billing", () => {
     expect(
       await screen.findByText("Plan and billing are managed by organisation admins."),
     ).toBeInTheDocument();
+  });
+});
+
+describe("billing payments and plans", () => {
+  it("pays an invoice with EcoCash and shows when it is paid; chooses a plan", async () => {
+    const posts: [string, unknown][] = [];
+    let polls = 0;
+    const invoice = {
+      id: "i1",
+      number: "MHRS-2026-000001",
+      currency: "USD",
+      subtotal: "49.00",
+      tax_amount: "0.00",
+      amount: "49.00",
+      status: "open",
+      lines: [],
+      period_start: null,
+      period_end: null,
+      issued_at: "2026-11-19T10:00:00Z",
+      due_at: "2026-12-03T10:00:00Z",
+      paid_at: null,
+    };
+    const plans = {
+      ...overview,
+      plans: [
+        { ...overview.plan, code: "starter", name: "Starter", price_usd: "49.00", is_trial: false },
+        {
+          ...overview.plan,
+          code: "enterprise",
+          name: "Enterprise",
+          price_usd: null,
+          is_trial: false,
+        },
+      ],
+    };
+    routes(
+      (u) => (u === "/api/v1/me/" ? { body: me("org_admin") } : undefined),
+      (u) => (u === "/api/v1/hr/billing/" ? { body: plans } : undefined),
+      (u) => (u === "/api/v1/hr/billing/invoices/" ? { body: [invoice] } : undefined),
+      (u) => {
+        if (!u.startsWith("/api/v1/hr/billing/payments/")) return undefined;
+        polls += 1;
+        return { body: { id: "p1", status: polls > 1 ? "paid" : "sent" } };
+      },
+      (u, init) => {
+        if (init?.method !== "POST") return undefined;
+        posts.push([u, JSON.parse(String(init.body))]);
+        if (u.endsWith("/pay/"))
+          return {
+            status: 201,
+            body: {
+              payment: { id: "p1", status: "sent" },
+              redirect_url: "",
+              instructions: "Dial *151# and enter your PIN",
+            },
+          };
+        return { status: 201, body: invoice };
+      },
+    );
+    wrap(<BillingRoute />);
+    await userEvent.click(await screen.findByRole("button", { name: "Pay now" }));
+    await userEvent.type(screen.getByLabelText("Mobile number"), "0771234567");
+    await userEvent.click(screen.getByRole("button", { name: "Pay USD 49.00" }));
+    expect(await screen.findByText("Dial *151# and enter your PIN")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Payment received. Thank you!", {}, { timeout: 8000 }),
+    ).toBeInTheDocument();
+    expect(posts[0]).toEqual([
+      "/api/v1/hr/billing/invoices/i1/pay/",
+      { method: "ecocash", phone: "0771234567" },
+    ]);
+    await userEvent.click(screen.getByRole("button", { name: "Choose this plan" }));
+    await waitFor(() =>
+      expect(posts[1]).toEqual([
+        "/api/v1/hr/billing/change-plan/",
+        { plan: "starter", currency: "USD" },
+      ]),
+    );
+    expect(screen.getByRole("link", { name: "Contact us" })).toBeInTheDocument();
+  }, 15000);
+
+  it("builds the plan form body: blanks mean custom price / unlimited", () => {
+    const row = {
+      code: "starter",
+      name: "Starter",
+      description: "",
+      limits: { active_vacancies: 5 },
+      price_usd: "49.00",
+      price_zwg: null,
+      interval: "month",
+      is_trial: false,
+      is_public: true,
+      active: true,
+      order: 1,
+      subscribers: 0,
+    };
+    const body = planBody(
+      row,
+      {
+        name: "Starter",
+        price_usd: "59",
+        price_zwg: "",
+        active_vacancies: "10",
+        seats: "",
+        ai_evaluations_month: "",
+        storage_gb: "",
+      },
+      { is_public: true, active: true },
+    );
+    expect(body.price_usd).toBe("59");
+    expect(body.price_zwg).toBeNull();
+    expect(body.limits).toEqual({
+      active_vacancies: 10,
+      seats: null,
+      ai_evaluations_month: null,
+      storage_gb: null,
+    });
   });
 });

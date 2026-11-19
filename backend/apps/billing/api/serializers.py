@@ -93,3 +93,34 @@ class PayResultSerializer(serializers.Serializer):
 class ManualPaymentSerializer(StrictSerializer):
     amount = serializers.DecimalField(max_digits=12, decimal_places=2)
     reference = serializers.CharField(max_length=100)
+
+
+class ChangePlanSerializer(StrictSerializer):
+    plan = serializers.CharField(max_length=40)
+    currency = serializers.ChoiceField(choices=["USD", "ZWG"], default="USD")
+
+
+class PlanAdminSerializer(serializers.Serializer):
+    code = serializers.SlugField(max_length=40)
+    name = serializers.CharField(max_length=80)
+    description = serializers.CharField(
+        max_length=300, allow_blank=True, required=False, default=""
+    )
+    limits = serializers.DictField(child=serializers.IntegerField(allow_null=True, min_value=0))
+    price_usd = serializers.DecimalField(
+        max_digits=10, decimal_places=2, allow_null=True, min_value=0
+    )
+    price_zwg = serializers.DecimalField(
+        max_digits=12, decimal_places=2, allow_null=True, min_value=0
+    )
+    is_trial = serializers.BooleanField(required=False, default=False)
+    is_public = serializers.BooleanField(required=False, default=True)
+    active = serializers.BooleanField(required=False, default=True)
+    order = serializers.IntegerField(required=False, default=0, min_value=0)
+    subscribers = serializers.IntegerField(read_only=True)
+
+    def validate_limits(self, value: dict) -> dict:
+        unknown = set(value) - {"active_vacancies", "seats", "ai_evaluations_month", "storage_gb"}
+        if unknown:
+            raise serializers.ValidationError(f"Unknown limits: {', '.join(sorted(unknown))}")
+        return value

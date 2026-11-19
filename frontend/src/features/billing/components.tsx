@@ -10,6 +10,8 @@ import { useJobsContext } from "@/features/jobs/hooks";
 import { api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
+import { ChangePlan, Invoices } from "./payments";
+
 export type BillingOverview = components["schemas"]["BillingOverview"];
 type UsageMetric = components["schemas"]["UsageMetric"];
 
@@ -163,7 +165,9 @@ export function BillingRoute() {
   return (
     <div className="flex flex-col gap-4">
       <BillingPlanCard data={billing.data} />
+      <Invoices />
       <BillingUsage data={billing.data} />
+      <ChangePlan data={billing.data} />
     </div>
   );
 }

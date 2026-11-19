@@ -88,4 +88,15 @@ BILLING_ENDPOINTS: list[Endpoint] = [
         setup=payment_setup,
         needs_s3=True,
     ),
+    Endpoint(
+        "hr-billing-change-plan",
+        "post",
+        lambda c: "/api/v1/hr/billing/change-plan/",
+        "billing.manage",
+        success=201,
+        org_header=True,
+        targets_object=False,
+        needs_s3=True,
+        data=lambda c: {"plan": "starter"},
+    ),
 ]

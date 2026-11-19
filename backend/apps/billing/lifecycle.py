@@ -177,3 +177,57 @@ def _record(sub: Subscription, action: str, after: dict[str, Any]) -> None:
         organisation=sub.organisation_id,
         after=after,
     )
+
+
+# --- plan changes (P14-T08) -----------------------------------------------------------------------
+def request_plan_change(membership: Any, plan_code: str, currency: str) -> Invoice:
+    """Choosing a paid plan issues its first invoice; the plan takes effect when it is paid
+    (``on_invoice_paid``). Custom-priced plans (Enterprise) are arranged with the sales team."""
+    from django.db import transaction
+
+    from apps.core.exceptions import ConflictError, DomainError, NotFoundError
+
+    from .entitlements import subscription_for
+    from .invoicing import add_months, issue_invoice
+    from .models import Currency, InvoiceStatus
+
+    plan = Plan.objects.filter(code=plan_code, active=True, is_public=True).first()
+    if plan is None:
+        raise NotFoundError()
+    if currency not in Currency.values:
+        raise DomainError("validation_error", "Unknown currency.", details={"currency": ["?"]})
+    price = plan.price(currency)
+    if price is None:
+        raise DomainError(
+            "plan_custom_price",
+            f"{plan.name} is priced individually. Contact MudhoTech Solutions to arrange it.",
+            409,
+        )
+    sub = subscription_for(membership.organisation_id)
+    if sub.plan_id == plan.pk and sub.status == SubscriptionStatus.ACTIVE:
+        raise ConflictError(code="plan_unchanged", message="This is already your plan.")
+    with transaction.atomic():
+        # an unpaid invoice for an earlier plan choice is replaced by the new choice
+        Invoice.objects.for_org(membership.organisation_id).filter(
+            subscription=sub, status=InvoiceStatus.OPEN, snapshot__plan_change=True
+        ).update(status=InvoiceStatus.VOID)
+        Subscription.objects.for_org(membership.organisation_id).filter(pk=sub.pk).update(
+            currency=currency
+        )
+        sub.currency = currency
+        start = now()
+        invoice = issue_invoice(
+            sub, period_start=start, period_end=add_months(start), plan=plan, actor=membership.user
+        )
+        if invoice is None:
+            raise DomainError("plan_custom_price", "This plan cannot be bought online.", 409)
+        invoice.snapshot = {**invoice.snapshot, "plan_change": True}
+        invoice.save(update_fields=["snapshot", "updated_at"])
+        audit.record(
+            actor=membership.user,
+            action="billing.plan_change_requested",
+            target=sub,
+            organisation=membership.organisation_id,
+            after={"plan": plan.code, "currency": currency, "invoice": invoice.number},
+        )
+    return invoice

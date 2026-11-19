@@ -24,6 +24,7 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/dashboard", labelKey: "dashboard", icon: "dashboard" },
   { href: "/admin/organisations", labelKey: "organisations", icon: "organisations" },
   { href: "/admin/users", labelKey: "users", icon: "users" },
+  { href: "/admin/plans", labelKey: "plans", icon: "reports" },
   { href: "/admin/feature-flags", labelKey: "featureFlags", icon: "flags" },
   { href: "/admin/taxonomy", labelKey: "taxonomy", icon: "jobs" },
   { href: "/admin/dead-letters", labelKey: "deadLetters", icon: "deadLetters" },

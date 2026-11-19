@@ -909,3 +909,131 @@ function QualificationAliases({ isAdmin }: { isAdmin: boolean }) {
     </section>
   );
 }
+
+// --- plans (P14-T08) ----------------------------------------------------------------------------
+type PlanRow = S["PlanAdmin"];
+const LIMIT_KEYS = ["active_vacancies", "seats", "ai_evaluations_month", "storage_gb"] as const;
+
+/** Form values -> API body: blank price/limit = none (custom price / unlimited). */
+export function planBody(
+  row: PlanRow,
+  form: Record<string, string>,
+  flags: Record<string, boolean>,
+) {
+  const num = (v: string) => (v.trim() === "" ? null : v.trim());
+  const limits: Record<string, number | null> = {};
+  for (const k of LIMIT_KEYS) limits[k] = form[k]?.trim() === "" ? null : Number(form[k]);
+  return {
+    code: row.code,
+    name: form.name || row.name,
+    description: row.description,
+    limits,
+    price_usd: num(form.price_usd ?? ""),
+    price_zwg: num(form.price_zwg ?? ""),
+    is_trial: row.is_trial,
+    is_public: flags.is_public,
+    active: flags.active,
+    order: row.order,
+  };
+}
+
+function PlanEditor({ row, isAdmin }: { row: PlanRow; isAdmin: boolean }) {
+  const t = useTranslations("admin.console.plans");
+  const client = useQueryClient();
+  const [form, setForm] = useState<Record<string, string>>(() => ({
+    name: row.name,
+    price_usd: row.price_usd ?? "",
+    price_zwg: row.price_zwg ?? "",
+    ...Object.fromEntries(
+      LIMIT_KEYS.map((k) => [
+        k,
+        row.limits[k] === null || row.limits[k] === undefined ? "" : String(row.limits[k]),
+      ]),
+    ),
+  }));
+  const [flags, setFlags] = useState({
+    is_public: row.is_public ?? true,
+    active: row.active ?? true,
+  });
+  const save = useMutation({
+    mutationFn: () => api.post<PlanRow>("/platform/billing/plans/", planBody(row, form, flags)),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["admin", "plans"] }),
+  });
+  const field = (key: string, label: string) => (
+    <label className="flex flex-col gap-1 text-xs">
+      {label}
+      <Input
+        className="h-9 w-32"
+        value={form[key] ?? ""}
+        disabled={!isAdmin}
+        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+      />
+    </label>
+  );
+  return (
+    <li className="flex flex-col gap-2 rounded-md border p-3 text-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <code className="font-medium">{row.code}</code>
+        <span className="text-muted-foreground">
+          {t("subscribers", { count: row.subscribers ?? 0 })}
+        </span>
+        {row.is_trial ? <Badge variant="outline">{t("trial")}</Badge> : null}
+      </div>
+      <div className="flex flex-wrap gap-3">
+        {field("name", t("name"))}
+        {field("price_usd", t("priceUsd"))}
+        {field("price_zwg", t("priceZwg"))}
+        {LIMIT_KEYS.map((k) => field(k, t(`limits.${k}`)))}
+      </div>
+      <div className="flex flex-wrap items-center gap-4">
+        {(["is_public", "active"] as const).map((k) => (
+          <label key={k} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="size-5"
+              checked={flags[k]}
+              disabled={!isAdmin}
+              onChange={(e) => setFlags((f) => ({ ...f, [k]: e.target.checked }))}
+            />
+            {t(k)}
+          </label>
+        ))}
+        {isAdmin ? (
+          <Button size="sm" disabled={save.isPending} onClick={() => save.mutate()}>
+            {t("save")}
+          </Button>
+        ) : null}
+        {save.isSuccess ? <span role="status">{t("saved")}</span> : null}
+        {save.error ? (
+          <span role="alert" className="text-destructive">
+            {errorText(save.error, t("failed"))}
+          </span>
+        ) : null}
+      </div>
+    </li>
+  );
+}
+
+export function AdminPlans() {
+  const t = useTranslations("admin.console.plans");
+  const isAdmin = useIsPlatformAdmin();
+  const plans = useQuery({
+    queryKey: ["admin", "plans"],
+    queryFn: () => api.get<PlanRow[]>("/platform/billing/plans/"),
+  });
+  return (
+    <Page title={t("title")} intro={t("intro")}>
+      {plans.isPending ? (
+        <PageSkeleton />
+      ) : plans.isError ? (
+        <ErrorState error={plans.error} onRetry={() => plans.refetch()} />
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {plans.data.map((p) => (
+            <PlanEditor key={p.code} row={p} isAdmin={isAdmin} />
+          ))}
+        </ul>
+      )}
+    </Page>
+  );
+}

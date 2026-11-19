@@ -182,3 +182,70 @@ class PlatformManualPaymentView(APIView):
             reference=data.validated_data["reference"],
         )
         return Response(s.PaymentSerializer(payment).data, status=201)
+
+
+class ChangePlanView(APIView):
+    permission_classes = [HasOrgAction("billing.manage")]
+    billing_exempt = True  # choosing a plan must work while read-only
+
+    @extend_schema(
+        operation_id="hr_billing_change_plan",
+        request=s.ChangePlanSerializer,
+        responses={201: s.InvoiceSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        from ..lifecycle import request_plan_change
+
+        data = s.ChangePlanSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        invoice = request_plan_change(
+            request.membership,  # type: ignore[attr-defined]
+            data.validated_data["plan"],
+            data.validated_data["currency"],
+        )
+        return Response(s.InvoiceSerializer(invoice).data, status=201)
+
+
+def _plan_row(plan: Plan) -> dict[str, Any]:
+    from ..models import Subscription
+
+    return {
+        **_plan(plan),
+        "is_public": plan.is_public,
+        "active": plan.active,
+        "order": plan.order,
+        "subscribers": Subscription.objects.unscoped().filter(plan=plan).count(),
+    }
+
+
+class PlatformPlansView(APIView):
+    def get_permissions(self) -> list[Any]:
+        from apps.organisations.permissions import IsPlatformStaff
+
+        return [IsPlatformStaff()] if self.request.method == "GET" else [IsPlatformAdmin()]
+
+    @extend_schema(operation_id="platform_plans", responses=s.PlanAdminSerializer(many=True))
+    def get(self, request: Request) -> Response:
+        rows = [_plan_row(p) for p in Plan.objects.order_by("order", "code")]
+        return Response(s.PlanAdminSerializer(rows, many=True).data)
+
+    @extend_schema(
+        operation_id="platform_plan_save",
+        request=s.PlanAdminSerializer,
+        responses=s.PlanAdminSerializer,
+    )
+    def post(self, request: Request) -> Response:
+        from apps.audit import services as audit
+
+        data = s.PlanAdminSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        v = dict(data.validated_data)
+        code = v.pop("code")
+        plan, created = Plan.objects.update_or_create(code=code, defaults=v)
+        audit.record(
+            actor=authed_user(request),
+            action="billing.plan_created" if created else "billing.plan_updated",
+            target=("plan", code),
+            after={k: str(val) for k, val in v.items()},
+        )
+        return Response(s.PlanAdminSerializer(_plan_row(plan)).data)

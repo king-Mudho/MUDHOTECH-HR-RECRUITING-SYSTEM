@@ -26,4 +26,6 @@ urlpatterns = [
         v.PlatformManualPaymentView.as_view(),
         name="platform-billing-manual-payment",
     ),
+    path("hr/billing/change-plan/", v.ChangePlanView.as_view(), name="hr-billing-change-plan"),
+    path("platform/billing/plans/", v.PlatformPlansView.as_view(), name="platform-billing-plans"),
 ]

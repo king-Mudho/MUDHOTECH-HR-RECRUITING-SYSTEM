@@ -1126,6 +1126,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/billing/change-plan/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_billing_change_plan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/billing/invoices/": {
         parameters: {
             query?: never;
@@ -3263,6 +3279,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/billing/plans/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["platform_plans"];
+        put?: never;
+        post: operations["platform_plan_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform/dead-letters/": {
         parameters: {
             query?: never;
@@ -4354,6 +4386,17 @@ export interface components {
             expires_at?: string | null;
             credential_id?: string;
             order?: number;
+        };
+        /**
+         * @description * `USD` - USD
+         *     * `ZWG` - ZWG
+         * @enum {string}
+         */
+        ChangePlanCurrencyEnum: "USD" | "ZWG";
+        ChangePlanRequest: {
+            plan: string;
+            /** @default USD */
+            currency: components["schemas"]["ChangePlanCurrencyEnum"];
         };
         /**
          * @description * `email` - Email
@@ -5642,7 +5685,9 @@ export interface components {
          *     * `interview_reminder` - interview_reminder
          *     * `interview_rescheduled` - interview_rescheduled
          *     * `invitation_staff` - invitation_staff
+         *     * `invoice_due_soon` - invoice_due_soon
          *     * `invoice_issued` - invoice_issued
+         *     * `invoice_overdue` - invoice_overdue
          *     * `new_message` - new_message
          *     * `not_selected` - not_selected
          *     * `note_mention` - note_mention
@@ -5662,11 +5707,14 @@ export interface components {
          *     * `rights_request_received` - rights_request_received
          *     * `rights_request_update` - rights_request_update
          *     * `shortlisted` - shortlisted
+         *     * `subscription_read_only` - subscription_read_only
          *     * `talent_pool_invitation` - talent_pool_invitation
          *     * `talent_pool_reconfirm` - talent_pool_reconfirm
+         *     * `trial_ended` - trial_ended
+         *     * `trial_ending` - trial_ending
          * @enum {string}
          */
-        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "invoice_issued" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "payment_received" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
+        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "invoice_due_soon" | "invoice_issued" | "invoice_overdue" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "payment_received" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "subscription_read_only" | "talent_pool_invitation" | "talent_pool_reconfirm" | "trial_ended" | "trial_ending";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -6536,6 +6584,49 @@ export interface components {
             paid_at: string | null;
             /** Format: date-time */
             created_at: string;
+        };
+        PlanAdmin: {
+            code: string;
+            name: string;
+            /** @default  */
+            description: string;
+            limits: {
+                [key: string]: number | null;
+            };
+            /** Format: decimal */
+            price_usd: string | null;
+            /** Format: decimal */
+            price_zwg: string | null;
+            /** @default false */
+            is_trial: boolean;
+            /** @default true */
+            is_public: boolean;
+            /** @default true */
+            active: boolean;
+            /** @default 0 */
+            order: number;
+            readonly subscribers: number;
+        };
+        PlanAdminRequest: {
+            code: string;
+            name: string;
+            /** @default  */
+            description: string;
+            limits: {
+                [key: string]: number | null;
+            };
+            /** Format: decimal */
+            price_usd: string | null;
+            /** Format: decimal */
+            price_zwg: string | null;
+            /** @default false */
+            is_trial: boolean;
+            /** @default true */
+            is_public: boolean;
+            /** @default true */
+            active: boolean;
+            /** @default 0 */
+            order: number;
         };
         PlatformErrors: {
             dead_letters_open: number;
@@ -10054,6 +10145,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BillingOverview"];
+                };
+            };
+        };
+    };
+    hr_billing_change_plan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePlanRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ChangePlanRequest"];
+                "multipart/form-data": components["schemas"]["ChangePlanRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"];
                 };
             };
         };
@@ -13956,6 +14072,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Payment"];
+                };
+            };
+        };
+    };
+    platform_plans: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanAdmin"][];
+                };
+            };
+        };
+    };
+    platform_plan_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanAdminRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PlanAdminRequest"];
+                "multipart/form-data": components["schemas"]["PlanAdminRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanAdmin"];
                 };
             };
         };

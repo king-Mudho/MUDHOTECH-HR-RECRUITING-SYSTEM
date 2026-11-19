@@ -51,7 +51,8 @@
     "interviews": "Interviews",
     "offers": "Offers",
     "talentPool": "Talent pool",
-    "taxonomy": "Skills taxonomy"
+    "taxonomy": "Skills taxonomy",
+    "plans": "Plans & pricing"
   },
   "footer": {
     "privacy": "Privacy",
@@ -561,6 +562,26 @@
         "aliasPlaceholder": "Add an alias",
         "addAlias": "Add",
         "qualifications": "Qualification names"
+      },
+      "plans": {
+        "title": "Plans & pricing",
+        "intro": "Edit plan prices (USD and ZWG) and limits. Leave a price blank for custom pricing and a limit blank for unlimited. Existing invoices keep the prices they were issued with.",
+        "subscribers": "{count, plural, one {# organisation} other {# organisations}}",
+        "trial": "trial",
+        "name": "Name",
+        "priceUsd": "Price USD / month",
+        "priceZwg": "Price ZWG / month",
+        "limits": {
+          "active_vacancies": "Published vacancies",
+          "seats": "Seats",
+          "ai_evaluations_month": "AI evaluations / month",
+          "storage_gb": "Storage GB"
+        },
+        "is_public": "Offered to organisations",
+        "active": "Active",
+        "save": "Save",
+        "saved": "Saved.",
+        "failed": "That didn't work. Please try again."
       }
     }
   },
@@ -3025,6 +3046,57 @@
       "ai_evaluations_month": "AI evaluations this month",
       "storage_gb": "Storage",
       "applications_month": "Applications this month"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "none": "No invoices yet.",
+      "download": "Download PDF",
+      "payNow": "Pay now",
+      "dueOn": "due {date}",
+      "paidOn": "paid {date}",
+      "status": {
+        "open": "Unpaid",
+        "paid": "Paid",
+        "void": "Void",
+        "draft": "Draft"
+      },
+      "bankTransfer": "You can also pay by bank transfer quoting the invoice number; MudhoTech records it for you."
+    },
+    "pay": {
+      "method": "Pay with",
+      "card": "Card (Visa / Mastercard)",
+      "phone": "Mobile number",
+      "submit": "Pay {amount}",
+      "cancel": "Cancel",
+      "close": "Close",
+      "failed": "That didn't work. Please try again.",
+      "checkPhone": "Check your phone and approve the payment with your PIN.",
+      "status": {
+        "waiting": "Waiting for the payment to be confirmed…",
+        "paid": "Payment received. Thank you!",
+        "failed": "The payment failed. You can try again.",
+        "cancelled": "The payment was cancelled.",
+        "pending_manual_check": "We could not confirm the payment automatically. Our team will check it and update the invoice."
+      }
+    },
+    "plans": {
+      "title": "Plans",
+      "currency": "Currency",
+      "custom": "Custom pricing",
+      "perMonth": "{price} per month",
+      "unlimited": "unlimited",
+      "current": "Your plan",
+      "contact": "Contact us",
+      "choose": "Choose this plan",
+      "how": "Choosing a plan creates an invoice; the plan starts as soon as it is paid.",
+      "invoiced": "Invoice created. Pay it above to start the plan.",
+      "failed": "That didn't work. Please try again.",
+      "limits": {
+        "active_vacancies": "{value} published vacancies",
+        "seats": "{value} staff seats",
+        "ai_evaluations_month": "{value} AI evaluations a month",
+        "storage_gb": "{value} GB storage"
+      }
     }
   }
 }
