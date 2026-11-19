@@ -158,6 +158,9 @@ def erase(user: Any, organisation_id: Any = None, *, actor: Any = None) -> dict[
         if organisation_id is not None:
             notes = notes.filter(organisation_id=organisation_id)
         counts["notifications"] += notes.update(payload={})
+        from apps.talentpool.services import erase_for
+
+        counts["talent_pool"] += erase_for(user, organisation_id)
         if organisation_id is None:
             _erase_account(user, counts)
         audit.record(

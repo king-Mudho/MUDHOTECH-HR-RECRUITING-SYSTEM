@@ -604,6 +604,7 @@ def submit(
     actor: Any = None,
     ip: str | None = None,
     assisted: dict[str, Any] | None = None,
+    join_talent_pool: bool = False,
 ) -> Application:
     """Submit exactly once (FR-M07-03). The request does no heavy work: screening starts from the
     ``application.submitted`` outbox event, so later failures never lose the application."""
@@ -685,6 +686,10 @@ def submit(
             reason="Assisted application" if actor is not None and actor != user else "",
             metadata={"objects_to_automated_processing": objects_to_automated_processing},
         )
+        if join_talent_pool and assisted is None:  # only the candidate can opt in (M18)
+            from apps.talentpool.services import join
+
+            join(user, app.organisation_id, ip=ip, source_application=app)
         job = app.job
         outbox.emit(
             "application.submitted",

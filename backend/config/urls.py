@@ -35,6 +35,7 @@ api_v1_patterns = [
     path("", include("apps.messaging.api.urls")),
     path("", include("apps.interviews.api.urls")),
     path("", include("apps.offers.api.urls")),
+    path("", include("apps.talentpool.api.urls")),
 ]
 
 urlpatterns = [

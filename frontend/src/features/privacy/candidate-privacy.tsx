@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { ApiError, api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
+import { TalentPools } from "./talent-pool";
+
 type RightsRequest = components["schemas"]["RightsRequest"];
 type Consent = components["schemas"]["Consent"];
 type Employer = components["schemas"]["Employer"];
@@ -336,6 +338,7 @@ export function CandidatePrivacy() {
       <h1 className="text-2xl font-semibold">{t("title")}</h1>
       <p className="text-muted-foreground text-sm">{t("intro")}</p>
       <Consents />
+      <TalentPools />
       <NewRequest />
       <MyRequests />
     </div>

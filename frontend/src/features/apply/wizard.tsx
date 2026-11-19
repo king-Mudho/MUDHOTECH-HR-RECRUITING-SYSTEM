@@ -573,6 +573,7 @@ function ReviewStep({
   const router = useRouter();
   const [privacy, setPrivacy] = useState(false);
   const [objects, setObjects] = useState(false);
+  const [pool, setPool] = useState(false);
   const [error, setError] = useState<{
     title: string;
     body: string;
@@ -584,7 +585,11 @@ function ReviewStep({
     mutationFn: () =>
       candidateApi.submit(
         app.id,
-        { accept_privacy: privacy, objects_to_automated_processing: objects },
+        {
+          accept_privacy: privacy,
+          objects_to_automated_processing: objects,
+          join_talent_pool: pool,
+        },
         keyRef.current,
       ),
     onSuccess: (res) => onSubmitted(res.reference),
@@ -754,6 +759,18 @@ function ReviewStep({
             onChange={(e) => setObjects(e.target.checked)}
           />
           <span>{t("object")}</span>
+        </label>
+        <label className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            className="mt-0.5 size-5"
+            checked={pool}
+            onChange={(e) => setPool(e.target.checked)}
+          />
+          <span>
+            {t("talentPool", { company: job.organisation.name })}{" "}
+            <span className="text-muted-foreground">{t("talentPoolHelp")}</span>
+          </span>
         </label>
       </fieldset>
       <div className="mt-2 flex justify-between gap-2 border-t pt-4">

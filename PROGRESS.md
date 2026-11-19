@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 13 — Consent-Based Talent Pool, Advanced Analytics & Exports
-- **Current task:** P13-T01
+- **Current task:** P13-T02
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 158 / 193 tasks · 10 / 16 phases
+- **Overall:** 159 / 193 tasks · 10 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -248,7 +248,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P12-EXIT — All exit criteria verified with evidence
 
 ### Phase 13 — Consent-Based Talent Pool, Advanced Analytics & Exports  (`phases/PHASE_13_TALENT_POOL_ANALYTICS.md`)
-- [ ] P13-T01 — `apps.talentpool`: TalentPoolEntry linked to ConsentRecord (purpose `talent_pool`, per organisation, duration …
+- [x] P13-T01 — `apps.talentpool`: TalentPoolEntry linked to ConsentRecord (purpose `talent_pool`, per organisation, duration …
 - [ ] P13-T02 — Talent search (HR): FTS + skill/qualification filters over consented profiles only (org-scoped)
 - [ ] P13-T03 — Analytics selectors/materialised views (refresh nightly + on-demand): time-to-review, time-to-shortlist, …
 - [ ] P13-T04 — Optional voluntary diversity monitoring module (default OFF
@@ -728,3 +728,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P12-T09 | reviewed all interview/offer templates (added in T02-T04); added optional hired_welcome (candidate, sent by record_hire, deduped per application) + test | none |
 | 2026-11-19 | Impl | P12-T10 | job funnel extended: shortlisted/interviewed/offered/hired counted as ever-reached (monotonic), offers declined, openings filled; dashboard shows them; cross-tenant 404 test. Also: two cross-tenant tests now use the in-memory S3 fixture | none |
 | 2026-11-19 | Close | P12-EXIT | Phase 12 closed: API E2E shortlist->hire->close-out, EC-INT/OFF 8/8, CI green (run 44468820772), full backend suite 2794 passed | Browser hiring journey on staging |
+| 2026-11-19 | Impl | P13-T01 | apps.talentpool: TalentPoolEntry (RLS) tied to a talent_pool ConsentRecord per employer (only employers applied to), 12-month period (TALENT_POOL_MONTHS), rejoin = reconfirmation, leave withdraws consent, delete removes entry+tags, daily reminders 30 days before + expiry, erasure removes entries; opt-in checkbox at submit (join_talent_pool, candidate only) and Talent pools section on /candidate/privacy; candidate API list/join/leave; tests | HR search in T02 |

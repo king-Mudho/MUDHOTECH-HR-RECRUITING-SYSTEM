@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "apps.shortlisting",
     "apps.interviews",
     "apps.offers",
+    "apps.talentpool",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -263,6 +264,7 @@ CELERY_TASK_ROUTES = {
     "apps.messaging.*": {"queue": "notifications"},
     "apps.interviews.*": {"queue": "notifications"},
     "apps.offers.*": {"queue": "default"},
+    "apps.talentpool.*": {"queue": "default"},
     "apps.analytics.*": {"queue": "reports"},
     "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }
@@ -313,6 +315,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.interviews.tasks.send_interview_reminders",
         "schedule": timedelta(minutes=5),
         "options": {"expires": 240},
+    },
+    "talent-pool-daily": {
+        "task": "apps.talentpool.tasks.talent_pool_daily",
+        "schedule": crontab(hour=6, minute=15),
+        "options": {"expires": 3600 * 6},
     },
     "privacy-retention-daily": {
         "task": "apps.privacy.tasks.retention_daily",
@@ -404,6 +411,7 @@ DOCUMENT_SCANNER = env("DOCUMENT_SCANNER", default="clamd")
 APPLICATION_DEADLINE_GRACE_SECONDS = env.int("APPLICATION_DEADLINE_GRACE_SECONDS", default=0)
 # Version of the public "How we use AI" notice (frontend /how-we-use-ai); bump when it changes.
 AI_NOTICE_VERSION = "2026-11-10"
+TALENT_POOL_MONTHS = env.int("TALENT_POOL_MONTHS", default=12)
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)

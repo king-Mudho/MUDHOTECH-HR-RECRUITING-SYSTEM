@@ -1362,7 +1362,9 @@
         }
       },
       "extractedCorrect": "If something is wrong, you can still submit: you'll be able to correct it on your application page, and your full CV always goes to the employer.",
-      "extractedNone": "Attach a CV to see what we read from it."
+      "extractedNone": "Attach a CV to see what we read from it.",
+      "talentPool": "Keep my details so {company} can invite me to apply for other vacancies (optional).",
+      "talentPoolHelp": "Only {company}, for 12 months; you can leave or delete them at any time."
     },
     "done": {
       "title": "Application submitted",
@@ -2211,6 +2213,26 @@
         "job": "Vacancy"
       },
       "failed": "The hold could not be placed."
+    },
+    "talentPool": {
+      "title": "Talent pools",
+      "intro": "Employers you applied to can keep your details for future vacancies only if you agree. Each employer is separate, and no one else ever sees your CV.",
+      "none": "You have not applied to any employer yet.",
+      "failed": "That didn't work. Please try again.",
+      "until": "until {date}",
+      "endingSoon": "Ending soon: confirm to stay.",
+      "join": "Join",
+      "reconfirm": "Stay for another 12 months",
+      "leave": "Leave",
+      "delete": "Delete my details",
+      "deleteTitle": "Delete your details from {company}'s talent pool?",
+      "deleteBody": "You leave the pool and the employer's notes about you for future vacancies are removed. Your applications are not affected.",
+      "status": {
+        "none": "Not in the pool",
+        "active": "In the pool",
+        "expired": "Ended",
+        "withdrawn": "Left"
+      }
     }
   },
   "support": {

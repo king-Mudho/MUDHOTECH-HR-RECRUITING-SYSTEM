@@ -44,7 +44,11 @@ export const candidateApi = {
   review: (id: string) => api.get<Review>(`/applications/${id}/review/`),
   submit: (
     id: string,
-    body: { accept_privacy: boolean; objects_to_automated_processing: boolean },
+    body: {
+      accept_privacy: boolean;
+      objects_to_automated_processing: boolean;
+      join_talent_pool?: boolean;
+    },
     idempotencyKey: string = newIdempotencyKey(),
   ) =>
     api.post<{ id: string; reference: string; submitted_at: string; status: string }>(

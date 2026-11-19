@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CandidatePrivacy } from "@/features/privacy/candidate-privacy";
 import { HRPrivacy } from "@/features/privacy/hr-privacy";
+import { poolActions, TalentPools } from "@/features/privacy/talent-pool";
 import messages from "../messages/en.json";
 
 vi.mock("next/navigation", () => ({
@@ -161,5 +162,58 @@ describe("HRPrivacy", () => {
     routes((u) => (u === "/api/v1/me/" ? { body: me("recruiter") } : undefined));
     wrap(<HRPrivacy />);
     expect(await screen.findByText(/Only organisation admins/)).toBeInTheDocument();
+  });
+});
+
+describe("TalentPools", () => {
+  it("offers the right actions per state", () => {
+    expect(poolActions({ status: "none", reconfirm_due: false })).toEqual({
+      join: true,
+      reconfirm: false,
+      leave: false,
+      remove: false,
+    });
+    expect(poolActions({ status: "active", reconfirm_due: true })).toMatchObject({
+      join: false,
+      reconfirm: true,
+      leave: true,
+    });
+    expect(poolActions({ status: "withdrawn", reconfirm_due: false })).toMatchObject({
+      join: true,
+      remove: true,
+    });
+  });
+
+  it("joins one employer's pool and deletes after confirmation", async () => {
+    const posts: [string, unknown][] = [];
+    let state = "none";
+    const row = () => ({
+      organisation_id: "o1",
+      organisation_name: "Acme",
+      status: state,
+      joined_at: state === "none" ? null : "2026-11-19T10:00:00Z",
+      expires_at: state === "none" ? null : "2027-11-19T10:00:00Z",
+      reconfirm_due: false,
+    });
+    routes((u, init) => {
+      if (init?.method === "POST") {
+        posts.push([u, JSON.parse(String(init.body))]);
+        state = u.endsWith("/leave/") ? "none" : "active";
+        return { body: row() };
+      }
+      return u === "/api/v1/candidate/talent-pools/" ? { body: [row()] } : undefined;
+    });
+    wrap(<TalentPools />);
+    await userEvent.click(await screen.findByRole("button", { name: "Join" }));
+    expect(await screen.findByText("In the pool")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Delete my details" }));
+    const dialog = await screen.findByRole("dialog");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Delete my details" }));
+    await waitFor(() =>
+      expect(posts).toEqual([
+        ["/api/v1/candidate/talent-pools/", { organisation_id: "o1" }],
+        ["/api/v1/candidate/talent-pools/o1/leave/", { delete: true }],
+      ]),
+    );
   });
 });

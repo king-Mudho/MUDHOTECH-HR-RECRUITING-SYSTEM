@@ -397,6 +397,19 @@ contact the candidate through the application's messages, or issue a new offer.
 [Open the offer]({{ offer_url }})""",
         "The offer for {{ reference }} ({{ job_title }}) expired.",
     ),
+    "talent_pool_reconfirm": DefaultTemplate(
+        "Stay in {{ organisation_name }}'s talent pool?",
+        """Hello {{ recipient_name }},
+
+You asked {{ organisation_name }} to keep your details for future vacancies. That ends on
+{{ expires_on }}.
+
+If you would like to stay, confirm it in your account. If you do nothing, your details simply stop
+being available to them; you can also leave or delete them at any time.
+
+[Manage your talent pool choices]({{ privacy_url }})""",
+        "Your place in {{ organisation_name }}'s talent pool ends on {{ expires_on }}.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},

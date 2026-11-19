@@ -1360,6 +1360,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
           description: ''
+  /api/v1/candidate/talent-pools/:
+    get:
+      operationId: candidate_talent_pools
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TalentPoolMembership'
+          description: ''
+    post:
+      operationId: candidate_talent_pool_join
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TalentPoolJoinRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TalentPoolJoinRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TalentPoolJoinRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentPoolMembership'
+          description: ''
+  /api/v1/candidate/talent-pools/{organisation_id}/leave/:
+    post:
+      operationId: candidate_talent_pool_leave
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TalentPoolLeaveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TalentPoolLeaveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TalentPoolLeaveRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentPoolMembership'
+          description: ''
   /api/v1/companies/{slug}/:
     get:
       operationId: companies_retrieve
@@ -11210,6 +11283,7 @@ components:
       - rights_request_received
       - rights_request_update
       - shortlisted
+      - talent_pool_reconfirm
       type: string
       description: |-
         * `application_received` - application_received
@@ -11246,6 +11320,7 @@ components:
         * `rights_request_received` - rights_request_received
         * `rights_request_update` - rights_request_update
         * `shortlisted` - shortlisted
+        * `talent_pool_reconfirm` - talent_pool_reconfirm
     KillSwitchRequest:
       type: object
       properties:
@@ -15446,6 +15521,9 @@ components:
         objects_to_automated_processing:
           type: boolean
           default: false
+        join_talent_pool:
+          type: boolean
+          default: false
       required:
       - accept_privacy
     SubmitResult:
@@ -15499,6 +15577,59 @@ components:
           maxItems: 20
       required:
       - tags
+    TalentPoolJoinRequest:
+      type: object
+      properties:
+        organisation_id:
+          type: string
+          format: uuid
+      required:
+      - organisation_id
+    TalentPoolLeaveRequest:
+      type: object
+      properties:
+        delete:
+          type: boolean
+          default: false
+    TalentPoolMembership:
+      type: object
+      properties:
+        organisation_id:
+          type: string
+          format: uuid
+        organisation_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/TalentPoolMembershipStatusEnum'
+        joined_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        reconfirm_due:
+          type: boolean
+      required:
+      - expires_at
+      - joined_at
+      - organisation_id
+      - organisation_name
+      - reconfirm_due
+      - status
+    TalentPoolMembershipStatusEnum:
+      enum:
+      - none
+      - active
+      - expired
+      - withdrawn
+      type: string
+      description: |-
+        * `none` - none
+        * `active` - active
+        * `expired` - expired
+        * `withdrawn` - withdrawn
     TargetTypeEnum:
       enum:
       - application

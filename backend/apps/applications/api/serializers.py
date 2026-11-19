@@ -145,6 +145,7 @@ class ReviewSerializer(serializers.Serializer):
 class SubmitSerializer(StrictSerializer):
     accept_privacy = serializers.BooleanField()
     objects_to_automated_processing = serializers.BooleanField(required=False, default=False)
+    join_talent_pool = serializers.BooleanField(required=False, default=False)
 
 
 class SubmitResultSerializer(serializers.Serializer):
