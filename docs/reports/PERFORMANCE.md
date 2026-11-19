@@ -121,3 +121,24 @@ events), `test_edge_cases.py` (S3 down, EC-OPS-02), `test_cache_resilience.py`, 
   30/hour).
 - Found while reviewing limits: allauth's `ACCOUNT_PASSWORD_MIN_LENGTH` was still 10 while the
   password validators require 12 — aligned to 12.
+
+## P16-T03 tuning pass (2026-11-19)
+
+Index review of the queries added in Phases 12-15 (each new filter/sort checked against an index):
+
+| Query | Index |
+|---|---|
+| Monthly AI allowance on every automatic screening (`Evaluation` by organisation + `created_at`) | `eval_org_created_idx` (new) |
+| Organisation-wide report windows, usage and dashboards (`Application` by organisation + `submitted_at`) | `app_org_submitted_idx` (new) |
+| Funnel and time-to-* reports: first status event per application and status | `app_event_status_idx` (new) |
+| Delivery receipts by provider message id | `notif_provider_msg_idx` (new, partial: non-empty only) |
+| Interview reminders, offer expiry, payment polling, webhook retries, talent-pool expiry | existing `(status, <time>)` indexes |
+| Invoice numbers, payment references, API key prefixes | unique constraints |
+
+Other measures already in place: the analytics default view is a nightly/on-demand snapshot; talent
+search prefetches profile data (no per-result queries); public feeds and job pages are cacheable
+(5 min / 60 s); exports run on the reports queue; list endpoints are paginated. Query budgets for the
+hot endpoints stay enforced by `tests/integration/test_query_budgets.py`.
+
+Still to measure on staging with production-like data (owner environment): `EXPLAIN ANALYZE` of the top
+endpoints from access logs and Lighthouse on the new pages.

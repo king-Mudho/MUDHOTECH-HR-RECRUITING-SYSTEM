@@ -102,7 +102,11 @@ class Evaluation(TenantModel):
         constraints = [
             models.UniqueConstraint(fields=["application", "version"], name="uniq_eval_version")
         ]
-        indexes = [models.Index(fields=["organisation", "band"], name="eval_org_band")]
+        indexes = [
+            models.Index(fields=["organisation", "band"], name="eval_org_band"),
+            # P16-T03: monthly AI allowance and usage counts (organisation + month window)
+            models.Index(fields=["organisation", "created_at"], name="eval_org_created_idx"),
+        ]
 
 
 class CriterionResult(TenantModel):

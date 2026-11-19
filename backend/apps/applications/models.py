@@ -102,6 +102,8 @@ class Application(TenantModel):
             models.Index(fields=["job", "score"], name="app_job_score_idx"),
             models.Index(fields=["job", "coverage"], name="app_job_coverage_idx"),
             models.Index(fields=["job", "submitted_at"], name="app_job_submitted_idx"),
+            # P16-T03: organisation-wide report windows, usage and dashboards
+            models.Index(fields=["organisation", "submitted_at"], name="app_org_submitted_idx"),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -177,7 +179,11 @@ class ApplicationStatusEvent(TenantModel):
 
     class Meta:
         ordering = ("application", "at")
-        indexes = [models.Index(fields=["application", "at"], name="app_event_timeline_idx")]
+        indexes = [
+            models.Index(fields=["application", "at"], name="app_event_timeline_idx"),
+            # P16-T03: "first time this application reached status X" (funnel, time-to-* reports)
+            models.Index(fields=["application", "to_status", "at"], name="app_event_status_idx"),
+        ]
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self._state.adding:

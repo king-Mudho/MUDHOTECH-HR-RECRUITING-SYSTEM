@@ -112,6 +112,12 @@ class Notification(BaseModel):
         indexes = [
             models.Index(fields=["recipient_user", "channel", "read_at"], name="notif_inbox_idx"),
             models.Index(fields=["status", "scheduled_for"], name="notif_due_idx"),
+            # P16-T03: delivery receipts look messages up by the provider's id
+            models.Index(
+                fields=["provider_message_id"],
+                name="notif_provider_msg_idx",
+                condition=~models.Q(provider_message_id=""),
+            ),
         ]
 
     def __str__(self) -> str:
