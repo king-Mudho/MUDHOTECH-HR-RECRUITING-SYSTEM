@@ -274,3 +274,25 @@ def test_policy_approvals_range(ctx: dict[str, Any]) -> None:
         policy.offer_approvals_required = bad
         with pytest.raises(ValidationError):
             policy.full_clean()
+
+
+def test_after_withdrawal_hr_can_record_not_selected(ctx: dict[str, Any]) -> None:
+    """ADR-030: offer -> not_selected is a human decision with a reason."""
+    from apps.applications.services import ApplicationTransitionError
+
+    offer = services.issue(approved_offer(ctx), actor=ctx["team"].recruiter)
+    services.withdraw(
+        offer, actor=ctx["team"].hr_manager, reason="Role cancelled after restructuring"
+    )
+    with pytest.raises(ApplicationTransitionError):  # never automatic
+        transition(ctx["app"], Status.NOT_SELECTED, actor=None, actor_type="system")
+    with pytest.raises(DomainError):  # a reason is required
+        transition(ctx["app"], Status.NOT_SELECTED, actor=ctx["team"].hr_manager, reason="")
+    transition(
+        ctx["app"],
+        Status.NOT_SELECTED,
+        actor=ctx["team"].hr_manager,
+        reason="Role cancelled after restructuring",
+    )
+    ctx["app"].refresh_from_db()
+    assert ctx["app"].status == Status.NOT_SELECTED

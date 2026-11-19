@@ -91,7 +91,7 @@ org status `pending_verification` → platform admin verifies (or auto-verify by
 | `on_hold` | HR action | `under_review`, `shortlisted`*, `not_selected`* |
 | `shortlisted` | **Human approval** | `interview`, `not_selected`*, `withdrawn` |
 | `interview` | Interview scheduled | `offer`*, `not_selected`*, `withdrawn` |
-| `offer` | **Approved offer issued** | `hired`*, `offer_declined`, `withdrawn` |
+| `offer` | **Approved offer issued** | `hired`*, `offer_declined`, `withdrawn`, `not_selected`* (employer withdrew the offer, ADR-030) |
 | `hired` / `not_selected` / `withdrawn` / `offer_declined` / `abandoned` | Terminal | `under_review` via authorised **reopen** with reason |
 
 `*` requires human actor + reason; recorded in `application_status_events` + `audit_events`.

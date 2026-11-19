@@ -535,7 +535,7 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-16 | P08-T05 | Applicants list moved from page-number to cursor pagination (with a total count); response is `{count, next_cursor, previous_cursor, results}` | EC-JOB-17 (5,000+ applicants) | - |
 | 2026-11-17 | P09-T01 | Rights request status `declined` (with the legal reason) instead of `rejected`; extra `on_hold` status for legal holds | Project wording rule (never "rejected"); EC-PRV-01 needs a visible hold state | - |
 | 2026-11-19 | P12-T04 | Offer letters rendered with PyMuPDF (Story, HTML subset) instead of WeasyPrint | Same renderer as decision reconstructions; no new native dependency in the image | - |
-| 2026-11-19 | P12-T04 | When the employer withdraws an issued offer the application stays at `offer` (HR issues a new offer or reopens it) | SRS §3.3 has no `offer -> not_selected`; changing the status table is an owner decision | Owner: add `offer -> not_selected` (human decision)? |
+| 2026-11-19 | P12-T04 | When the employer withdraws an issued offer the application stays at `offer` (HR issues a new offer or reopens it) | SRS §3.3 had no `offer -> not_selected` | **Resolved 2026-11-19:** owner approved adding it (ADR-030) |
 
 ## Session log
 | Date | Session | Tasks | Summary | Follow-ups |

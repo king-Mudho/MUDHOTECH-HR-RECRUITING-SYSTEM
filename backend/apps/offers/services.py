@@ -525,8 +525,8 @@ def decline(offer: Offer, *, candidate: Any, reason: str = "") -> Offer:
 
 # --- employer withdrawal, expiry ------------------------------------------------------------------
 def withdraw(offer: Offer, *, actor: Any, reason: str) -> Offer:
-    """The employer withdraws an open offer. The application stays at ``offer`` (SRS §3.3 has no
-    offer -> not_selected); HR can issue a new offer or reopen it."""
+    """The employer withdraws an open offer. The application stays at ``offer``; a person then
+    records ``not_selected`` (ADR-030), issues a new offer or reopens it."""
     _membership(actor, offer.organisation_id, "offers.approve")
     text = _reason(reason)
     with transaction.atomic():

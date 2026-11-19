@@ -68,6 +68,8 @@ TRANSITIONS: dict[tuple[str, str], Rule] = {
     (S.INTERVIEW, S.NOT_SELECTED): HUMAN_DECISION,
     (S.INTERVIEW, S.WITHDRAWN): _r(CANDIDATE),
     (S.OFFER, S.HIRED): HUMAN_DECISION,
+    # the employer withdrew the offer and decides not to proceed (ADR-030, owner 2026-11-19)
+    (S.OFFER, S.NOT_SELECTED): HUMAN_DECISION,
     (S.OFFER, S.OFFER_DECLINED): _r(CANDIDATE, STAFF),
     (S.OFFER, S.WITHDRAWN): _r(CANDIDATE),
 }

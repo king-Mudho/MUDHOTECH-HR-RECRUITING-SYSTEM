@@ -36,7 +36,7 @@ EXPECTED = {
     # under_review: shortlist undo only (P08-T02, EC-REV-04)
     "shortlisted": {"interview", "not_selected", "withdrawn", "under_review"},
     "interview": {"offer", "not_selected", "withdrawn"},
-    "offer": {"hired", "offer_declined", "withdrawn"},
+    "offer": {"hired", "offer_declined", "withdrawn", "not_selected"},  # ADR-030
     "hired": {"under_review"},
     "not_selected": {"under_review"},
     "withdrawn": {"under_review"},
