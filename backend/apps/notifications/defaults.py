@@ -397,4 +397,16 @@ contact the candidate through the application's messages, or issue a new offer.
 [Open the offer]({{ offer_url }})""",
         "The offer for {{ reference }} ({{ job_title }}) expired.",
     ),
+    "hired_welcome": DefaultTemplate(
+        "Welcome to {{ organisation_name }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} has confirmed your appointment as **{{ job_title }}**, starting on
+{{ start_date }}. Congratulations!
+
+The employer will contact you about your first day. Your application stays in your account.
+
+[View your application]({{ application_url }})""",
+        "Welcome to {{ organisation_name }}: you start as {{ job_title }} on {{ start_date }}.",
+    ),
 }

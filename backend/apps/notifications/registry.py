@@ -35,6 +35,7 @@ SAMPLES: dict[str, str] = {
     "job_title": "Software Developer",
     "reference": "MHRS-MUDHOT1A2B-2026-000042",
     "application_url": "https://mhrs.example/candidate/applications/42",
+    "start_date": "1 December 2026",
     "document_name": "cv.pdf",
     "reason": "This file didn't pass our security check.",
     "due_date": "15 November 2026",
@@ -321,6 +322,12 @@ _KINDS = [
         "staff",
         ("job_title", "reference", "offer_url"),
         urgent=True,
+    ),
+    NotificationKind(
+        "hired_welcome",
+        "Welcome message once HR records the hire",
+        "candidate",
+        ("organisation_name", "job_title", "start_date", "application_url"),
     ),
 ]
 

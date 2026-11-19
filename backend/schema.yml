@@ -11160,6 +11160,7 @@ components:
       - document_rejected_reupload
       - draft_abandoned
       - draft_deadline_reminder
+      - hired_welcome
       - interview_booked
       - interview_cancelled
       - interview_invitation
@@ -11195,6 +11196,7 @@ components:
         * `document_rejected_reupload` - document_rejected_reupload
         * `draft_abandoned` - draft_abandoned
         * `draft_deadline_reminder` - draft_deadline_reminder
+        * `hired_welcome` - hired_welcome
         * `interview_booked` - interview_booked
         * `interview_cancelled` - interview_cancelled
         * `interview_invitation` - interview_invitation

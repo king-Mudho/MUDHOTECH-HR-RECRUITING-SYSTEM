@@ -84,6 +84,8 @@ def test_record_hire_and_close_prompt(ctx: dict[str, Any]) -> None:
     assert hire.start_date == ctx["offer"].start_date and hire.recorded_by == ctx["team"].hr_manager
     assert result["prompt_close"] is True and result["openings"]["remaining"] == 0
     assert AuditEvent.objects.filter(action="hiring.hire_recorded").exists()
+    welcome = Notification.objects.filter(key="hired_welcome")
+    assert {n.recipient_user_id for n in welcome} == {ctx["app"].candidate_user_id}
     with pytest.raises(DomainError):  # not twice
         hiring.record_hire(ctx["hr"], ctx["team"].hr_manager, ctx["offer"].pk)
 

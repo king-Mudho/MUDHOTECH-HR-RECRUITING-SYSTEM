@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 12 — Interviews, Offers & Hiring
-- **Current task:** P12-T09
+- **Current task:** P12-T10
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 156 / 193 tasks · 9 / 16 phases
+- **Overall:** 157 / 193 tasks · 9 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -243,7 +243,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P12-T06 — APIs + permission matrix + cross-tenant tests for all new endpoints
 - [x] P12-T07 — Frontend HR: `/hr/interviews` calendar/list (day/week), schedule dialog, panel management, scorecard form, …
 - [x] P12-T08 — Frontend candidate: interview invitations (book slot, add to calendar, reschedule request), offer view …
-- [ ] P12-T09 — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, …
+- [x] P12-T09 — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, …
 - [ ] P12-T10 — Funnel extended to interviews/offers/hires on dashboard
 - [ ] P12-EXIT — All exit criteria verified with evidence
 
@@ -709,3 +709,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P12-T06 | REST API (X-Org-Id staff endpoints): interviews list (paginated; own panel + view_all scope, from/to/job/status/mine filters), application interviews list/create (returns EC-INT-01 conflict warnings), interview detail (panel view, AI hidden by policy, 404 unless on the panel or view_all on a visible application), reschedule/cancel/no-show/complete, scorecards (EC-INT-04 visibility), my scorecard save/submit, consolidated feedback, scorecard templates; offers list (paginated)/per application/create/detail/patch (lock_version)/submit/approve/return/issue (Idempotency-Key)/withdraw/letter (302 presigned, access logged)/hire, vacancy close-out preview/confirm (Idempotency-Key). Candidate endpoints: own interviews (slots only while proposed, video link once scheduled), book slot, calendar.ics; own offers (issued onwards only), accept (Idempotency-Key, IP/UA from the request), decline. 28 endpoints registered in tests/tenancy (Endpoint.needs_s3 for the issue endpoint): full role matrix + cross-tenant 404 + list exclusion pass; 6 API tests for candidate/object-level rules. OpenAPI validated without warnings (prefixed serializer names, enum overrides; no existing component renamed); api.d.ts regenerated. 1,040 tests pass | - |
 | 2026-11-19 | Impl | P12-T07 | HR frontend: /hr/interviews (day/week calendar list, previous/today/next, only-mine filter, grouped by local day, unscheduled last), /hr/interviews/[id] (details with timezone, panel with submitted marks, manage actions: reschedule dialog RHF+Zod, cancel/no-show via ConfirmDialog with reasons, complete; documents; AI notice only when the policy allows; scorecard form with 1-5 radiogroups + evidence notes, draft save and submit after start, EC-INT-04 independent view; consolidated feedback table with disagreement badges), /hr/offers (status filter) and /hr/offers/[id] (terms, approvals history, submit/approve/return/issue/withdraw/record hire by role + state, letter download, over-acceptance warning, close prompt after hire), /hr/jobs/[id]/closeout (preview, reason, confirm, result). Application page: Interviews panel with schedule dialog (fixed time or up to 12 slots, panel + lead from the new panel-options endpoint, scorecard template incl. create-from-vacancy, conflict warnings) and Offer panel with the offer builder (RHF+Zod, server errors mapped). Nav items Interviews/Offers; policy setting offer_approvals_required. Backend: GET /hr/interviews/panel-options/ (interviews.manage, registered), HR letter streamed as PDF (no bucket CORS). Messages for both namespaces; Vitest helpers tests; lint/typecheck/prettier/167 tests pass | Not browser-verified locally (full stack does not fit in host RAM); covered by the P12 exit E2E |
 | 2026-11-19 | Impl | P12-T08 | candidate interviews (book slot, ICS, reschedule via messages) and offer (terms, letter, typed-name e-acceptance, decline) on the application page; anchors #interviews/#offer; helper tests | none |
+| 2026-11-19 | Impl | P12-T09 | reviewed all interview/offer templates (added in T02-T04); added optional hired_welcome (candidate, sent by record_hire, deduped per application) + test | none |

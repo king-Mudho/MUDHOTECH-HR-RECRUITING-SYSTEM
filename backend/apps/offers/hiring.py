@@ -19,6 +19,7 @@ import hashlib
 from datetime import date
 from typing import Any
 
+from django.conf import settings
 from django.db import transaction
 
 from apps.applications import ats
@@ -29,6 +30,7 @@ from apps.core import time as mhrs_time
 from apps.core.exceptions import ConflictError, DomainError, NotFoundError, PermissionDeniedError
 from apps.jobs.assignments import jobs_visible_to
 from apps.jobs.models import Job, JobStatus
+from apps.notifications import delivery as notifications
 from apps.organisations import rbac
 from apps.organisations.models import Membership
 
@@ -94,6 +96,19 @@ def record_hire(
             organisation=app.organisation_id,
             after={"start_date": start.isoformat(), "offer_id": str(offer.pk)},
         )
+        if app.candidate_user_id:
+            notifications.notify(
+                app.candidate_user,
+                "hired_welcome",
+                {
+                    "organisation_name": app.organisation.name,
+                    "job_title": app.job.title,
+                    "start_date": f"{start.day} {start:%B %Y}",
+                    "application_url": f"{settings.FRONTEND_URL}/candidate/applications/{app.pk}",
+                },
+                dedupe_key=f"hired_welcome:{app.pk}",
+                organisation=app.organisation,
+            )
         counter = openings(app.job)
         job = app.job
     return {

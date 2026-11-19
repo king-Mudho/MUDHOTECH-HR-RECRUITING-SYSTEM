@@ -12,7 +12,7 @@
 - [x] **P12-T06** — APIs + permission matrix + cross-tenant tests for all new endpoints.
 - [x] **P12-T07** — Frontend HR: `/hr/interviews` calendar/list (day/week), schedule dialog, panel management, scorecard form, consolidated feedback; `/hr/offers` list, offer builder, approvals, letter preview.
 - [x] **P12-T08** — Frontend candidate: interview invitations (book slot, add to calendar, reschedule request), offer view (accept/decline), timeline updates.
-- [ ] **P12-T09** — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, offer_issued, offer_expiring, offer_accepted (HR), offer_declined (HR), hired_welcome (optional).
+- [x] **P12-T09** — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, offer_issued, offer_expiring, offer_accepted (HR), offer_declined (HR), hired_welcome (optional).
 - [ ] **P12-T10** — Funnel extended to interviews/offers/hires on dashboard.
 
 ## Exit criteria
