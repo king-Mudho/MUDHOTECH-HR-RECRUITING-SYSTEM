@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "apps.offers",
     "apps.talentpool",
     "apps.analytics",
+    "apps.billing",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -267,6 +268,7 @@ CELERY_TASK_ROUTES = {
     "apps.interviews.*": {"queue": "notifications"},
     "apps.offers.*": {"queue": "default"},
     "apps.talentpool.*": {"queue": "default"},
+    "apps.billing.*": {"queue": "default"},
     "apps.analytics.*": {"queue": "reports"},
     "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }

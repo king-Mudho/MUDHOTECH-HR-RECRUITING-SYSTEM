@@ -7,7 +7,7 @@
 
 ## Tasks
 - [x] **P14-T01** — Admin console completion: `/admin/dashboard` (tenants, active vacancies, applications/day, queue health, error rates), organisations detail (members, usage, plan, verification docs), users search (platform scope, minimal PII), feature flags UI, taxonomy curation UI (skills, aliases, relations, qualification mappings; publish new taxonomy version), dead-letter viewer with retry, queues view, system health.
-- [ ] **P14-T02** — `apps.billing` models: Plan (limits jsonb: active_vacancies, seats, ai_evaluations_month, storage_gb), Subscription, UsageCounter, Invoice, Payment; seed plans per D-13 (editable).
+- [x] **P14-T02** — `apps.billing` models: Plan (limits jsonb: active_vacancies, seats, ai_evaluations_month, storage_gb), Subscription, UsageCounter, Invoice, Payment; seed plans per D-13 (editable).
 - [ ] **P14-T03** — Entitlements service `billing.entitlements.check(org, metric)` enforced at: publish job, invite member, run screening, upload storage; never blocks candidates applying to already-published jobs (EC-BIL-03); trial (30 days) flow.
 - [ ] **P14-T04** — Usage metering (increment in services via outbox consumers), monthly roll-up, usage page for org_admin.
 - [ ] **P14-T05** — Invoicing: monthly invoice generation (USD or ZWG with price snapshot (EC-BIL-05)), PDF invoice (MudhoTech Solutions (Pvt) Ltd details, configurable tax/VAT fields), email.

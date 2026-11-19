@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 14 — Platform Administration, Subscriptions & Billing
-- **Current task:** P14-T02
+- **Current task:** P14-T03
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 167 / 193 tasks · 11 / 16 phases
+- **Overall:** 168 / 193 tasks · 11 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -260,7 +260,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 
 ### Phase 14 — Platform Administration, Subscriptions & Billing  (`phases/PHASE_14_PLATFORM_ADMIN_BILLING.md`)
 - [x] P14-T01 — Admin console completion: `/admin/dashboard` (tenants, active vacancies, applications/day, queue health, error …
-- [ ] P14-T02 — `apps.billing` models: Plan (limits jsonb: active_vacancies, seats, ai_evaluations_month, storage_gb), Subscription, …
+- [x] P14-T02 — `apps.billing` models: Plan (limits jsonb: active_vacancies, seats, ai_evaluations_month, storage_gb), Subscription, …
 - [ ] P14-T03 — Entitlements service `billing.entitlements.check(org, metric)` enforced at: publish job, invite member, run …
 - [ ] P14-T04 — Usage metering (increment in services via outbox consumers), monthly roll-up, usage page for org_admin
 - [ ] P14-T05 — Invoicing: monthly invoice generation (USD or ZWG with price snapshot (EC-BIL-05)), PDF invoice (MudhoTech Solutions …
@@ -753,3 +753,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P13-T08 | tests/integration/test_phase13_boundaries.py: cross-employer consent boundary end to end (join only applied employers, other employer never finds the person by skill or name, no CV id/filename/email in results, CV download refused, leave/erasure end membership) + report export without personal data + report funnel reconciles with the dashboard funnel; plus the T01-T07 suites (consent, search, analytics reconciliation, exports escaping/permissions, monitoring) | none |
 | 2026-11-19 | Close | P13-EXIT | Phase 13 closed: consent boundaries, report reconciliation and export safety proven by tests; full backend suite 2897 passed, 2 skipped; CI run 44506354495 on d66a298 | Browser checks of /hr/reports and /hr/talent-pool on staging |
 | 2026-11-19 | Impl | P14-T01 | platform console: /admin/dashboard (tenants by status, published vacancies, applications per day 14d, dead letters + CV read failure rate, queue/outbox/backlog/email health), organisation detail (members by role, usage: vacancies, applications/evaluations this month, storage), users search (3+ chars, minimal PII), feature flags (global/per-org, audited), skills taxonomy curation (skills, aliases, relations, qualification aliases; publish new version with checksum, engine keeps the published version until then), dead-letter viewer with retry/resolve, system health (checks + queues); platform staff read, platform admin write; current_version ignores unpublished rows (NULLS FIRST fix); tests | Plan/billing on org detail comes with P14-T02 |
+| 2026-11-19 | Impl | P14-T02 | apps.billing: Plan (platform, limits json: active_vacancies/seats/ai_evaluations_month/storage_gb, null = unlimited; USD/ZWG prices; trial flag), Subscription (one per org; trialing/active/past_due/read_only/cancelled; currency, trial/period/grace dates), UsageCounter (unique org+metric+month), Invoice (number, subtotal/tax/total, lines + price snapshot, status, PDF document), Payment (paynow/manual, method, reference, poll_url, status incl. pending_manual_check, raw without card data); RLS on tenant tables; default plans per D-13 seeded on post_migrate without overwriting edits; admin | none |
