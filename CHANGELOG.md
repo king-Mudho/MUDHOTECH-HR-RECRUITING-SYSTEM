@@ -6,6 +6,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 ## [Unreleased]
 
 ### Added
+- Phase 13 talent pool, analytics & exports: consent-based talent pool per employer (opt-in at
+  application end or on the privacy page, reconfirmation, expiry, leave/delete) with HR talent
+  search and invitations; recruitment reports (time to review/shortlist/hire, funnel conversion,
+  sources, completion, CV processing quality, AI-human agreement, clarifications) with nightly
+  snapshots; permissioned CSV/XLSX/PDF exports with a blind option and 15-minute links; AI
+  quality monitoring (override alerts, drift indicators).
 - Phase 12 interviews, offers & hiring: interview scheduling with candidate self-booking, calendar
   files, reminders, panel conflict warnings and no-show handling; independent scorecards with a
   consolidated view; offers with approval chain, PDF letter, electronic acceptance, expiry and

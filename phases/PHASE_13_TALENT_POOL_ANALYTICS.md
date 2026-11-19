@@ -14,4 +14,20 @@
 - [x] **P13-T08** — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data.
 
 ## Exit criteria
-- [ ] Talent pool consent boundaries proven by tests; reports reconcile; exports secure and logged.
+- [x] Talent pool consent boundaries proven by tests; reports reconcile; exports secure and logged.
+
+## Exit evidence (2026-11-19)
+- Consent boundaries: `tests/integration/test_phase13_boundaries.py` (join only employers applied
+  to; another employer never finds the person by skill or name; no CV id, filename or email in
+  search results; CV download refused across employers; leaving and erasure end membership at
+  once) + `apps/talentpool/tests` (opt-in at submit, reconfirmation, reminders, expiry, withdrawal
+  from the general consents list, deletion, cross-tenant 404s) + registry endpoints in the
+  cross-tenant suite and role matrix.
+- Reports reconcile: `apps/analytics/tests/test_reports.py` compares every section with direct
+  queries; the report funnel equals the dashboard funnel for the same vacancy.
+- Exports secure and logged: `apps/analytics/tests/test_exports.py` (EC-PRV-08 formula payloads
+  neutralised in CSV and XLSX, blind export without names/contacts, admin/HR manager only, other
+  organisations 404, 15-minute presigned links, files expire after 24 h, requested/downloaded
+  audited).
+- Full backend suite 2897 passed, 2 skipped; CI green (run 44506354495 on d66a298).
+- T04 (diversity monitoring) not built by design: ADR-031 / open decision D-10.

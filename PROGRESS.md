@@ -5,11 +5,11 @@
 > Task details live in the phase files; keep both in sync.
 
 ## Current pointer
-- **Current phase:** 13 — Consent-Based Talent Pool, Advanced Analytics & Exports
-- **Current task:** P13-EXIT
+- **Current phase:** 14 — Platform Administration, Subscriptions & Billing
+- **Current task:** P14-T01
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 166 / 193 tasks · 10 / 16 phases
+- **Overall:** 166 / 193 tasks · 11 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -26,8 +26,8 @@
 | 10 | [Quality Assurance, AI Validation & Pilot Readiness](phases/PHASE_10_QA_AI_VALIDATION_PILOT.md) | MVP | 10 | 🟦 In progress | |
 | 11 | [Production Deployment & Operations (→ v1.0 pilot live)](phases/PHASE_11_PRODUCTION_DEPLOYMENT.md) | MVP | 12 | 🟦 In progress | |
 | 12 | [Interviews, Offers & Hiring](phases/PHASE_12_INTERVIEWS_OFFERS_HIRING.md) | v1.1 | 10 | ✅ Done | 2026-11-19 |
-| 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | 🟦 In progress | |
-| 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | ⬜ Not started | |
+| 13 | [Consent-Based Talent Pool, Advanced Analytics & Exports](phases/PHASE_13_TALENT_POOL_ANALYTICS.md) | v1.1 | 8 | ✅ Done | 2026-11-19 |
+| 14 | [Platform Administration, Subscriptions & Billing](phases/PHASE_14_PLATFORM_ADMIN_BILLING.md) | v1.1 | 9 | 🟦 In progress | |
 | 15 | [External Integrations & Localisation](phases/PHASE_15_INTEGRATIONS_LOCALISATION.md) | v1.2 | 8 | ⬜ Not started | |
 | 16 | [Final Hardening, Documentation & Release (Project complete)](phases/PHASE_16_FINAL_HARDENING_RELEASE.md) | v1.2 final | 8 | ⬜ Not started | |
 
@@ -256,7 +256,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P13-T06 — Exports (reports queue): XLSX (openpyxl) / CSV / PDF
 - [x] P13-T07 — AI quality monitoring: scheduled `ai_quality_reports`
 - [x] P13-T08 — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data
-- [ ] P13-EXIT — All exit criteria verified with evidence
+- [x] P13-EXIT — All exit criteria verified with evidence
 
 ### Phase 14 — Platform Administration, Subscriptions & Billing  (`phases/PHASE_14_PLATFORM_ADMIN_BILLING.md`)
 - [ ] P14-T01 — Admin console completion: `/admin/dashboard` (tenants, active vacancies, applications/day, queue health, error …
@@ -520,6 +520,21 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
   counted as "ever reached" so the funnel never widens.
 - **Follow-ups:** Playwright hiring journey on staging; HR UI not browser-verified locally.
 
+### Phase 13 — Consent-Based Talent Pool, Advanced Analytics & Exports (closed 2026-11-19)
+- **Built:** `apps.talentpool` (per-employer opt-in tied to a `talent_pool` consent record, only
+  employers applied to, 12-month period with reminder 30 days before and expiry, leave/delete,
+  erasure; opt-in at submit and on the privacy page; HR search with PostgreSQL FTS + skill,
+  qualification and tag filters over consented members only, tags, invite to apply);
+  `apps.analytics` (time to review/shortlist/hire, funnel conversion, UTM sources, completion and
+  question drop-off, CV processing quality, AI-human agreement and override rates, clarification
+  response rates; nightly + on-demand snapshot; CSV/XLSX/PDF exports with blind option, 15-minute
+  links, audit); `/hr/talent-pool` and `/hr/reports` pages; AI quality monitoring (override alerts
+  above 30 %, platform drift indicators, `ai_quality_report`).
+- **Deviations:** analytics snapshots are a tenant table, not PostgreSQL materialised views
+  (materialised views bypass RLS); diversity monitoring not built (ADR-031, D-10); openpyxl added.
+- **Follow-ups:** reports and talent pool pages not browser-verified locally (check on staging);
+  platform admin UI for drift indicators (API only).
+
 ## Deviations from spec
 | Date | Phase/Task | Deviation | Reason | ADR |
 |---|---|---|---|---|
@@ -736,3 +751,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P13-T06 | ExportJob (RLS) requested via POST /hr/exports (reports.export = admin/HR manager), built on the reports queue from the outbox: applicants of a vacancy (visibility + conflicts respected, blind option drops names/contacts, AI band labelled) or the recruitment report; CSV (BOM) / XLSX (openpyxl) / PDF (PyMuPDF Story, escaped); every text cell through csv_safe (EC-PRV-08, also XLSX); files 24 h then deleted (hourly sweep), POST download returns a 15-minute presigned link; requested/downloaded audited; export panel on /hr/reports with polling; tests + registry endpoints | none |
 | 2026-11-19 | Impl | P13-T07 | apps/screening/monitoring.py: daily override alerts per vacancy (30-day window, >30% with >=10 decisions, HR managers + admins, deduped per week, audited, advice only; notification ai_override_alert); weekly platform drift indicators stored as the platform AIQualityReport row (parse failure rate per week, score/band distribution per engine version, shift flags between the two latest versions, audited when flagged); GET /api/v1/platform/ai/quality/ (platform staff); manage.py ai_quality_report; beat entries on the reports queue; tests | Platform admin UI for drift indicators (admin area) - API only for now |
 | 2026-11-19 | Impl | P13-T08 | tests/integration/test_phase13_boundaries.py: cross-employer consent boundary end to end (join only applied employers, other employer never finds the person by skill or name, no CV id/filename/email in results, CV download refused, leave/erasure end membership) + report export without personal data + report funnel reconciles with the dashboard funnel; plus the T01-T07 suites (consent, search, analytics reconciliation, exports escaping/permissions, monitoring) | none |
+| 2026-11-19 | Close | P13-EXIT | Phase 13 closed: consent boundaries, report reconciliation and export safety proven by tests; full backend suite 2897 passed, 2 skipped; CI run 44506354495 on d66a298 | Browser checks of /hr/reports and /hr/talent-pool on staging |
