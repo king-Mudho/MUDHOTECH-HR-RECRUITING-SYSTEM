@@ -9,6 +9,7 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/forms/confirm-dialog";
 
 import { CandidateClarifications, CandidateMessages } from "./conversation";
+import { CandidateInterviews, CandidateOffers } from "./hiring";
 import { EmptyState, ErrorState } from "@/components/states/states";
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { StatusBadge } from "@/components/states/status-badge";
@@ -228,6 +229,8 @@ export function CandidateApplicationDetail({ id }: { id: string }) {
 
       {a.status !== "draft" ? (
         <>
+          <CandidateOffers applicationId={id} />
+          <CandidateInterviews applicationId={id} />
           <CandidateClarifications applicationId={id} />
           <CandidateMessages
             applicationId={id}

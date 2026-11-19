@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { addDays, groupByDay, weekStart, type Interview } from "@/features/interviews/api";
+import {
+  acceptSchema,
+  canRespond,
+  openSlots,
+  type CandidateInterview,
+} from "@/features/candidates/components/hiring";
 import { offerActions } from "@/features/offers/api";
 
 function iv(id: string, starts_at: string | null): Interview {
@@ -76,5 +82,61 @@ describe("offer actions by role and state", () => {
     expect(offerActions({ status: "approved", hire_recorded: false }, "hiring_manager").issue).toBe(
       false,
     );
+  });
+});
+
+describe("candidate interview and offer helpers", () => {
+  const now = new Date("2026-11-19T10:00:00Z");
+
+  it("only free future slots of a proposed interview can be picked, earliest first", () => {
+    const base = iv("x", null) as unknown as CandidateInterview;
+    const interview = {
+      ...base,
+      slots: [
+        {
+          id: "late",
+          starts_at: "2026-11-21T09:00:00Z",
+          ends_at: "2026-11-21T10:00:00Z",
+          booked: false,
+        },
+        {
+          id: "past",
+          starts_at: "2026-11-18T09:00:00Z",
+          ends_at: "2026-11-18T10:00:00Z",
+          booked: false,
+        },
+        {
+          id: "taken",
+          starts_at: "2026-11-20T09:00:00Z",
+          ends_at: "2026-11-20T10:00:00Z",
+          booked: true,
+        },
+        {
+          id: "soon",
+          starts_at: "2026-11-20T08:00:00Z",
+          ends_at: "2026-11-20T09:00:00Z",
+          booked: false,
+        },
+      ],
+    };
+    expect(openSlots(interview, now).map((s) => s.id)).toEqual(["soon", "late"]);
+    expect(openSlots({ ...interview, status: "scheduled" }, now)).toEqual([]);
+  });
+
+  it("an offer can be answered only while issued and not expired", () => {
+    expect(canRespond({ status: "issued", expires_at: "2026-11-20T00:00:00Z" }, now)).toBe(true);
+    expect(canRespond({ status: "issued", expires_at: "2026-11-19T09:59:00Z" }, now)).toBe(false);
+    expect(canRespond({ status: "accepted", expires_at: "2026-11-20T00:00:00Z" }, now)).toBe(false);
+  });
+
+  it("acceptance needs a typed name and the ticked statement", () => {
+    const empty = acceptSchema.safeParse({ typed_name: " ", agree: false, counter_offer_note: "" });
+    expect(empty.success).toBe(false);
+    const paths = empty.error!.issues.map((i) => i.path[0]);
+    expect(paths).toEqual(expect.arrayContaining(["typed_name", "agree"]));
+    expect(
+      acceptSchema.safeParse({ typed_name: "Tariro Moyo", agree: true, counter_offer_note: "" })
+        .success,
+    ).toBe(true);
   });
 });

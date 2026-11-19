@@ -133,7 +133,8 @@
     "invalidKey": "Use lowercase letters, numbers and dashes.",
     "twoOptions": "Add at least two options.",
     "tooLong": "This is too long.",
-    "correctionEmpty": "Tell us what should change, or tick that this item is wrong."
+    "correctionEmpty": "Tell us what should change, or tick that this item is wrong.",
+    "mustAgreeOffer": "Tick the statement to accept the offer."
   },
   "forms": {
     "errorSummaryTitle": "Please fix the following:",
@@ -2636,6 +2637,71 @@
       "nobody": "There are no remaining open applications for this vacancy.",
       "failed": "The list changed or the request failed. Review it again.",
       "forbidden": "Only HR managers can close out a vacancy."
+    }
+  },
+  "candidateHiring": {
+    "interviews": {
+      "title": "Interviews",
+      "failed": "That didn't work. Please try again.",
+      "duration": "{minutes} minutes",
+      "where": "Where: {location}",
+      "join": "Join the video call",
+      "note": "Note from the employer: {note}",
+      "chooseTime": "Choose a time that suits you",
+      "timezone": "Times are shown in {zone}.",
+      "noSlots": "None of the offered times are still free. The employer has been asked to suggest new ones; you can also send them a message below.",
+      "addToCalendar": "Add to calendar",
+      "askToMove": "Need a different time? Send a message",
+      "mode": {
+        "video": "Video call",
+        "in_person": "In person",
+        "phone": "Phone call"
+      },
+      "status": {
+        "proposed": "Choose a time",
+        "scheduled": "Booked",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "no_show": "Missed"
+      }
+    },
+    "offer": {
+      "title": "Job offer",
+      "failed": "That didn't work. Please try again.",
+      "salary": "Salary",
+      "startDate": "Start date",
+      "contract": "Contract",
+      "respondBy": "Please respond by",
+      "conditions": "Conditions",
+      "letter": "Download the offer letter (PDF)",
+      "acceptedNote": "You accepted this offer. The employer will contact you about next steps.",
+      "expiredNote": "The time to respond to this offer has passed. Send the employer a message if you are still interested.",
+      "accept": "Accept the offer",
+      "decline": "Decline the offer",
+      "declineTitle": "Decline this offer?",
+      "declineBody": "The employer is told straight away. You can add a reason if you like; it is optional.",
+      "acceptTitle": "Accept the offer",
+      "typedName": "Your full name",
+      "typedNameHelp": "Type your full name exactly as it appears on your account. This is your electronic signature.",
+      "agreeLabel": "Acceptance statement",
+      "defaultStatement": "I accept this offer on the terms set out above and in the offer letter.",
+      "counterNote": "Anything you want the employer to know (optional)",
+      "counterNoteHelp": "For example a question about the start date. Accepting is not conditional on this note.",
+      "confirmAccept": "Sign and accept",
+      "cancel": "Not now",
+      "period": {
+        "month": "per month",
+        "year": "per year",
+        "day": "per day",
+        "hour": "per hour"
+      },
+      "status": {
+        "issued": "Waiting for your answer",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "expired": "Expired",
+        "withdrawn": "Withdrawn by the employer"
+      }
     }
   }
 }
