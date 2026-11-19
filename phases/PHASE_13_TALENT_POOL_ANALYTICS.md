@@ -10,7 +10,7 @@
 - [x] **P13-T04** — Optional voluntary diversity monitoring module (default OFF; separate form after submission, never visible to reviewers, aggregate-only with k ≥ 10 suppression) — only if owner enables (record ADR).
 - [x] **P13-T05** — Reports UI `/hr/reports` with charts (accessible, table alternatives; follow dataviz guidance), date/department/vacancy filters, drill-down.
 - [x] **P13-T06** — Exports (reports queue): XLSX (openpyxl) / CSV / PDF; permission-checked, formula-injection-safe, PII minimisation options (blind export), expiring links (15 min), audit (EC-PRV-08).
-- [ ] **P13-T07** — AI quality monitoring: scheduled `ai_quality_reports`; alert to HR manager when vacancy override rate > 30% (suggest rubric review); platform-level drift indicators (parse failure trends, score distribution shifts by engine version).
+- [x] **P13-T07** — AI quality monitoring: scheduled `ai_quality_reports`; alert to HR manager when vacancy override rate > 30% (suggest rubric review); platform-level drift indicators (parse failure trends, score distribution shifts by engine version).
 - [ ] **P13-T08** — Tests: consent boundaries, export permissions & escaping, analytics reconciliation against raw data.
 
 ## Exit criteria

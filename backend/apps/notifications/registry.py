@@ -37,6 +37,9 @@ SAMPLES: dict[str, str] = {
     "application_url": "https://mhrs.example/candidate/applications/42",
     "start_date": "1 December 2026",
     "expires_on": "19 December 2026",
+    "override_rate": "42%",
+    "decisions": "24",
+    "report_url": "https://mhrs.example/hr/reports",
     "job_url": "https://mhrs.example/jobs/software-developer",
     "document_name": "cv.pdf",
     "reason": "This file didn't pass our security check.",
@@ -336,6 +339,12 @@ _KINDS = [
         "An employer whose talent pool you joined invites you to apply",
         "candidate",
         ("organisation_name", "job_title", "job_url", "privacy_url"),
+    ),
+    NotificationKind(
+        "ai_override_alert",
+        "HR decisions often go against the AI band for a vacancy (rubric review suggested)",
+        "staff",
+        ("organisation_name", "job_title", "override_rate", "decisions", "report_url"),
     ),
     NotificationKind(
         "hired_welcome",

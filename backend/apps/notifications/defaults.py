@@ -424,6 +424,20 @@ Applying is entirely up to you, and you apply in the usual way.
 You can leave the talent pool at any time: [manage your choices]({{ privacy_url }})""",
         "{{ organisation_name }} invites you to apply for {{ job_title }}.",
     ),
+    "ai_override_alert": DefaultTemplate(
+        "Rubric review suggested: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+Over the last 30 days, {{ override_rate }} of {{ decisions }} shortlist decisions for
+**{{ job_title }}** went against the AI band. That usually means the rubric does not match what
+your team is looking for.
+
+Consider reviewing the vacancy's criteria and weights. Nothing changes automatically: people keep
+making every decision.
+
+[Open the reports]({{ report_url }})""",
+        "{{ override_rate }} of decisions for {{ job_title }} went against the AI band.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},

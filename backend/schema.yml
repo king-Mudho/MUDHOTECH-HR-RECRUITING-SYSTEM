@@ -6951,6 +6951,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/AIGovernance'
           description: ''
+  /api/v1/platform/ai/quality/:
+    get:
+      operationId: platform_ai_quality
+      description: 'P13-T07: platform drift indicators (aggregates only).'
+      tags:
+      - platform
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIDrift'
+          description: ''
   /api/v1/platform/organisations/:
     get:
       operationId: platform_organisations_list
@@ -7577,6 +7592,34 @@ components:
       - evaluations
       - override_rate
       - overrides
+    AIDrift:
+      type: object
+      properties:
+        window_days:
+          type: integer
+        computed_at:
+          type: string
+          format: date-time
+        parse_failure_trend:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        engine_versions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        latest_shift:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      required:
+      - computed_at
+      - engine_versions
+      - latest_shift
+      - parse_failure_trend
+      - window_days
     AIGovernance:
       type: object
       properties:
@@ -11729,6 +11772,7 @@ components:
       - title
     KeyEnum:
       enum:
+      - ai_override_alert
       - application_received
       - application_withdrawn_confirmation
       - clarification_answered
@@ -11767,6 +11811,7 @@ components:
       - talent_pool_reconfirm
       type: string
       description: |-
+        * `ai_override_alert` - ai_override_alert
         * `application_received` - application_received
         * `application_withdrawn_confirmation` - application_withdrawn_confirmation
         * `clarification_answered` - clarification_answered

@@ -260,6 +260,7 @@ CELERY_TASK_QUEUES = [
 CELERY_TASK_ROUTES = {
     "apps.documents.*": {"queue": "documents"},
     "apps.resumes.*": {"queue": "documents"},
+    "apps.screening.tasks.ai_quality_*": {"queue": "reports"},
     "apps.screening.*": {"queue": "ai"},
     "apps.notifications.*": {"queue": "notifications"},
     "apps.messaging.*": {"queue": "notifications"},
@@ -316,6 +317,16 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.interviews.tasks.send_interview_reminders",
         "schedule": timedelta(minutes=5),
         "options": {"expires": 240},
+    },
+    "ai-quality-override-alerts": {
+        "task": "apps.screening.tasks.ai_quality_override_alerts",
+        "schedule": crontab(hour=7, minute=0),
+        "options": {"expires": 3600 * 6},
+    },
+    "ai-quality-platform-weekly": {
+        "task": "apps.screening.tasks.ai_quality_platform_report",
+        "schedule": crontab(hour=3, minute=0, day_of_week="mon"),
+        "options": {"expires": 3600 * 12},
     },
     "exports-expiry": {
         "task": "apps.analytics.tasks.expire_exports",

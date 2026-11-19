@@ -3130,6 +3130,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/ai/quality/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description P13-T07: platform drift indicators (aggregates only). */
+        get: operations["platform_ai_quality"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/platform/organisations/": {
         parameters: {
             query?: never;
@@ -3486,6 +3503,20 @@ export interface components {
             /** Format: double */
             claim_verification_override_rate: number | null;
             evaluations: number;
+        };
+        AIDrift: {
+            window_days: number;
+            /** Format: date-time */
+            computed_at: string;
+            parse_failure_trend: {
+                [key: string]: unknown;
+            }[];
+            engine_versions: {
+                [key: string]: unknown;
+            }[];
+            latest_shift: {
+                [key: string]: unknown;
+            } | null;
         };
         AIGovernance: {
             platform_enabled: boolean;
@@ -5080,7 +5111,8 @@ export interface components {
             change_note?: string;
         };
         /**
-         * @description * `application_received` - application_received
+         * @description * `ai_override_alert` - ai_override_alert
+         *     * `application_received` - application_received
          *     * `application_withdrawn_confirmation` - application_withdrawn_confirmation
          *     * `clarification_answered` - clarification_answered
          *     * `clarification_expired` - clarification_expired
@@ -5118,7 +5150,7 @@ export interface components {
          *     * `talent_pool_reconfirm` - talent_pool_reconfirm
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
+        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -13057,6 +13089,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AIGovernance"];
+                };
+            };
+        };
+    };
+    platform_ai_quality: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AIDrift"];
                 };
             };
         };

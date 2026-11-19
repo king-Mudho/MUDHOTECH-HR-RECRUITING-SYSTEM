@@ -122,3 +122,23 @@ class PlatformOrgAIView(APIView):
             reason=data.validated_data["reason"],
         )
         return Response(AIGovernanceSerializer(_state()).data)
+
+
+class AIDriftSerializer(serializers.Serializer):
+    window_days = serializers.IntegerField()
+    computed_at = serializers.DateTimeField()
+    parse_failure_trend = serializers.ListField(child=serializers.DictField())
+    engine_versions = serializers.ListField(child=serializers.DictField())
+    latest_shift = serializers.DictField(allow_null=True)
+
+
+class PlatformAIQualityView(APIView):
+    """P13-T07: platform drift indicators (aggregates only)."""
+
+    permission_classes = [IsPlatformStaff]
+
+    @extend_schema(operation_id="platform_ai_quality", responses=AIDriftSerializer)
+    def get(self, request: Request) -> Response:
+        from ..monitoring import latest_platform_report
+
+        return Response(AIDriftSerializer(latest_platform_report()).data)

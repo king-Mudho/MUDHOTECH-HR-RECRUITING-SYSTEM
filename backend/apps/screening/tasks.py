@@ -86,3 +86,19 @@ def dispatch_run(run_id: str, application_ids: list[str]) -> int:
 def on_clarification_answered(event: OutboxEvent) -> None:
     if settings.SCREENING_AUTOSTART:
         evaluate_application.delay(event.payload["application_id"], Trigger.CLARIFICATION)
+
+
+@shared_task(name="apps.screening.tasks.ai_quality_override_alerts", base=BaseTask)
+def ai_quality_override_alerts() -> int:
+    """P13-T07: daily - alert HR when a vacancy's override rate is above 30 %."""
+    from . import monitoring
+
+    return monitoring.check_override_alerts()
+
+
+@shared_task(name="apps.screening.tasks.ai_quality_platform_report", base=BaseTask)
+def ai_quality_platform_report() -> str:
+    """P13-T07: weekly - platform drift indicators (parse failures, score shifts by version)."""
+    from . import monitoring
+
+    return str(monitoring.store_platform_report().pk)
