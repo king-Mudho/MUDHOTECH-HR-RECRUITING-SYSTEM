@@ -36,6 +36,7 @@ api_v1_patterns = [
     path("", include("apps.interviews.api.urls")),
     path("", include("apps.offers.api.urls")),
     path("", include("apps.talentpool.api.urls")),
+    path("", include("apps.analytics.api.urls")),
 ]
 
 urlpatterns = [

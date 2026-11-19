@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "apps.interviews",
     "apps.offers",
     "apps.talentpool",
+    "apps.analytics",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -315,6 +316,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.interviews.tasks.send_interview_reminders",
         "schedule": timedelta(minutes=5),
         "options": {"expires": 240},
+    },
+    "analytics-nightly": {
+        "task": "apps.analytics.tasks.refresh_analytics",
+        "schedule": crontab(hour=2, minute=30),
+        "options": {"expires": 3600 * 6},
     },
     "talent-pool-daily": {
         "task": "apps.talentpool.tasks.talent_pool_daily",

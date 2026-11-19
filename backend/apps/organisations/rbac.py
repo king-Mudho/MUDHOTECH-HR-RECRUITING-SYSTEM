@@ -63,6 +63,8 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     # consent-based talent pool (P13-T02): search, tag and invite within the own organisation
     "talentpool.search": RECRUITING,
     "talentpool.invite": RECRUITING,
+    # advanced analytics and exports (P13-T03/T06)
+    "reports.view": ADMIN_HR,
 }
 
 

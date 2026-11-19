@@ -2166,6 +2166,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/reports/recruitment/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_reports_recruitment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/reports/recruitment/refresh/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_reports_recruitment_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/saved-views/": {
         parameters: {
             query?: never;
@@ -3394,6 +3426,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AIAgreement: {
+            decisions: number;
+            overrides: number;
+            /** Format: double */
+            override_rate: number | null;
+            /** Format: double */
+            agreement_rate: number | null;
+            by_band: components["schemas"]["BandOverride"][];
+            by_job: components["schemas"]["JobOverride"][];
+            /** Format: double */
+            claim_verification_override_rate: number | null;
+            evaluations: number;
+        };
         AIGovernance: {
             platform_enabled: boolean;
             disabled_organisations: components["schemas"]["DisabledOrg"][];
@@ -3620,6 +3665,13 @@ export interface components {
         BandCount: {
             band: string;
             count: number;
+        };
+        BandOverride: {
+            decisions: number;
+            overrides: number;
+            /** Format: double */
+            override_rate: number | null;
+            band: string;
         };
         /** @enum {unknown} */
         BlankEnum: "";
@@ -3864,6 +3916,16 @@ export interface components {
             prompt: string;
             /** @default false */
             allow_upload: boolean;
+        };
+        ClarificationStats: {
+            total: number;
+            answered: number;
+            expired: number;
+            open: number;
+            cancelled: number;
+            /** Format: double */
+            response_rate: number | null;
+            time_to_answer: components["schemas"]["DurationStats"];
         };
         /**
          * @description * `open` - Waiting for the candidate
@@ -4191,6 +4253,15 @@ export interface components {
         DuplicatePolicyEnum: "one_active" | "allow_resubmit_replace" | "allow_multiple";
         DuplicateRequest: {
             title?: string;
+        };
+        DurationStats: {
+            count: number;
+            /** Format: double */
+            median_hours: number | null;
+            /** Format: double */
+            mean_hours: number | null;
+            /** Format: double */
+            p90_hours: number | null;
         };
         /** @description Shared behaviour: ``source`` is read-only (CV imports go through a confirmation flow). */
         Education: {
@@ -4844,6 +4915,14 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
+        JobOverride: {
+            decisions: number;
+            overrides: number;
+            /** Format: double */
+            override_rate: number | null;
+            /** Format: uuid */
+            job_id: string;
+        };
         /**
          * @description * `draft` - Draft
          *     * `in_review` - In review
@@ -5294,6 +5373,12 @@ export interface components {
          * @enum {string}
          */
         OrganisationStatusEnum: "pending_verification" | "active" | "suspended" | "closed";
+        /**
+         * @description * `snapshot` - snapshot
+         *     * `live` - live
+         * @enum {string}
+         */
+        OriginEnum: "snapshot" | "live";
         PaginatedAssignmentList: {
             /** @example 123 */
             count: number;
@@ -5812,6 +5897,18 @@ export interface components {
             subject?: string;
             body_md?: string;
         };
+        ProcessingStats: {
+            extraction_runs: number;
+            /** Format: double */
+            parse_failure_rate: number | null;
+            /** Format: double */
+            partial_rate: number | null;
+            /** Format: double */
+            ocr_rate: number | null;
+            /** Format: double */
+            mean_extraction_seconds: number | null;
+            submission_to_evaluation: components["schemas"]["DurationStats"];
+        };
         Profile: {
             /** Format: uuid */
             readonly id: string;
@@ -6026,6 +6123,17 @@ export interface components {
             protected_exception_reason: string;
             options: components["schemas"]["QuestionOptionInput"][];
         };
+        QuestionRow: {
+            /** Format: uuid */
+            question_id: string;
+            key: string;
+            prompt: string;
+            required: boolean;
+            answered: number;
+            started: number;
+            /** Format: double */
+            drop_off: number | null;
+        };
         QuestionTemplate: {
             key: string;
             prompt: string;
@@ -6034,6 +6142,13 @@ export interface components {
         QuestionnaireInputRequest: {
             lock_version?: number;
             questions: components["schemas"]["QuestionInputRequest"][];
+        };
+        QuestionnaireStats: {
+            started: number;
+            submitted: number;
+            unfinished: number;
+            unfinished_by_step: components["schemas"]["StepRow"][];
+            questions: components["schemas"]["QuestionRow"][];
         };
         Readiness: {
             ready: boolean;
@@ -6063,6 +6178,20 @@ export interface components {
          * @enum {string}
          */
         RecommendationEnum: "strong_yes" | "yes" | "no" | "strong_no";
+        RecruitmentReport: {
+            scope: components["schemas"]["ReportScope"];
+            /** Format: date-time */
+            computed_at: string;
+            origin: components["schemas"]["OriginEnum"];
+            applications: number;
+            timing: components["schemas"]["Timing"];
+            funnel: components["schemas"]["ReportFunnel"];
+            sources: components["schemas"]["SourceRow"][];
+            questionnaire: components["schemas"]["QuestionnaireStats"];
+            processing: components["schemas"]["ProcessingStats"];
+            ai_agreement: components["schemas"]["AIAgreement"];
+            clarifications: components["schemas"]["ClarificationStats"];
+        };
         RegistryEntry: {
             /** Format: uuid */
             readonly id: string;
@@ -6092,6 +6221,26 @@ export interface components {
             subject: string;
             text: string;
             html: string;
+        };
+        ReportFunnel: {
+            stages: components["schemas"]["ReportFunnelStage"][];
+            withdrawn: number;
+        };
+        ReportFunnelStage: {
+            stage: string;
+            count: number;
+            /** Format: double */
+            conversion: number | null;
+        };
+        ReportScope: {
+            /** Format: date */
+            to: string;
+            /** Format: uuid */
+            department: string | null;
+            /** Format: uuid */
+            job: string | null;
+            /** Format: date */
+            from: string;
         };
         RequestAccessRequest: {
             /** Format: uuid */
@@ -6587,6 +6736,11 @@ export interface components {
          * @enum {string}
          */
         SourceEnum: "manual" | "cv_import";
+        SourceRow: {
+            source: string;
+            applications: number;
+            shortlisted: number;
+        };
         StaffRightsRequest: {
             /** Format: uuid */
             id: string;
@@ -6638,6 +6792,10 @@ export interface components {
         StartRunScopeEnum: "all" | "pending" | "failed" | "selected";
         StatementRequest: {
             statement: string;
+        };
+        StepRow: {
+            step: string;
+            unfinished: number;
         };
         SubmitRequest: {
             accept_privacy: boolean;
@@ -6770,6 +6928,11 @@ export interface components {
             /** Format: date-time */
             at: string;
             note: string;
+        };
+        Timing: {
+            time_to_review: components["schemas"]["DurationStats"];
+            time_to_shortlist: components["schemas"]["DurationStats"];
+            time_to_hire: components["schemas"]["DurationStats"];
         };
         TransitionRequest: {
             to_status: components["schemas"]["ApplicationStatusEnum"];
@@ -10944,6 +11107,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffRightsRequest"];
+                };
+            };
+        };
+    };
+    hr_reports_recruitment: {
+        parameters: {
+            query?: {
+                department?: string;
+                /** @description Local date, inclusive (default: 90 days) */
+                from?: string;
+                job?: string;
+                /** @description Local date, inclusive (default: today) */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecruitmentReport"];
+                };
+            };
+        };
+    };
+    hr_reports_recruitment_refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecruitmentReport"];
                 };
             };
         };

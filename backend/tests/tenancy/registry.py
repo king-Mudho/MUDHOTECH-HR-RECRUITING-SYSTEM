@@ -315,6 +315,10 @@ from tests.tenancy.talentpool_endpoints import TALENT_POOL_ENDPOINTS  # noqa: E4
 
 REGISTRY.extend(TALENT_POOL_ENDPOINTS)
 
+from tests.tenancy.analytics_endpoints import ANALYTICS_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(ANALYTICS_ENDPOINTS)
+
 
 def register(endpoint: Endpoint) -> Endpoint:
     REGISTRY.append(endpoint)

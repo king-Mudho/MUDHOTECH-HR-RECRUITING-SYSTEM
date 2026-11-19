@@ -4765,6 +4765,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffRightsRequest'
           description: ''
+  /api/v1/hr/reports/recruitment/:
+    get:
+      operationId: hr_reports_recruitment
+      parameters:
+      - in: query
+        name: department
+        schema:
+          type: string
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: 'Local date, inclusive (default: 90 days)'
+      - in: query
+        name: job
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: 'Local date, inclusive (default: today)'
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruitmentReport'
+          description: ''
+  /api/v1/hr/reports/recruitment/refresh/:
+    post:
+      operationId: hr_reports_recruitment_refresh
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecruitmentReport'
+          description: ''
   /api/v1/hr/saved-views/:
     get:
       operationId: hr_saved_views
@@ -7409,6 +7456,44 @@ paths:
           description: ''
 components:
   schemas:
+    AIAgreement:
+      type: object
+      properties:
+        decisions:
+          type: integer
+        overrides:
+          type: integer
+        override_rate:
+          type: number
+          format: double
+          nullable: true
+        agreement_rate:
+          type: number
+          format: double
+          nullable: true
+        by_band:
+          type: array
+          items:
+            $ref: '#/components/schemas/BandOverride'
+        by_job:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobOverride'
+        claim_verification_override_rate:
+          type: number
+          format: double
+          nullable: true
+        evaluations:
+          type: integer
+      required:
+      - agreement_rate
+      - by_band
+      - by_job
+      - claim_verification_override_rate
+      - decisions
+      - evaluations
+      - override_rate
+      - overrides
     AIGovernance:
       type: object
       properties:
@@ -7976,6 +8061,24 @@ components:
       required:
       - band
       - count
+    BandOverride:
+      type: object
+      properties:
+        decisions:
+          type: integer
+        overrides:
+          type: integer
+        override_rate:
+          type: number
+          format: double
+          nullable: true
+        band:
+          type: string
+      required:
+      - band
+      - decisions
+      - override_rate
+      - overrides
     BlankEnum:
       enum:
       - ''
@@ -8579,6 +8682,33 @@ components:
           default: false
       required:
       - prompt
+    ClarificationStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        answered:
+          type: integer
+        expired:
+          type: integer
+        open:
+          type: integer
+        cancelled:
+          type: integer
+        response_rate:
+          type: number
+          format: double
+          nullable: true
+        time_to_answer:
+          $ref: '#/components/schemas/DurationStats'
+      required:
+      - answered
+      - cancelled
+      - expired
+      - open
+      - response_rate
+      - time_to_answer
+      - total
     ClarificationStatusEnum:
       enum:
       - open
@@ -9395,6 +9525,28 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    DurationStats:
+      type: object
+      properties:
+        count:
+          type: integer
+        median_hours:
+          type: number
+          format: double
+          nullable: true
+        mean_hours:
+          type: number
+          format: double
+          nullable: true
+        p90_hours:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - count
+      - mean_hours
+      - median_hours
+      - p90_hours
     Education:
       type: object
       description: 'Shared behaviour: ``source`` is read-only (CV imports go through
@@ -11241,6 +11393,25 @@ components:
       - reason
       - to_status
       - version_number
+    JobOverride:
+      type: object
+      properties:
+        decisions:
+          type: integer
+        overrides:
+          type: integer
+        override_rate:
+          type: number
+          format: double
+          nullable: true
+        job_id:
+          type: string
+          format: uuid
+      required:
+      - decisions
+      - job_id
+      - override_rate
+      - overrides
     JobStatusEnum:
       enum:
       - draft
@@ -12419,6 +12590,14 @@ components:
         * `active` - Active
         * `suspended` - Suspended
         * `closed` - Closed
+    OriginEnum:
+      enum:
+      - snapshot
+      - live
+      type: string
+      description: |-
+        * `snapshot` - snapshot
+        * `live` - live
     PaginatedAssignmentList:
       type: object
       required:
@@ -13557,6 +13736,36 @@ components:
           type: string
           minLength: 1
           maxLength: 25000
+    ProcessingStats:
+      type: object
+      properties:
+        extraction_runs:
+          type: integer
+        parse_failure_rate:
+          type: number
+          format: double
+          nullable: true
+        partial_rate:
+          type: number
+          format: double
+          nullable: true
+        ocr_rate:
+          type: number
+          format: double
+          nullable: true
+        mean_extraction_seconds:
+          type: number
+          format: double
+          nullable: true
+        submission_to_evaluation:
+          $ref: '#/components/schemas/DurationStats'
+      required:
+      - extraction_runs
+      - mean_extraction_seconds
+      - ocr_rate
+      - parse_failure_rate
+      - partial_rate
+      - submission_to_evaluation
     Profile:
       type: object
       properties:
@@ -14189,6 +14398,34 @@ components:
       - scoring
       - section
       - type
+    QuestionRow:
+      type: object
+      properties:
+        question_id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        prompt:
+          type: string
+        required:
+          type: boolean
+        answered:
+          type: integer
+        started:
+          type: integer
+        drop_off:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - answered
+      - drop_off
+      - key
+      - prompt
+      - question_id
+      - required
+      - started
     QuestionTemplate:
       type: object
       properties:
@@ -14214,6 +14451,29 @@ components:
             $ref: '#/components/schemas/QuestionInputRequest'
       required:
       - questions
+    QuestionnaireStats:
+      type: object
+      properties:
+        started:
+          type: integer
+        submitted:
+          type: integer
+        unfinished:
+          type: integer
+        unfinished_by_step:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepRow'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionRow'
+      required:
+      - questions
+      - started
+      - submitted
+      - unfinished
+      - unfinished_by_step
     Readiness:
       type: object
       properties:
@@ -14273,6 +14533,46 @@ components:
         * `yes` - Yes
         * `no` - No
         * `strong_no` - Strong no
+    RecruitmentReport:
+      type: object
+      properties:
+        scope:
+          $ref: '#/components/schemas/ReportScope'
+        computed_at:
+          type: string
+          format: date-time
+        origin:
+          $ref: '#/components/schemas/OriginEnum'
+        applications:
+          type: integer
+        timing:
+          $ref: '#/components/schemas/Timing'
+        funnel:
+          $ref: '#/components/schemas/ReportFunnel'
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceRow'
+        questionnaire:
+          $ref: '#/components/schemas/QuestionnaireStats'
+        processing:
+          $ref: '#/components/schemas/ProcessingStats'
+        ai_agreement:
+          $ref: '#/components/schemas/AIAgreement'
+        clarifications:
+          $ref: '#/components/schemas/ClarificationStats'
+      required:
+      - ai_agreement
+      - applications
+      - clarifications
+      - computed_at
+      - funnel
+      - origin
+      - processing
+      - questionnaire
+      - scope
+      - sources
+      - timing
     RegistryEntry:
       type: object
       properties:
@@ -14355,6 +14655,55 @@ components:
       - html
       - subject
       - text
+    ReportFunnel:
+      type: object
+      properties:
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportFunnelStage'
+        withdrawn:
+          type: integer
+      required:
+      - stages
+      - withdrawn
+    ReportFunnelStage:
+      type: object
+      properties:
+        stage:
+          type: string
+        count:
+          type: integer
+        conversion:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - conversion
+      - count
+      - stage
+    ReportScope:
+      type: object
+      properties:
+        to:
+          type: string
+          format: date
+        department:
+          type: string
+          format: uuid
+          nullable: true
+        job:
+          type: string
+          format: uuid
+          nullable: true
+        from:
+          type: string
+          format: date
+      required:
+      - department
+      - from
+      - job
+      - to
     RequestAccessRequest:
       type: object
       properties:
@@ -15545,6 +15894,19 @@ components:
       description: |-
         * `manual` - Entered by the candidate
         * `cv_import` - Imported from a CV (confirmed by the candidate)
+    SourceRow:
+      type: object
+      properties:
+        source:
+          type: string
+        applications:
+          type: integer
+        shortlisted:
+          type: integer
+      required:
+      - applications
+      - shortlisted
+      - source
     StaffRightsRequest:
       type: object
       properties:
@@ -15666,6 +16028,16 @@ components:
           maxLength: 4000
       required:
       - statement
+    StepRow:
+      type: object
+      properties:
+        step:
+          type: string
+        unfinished:
+          type: integer
+      required:
+      - step
+      - unfinished
     SubmitRequest:
       type: object
       properties:
@@ -15988,6 +16360,19 @@ components:
       - at
       - note
       - status
+    Timing:
+      type: object
+      properties:
+        time_to_review:
+          $ref: '#/components/schemas/DurationStats'
+        time_to_shortlist:
+          $ref: '#/components/schemas/DurationStats'
+        time_to_hire:
+          $ref: '#/components/schemas/DurationStats'
+      required:
+      - time_to_hire
+      - time_to_review
+      - time_to_shortlist
     TransitionRequest:
       type: object
       properties:
