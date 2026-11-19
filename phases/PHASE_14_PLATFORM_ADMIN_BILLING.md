@@ -12,7 +12,7 @@
 - [x] **P14-T04** — Usage metering (increment in services via outbox consumers), monthly roll-up, usage page for org_admin.
 - [x] **P14-T05** — Invoicing: monthly invoice generation (USD or ZWG with price snapshot (EC-BIL-05)), PDF invoice (MudhoTech Solutions (Pvt) Ltd details, configurable tax/VAT fields), email.
 - [x] **P14-T06** — Paynow integration (official Python SDK or REST): web checkout (cards) + mobile express checkout (EcoCash/OneMoney); result URL handler with hash verification (EC-BIL-01), server-side polling of poll_url with backoff (EC-BIL-02), idempotent payment application, receipts; manual payment recording by platform admin (bank transfer).
-- [ ] **P14-T07** — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible until their deadline (EC-BIL-04), reactivation on payment.
+- [x] **P14-T07** — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible until their deadline (EC-BIL-04), reactivation on payment.
 - [ ] **P14-T08** — Org billing UI `/hr/settings/billing` (plan, usage, invoices, pay now, change plan) and admin plan management.
 - [ ] **P14-T09** — Tests incl. mocked Paynow callbacks (valid/invalid hash, duplicates, pending→paid, failed).
 

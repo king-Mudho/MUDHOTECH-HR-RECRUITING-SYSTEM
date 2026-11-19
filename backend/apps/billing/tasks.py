@@ -41,3 +41,10 @@ def poll_payments() -> dict[str, int]:
     from . import payments
 
     return payments.poll_due()
+
+
+@shared_task(name="apps.billing.tasks.dunning_sweep", base=BaseTask)
+def dunning_sweep() -> dict[str, int]:
+    from . import lifecycle
+
+    return lifecycle.sweep()

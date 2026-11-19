@@ -114,6 +114,7 @@ class InvoicePdfView(APIView):
 
 class PayInvoiceView(APIView):
     permission_classes = [HasOrgAction("billing.manage")]
+    billing_exempt = True  # paying must work while the organisation is read-only
 
     @extend_schema(
         operation_id="hr_billing_invoice_pay",

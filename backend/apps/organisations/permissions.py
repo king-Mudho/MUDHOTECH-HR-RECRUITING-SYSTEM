@@ -67,6 +67,13 @@ class _OrgPermission(BasePermission):
             and not self.allow_writes_when_suspended
         ):
             raise OrgSuspendedError()
+        if request.method not in SAFE_METHODS and not getattr(view, "billing_exempt", False):
+            # P14-T07 / EC-BIL-04: an unpaid subscription past its grace period is read-only for
+            # staff (billing endpoints stay usable so the invoice can be paid). Candidate and
+            # public endpoints never use this permission, so they are never affected.
+            from apps.billing.entitlements import assert_writable
+
+            assert_writable(membership.organisation_id)
         return True
 
 

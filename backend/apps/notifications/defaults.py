@@ -460,6 +460,57 @@ Thank you. We received {{ amount }} for invoice **{{ invoice_number }}**
 [Open plan & billing]({{ billing_url }})""",
         "Payment of {{ amount }} received for invoice {{ invoice_number }}.",
     ),
+    "invoice_due_soon": DefaultTemplate(
+        "Invoice {{ invoice_number }} is due on {{ due_date }}",
+        """Hello {{ recipient_name }},
+
+A reminder that invoice **{{ invoice_number }}** ({{ amount }}) is due on {{ due_date }}.
+
+[Pay now]({{ billing_url }})""",
+        "Invoice {{ invoice_number }} ({{ amount }}) is due on {{ due_date }}.",
+    ),
+    "invoice_overdue": DefaultTemplate(
+        "Invoice {{ invoice_number }} is overdue",
+        """Hello {{ recipient_name }},
+
+Invoice **{{ invoice_number }}** ({{ amount }}) is overdue. Everything keeps working until
+{{ grace_date }}; after that your team can still sign in and view data, but cannot make changes
+until the invoice is paid. Published vacancies stay open to candidates until their closing date.
+
+[Pay now]({{ billing_url }})""",
+        "Invoice {{ invoice_number }} is overdue. Pay by {{ grace_date }} to avoid read-only mode.",
+    ),
+    "trial_ending": DefaultTemplate(
+        "Your free trial ends on {{ trial_end }}",
+        """Hello {{ recipient_name }},
+
+Your {{ organisation_name }} free trial ends on {{ trial_end }}. Choose a plan to keep recruiting
+without interruption.
+
+[Choose a plan]({{ billing_url }})""",
+        "Your free trial ends on {{ trial_end }}. Choose a plan to continue.",
+    ),
+    "trial_ended": DefaultTemplate(
+        "Your free trial has ended",
+        """Hello {{ recipient_name }},
+
+Your {{ organisation_name }} free trial has ended. Everything keeps working until {{ grace_date }};
+choose a plan before then to avoid read-only mode. Published vacancies stay open to candidates.
+
+[Choose a plan]({{ billing_url }})""",
+        "Your free trial has ended. Choose a plan by {{ grace_date }}.",
+    ),
+    "subscription_read_only": DefaultTemplate(
+        "{{ organisation_name }} is now read-only",
+        """Hello {{ recipient_name }},
+
+Because payment is overdue, {{ organisation_name }} is now read-only: your team can sign in and
+view data but cannot make changes. Published vacancies stay open to candidates until their closing
+date, and nothing is deleted. Paying reactivates everything immediately.
+
+[Pay now]({{ billing_url }})""",
+        "{{ organisation_name }} is read-only until the overdue invoice is paid.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},

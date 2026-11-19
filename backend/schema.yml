@@ -12696,7 +12696,9 @@ components:
       - interview_reminder
       - interview_rescheduled
       - invitation_staff
+      - invoice_due_soon
       - invoice_issued
+      - invoice_overdue
       - new_message
       - not_selected
       - note_mention
@@ -12716,8 +12718,11 @@ components:
       - rights_request_received
       - rights_request_update
       - shortlisted
+      - subscription_read_only
       - talent_pool_invitation
       - talent_pool_reconfirm
+      - trial_ended
+      - trial_ending
       type: string
       description: |-
         * `ai_override_alert` - ai_override_alert
@@ -12737,7 +12742,9 @@ components:
         * `interview_reminder` - interview_reminder
         * `interview_rescheduled` - interview_rescheduled
         * `invitation_staff` - invitation_staff
+        * `invoice_due_soon` - invoice_due_soon
         * `invoice_issued` - invoice_issued
+        * `invoice_overdue` - invoice_overdue
         * `new_message` - new_message
         * `not_selected` - not_selected
         * `note_mention` - note_mention
@@ -12757,8 +12764,11 @@ components:
         * `rights_request_received` - rights_request_received
         * `rights_request_update` - rights_request_update
         * `shortlisted` - shortlisted
+        * `subscription_read_only` - subscription_read_only
         * `talent_pool_invitation` - talent_pool_invitation
         * `talent_pool_reconfirm` - talent_pool_reconfirm
+        * `trial_ended` - trial_ended
+        * `trial_ending` - trial_ending
     KillSwitchRequest:
       type: object
       properties:

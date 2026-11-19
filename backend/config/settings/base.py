@@ -340,6 +340,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=1),
         "options": {"expires": 50},
     },
+    "billing-dunning-daily": {
+        "task": "apps.billing.tasks.dunning_sweep",
+        "schedule": crontab(hour=6, minute=0),
+        "options": {"expires": 3600 * 6},
+    },
     "billing-invoices-daily": {
         "task": "apps.billing.tasks.issue_due_invoices",
         "schedule": crontab(hour=5, minute=0),
