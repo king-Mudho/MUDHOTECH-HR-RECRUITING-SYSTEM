@@ -333,4 +333,68 @@ Your application is still open unless you hear otherwise; any update will appear
 [View your application]({{ application_url }})""",
         "The interview for {{ job_title }} on {{ interview_when }} was cancelled.",
     ),
+    "offer_issued": DefaultTemplate(
+        "An offer from {{ organisation_name }}: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} has made you an offer for **{{ job_title }}**. The offer letter and its
+terms are in your account, where you can accept or decline it.
+
+Please reply by **{{ deadline }}**.
+
+[See the offer]({{ offer_url }})""",
+        "{{ organisation_name }} made you an offer for {{ job_title }}.",
+    ),
+    "offer_expiring": DefaultTemplate(
+        "Your offer for {{ job_title }} expires soon",
+        """Hello {{ recipient_name }},
+
+This is a reminder that the offer from {{ organisation_name }} for **{{ job_title }}** is open
+until **{{ deadline }}**. You can accept or decline it in your account.
+
+[See the offer]({{ offer_url }})""",
+        "Your offer for {{ job_title }} is open until {{ deadline }}.",
+    ),
+    "offer_withdrawn": DefaultTemplate(
+        "Update on your offer for {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+{{ organisation_name }} has withdrawn the offer for **{{ job_title }}**.
+
+Note from the employer: {{ reason }}
+
+[View your application]({{ application_url }})""",
+        "{{ organisation_name }} withdrew the offer for {{ job_title }}.",
+    ),
+    "offer_accepted": DefaultTemplate(
+        "Offer accepted: {{ job_title }} ({{ reference }})",
+        """Hello {{ recipient_name }},
+
+The candidate for application **{{ reference }}** accepted the offer for **{{ job_title }}**.
+{{ openings_note }}
+
+Record the hire once the start is confirmed.
+
+[Open the offer]({{ offer_url }})""",
+        "Offer accepted for {{ reference }} ({{ job_title }}).",
+    ),
+    "offer_declined": DefaultTemplate(
+        "Offer declined: {{ job_title }} ({{ reference }})",
+        """Hello {{ recipient_name }},
+
+The candidate for application **{{ reference }}** declined the offer for **{{ job_title }}**.
+
+[Open the offer]({{ offer_url }})""",
+        "Offer declined for {{ reference }} ({{ job_title }}).",
+    ),
+    "offer_expired": DefaultTemplate(
+        "Offer expired: {{ job_title }} ({{ reference }})",
+        """Hello {{ recipient_name }},
+
+The offer for application **{{ reference }}** ({{ job_title }}) expired without an answer. You can
+contact the candidate through the application's messages, or issue a new offer.
+
+[Open the offer]({{ offer_url }})""",
+        "The offer for {{ reference }} ({{ job_title }}) expired.",
+    ),
 }

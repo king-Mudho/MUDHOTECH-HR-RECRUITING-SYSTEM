@@ -55,6 +55,11 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "interviews.manage": RECRUITING,
     "interviews.view_all": RECRUITING | {Role.HIRING_MANAGER},
     "interviews.feedback": RECRUITING | {Role.HIRING_MANAGER},
+    # offers and hiring (P12-T04/T05): drafting by recruiters, approving and recording hires by HR
+    "offers.view": RECRUITING | {Role.HIRING_MANAGER},
+    "offers.manage": RECRUITING,
+    "offers.approve": ADMIN_HR,
+    "hires.record": ADMIN_HR,
 }
 
 

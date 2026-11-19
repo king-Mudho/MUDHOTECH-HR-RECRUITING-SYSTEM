@@ -64,6 +64,8 @@ SAMPLES: dict[str, str] = {
     "interview_mode": "Video call",
     "interview_where": "The link is in your account",
     "interview_url": "https://mhrs.example/candidate/applications/42#interviews",
+    "offer_url": "https://mhrs.example/candidate/applications/42#offer",
+    "openings_note": "1 of 1 opening is now filled.",
 }
 
 _KINDS = [
@@ -276,6 +278,48 @@ _KINDS = [
             "reason",
             "application_url",
         ),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_issued",
+        "A job offer is waiting in the candidate's account",
+        "candidate",
+        ("organisation_name", "job_title", "offer_url", "deadline"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_expiring",
+        "Reminder: an offer expires soon (48 hours before)",
+        "candidate",
+        ("organisation_name", "job_title", "offer_url", "deadline"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_withdrawn",
+        "The employer withdrew an offer",
+        "candidate",
+        ("organisation_name", "job_title", "reason", "application_url"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_accepted",
+        "A candidate accepted an offer (HR)",
+        "staff",
+        ("job_title", "reference", "offer_url", "openings_note"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_declined",
+        "A candidate declined an offer (HR)",
+        "staff",
+        ("job_title", "reference", "offer_url"),
+        urgent=True,
+    ),
+    NotificationKind(
+        "offer_expired",
+        "An offer expired without an answer (HR)",
+        "staff",
+        ("job_title", "reference", "offer_url"),
         urgent=True,
     ),
 ]

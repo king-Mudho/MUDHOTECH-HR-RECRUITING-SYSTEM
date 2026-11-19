@@ -61,6 +61,7 @@ POLICY_EDITABLE_FIELDS = (
     "blind_mask_institutions",
     "notification_delay_minutes",
     "hide_ai_from_panelists",
+    "offer_approvals_required",
     "rights_request_sla_days",
 )
 

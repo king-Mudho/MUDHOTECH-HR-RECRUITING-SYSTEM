@@ -9762,6 +9762,12 @@ components:
       - new_message
       - not_selected
       - note_mention
+      - offer_accepted
+      - offer_declined
+      - offer_expired
+      - offer_expiring
+      - offer_issued
+      - offer_withdrawn
       - organisation_closed
       - recruiter_digest
       - recruitment_paused
@@ -9791,6 +9797,12 @@ components:
         * `new_message` - new_message
         * `not_selected` - not_selected
         * `note_mention` - note_mention
+        * `offer_accepted` - offer_accepted
+        * `offer_declined` - offer_declined
+        * `offer_expired` - offer_expired
+        * `offer_expiring` - offer_expiring
+        * `offer_issued` - offer_issued
+        * `offer_withdrawn` - offer_withdrawn
         * `organisation_closed` - organisation_closed
         * `recruiter_digest` - recruiter_digest
         * `recruitment_paused` - recruitment_paused
@@ -11225,6 +11237,10 @@ components:
           minimum: 0
         hide_ai_from_panelists:
           type: boolean
+        offer_approvals_required:
+          type: integer
+          maximum: 5
+          minimum: 1
         rights_request_sla_days:
           type: integer
           maximum: 32767
@@ -11399,6 +11415,10 @@ components:
           minimum: 0
         hide_ai_from_panelists:
           type: boolean
+        offer_approvals_required:
+          type: integer
+          maximum: 5
+          minimum: 1
         rights_request_sla_days:
           type: integer
           maximum: 32767

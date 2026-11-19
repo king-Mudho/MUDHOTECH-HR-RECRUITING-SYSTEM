@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -95,6 +96,9 @@ class OrganisationPolicy(BaseModel):
     blind_mask_institutions = models.BooleanField(default=False)  # P08-T04 (optional)
     notification_delay_minutes = models.PositiveSmallIntegerField(default=15)  # ADR-014
     hide_ai_from_panelists = models.BooleanField(default=True)  # ADR-019
+    offer_approvals_required = models.PositiveSmallIntegerField(  # P12-T04
+        default=1, validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     rights_request_sla_days = models.PositiveSmallIntegerField(default=30)
     upload_limits_mb = models.JSONField(
         default=dict, blank=True, help_text='Per-purpose upload limit in MB, e.g. {"cv": 5}.'

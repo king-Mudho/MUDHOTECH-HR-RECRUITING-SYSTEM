@@ -4173,6 +4173,12 @@ export interface components {
          *     * `new_message` - new_message
          *     * `not_selected` - not_selected
          *     * `note_mention` - note_mention
+         *     * `offer_accepted` - offer_accepted
+         *     * `offer_declined` - offer_declined
+         *     * `offer_expired` - offer_expired
+         *     * `offer_expiring` - offer_expiring
+         *     * `offer_issued` - offer_issued
+         *     * `offer_withdrawn` - offer_withdrawn
          *     * `organisation_closed` - organisation_closed
          *     * `recruiter_digest` - recruiter_digest
          *     * `recruitment_paused` - recruitment_paused
@@ -4184,7 +4190,7 @@ export interface components {
          *     * `shortlisted` - shortlisted
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -4781,6 +4787,7 @@ export interface components {
             blind_mask_institutions?: boolean;
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
+            offer_approvals_required?: number;
             rights_request_sla_days?: number;
         };
         PatchedProfileRequest: {
@@ -4847,6 +4854,7 @@ export interface components {
             blind_mask_institutions?: boolean;
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
+            offer_approvals_required?: number;
             rights_request_sla_days?: number;
         };
         PreviewRequest: {

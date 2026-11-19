@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "apps.screening",
     "apps.shortlisting",
     "apps.interviews",
+    "apps.offers",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -258,6 +259,7 @@ CELERY_TASK_ROUTES = {
     "apps.notifications.*": {"queue": "notifications"},
     "apps.messaging.*": {"queue": "notifications"},
     "apps.interviews.*": {"queue": "notifications"},
+    "apps.offers.*": {"queue": "default"},
     "apps.analytics.*": {"queue": "reports"},
     "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }
@@ -298,6 +300,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.messaging.tasks.clarifications_due",
         "schedule": timedelta(minutes=15),
         "options": {"expires": 800},
+    },
+    "offers-expiry": {
+        "task": "apps.offers.tasks.process_offer_expiry",
+        "schedule": timedelta(minutes=15),
+        "options": {"expires": 600},
     },
     "interview-reminders": {
         "task": "apps.interviews.tasks.send_interview_reminders",
