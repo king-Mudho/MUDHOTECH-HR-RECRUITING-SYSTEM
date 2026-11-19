@@ -15,4 +15,4 @@ def test_generate_erd_covers_domain_apps(tmp_path: Path) -> None:
     for entity in ("APPLICATIONS_APPLICATION", "BILLING_INVOICE", "INTEGRATIONS_WEBHOOKENDPOINT"):
         assert entity in text
     assert "erDiagram" in text and "CORE_TESTAPP" not in text
-    assert '}o--||' in text  # relations are drawn
+    assert "}o--||" in text  # relations are drawn
