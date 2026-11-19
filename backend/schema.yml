@@ -5115,6 +5115,126 @@ paths:
               schema:
                 $ref: '#/components/schemas/ActiveSupport'
           description: ''
+  /api/v1/hr/talent-pool/:
+    get:
+      operationId: hr_talent_pool_search
+      parameters:
+      - in: query
+        name: min_qualification_rank
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Full-text search
+      - in: query
+        name: skill
+        schema:
+          type: array
+          items:
+            type: string
+        description: Skill name or id (all must match)
+      - in: query
+        name: tag
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTalentCandidateList'
+          description: ''
+  /api/v1/hr/talent-pool/{entry_id}/:
+    get:
+      operationId: hr_talent_pool_entry
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentCandidate'
+          description: ''
+    patch:
+      operationId: hr_talent_pool_tags
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTalentTagsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTalentTagsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTalentTagsRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentCandidate'
+          description: ''
+  /api/v1/hr/talent-pool/{entry_id}/invite/:
+    post:
+      operationId: hr_talent_pool_invite
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TalentInviteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TalentInviteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TalentInviteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentInviteResult'
+          description: ''
   /api/v1/interviews/{interview_id}/book/:
     post:
       operationId: candidate_interview_book
@@ -11283,6 +11403,7 @@ components:
       - rights_request_received
       - rights_request_update
       - shortlisted
+      - talent_pool_invitation
       - talent_pool_reconfirm
       type: string
       description: |-
@@ -11320,6 +11441,7 @@ components:
         * `rights_request_received` - rights_request_received
         * `rights_request_update` - rights_request_update
         * `shortlisted` - shortlisted
+        * `talent_pool_invitation` - talent_pool_invitation
         * `talent_pool_reconfirm` - talent_pool_reconfirm
     KillSwitchRequest:
       type: object
@@ -12627,6 +12749,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Skill'
+    PaginatedTalentCandidateList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TalentCandidate'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedTemplateList:
       type: object
       required:
@@ -13255,6 +13399,15 @@ components:
         lock_version:
           type: integer
           nullable: true
+    PatchedTalentTagsRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 10
     PlatformOrganisation:
       type: object
       properties:
@@ -15577,6 +15730,101 @@ components:
           maxItems: 20
       required:
       - tags
+    TalentApplicationRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        job_title:
+          type: string
+      required:
+      - id
+      - job_title
+      - reference
+    TalentCandidate:
+      type: object
+      description: 'A pool member as HR sees them: profile facts only, never documents
+        (M18 AC).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        headline:
+          type: string
+        city:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        qualifications:
+          type: array
+          items:
+            type: string
+        latest_title:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        joined_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        latest_application:
+          allOf:
+          - $ref: '#/components/schemas/TalentApplicationRef'
+          nullable: true
+        invited_job_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - city
+      - expires_at
+      - headline
+      - id
+      - invited_job_ids
+      - joined_at
+      - latest_application
+      - latest_title
+      - name
+      - qualifications
+      - skills
+      - tags
+    TalentInviteRequest:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+      required:
+      - job_id
+    TalentInviteResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+        invited_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - invited_at
+      - job_id
     TalentPoolJoinRequest:
       type: object
       properties:

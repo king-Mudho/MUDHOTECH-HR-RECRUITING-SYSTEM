@@ -37,6 +37,7 @@ SAMPLES: dict[str, str] = {
     "application_url": "https://mhrs.example/candidate/applications/42",
     "start_date": "1 December 2026",
     "expires_on": "19 December 2026",
+    "job_url": "https://mhrs.example/jobs/software-developer",
     "document_name": "cv.pdf",
     "reason": "This file didn't pass our security check.",
     "due_date": "15 November 2026",
@@ -329,6 +330,12 @@ _KINDS = [
         "Reminder 30 days before a talent pool membership ends",
         "candidate",
         ("organisation_name", "expires_on", "privacy_url"),
+    ),
+    NotificationKind(
+        "talent_pool_invitation",
+        "An employer whose talent pool you joined invites you to apply",
+        "candidate",
+        ("organisation_name", "job_title", "job_url", "privacy_url"),
     ),
     NotificationKind(
         "hired_welcome",

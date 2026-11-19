@@ -49,7 +49,8 @@
     "supportAccess": "Support access",
     "modelRegistry": "AI governance",
     "interviews": "Interviews",
-    "offers": "Offers"
+    "offers": "Offers",
+    "talentPool": "Talent pool"
   },
   "footer": {
     "privacy": "Privacy",
@@ -2730,5 +2731,33 @@
         "withdrawn": "Withdrawn by the employer"
       }
     }
+  },
+  "talentPool": {
+    "title": "Talent pool",
+    "intro": "People who agreed to be considered for future vacancies at your organisation. Only members whose consent is current appear here; CVs stay with their applications.",
+    "forbidden": "You don't have access to the talent pool in this organisation.",
+    "searchLabel": "Search the talent pool",
+    "q": "Search",
+    "qPlaceholder": "e.g. python developer",
+    "skills": "Skills",
+    "skillsPlaceholder": "e.g. Python, SQL",
+    "tag": "Tag",
+    "search": "Search",
+    "emptyTitle": "No one found",
+    "empty": "No pool members match. People join when they apply and choose to stay in touch.",
+    "count": "{count, plural, one {# person} other {# people}}",
+    "failed": "That didn't work. Please try again.",
+    "unnamed": "Name not given",
+    "latestTitle": "Latest role: {title}",
+    "consentUntil": "Consent until {date}",
+    "lastApplication": "Application {reference} ({job})",
+    "editTags": "Edit tags",
+    "tagsLabel": "Tags (comma separated)",
+    "saveTags": "Save tags",
+    "inviteTo": "Invite to apply for",
+    "chooseVacancy": "Choose a vacancy",
+    "invite": "Send invitation",
+    "invited": "Invitation sent.",
+    "skillsOf": "Skills of {name}"
   }
 }

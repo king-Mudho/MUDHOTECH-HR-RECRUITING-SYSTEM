@@ -13,4 +13,15 @@ urlpatterns = [
         v.CandidateTalentPoolLeaveView.as_view(),
         name="candidate-talent-pool-leave",
     ),
+    path("hr/talent-pool/", v.TalentSearchView.as_view(), name="hr-talent-pool"),
+    path(
+        "hr/talent-pool/<uuid:entry_id>/",
+        v.TalentEntryView.as_view(),
+        name="hr-talent-pool-entry",
+    ),
+    path(
+        "hr/talent-pool/<uuid:entry_id>/invite/",
+        v.TalentInviteView.as_view(),
+        name="hr-talent-pool-invite",
+    ),
 ]

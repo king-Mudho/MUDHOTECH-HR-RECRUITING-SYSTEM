@@ -2376,6 +2376,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/talent-pool/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_talent_pool_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/talent-pool/{entry_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_talent_pool_entry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["hr_talent_pool_tags"];
+        trace?: never;
+    };
+    "/api/v1/hr/talent-pool/{entry_id}/invite/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_talent_pool_invite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/interviews/{interview_id}/book/": {
         parameters: {
             query?: never;
@@ -4887,10 +4935,11 @@ export interface components {
          *     * `rights_request_received` - rights_request_received
          *     * `rights_request_update` - rights_request_update
          *     * `shortlisted` - shortlisted
+         *     * `talent_pool_invitation` - talent_pool_invitation
          *     * `talent_pool_reconfirm` - talent_pool_reconfirm
          * @enum {string}
          */
-        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_reconfirm";
+        KeyEnum: "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -5437,6 +5486,14 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Skill"][];
         };
+        PaginatedTalentCandidateList: {
+            count: number;
+            /** Format: uri */
+            next: string | null;
+            /** Format: uri */
+            previous: string | null;
+            results: components["schemas"]["TalentCandidate"][];
+        };
         PaginatedTemplateList: {
             /** @example 123 */
             count: number;
@@ -5694,6 +5751,9 @@ export interface components {
         PatchedShortlistDecisionsRequest: {
             decisions?: components["schemas"]["ShortlistDecisionRequest"][];
             lock_version?: number | null;
+        };
+        PatchedTalentTagsRequest: {
+            tags?: string[];
         };
         PlatformOrganisation: {
             /** Format: uuid */
@@ -6606,6 +6666,42 @@ export interface components {
         };
         TagsRequest: {
             tags: string[];
+        };
+        TalentApplicationRef: {
+            /** Format: uuid */
+            id: string;
+            reference: string | null;
+            job_title: string;
+        };
+        /** @description A pool member as HR sees them: profile facts only, never documents (M18 AC). */
+        TalentCandidate: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            headline: string;
+            city: string;
+            skills: string[];
+            qualifications: string[];
+            latest_title: string;
+            tags: string[];
+            /** Format: date-time */
+            joined_at: string;
+            /** Format: date-time */
+            expires_at: string;
+            latest_application: components["schemas"]["TalentApplicationRef"] | null;
+            invited_job_ids: string[];
+        };
+        TalentInviteRequest: {
+            /** Format: uuid */
+            job_id: string;
+        };
+        TalentInviteResult: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            /** Format: date-time */
+            invited_at: string;
         };
         TalentPoolJoinRequest: {
             /** Format: uuid */
@@ -11174,6 +11270,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActiveSupport"];
+                };
+            };
+        };
+    };
+    hr_talent_pool_search: {
+        parameters: {
+            query?: {
+                min_qualification_rank?: number;
+                /** @description Full-text search */
+                q?: string;
+                /** @description Skill name or id (all must match) */
+                skill?: string[];
+                tag?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTalentCandidateList"];
+                };
+            };
+        };
+    };
+    hr_talent_pool_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TalentCandidate"];
+                };
+            };
+        };
+    };
+    hr_talent_pool_tags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedTalentTagsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedTalentTagsRequest"];
+                "multipart/form-data": components["schemas"]["PatchedTalentTagsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TalentCandidate"];
+                };
+            };
+        };
+    };
+    hr_talent_pool_invite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TalentInviteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TalentInviteRequest"];
+                "multipart/form-data": components["schemas"]["TalentInviteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TalentInviteResult"];
                 };
             };
         };

@@ -7,6 +7,7 @@ import {
   Building2,
   CalendarDays,
   FileSignature,
+  UsersRound,
   FileText,
   Flag,
   Inbox,
@@ -45,6 +46,7 @@ const ICONS: Record<NavIcon, LucideIcon> = {
   audit: ScrollText,
   interviews: CalendarDays,
   offers: FileSignature,
+  talentPool: UsersRound,
 };
 
 export function isActive(pathname: string, href: string): boolean {

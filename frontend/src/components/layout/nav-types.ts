@@ -21,4 +21,5 @@ export type NavIcon =
   | "deadLetters"
   | "audit"
   | "interviews"
-  | "offers";
+  | "offers"
+  | "talentPool";

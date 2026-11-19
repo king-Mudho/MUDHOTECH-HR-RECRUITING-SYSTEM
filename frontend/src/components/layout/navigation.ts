@@ -16,6 +16,7 @@ export const HR_NAV: NavItem[] = [
   { href: "/hr/jobs", labelKey: "jobs", icon: "jobs" },
   { href: "/hr/interviews", labelKey: "interviews", icon: "interviews" },
   { href: "/hr/offers", labelKey: "offers", icon: "offers" },
+  { href: "/hr/talent-pool", labelKey: "talentPool", icon: "talentPool" },
   { href: "/hr/settings", labelKey: "settings", icon: "settings" },
 ];
 

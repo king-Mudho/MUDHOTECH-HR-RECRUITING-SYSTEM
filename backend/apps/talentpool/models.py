@@ -57,3 +57,20 @@ class TalentPoolEntry(TenantModel):
 
     def __str__(self) -> str:
         return f"{self.candidate_user_id} in {self.organisation_id} ({self.status})"
+
+
+class TalentPoolInvite(TenantModel):
+    """HR invited a pool member to apply for a vacancy (one invitation per person and vacancy)."""
+
+    entry = models.ForeignKey(TalentPoolEntry, on_delete=models.CASCADE, related_name="invites")
+    job = models.ForeignKey("jobs.Job", on_delete=models.CASCADE, related_name="+")
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    invited_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ("-invited_at",)
+        constraints = [
+            models.UniqueConstraint(fields=["entry", "job"], name="uniq_talent_pool_invite")
+        ]

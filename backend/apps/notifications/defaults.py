@@ -410,6 +410,20 @@ being available to them; you can also leave or delete them at any time.
 [Manage your talent pool choices]({{ privacy_url }})""",
         "Your place in {{ organisation_name }}'s talent pool ends on {{ expires_on }}.",
     ),
+    "talent_pool_invitation": DefaultTemplate(
+        "{{ organisation_name }} invites you to apply: {{ job_title }}",
+        """Hello {{ recipient_name }},
+
+You are in {{ organisation_name }}'s talent pool, and they think this vacancy could suit you:
+**{{ job_title }}**.
+
+Applying is entirely up to you, and you apply in the usual way.
+
+[View the vacancy]({{ job_url }})
+
+You can leave the talent pool at any time: [manage your choices]({{ privacy_url }})""",
+        "{{ organisation_name }} invites you to apply for {{ job_title }}.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},
