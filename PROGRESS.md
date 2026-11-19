@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 14 — Platform Administration, Subscriptions & Billing
-- **Current task:** P14-T05
+- **Current task:** P14-T06
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 170 / 193 tasks · 11 / 16 phases
+- **Overall:** 171 / 193 tasks · 11 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -263,7 +263,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P14-T02 — `apps.billing` models: Plan (limits jsonb: active_vacancies, seats, ai_evaluations_month, storage_gb), Subscription, …
 - [x] P14-T03 — Entitlements service `billing.entitlements.check(org, metric)` enforced at: publish job, invite member, run …
 - [x] P14-T04 — Usage metering (increment in services via outbox consumers), monthly roll-up, usage page for org_admin
-- [ ] P14-T05 — Invoicing: monthly invoice generation (USD or ZWG with price snapshot (EC-BIL-05)), PDF invoice (MudhoTech Solutions …
+- [x] P14-T05 — Invoicing: monthly invoice generation (USD or ZWG with price snapshot (EC-BIL-05)), PDF invoice (MudhoTech Solutions …
 - [ ] P14-T06 — Paynow integration (official Python SDK or REST): web checkout (cards) + mobile express checkout (EcoCash/OneMoney)
 - [ ] P14-T07 — Dunning & lifecycle: reminders before due, grace 7 days, `past_due` → staff read-only, public jobs remain visible …
 - [ ] P14-T08 — Org billing UI `/hr/settings/billing` (plan, usage, invoices, pay now, change plan) and admin plan management
@@ -756,3 +756,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P14-T02 | apps.billing: Plan (platform, limits json: active_vacancies/seats/ai_evaluations_month/storage_gb, null = unlimited; USD/ZWG prices; trial flag), Subscription (one per org; trialing/active/past_due/read_only/cancelled; currency, trial/period/grace dates), UsageCounter (unique org+metric+month), Invoice (number, subtotal/tax/total, lines + price snapshot, status, PDF document), Payment (paynow/manual, method, reference, poll_url, status incl. pending_manual_check, raw without card data); RLS on tenant tables; default plans per D-13 seeded on post_migrate without overwriting edits; admin | none |
 | 2026-11-19 | Impl | P14-T03 | billing.entitlements: check(org, metric) at publish/schedule/scheduled publish/resume (active_vacancies), invite (seats incl. open invitations, re-invite allowed), screening runs (ai_evaluations_month by run size), org-owned staff uploads (storage, never candidate purposes); read_only/cancelled subscriptions block staff actions; automatic screening over the allowance routes to human review; candidates never blocked (tests: submit to live vacancy at limit and while read-only); 30-day trial on organisation creation (lazy for existing orgs); BILLING_ENFORCE setting (off in general tests, on in billing tests); demo orgs on Enterprise | none |
 | 2026-11-19 | Impl | P14-T04 | billing.metering: atomic monthly counters via outbox consumers (screening.completed -> ai_evaluations_month, application.submitted -> applications_month, idempotent), daily roll-up of gauge peaks (active vacancies, seats, storage MB), history; GET /hr/billing (billing.view = org admin) with plan, subscription, live usage vs limits, history, public plans; /hr/settings/billing usage page with meters; tests + registry | Invoices/pay/change plan on the billing page in T08 |
+| 2026-11-19 | Impl | P14-T05 | billing.invoicing: invoices per subscription period in USD or ZWG with price/tax/seller snapshot (EC-BIL-05), configurable tax rate/label, seller name/address/email/tax number and due days (env), sequential MHRS-YYYY-NNNNNN numbers (advisory lock), free/unpriced plans not invoiced (Enterprise/missing ZWG price = manual), daily run invoices ended periods and advances them, PDF (PyMuPDF, escaped) in the exports bucket (regenerated from the snapshot if missing), invoice_issued email to org admins; GET /hr/billing/invoices + PDF stream; tests + registry | none |

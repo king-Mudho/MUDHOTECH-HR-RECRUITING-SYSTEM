@@ -4,15 +4,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from django.http import HttpResponse
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.exceptions import NotFoundError
 from apps.organisations.permissions import HasOrgAction
 
-from .. import entitlements, metering
-from ..models import Metric, Plan
+from .. import entitlements, invoicing, metering
+from ..models import Invoice, InvoiceStatus, Metric, Plan
 from . import serializers as s
 
 
@@ -69,3 +71,37 @@ class BillingOverviewView(APIView):
     def get(self, request: Request) -> Response:
         org_id = request.membership.organisation_id  # type: ignore[attr-defined]
         return Response(s.BillingOverviewSerializer(overview(org_id)).data)
+
+
+class InvoiceListView(APIView):
+    permission_classes = [HasOrgAction("billing.view")]
+
+    @extend_schema(operation_id="hr_billing_invoices", responses=s.InvoiceSerializer(many=True))
+    def get(self, request: Request) -> Response:
+        org_id = request.membership.organisation_id  # type: ignore[attr-defined]
+        rows = Invoice.objects.for_org(org_id).exclude(status=InvoiceStatus.DRAFT)[:50]
+        return Response(s.InvoiceSerializer(rows, many=True).data)
+
+
+class InvoicePdfView(APIView):
+    permission_classes = [HasOrgAction("billing.view")]
+
+    @extend_schema(
+        operation_id="hr_billing_invoice_pdf",
+        responses={(200, "application/pdf"): OpenApiResponse(description="Invoice PDF")},
+    )
+    def get(self, request: Request, invoice_id: str) -> HttpResponse:
+        org_id = request.membership.organisation_id  # type: ignore[attr-defined]
+        invoice = (
+            Invoice.objects.for_org(org_id)
+            .select_related("organisation")
+            .exclude(status=InvoiceStatus.DRAFT)
+            .filter(pk=invoice_id)
+            .first()
+        )
+        if invoice is None:
+            raise NotFoundError()
+        response = HttpResponse(invoicing.pdf_bytes(invoice), content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{invoice.number}.pdf"'
+        response["Cache-Control"] = "no-store"
+        return response

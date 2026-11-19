@@ -40,6 +40,9 @@ SAMPLES: dict[str, str] = {
     "override_rate": "42%",
     "decisions": "24",
     "report_url": "https://mhrs.example/hr/reports",
+    "invoice_number": "MHRS-2026-000042",
+    "amount": "USD 49.00",
+    "billing_url": "https://mhrs.example/hr/settings/billing",
     "job_url": "https://mhrs.example/jobs/software-developer",
     "document_name": "cv.pdf",
     "reason": "This file didn't pass our security check.",
@@ -345,6 +348,12 @@ _KINDS = [
         "HR decisions often go against the AI band for a vacancy (rubric review suggested)",
         "staff",
         ("organisation_name", "job_title", "override_rate", "decisions", "report_url"),
+    ),
+    NotificationKind(
+        "invoice_issued",
+        "A new invoice for the organisation's subscription (organisation admins)",
+        "staff",
+        ("organisation_name", "invoice_number", "amount", "due_date", "billing_url"),
     ),
     NotificationKind(
         "hired_welcome",

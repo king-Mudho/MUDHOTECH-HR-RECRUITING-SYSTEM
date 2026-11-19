@@ -2409,6 +2409,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/BillingOverview'
           description: ''
+  /api/v1/hr/billing/invoices/:
+    get:
+      operationId: hr_billing_invoices
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+          description: ''
+  /api/v1/hr/billing/invoices/{invoice_id}/pdf/:
+    get:
+      operationId: hr_billing_invoice_pdf
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Invoice PDF
   /api/v1/hr/claims/{claim_id}/verify/:
     post:
       operationId: hr_claim_verify
@@ -12251,6 +12284,88 @@ components:
       - organisation_slug
       - role
       - status
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        currency:
+          type: string
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        tax_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLine'
+        period_start:
+          type: string
+          format: date
+          nullable: true
+        period_end:
+          type: string
+          format: date
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - amount
+      - currency
+      - due_at
+      - id
+      - issued_at
+      - lines
+      - number
+      - paid_at
+      - period_end
+      - period_start
+      - status
+      - subtotal
+      - tax_amount
+    InvoiceLine:
+      type: object
+      properties:
+        description:
+          type: string
+        quantity:
+          type: integer
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - description
+      - quantity
+      - total
+      - unit_price
     JobBrief:
       type: object
       properties:
@@ -12481,6 +12596,7 @@ components:
       - interview_reminder
       - interview_rescheduled
       - invitation_staff
+      - invoice_issued
       - new_message
       - not_selected
       - note_mention
@@ -12520,6 +12636,7 @@ components:
         * `interview_reminder` - interview_reminder
         * `interview_rescheduled` - interview_rescheduled
         * `invitation_staff` - invitation_staff
+        * `invoice_issued` - invoice_issued
         * `new_message` - new_message
         * `not_selected` - not_selected
         * `note_mention` - note_mention

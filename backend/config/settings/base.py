@@ -335,6 +335,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=40),
         "options": {"expires": 3000},
     },
+    "billing-invoices-daily": {
+        "task": "apps.billing.tasks.issue_due_invoices",
+        "schedule": crontab(hour=5, minute=0),
+        "options": {"expires": 3600 * 6},
+    },
     "billing-usage-rollup": {
         "task": "apps.billing.tasks.usage_rollup",
         "schedule": crontab(hour=1, minute=10),
@@ -443,6 +448,14 @@ AI_NOTICE_VERSION = "2026-11-10"
 TALENT_POOL_MONTHS = env.int("TALENT_POOL_MONTHS", default=12)
 # P14-T03: plan limits on staff actions (the general test settings switch it off; billing tests on)
 BILLING_ENFORCE = env.bool("BILLING_ENFORCE", default=True)
+# P14-T05 invoices: seller details and tax (VAT) fields are configuration, not code
+BILLING_SELLER_NAME = env("BILLING_SELLER_NAME", default="MudhoTech Solutions (Pvt) Ltd")
+BILLING_SELLER_ADDRESS = env("BILLING_SELLER_ADDRESS", default="Harare, Zimbabwe")
+BILLING_SELLER_EMAIL = env("BILLING_SELLER_EMAIL", default="billing@mudhotech.co.zw")
+BILLING_SELLER_TAX_NUMBER = env("BILLING_SELLER_TAX_NUMBER", default="")
+BILLING_TAX_RATE = env("BILLING_TAX_RATE", default="0")  # e.g. "0.15" for 15 % VAT
+BILLING_TAX_LABEL = env("BILLING_TAX_LABEL", default="VAT")
+BILLING_DUE_DAYS = env.int("BILLING_DUE_DAYS", default=14)
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)

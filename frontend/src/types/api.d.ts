@@ -1106,6 +1106,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/billing/invoices/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_billing_invoices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/billing/invoices/{invoice_id}/pdf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_billing_invoice_pdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/claims/{claim_id}/verify/": {
         parameters: {
             query?: never;
@@ -5405,6 +5437,38 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
+        Invoice: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            currency: string;
+            /** Format: decimal */
+            subtotal: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            amount: string;
+            status: string;
+            lines: components["schemas"]["InvoiceLine"][];
+            /** Format: date */
+            period_start: string | null;
+            /** Format: date */
+            period_end: string | null;
+            /** Format: date-time */
+            issued_at: string | null;
+            /** Format: date-time */
+            due_at: string | null;
+            /** Format: date-time */
+            paid_at: string | null;
+        };
+        InvoiceLine: {
+            description: string;
+            quantity: number;
+            /** Format: decimal */
+            unit_price: string;
+            /** Format: decimal */
+            total: string;
+        };
         JobBrief: {
             /** Format: uuid */
             id: string;
@@ -5510,6 +5574,7 @@ export interface components {
          *     * `interview_reminder` - interview_reminder
          *     * `interview_rescheduled` - interview_rescheduled
          *     * `invitation_staff` - invitation_staff
+         *     * `invoice_issued` - invoice_issued
          *     * `new_message` - new_message
          *     * `not_selected` - not_selected
          *     * `note_mention` - note_mention
@@ -5532,7 +5597,7 @@ export interface components {
          *     * `talent_pool_reconfirm` - talent_pool_reconfirm
          * @enum {string}
          */
-        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
+        KeyEnum: "ai_override_alert" | "application_received" | "application_withdrawn_confirmation" | "clarification_answered" | "clarification_expired" | "clarification_reminder" | "clarification_requested" | "document_rejected_reupload" | "draft_abandoned" | "draft_deadline_reminder" | "hired_welcome" | "interview_booked" | "interview_cancelled" | "interview_invitation" | "interview_reminder" | "interview_rescheduled" | "invitation_staff" | "invoice_issued" | "new_message" | "not_selected" | "note_mention" | "offer_accepted" | "offer_declined" | "offer_expired" | "offer_expiring" | "offer_issued" | "offer_withdrawn" | "organisation_closed" | "recruiter_digest" | "recruitment_paused" | "retention_report" | "rights_request_confirm" | "rights_request_due" | "rights_request_received" | "rights_request_update" | "shortlisted" | "talent_pool_invitation" | "talent_pool_reconfirm";
         KillSwitchRequest: {
             enabled: boolean;
             reason: string;
@@ -9865,6 +9930,45 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BillingOverview"];
                 };
+            };
+        };
+    };
+    hr_billing_invoices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"][];
+                };
+            };
+        };
+    };
+    hr_billing_invoice_pdf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invoice PDF */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -438,6 +438,18 @@ making every decision.
 [Open the reports]({{ report_url }})""",
         "{{ override_rate }} of decisions for {{ job_title }} went against the AI band.",
     ),
+    "invoice_issued": DefaultTemplate(
+        "Invoice {{ invoice_number }} for {{ organisation_name }}",
+        """Hello {{ recipient_name }},
+
+Invoice **{{ invoice_number }}** for {{ amount }} is ready and due by {{ due_date }}.
+
+You can download it and pay online (EcoCash, OneMoney or card through Paynow) from your plan and
+billing page, or pay by bank transfer quoting the invoice number.
+
+[Open plan & billing]({{ billing_url }})""",
+        "Invoice {{ invoice_number }} ({{ amount }}) is due by {{ due_date }}.",
+    ),
     "hired_welcome": DefaultTemplate(
         "Welcome to {{ organisation_name }}",
         """Hello {{ recipient_name }},

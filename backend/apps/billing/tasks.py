@@ -27,3 +27,10 @@ def meter_application(event: OutboxEvent) -> None:
 @shared_task(name="apps.billing.tasks.usage_rollup", base=BaseTask)
 def usage_rollup() -> int:
     return metering.rollup_all()
+
+
+@shared_task(name="apps.billing.tasks.issue_due_invoices", base=BaseTask)
+def issue_due_invoices() -> int:
+    from . import invoicing
+
+    return invoicing.run_monthly()
