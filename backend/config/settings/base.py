@@ -235,6 +235,9 @@ SPECTACULAR_SETTINGS = {
         "ApplicationStatusEnum": "apps.applications.models.Status",
         "JobVisibilityEnum": "apps.jobs.models.Visibility",
         "NoteVisibilityEnum": "apps.applications.models.ApplicationNote.Visibility",
+        "SalaryCurrencyEnum": "apps.jobs.models.Currency",
+        "SalaryPeriodEnum": "apps.jobs.models.SalaryPeriod",
+        "EmploymentTypeEnum": "apps.jobs.models.EmploymentType",
     },
 }
 

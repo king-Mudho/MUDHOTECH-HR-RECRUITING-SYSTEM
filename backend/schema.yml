@@ -246,6 +246,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Review'
           description: ''
+  /api/v1/applications/{application_id}/interviews/:
+    get:
+      operationId: candidate_application_interviews
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CandidateInterview'
+          description: ''
   /api/v1/applications/{application_id}/messages/:
     get:
       operationId: applications_messages_list
@@ -300,6 +323,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
+          description: ''
+  /api/v1/applications/{application_id}/offers/:
+    get:
+      operationId: candidate_application_offers
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - applications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CandidateOffer'
           description: ''
   /api/v1/applications/{application_id}/review/:
     get:
@@ -1752,6 +1798,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/HRExtraction'
           description: ''
+  /api/v1/hr/applications/{application_id}/interviews/:
+    get:
+      operationId: hr_application_interviews
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Interview'
+          description: ''
+    post:
+      operationId: hr_application_interview_create
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InterviewCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InterviewCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scheduled'
+          description: ''
   /api/v1/hr/applications/{application_id}/messages/:
     get:
       operationId: hr_applications_messages_list
@@ -1865,6 +1966,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+          description: ''
+  /api/v1/hr/applications/{application_id}/offers/:
+    get:
+      operationId: hr_application_offers
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+          description: ''
+    post:
+      operationId: hr_application_offer_create
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferTermsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferTermsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferTermsRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
           description: ''
   /api/v1/hr/applications/{application_id}/reconstruct/:
     get:
@@ -2278,6 +2434,292 @@ paths:
                 items:
                   $ref: '#/components/schemas/DecisionReason'
           description: ''
+  /api/v1/hr/interviews/:
+    get:
+      operationId: hr_interviews
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: ISO date-time (starts_at >=)
+      - in: query
+        name: job
+        schema:
+          type: string
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+        description: only interviews I sit on
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: ISO date-time (starts_at <)
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInterviewList'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/:
+    get:
+      operationId: hr_interview
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PanelView'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/cancel/:
+    post:
+      operationId: hr_interview_cancel
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InterviewReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InterviewReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interview'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/complete/:
+    post:
+      operationId: hr_interview_complete
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interview'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/feedback/:
+    get:
+      operationId: hr_interview_feedback
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/no-show/:
+    post:
+      operationId: hr_interview_no_show
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewNoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InterviewNoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InterviewNoteRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interview'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/reschedule/:
+    post:
+      operationId: hr_interview_reschedule
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RescheduleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RescheduleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RescheduleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scheduled'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/scorecard/:
+    put:
+      operationId: hr_interview_my_scorecard_save
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scorecard'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/scorecard/submit/:
+    post:
+      operationId: hr_interview_my_scorecard_submit
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScorecardInRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scorecard'
+          description: ''
+  /api/v1/hr/interviews/{interview_id}/scorecards/:
+    get:
+      operationId: hr_interview_scorecards
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scorecard'
+          description: ''
   /api/v1/hr/jobs/:
     get:
       operationId: hr_jobs_list
@@ -2493,6 +2935,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/BulkActionResult'
           description: ''
+  /api/v1/hr/jobs/{job_id}/closeout/:
+    get:
+      operationId: hr_job_closeout_preview
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseoutPreview'
+          description: ''
+    post:
+      operationId: hr_job_closeout_confirm
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseoutConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CloseoutConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CloseoutConfirmRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseoutResult'
+          description: ''
   /api/v1/hr/jobs/{job_id}/funnel/:
     get:
       operationId: hr_job_funnel
@@ -2513,6 +3008,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Funnel'
+          description: ''
+  /api/v1/hr/jobs/{job_id}/scorecard-templates/:
+    get:
+      operationId: hr_job_scorecard_templates
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScorecardTemplate'
+          description: ''
+    post:
+      operationId: hr_job_scorecard_template_create
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScorecardTemplateCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScorecardTemplateCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScorecardTemplateCreateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScorecardTemplate'
           description: ''
   /api/v1/hr/jobs/{job_id}/screening-analytics/:
     get:
@@ -3810,6 +4359,270 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/hr/offers/:
+    get:
+      operationId: hr_offers
+      parameters:
+      - in: query
+        name: job
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOfferList'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/:
+    get:
+      operationId: hr_offer
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+    patch:
+      operationId: hr_offer_update
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOfferPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/approve/:
+    post:
+      operationId: hr_offer_approve
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferCommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferCommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferCommentRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/hire/:
+    post:
+      operationId: hr_offer_hire
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferHireRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferHireRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferHireRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HireResult'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/issue/:
+    post:
+      operationId: hr_offer_issue
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/letter/:
+    get:
+      operationId: hr_offer_letter
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '302':
+          description: Redirect to a 60-second presigned URL
+  /api/v1/hr/offers/{offer_id}/return/:
+    post:
+      operationId: hr_offer_return
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferRequiredCommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferRequiredCommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferRequiredCommentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/submit/:
+    post:
+      operationId: hr_offer_submit
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
+  /api/v1/hr/offers/{offer_id}/withdraw/:
+    post:
+      operationId: hr_offer_withdraw
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+          description: ''
   /api/v1/hr/privacy/requests/:
     get:
       operationId: hr_privacy_requests
@@ -4209,6 +5022,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/ActiveSupport'
           description: ''
+  /api/v1/interviews/{interview_id}/book/:
+    post:
+      operationId: candidate_interview_book
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - interviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewBookRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InterviewBookRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InterviewBookRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateInterview'
+          description: ''
+  /api/v1/interviews/{interview_id}/calendar.ics:
+    get:
+      operationId: candidate_interview_calendar
+      parameters:
+      - in: path
+        name: interview_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - interviews
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: iCalendar file
   /api/v1/invitations/{token}/:
     get:
       operationId: invitations_preview
@@ -4609,6 +5472,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnreadCount'
+          description: ''
+  /api/v1/offers/{offer_id}/accept/:
+    post:
+      operationId: candidate_offer_accept
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferAcceptRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateOffer'
+          description: ''
+  /api/v1/offers/{offer_id}/decline/:
+    post:
+      operationId: candidate_offer_decline
+      parameters:
+      - in: path
+        name: offer_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - offers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferDeclineRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfferDeclineRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfferDeclineRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateOffer'
           description: ''
   /api/v1/organisations/:
     post:
@@ -6975,6 +7903,121 @@ components:
         * `clarification` - clarification
         * `reupload` - reupload
         * `message` - message
+    CandidateInterview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        stage:
+          type: string
+        mode:
+          type: string
+        location:
+          type: string
+        video_link:
+          type: string
+        duration_minutes:
+          type: integer
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+        status:
+          type: string
+        status_reason:
+          type: string
+        instructions:
+          type: string
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewSlot'
+      required:
+      - duration_minutes
+      - ends_at
+      - id
+      - instructions
+      - location
+      - mode
+      - slots
+      - stage
+      - starts_at
+      - status
+      - status_reason
+      - timezone
+      - video_link
+    CandidateOffer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        job_title:
+          type: string
+        organisation_name:
+          type: string
+        salary_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          type: string
+        period:
+          type: string
+        start_date:
+          type: string
+          format: date
+        contract_type:
+          type: string
+        conditions:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        declined_at:
+          type: string
+          format: date-time
+          nullable: true
+        letter_document_id:
+          type: string
+          format: uuid
+          nullable: true
+        acceptance_statement:
+          type: string
+      required:
+      - acceptance_statement
+      - accepted_at
+      - conditions
+      - contract_type
+      - currency
+      - declined_at
+      - expires_at
+      - id
+      - issued_at
+      - job_title
+      - letter_document_id
+      - organisation_name
+      - period
+      - salary_amount
+      - start_date
+      - status
     CandidateSkill:
       type: object
       properties:
@@ -7335,6 +8378,91 @@ components:
         * `answered` - Answered
         * `expired` - Expired
         * `cancelled` - Cancelled
+    CloseoutConfirmRequest:
+      type: object
+      properties:
+        fingerprint:
+          type: string
+          minLength: 1
+          maxLength: 64
+        reason_code:
+          type: string
+          minLength: 1
+          default: position_filled
+          maxLength: 40
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 2000
+      required:
+      - fingerprint
+    CloseoutPreview:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        openings:
+          $ref: '#/components/schemas/OfferOpenings'
+        to_notify:
+          type: integer
+        to_notify_by_status:
+          type: object
+          additionalProperties:
+            type: integer
+        still_in_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloseoutRef'
+        with_open_offer:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloseoutRef'
+        fingerprint:
+          type: string
+      required:
+      - fingerprint
+      - job_id
+      - openings
+      - still_in_progress
+      - to_notify
+      - to_notify_by_status
+      - with_open_offer
+    CloseoutRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+      required:
+      - id
+      - reference
+    CloseoutResult:
+      type: object
+      properties:
+        notified:
+          type: integer
+        skipped:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloseoutSkipped'
+      required:
+      - notified
+      - skipped
+    CloseoutSkipped:
+      type: object
+      properties:
+        application_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+      required:
+      - application_id
+      - reason
     CommentRequest:
       type: object
       properties:
@@ -8514,6 +9642,69 @@ components:
       required:
       - closes_at
       - reason
+    Feedback:
+      type: object
+      properties:
+        interview_id:
+          type: string
+          format: uuid
+        submitted:
+          type: integer
+        panel_size:
+          type: integer
+        outstanding:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScorecardOutstanding'
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedbackCriterion'
+        overall_average:
+          type: number
+          format: double
+          nullable: true
+        recommendations:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - criteria
+      - interview_id
+      - outstanding
+      - overall_average
+      - panel_size
+      - recommendations
+      - submitted
+    FeedbackCriterion:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        count:
+          type: integer
+        average:
+          type: number
+          format: double
+          nullable: true
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+        disagreement:
+          type: boolean
+      required:
+      - average
+      - count
+      - disagreement
+      - key
+      - max
+      - min
+      - title
     FrameworkEnum:
       enum:
       - ZW
@@ -9364,6 +10555,24 @@ components:
       - reason_code
       - reason_text
       - to_status
+    HireResult:
+      type: object
+      properties:
+        hire_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date
+        openings:
+          $ref: '#/components/schemas/OfferOpenings'
+        prompt_close:
+          type: boolean
+      required:
+      - hire_id
+      - openings
+      - prompt_close
+      - start_date
     IdentityReveal:
       type: object
       properties:
@@ -9459,6 +10668,184 @@ components:
       - organisation
       - read_at
       - text
+    Interview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        application_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        job_id:
+          type: string
+          format: uuid
+        job_title:
+          type: string
+        stage:
+          type: string
+        mode:
+          type: string
+        location:
+          type: string
+        video_link:
+          type: string
+        duration_minutes:
+          type: integer
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+        status:
+          type: string
+        status_reason:
+          type: string
+        instructions:
+          type: string
+        scorecard_template_id:
+          type: string
+          format: uuid
+          nullable: true
+        sequence:
+          type: integer
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewSlot'
+        panel:
+          type: array
+          items:
+            $ref: '#/components/schemas/Panelist'
+      required:
+      - application_id
+      - duration_minutes
+      - ends_at
+      - id
+      - instructions
+      - job_id
+      - job_title
+      - location
+      - mode
+      - panel
+      - reference
+      - scorecard_template_id
+      - sequence
+      - slots
+      - stage
+      - starts_at
+      - status
+      - status_reason
+      - timezone
+      - video_link
+    InterviewBookRequest:
+      type: object
+      properties:
+        slot_id:
+          type: string
+          format: uuid
+      required:
+      - slot_id
+    InterviewCreateRequest:
+      type: object
+      properties:
+        stage:
+          type: string
+          minLength: 1
+          maxLength: 60
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        panel:
+          type: array
+          items:
+            $ref: '#/components/schemas/PanelMemberInRequest'
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        slots:
+          type: array
+          items:
+            type: string
+            format: date-time
+          maxItems: 12
+        duration_minutes:
+          type: integer
+          maximum: 480
+          minimum: 5
+          default: 45
+        timezone:
+          type: string
+          minLength: 1
+          default: Africa/Harare
+          maxLength: 64
+        location:
+          type: string
+          default: ''
+          maxLength: 300
+        video_link:
+          oneOf:
+          - type: string
+            format: uri
+            default: ''
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        instructions:
+          type: string
+          default: ''
+          maxLength: 2000
+        scorecard_template_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - mode
+      - panel
+      - stage
+    InterviewNoteRequest:
+      type: object
+      properties:
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+    InterviewReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
+    InterviewSlot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        booked:
+          type: boolean
+      required:
+      - booked
+      - ends_at
+      - id
+      - starts_at
     Invitation:
       type: object
       properties:
@@ -10303,6 +11690,16 @@ components:
       - code
       - key
       - step
+    ModeEnum:
+      enum:
+      - in_person
+      - video
+      - phone
+      type: string
+      description: |-
+        * `in_person` - In person
+        * `video` - Video call
+        * `phone` - Phone
     Note:
       type: object
       properties:
@@ -10384,6 +11781,241 @@ components:
       - ai_notice_version
       - privacy_notice
       - privacy_notice_version
+    Offer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        application_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        job_id:
+          type: string
+          format: uuid
+        job_title:
+          type: string
+        status:
+          type: string
+        salary_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          type: string
+        period:
+          type: string
+        start_date:
+          type: string
+          format: date
+        contract_type:
+          type: string
+        conditions:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        required_approvals:
+          type: integer
+        approval_round:
+          type: integer
+        approvals:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferApproval'
+        created_by:
+          type: string
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        counter_offer_note:
+          type: string
+        declined_at:
+          type: string
+          format: date-time
+          nullable: true
+        decline_reason:
+          type: string
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        close_reason:
+          type: string
+        has_letter:
+          type: boolean
+        hire_recorded:
+          type: boolean
+        lock_version:
+          type: integer
+        openings:
+          $ref: '#/components/schemas/OfferOpenings'
+      required:
+      - accepted_at
+      - application_id
+      - approval_round
+      - approvals
+      - close_reason
+      - closed_at
+      - conditions
+      - contract_type
+      - counter_offer_note
+      - created_by
+      - currency
+      - decline_reason
+      - declined_at
+      - expires_at
+      - has_letter
+      - hire_recorded
+      - id
+      - issued_at
+      - job_id
+      - job_title
+      - lock_version
+      - openings
+      - period
+      - reference
+      - required_approvals
+      - salary_amount
+      - start_date
+      - status
+    OfferAcceptRequest:
+      type: object
+      properties:
+        typed_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        agree:
+          type: boolean
+        counter_offer_note:
+          type: string
+          default: ''
+          maxLength: 2000
+      required:
+      - agree
+      - typed_name
+    OfferApproval:
+      type: object
+      properties:
+        approver:
+          type: string
+        round:
+          type: integer
+        decision:
+          type: string
+        comment:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - approver
+      - at
+      - comment
+      - decision
+      - round
+    OfferCommentRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          default: ''
+          maxLength: 2000
+    OfferDeclineRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 2000
+    OfferHireRequest:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        note:
+          type: string
+          default: ''
+          maxLength: 400
+    OfferOpenings:
+      type: object
+      properties:
+        openings:
+          type: integer
+        accepted:
+          type: integer
+        hired:
+          type: integer
+        remaining:
+          type: integer
+        over:
+          type: boolean
+      required:
+      - accepted
+      - hired
+      - openings
+      - over
+      - remaining
+    OfferReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
+    OfferRequiredCommentRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - comment
+    OfferTermsRequest:
+      type: object
+      properties:
+        salary_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          $ref: '#/components/schemas/SalaryCurrencyEnum'
+        period:
+          $ref: '#/components/schemas/SalaryPeriodEnum'
+        start_date:
+          type: string
+          format: date
+        contract_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        conditions:
+          type: string
+          default: ''
+          maxLength: 10000
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - contract_type
+      - currency
+      - expires_at
+      - period
+      - salary_amount
+      - start_date
     OrgKillSwitchRequest:
       type: object
       properties:
@@ -10668,6 +12300,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InboxItem'
+    PaginatedInterviewList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interview'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedInvitationList:
       type: object
       required:
@@ -10760,6 +12414,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Membership'
+    PaginatedOfferList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Offer'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPlatformOrganisationList:
       type: object
       required:
@@ -10875,6 +12551,133 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VersionSummary'
+    PanelAiHint:
+      type: object
+      properties:
+        band:
+          type: string
+        coverage:
+          type: number
+          format: double
+          nullable: true
+        essentials_met:
+          type: integer
+          nullable: true
+        essentials_unknown:
+          type: integer
+          nullable: true
+        notice:
+          type: string
+      required:
+      - band
+      - coverage
+      - essentials_met
+      - essentials_unknown
+      - notice
+    PanelConflict:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        interview_id:
+          type: string
+          format: uuid
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - ends_at
+      - interview_id
+      - membership_id
+      - starts_at
+    PanelDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+        filename:
+          type: string
+        available:
+          type: boolean
+      required:
+      - available
+      - filename
+      - id
+      - role
+    PanelMemberInRequest:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        role:
+          allOf:
+          - $ref: '#/components/schemas/PanelMemberInRoleEnum'
+          default: member
+      required:
+      - membership_id
+    PanelMemberInRoleEnum:
+      enum:
+      - lead
+      - member
+      type: string
+      description: |-
+        * `lead` - Lead
+        * `member` - Member
+    PanelView:
+      type: object
+      properties:
+        interview:
+          $ref: '#/components/schemas/Interview'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PanelDocument'
+        scorecard_criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScorecardCriterion'
+        ai:
+          allOf:
+          - $ref: '#/components/schemas/PanelAiHint'
+          nullable: true
+        can_manage:
+          type: boolean
+        on_panel:
+          type: boolean
+      required:
+      - ai
+      - can_manage
+      - documents
+      - interview
+      - on_panel
+      - scorecard_criteria
+    Panelist:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+        submitted:
+          type: boolean
+      required:
+      - membership_id
+      - name
+      - role
+      - submitted
     PatchedCandidateSkillRequest:
       type: object
       properties:
@@ -11158,6 +12961,30 @@ components:
         reason:
           type: string
           maxLength: 500
+    PatchedOfferPatchRequest:
+      type: object
+      properties:
+        lock_version:
+          type: integer
+        salary_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        currency:
+          $ref: '#/components/schemas/SalaryCurrencyEnum'
+        period:
+          $ref: '#/components/schemas/SalaryPeriodEnum'
+        start_date:
+          type: string
+          format: date
+        contract_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        conditions:
+          type: string
+          maxLength: 10000
+        expires_at:
+          type: string
+          format: date-time
     PatchedOrganisationRequest:
       type: object
       properties:
@@ -12145,6 +13972,18 @@ components:
         reason:
           type: string
           maxLength: 1000
+    RecommendationEnum:
+      enum:
+      - strong_yes
+      - 'yes'
+      - 'no'
+      - strong_no
+      type: string
+      description: |-
+        * `strong_yes` - Strong yes
+        * `yes` - Yes
+        * `no` - No
+        * `strong_no` - Strong no
     RegistryEntry:
       type: object
       properties:
@@ -12252,6 +14091,25 @@ components:
           type: string
           minLength: 10
           maxLength: 500
+      required:
+      - reason
+    RescheduleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        slots:
+          type: array
+          items:
+            type: string
+            format: date-time
+          maxItems: 12
       required:
       - reason
     Resume:
@@ -12672,6 +14530,149 @@ components:
           format: date-time
       required:
       - publish_at
+    Scheduled:
+      type: object
+      properties:
+        interview:
+          $ref: '#/components/schemas/Interview'
+        conflicts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PanelConflict'
+      required:
+      - conflicts
+      - interview
+    Scorecard:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        panelist:
+          type: string
+        membership_id:
+          type: string
+          format: uuid
+        own:
+          type: boolean
+        scores:
+          type: object
+          additionalProperties:
+            type: integer
+        criterion_notes:
+          type: object
+          additionalProperties:
+            type: string
+        overall:
+          type: integer
+          nullable: true
+        recommendation:
+          type: string
+        notes:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - criterion_notes
+      - id
+      - membership_id
+      - notes
+      - overall
+      - own
+      - panelist
+      - recommendation
+      - scores
+      - submitted_at
+    ScorecardCriterion:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        source_criterion_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - description
+      - key
+      - source_criterion_id
+      - title
+    ScorecardInRequest:
+      type: object
+      properties:
+        scores:
+          type: object
+          additionalProperties:
+            type: integer
+        criterion_notes:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 2000
+        overall:
+          type: integer
+          nullable: true
+        recommendation:
+          oneOf:
+          - $ref: '#/components/schemas/RecommendationEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        notes:
+          type: string
+          maxLength: 4000
+    ScorecardOutstanding:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - membership_id
+      - name
+    ScorecardTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScorecardCriterion'
+        locked:
+          type: boolean
+      required:
+      - criteria
+      - id
+      - job_id
+      - locked
+      - name
+    ScorecardTemplateCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          default: ''
+          maxLength: 120
+        extra_competencies:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          maxItems: 10
     ScreeningAnalytics:
       type: object
       properties:

@@ -60,6 +60,8 @@ class Endpoint:
     targets_object: bool = True
     # endpoints decorated with ``@idempotent`` need an ``Idempotency-Key`` header
     idempotent: bool = False
+    # endpoints that write to object storage (e.g. issuing an offer letter) run with in-memory S3
+    needs_s3: bool = False
 
     def headers(self, ctx: Ctx) -> dict[str, str]:
         import uuid
@@ -300,6 +302,14 @@ REGISTRY.extend(APPLICANT_ENDPOINTS)
 from tests.tenancy.privacy_endpoints import PRIVACY_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(PRIVACY_ENDPOINTS)
+
+from tests.tenancy.interviews_endpoints import INTERVIEW_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(INTERVIEW_ENDPOINTS)
+
+from tests.tenancy.offers_endpoints import OFFER_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(OFFER_ENDPOINTS)
 
 
 def register(endpoint: Endpoint) -> Endpoint:

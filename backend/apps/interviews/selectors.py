@@ -69,7 +69,7 @@ def panel_view(user: Any, membership: Membership, interview_id: Any) -> dict[str
             "coverage": app.coverage,
             "essentials_met": app.essentials_met,
             "essentials_unknown": app.essentials_unknown,
-            "label": "AI-assisted suggestion - requires human review",
+            "notice": "AI-assisted suggestion - requires human review",
         }
     return {
         "interview": iv,

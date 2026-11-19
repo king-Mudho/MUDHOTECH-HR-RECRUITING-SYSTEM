@@ -120,6 +120,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/{application_id}/interviews/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_application_interviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/applications/{application_id}/messages/": {
         parameters: {
             query?: never;
@@ -130,6 +146,22 @@ export interface paths {
         get: operations["applications_messages_list"];
         put?: never;
         post: operations["applications_messages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/offers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_application_offers"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -813,6 +845,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/applications/{application_id}/interviews/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_interviews"];
+        put?: never;
+        post: operations["hr_application_interview_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/applications/{application_id}/messages/": {
         parameters: {
             query?: never;
@@ -841,6 +889,22 @@ export interface paths {
         get: operations["hr_applications_notes_list"];
         put?: never;
         post: operations["hr_applications_notes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/applications/{application_id}/offers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_application_offers"];
+        put?: never;
+        post: operations["hr_application_offer_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1058,6 +1122,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/interviews/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_interviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_interview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/cancel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_interview_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/complete/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_interview_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/feedback/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_interview_feedback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/no-show/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_interview_no_show"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/reschedule/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_interview_reschedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/scorecard/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["hr_interview_my_scorecard_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/scorecard/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_interview_my_scorecard_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/interviews/{interview_id}/scorecards/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_interview_scorecards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/": {
         parameters: {
             query?: never;
@@ -1109,6 +1333,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/jobs/{job_id}/closeout/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_job_closeout_preview"];
+        put?: never;
+        post: operations["hr_job_closeout_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/jobs/{job_id}/funnel/": {
         parameters: {
             query?: never;
@@ -1119,6 +1359,22 @@ export interface paths {
         get: operations["hr_job_funnel"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/jobs/{job_id}/scorecard-templates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_job_scorecard_templates"];
+        put?: never;
+        post: operations["hr_job_scorecard_template_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1684,6 +1940,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/offers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_offers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_offer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["hr_offer_update"];
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/hire/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_hire"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/issue/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_issue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/letter/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_offer_letter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/return/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_return"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/offers/{offer_id}/withdraw/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_offer_withdraw"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/privacy/requests/": {
         parameters: {
             query?: never;
@@ -1918,6 +2318,38 @@ export interface paths {
         };
         /** @description For the banner every staff member of the organisation sees while support has access. */
         get: operations["hr_support_access_active"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/interviews/{interview_id}/book/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_interview_book"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/interviews/{interview_id}/calendar.ics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_interview_calendar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2165,6 +2597,38 @@ export interface paths {
         get: operations["notifications_unread_count"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/offers/{offer_id}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_offer_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/offers/{offer_id}/decline/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["candidate_offer_decline"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3118,6 +3582,50 @@ export interface components {
          * @enum {string}
          */
         CandidateActionKindEnum: "clarification" | "reupload" | "message";
+        CandidateInterview: {
+            /** Format: uuid */
+            id: string;
+            stage: string;
+            mode: string;
+            location: string;
+            video_link: string;
+            duration_minutes: number;
+            /** Format: date-time */
+            starts_at: string | null;
+            /** Format: date-time */
+            ends_at: string | null;
+            timezone: string;
+            status: string;
+            status_reason: string;
+            instructions: string;
+            slots: components["schemas"]["InterviewSlot"][];
+        };
+        CandidateOffer: {
+            /** Format: uuid */
+            id: string;
+            status: string;
+            job_title: string;
+            organisation_name: string;
+            /** Format: decimal */
+            salary_amount: string;
+            currency: string;
+            period: string;
+            /** Format: date */
+            start_date: string;
+            contract_type: string;
+            conditions: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            issued_at: string | null;
+            /** Format: date-time */
+            accepted_at: string | null;
+            /** Format: date-time */
+            declined_at: string | null;
+            /** Format: uuid */
+            letter_document_id: string | null;
+            acceptance_statement: string;
+        };
         CandidateSkill: {
             /** Format: uuid */
             readonly id: string;
@@ -3267,6 +3775,39 @@ export interface components {
          * @enum {string}
          */
         ClarificationStatusEnum: "open" | "answered" | "expired" | "cancelled";
+        CloseoutConfirmRequest: {
+            fingerprint: string;
+            /** @default position_filled */
+            reason_code: string;
+            /** @default  */
+            reason_text: string;
+        };
+        CloseoutPreview: {
+            /** Format: uuid */
+            job_id: string;
+            openings: components["schemas"]["OfferOpenings"];
+            to_notify: number;
+            to_notify_by_status: {
+                [key: string]: number;
+            };
+            still_in_progress: components["schemas"]["CloseoutRef"][];
+            with_open_offer: components["schemas"]["CloseoutRef"][];
+            fingerprint: string;
+        };
+        CloseoutRef: {
+            /** Format: uuid */
+            id: string;
+            reference: string | null;
+        };
+        CloseoutResult: {
+            notified: number;
+            skipped: components["schemas"]["CloseoutSkipped"][];
+        };
+        CloseoutSkipped: {
+            /** Format: uuid */
+            application_id: string;
+            reason: string;
+        };
         CommentRequest: {
             comment?: string;
         };
@@ -3733,6 +4274,29 @@ export interface components {
             closes_at: string;
             reason: string;
         };
+        Feedback: {
+            /** Format: uuid */
+            interview_id: string;
+            submitted: number;
+            panel_size: number;
+            outstanding: components["schemas"]["ScorecardOutstanding"][];
+            criteria: components["schemas"]["FeedbackCriterion"][];
+            /** Format: double */
+            overall_average: number | null;
+            recommendations: {
+                [key: string]: number;
+            };
+        };
+        FeedbackCriterion: {
+            key: string;
+            title: string;
+            count: number;
+            /** Format: double */
+            average: number | null;
+            min: number | null;
+            max: number | null;
+            disagreement: boolean;
+        };
         /**
          * @description * `ZW` - Zimbabwe
          *     * `INTL` - International
@@ -4001,6 +4565,14 @@ export interface components {
             /** Format: date-time */
             at: string;
         };
+        HireResult: {
+            /** Format: uuid */
+            hire_id: string;
+            /** Format: date */
+            start_date: string;
+            openings: components["schemas"]["OfferOpenings"];
+            prompt_close: boolean;
+        };
         IdentityReveal: {
             /** Format: uuid */
             application_id: string;
@@ -4037,6 +4609,73 @@ export interface components {
             readonly created_at: string;
             /** Format: date-time */
             readonly read_at: string | null;
+        };
+        Interview: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            application_id: string;
+            reference: string | null;
+            /** Format: uuid */
+            job_id: string;
+            job_title: string;
+            stage: string;
+            mode: string;
+            location: string;
+            video_link: string;
+            duration_minutes: number;
+            /** Format: date-time */
+            starts_at: string | null;
+            /** Format: date-time */
+            ends_at: string | null;
+            timezone: string;
+            status: string;
+            status_reason: string;
+            instructions: string;
+            /** Format: uuid */
+            scorecard_template_id: string | null;
+            sequence: number;
+            slots: components["schemas"]["InterviewSlot"][];
+            panel: components["schemas"]["Panelist"][];
+        };
+        InterviewBookRequest: {
+            /** Format: uuid */
+            slot_id: string;
+        };
+        InterviewCreateRequest: {
+            stage: string;
+            mode: components["schemas"]["ModeEnum"];
+            panel: components["schemas"]["PanelMemberInRequest"][];
+            /** Format: date-time */
+            starts_at?: string | null;
+            slots?: string[];
+            /** @default 45 */
+            duration_minutes: number;
+            /** @default Africa/Harare */
+            timezone: string;
+            /** @default  */
+            location: string;
+            video_link?: string;
+            /** @default  */
+            instructions: string;
+            /** Format: uuid */
+            scorecard_template_id?: string | null;
+        };
+        InterviewNoteRequest: {
+            /** @default  */
+            note: string;
+        };
+        InterviewReasonRequest: {
+            reason: string;
+        };
+        InterviewSlot: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            booked: boolean;
         };
         Invitation: {
             /** Format: uuid */
@@ -4361,6 +5000,13 @@ export interface components {
             code: string;
             key: string;
         };
+        /**
+         * @description * `in_person` - In person
+         *     * `video` - Video call
+         *     * `phone` - Phone
+         * @enum {string}
+         */
+        ModeEnum: "in_person" | "video" | "phone";
         Note: {
             /** Format: uuid */
             readonly id: string;
@@ -4390,6 +5036,100 @@ export interface components {
             privacy_notice_version: string;
             ai_notice_version: string;
             ai_notice_url: string;
+        };
+        Offer: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            application_id: string;
+            reference: string | null;
+            /** Format: uuid */
+            job_id: string;
+            job_title: string;
+            status: string;
+            /** Format: decimal */
+            salary_amount: string;
+            currency: string;
+            period: string;
+            /** Format: date */
+            start_date: string;
+            contract_type: string;
+            conditions: string;
+            /** Format: date-time */
+            expires_at: string;
+            required_approvals: number;
+            approval_round: number;
+            approvals: components["schemas"]["OfferApproval"][];
+            created_by: string | null;
+            /** Format: date-time */
+            issued_at: string | null;
+            /** Format: date-time */
+            accepted_at: string | null;
+            counter_offer_note: string;
+            /** Format: date-time */
+            declined_at: string | null;
+            decline_reason: string;
+            /** Format: date-time */
+            closed_at: string | null;
+            close_reason: string;
+            has_letter: boolean;
+            hire_recorded: boolean;
+            lock_version: number;
+            openings: components["schemas"]["OfferOpenings"];
+        };
+        OfferAcceptRequest: {
+            typed_name: string;
+            agree: boolean;
+            /** @default  */
+            counter_offer_note: string;
+        };
+        OfferApproval: {
+            approver: string;
+            round: number;
+            decision: string;
+            comment: string;
+            /** Format: date-time */
+            at: string;
+        };
+        OfferCommentRequest: {
+            /** @default  */
+            comment: string;
+        };
+        OfferDeclineRequest: {
+            /** @default  */
+            reason: string;
+        };
+        OfferHireRequest: {
+            /** Format: date */
+            start_date?: string | null;
+            /** @default  */
+            note: string;
+        };
+        OfferOpenings: {
+            openings: number;
+            accepted: number;
+            hired: number;
+            remaining: number;
+            over: boolean;
+        };
+        OfferReasonRequest: {
+            reason: string;
+        };
+        OfferRequiredCommentRequest: {
+            comment: string;
+        };
+        OfferTermsRequest: {
+            /** Format: decimal */
+            salary_amount: string;
+            currency: components["schemas"]["SalaryCurrencyEnum"];
+            period: components["schemas"]["SalaryPeriodEnum"];
+            /** Format: date */
+            start_date: string;
+            contract_type: components["schemas"]["EmploymentTypeEnum"];
+            /** @default  */
+            conditions: string;
+            /** Format: date-time */
+            expires_at: string;
         };
         OrgKillSwitchRequest: {
             enabled: boolean | null;
@@ -4515,6 +5255,14 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["InboxItem"][];
         };
+        PaginatedInterviewList: {
+            count: number;
+            /** Format: uri */
+            next: string | null;
+            /** Format: uri */
+            previous: string | null;
+            results: components["schemas"]["Interview"][];
+        };
         PaginatedInvitationList: {
             /** @example 123 */
             count: number;
@@ -4574,6 +5322,14 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Membership"][];
+        };
+        PaginatedOfferList: {
+            count: number;
+            /** Format: uri */
+            next: string | null;
+            /** Format: uri */
+            previous: string | null;
+            results: components["schemas"]["Offer"][];
         };
         PaginatedPlatformOrganisationList: {
             /** @example 123 */
@@ -4649,6 +5405,58 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["VersionSummary"][];
+        };
+        PanelAiHint: {
+            band: string;
+            /** Format: double */
+            coverage: number | null;
+            essentials_met: number | null;
+            essentials_unknown: number | null;
+            notice: string;
+        };
+        PanelConflict: {
+            /** Format: uuid */
+            membership_id: string;
+            /** Format: uuid */
+            interview_id: string;
+            /** Format: date-time */
+            starts_at: string | null;
+            /** Format: date-time */
+            ends_at: string | null;
+        };
+        PanelDocument: {
+            /** Format: uuid */
+            id: string;
+            role: string;
+            filename: string;
+            available: boolean;
+        };
+        PanelMemberInRequest: {
+            /** Format: uuid */
+            membership_id: string;
+            /** @default member */
+            role: components["schemas"]["PanelMemberInRoleEnum"];
+        };
+        /**
+         * @description * `lead` - Lead
+         *     * `member` - Member
+         * @enum {string}
+         */
+        PanelMemberInRoleEnum: "lead" | "member";
+        PanelView: {
+            interview: components["schemas"]["Interview"];
+            documents: components["schemas"]["PanelDocument"][];
+            scorecard_criteria: components["schemas"]["ScorecardCriterion"][];
+            ai: components["schemas"]["PanelAiHint"] | null;
+            can_manage: boolean;
+            on_panel: boolean;
+        };
+        Panelist: {
+            /** Format: uuid */
+            membership_id: string;
+            name: string;
+            role: string;
+            submitted: boolean;
         };
         PatchedCandidateSkillRequest: {
             /** Format: uuid */
@@ -4758,6 +5566,19 @@ export interface components {
         PatchedMembershipUpdateRequest: {
             role?: components["schemas"]["RoleEnum"];
             reason?: string;
+        };
+        PatchedOfferPatchRequest: {
+            lock_version?: number;
+            /** Format: decimal */
+            salary_amount?: string;
+            currency?: components["schemas"]["SalaryCurrencyEnum"];
+            period?: components["schemas"]["SalaryPeriodEnum"];
+            /** Format: date */
+            start_date?: string;
+            contract_type?: components["schemas"]["EmploymentTypeEnum"];
+            conditions?: string;
+            /** Format: date-time */
+            expires_at?: string;
         };
         PatchedOrganisationRequest: {
             name?: string;
@@ -5107,6 +5928,14 @@ export interface components {
         ReasonRequest: {
             reason?: string;
         };
+        /**
+         * @description * `strong_yes` - Strong yes
+         *     * `yes` - Yes
+         *     * `no` - No
+         *     * `strong_no` - Strong no
+         * @enum {string}
+         */
+        RecommendationEnum: "strong_yes" | "yes" | "no" | "strong_no";
         RegistryEntry: {
             /** Format: uuid */
             readonly id: string;
@@ -5145,6 +5974,12 @@ export interface components {
         };
         RequiredReasonRequest: {
             reason: string;
+        };
+        RescheduleRequest: {
+            reason: string;
+            /** Format: date-time */
+            starts_at?: string | null;
+            slots?: string[];
         };
         Resume: {
             /** Format: uuid */
@@ -5321,6 +6156,66 @@ export interface components {
         ScheduleRequest: {
             /** Format: date-time */
             publish_at: string;
+        };
+        Scheduled: {
+            interview: components["schemas"]["Interview"];
+            conflicts: components["schemas"]["PanelConflict"][];
+        };
+        Scorecard: {
+            /** Format: uuid */
+            id: string;
+            panelist: string;
+            /** Format: uuid */
+            membership_id: string;
+            own: boolean;
+            scores: {
+                [key: string]: number;
+            };
+            criterion_notes: {
+                [key: string]: string;
+            };
+            overall: number | null;
+            recommendation: string;
+            notes: string;
+            /** Format: date-time */
+            submitted_at: string | null;
+        };
+        ScorecardCriterion: {
+            key: string;
+            title: string;
+            description: string;
+            /** Format: uuid */
+            source_criterion_id: string | null;
+        };
+        ScorecardInRequest: {
+            scores?: {
+                [key: string]: number;
+            };
+            criterion_notes?: {
+                [key: string]: string;
+            };
+            overall?: number | null;
+            recommendation?: components["schemas"]["RecommendationEnum"] | components["schemas"]["BlankEnum"];
+            notes?: string;
+        };
+        ScorecardOutstanding: {
+            /** Format: uuid */
+            membership_id: string;
+            name: string;
+        };
+        ScorecardTemplate: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            job_id: string;
+            name: string;
+            criteria: components["schemas"]["ScorecardCriterion"][];
+            locked: boolean;
+        };
+        ScorecardTemplateCreateRequest: {
+            /** @default  */
+            name: string;
+            extra_competencies?: string[];
         };
         ScreeningAnalytics: {
             /** Format: uuid */
@@ -6029,6 +6924,27 @@ export interface operations {
             };
         };
     };
+    candidate_application_interviews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateInterview"][];
+                };
+            };
+        };
+    };
     applications_messages_list: {
         parameters: {
             query?: never;
@@ -6073,6 +6989,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    candidate_application_offers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateOffer"][];
                 };
             };
         };
@@ -7404,6 +8341,54 @@ export interface operations {
             };
         };
     };
+    hr_application_interviews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interview"][];
+                };
+            };
+        };
+    };
+    hr_application_interview_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterviewCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InterviewCreateRequest"];
+                "multipart/form-data": components["schemas"]["InterviewCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Scheduled"];
+                };
+            };
+        };
+    };
     hr_applications_messages_list: {
         parameters: {
             query?: never;
@@ -7496,6 +8481,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Note"];
+                };
+            };
+        };
+    };
+    hr_application_offers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"][];
+                };
+            };
+        };
+    };
+    hr_application_offer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferTermsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferTermsRequest"];
+                "multipart/form-data": components["schemas"]["OfferTermsRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
                 };
             };
         };
@@ -7827,6 +8860,253 @@ export interface operations {
             };
         };
     };
+    hr_interviews: {
+        parameters: {
+            query?: {
+                /** @description ISO date-time (starts_at >=) */
+                from?: string;
+                job?: string;
+                /** @description only interviews I sit on */
+                mine?: boolean;
+                status?: string;
+                /** @description ISO date-time (starts_at <) */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedInterviewList"];
+                };
+            };
+        };
+    };
+    hr_interview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PanelView"];
+                };
+            };
+        };
+    };
+    hr_interview_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterviewReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InterviewReasonRequest"];
+                "multipart/form-data": components["schemas"]["InterviewReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interview"];
+                };
+            };
+        };
+    };
+    hr_interview_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interview"];
+                };
+            };
+        };
+    };
+    hr_interview_feedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Feedback"];
+                };
+            };
+        };
+    };
+    hr_interview_no_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["InterviewNoteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InterviewNoteRequest"];
+                "multipart/form-data": components["schemas"]["InterviewNoteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Interview"];
+                };
+            };
+        };
+    };
+    hr_interview_reschedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RescheduleRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RescheduleRequest"];
+                "multipart/form-data": components["schemas"]["RescheduleRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Scheduled"];
+                };
+            };
+        };
+    };
+    hr_interview_my_scorecard_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ScorecardInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ScorecardInRequest"];
+                "multipart/form-data": components["schemas"]["ScorecardInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Scorecard"];
+                };
+            };
+        };
+    };
+    hr_interview_my_scorecard_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ScorecardInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ScorecardInRequest"];
+                "multipart/form-data": components["schemas"]["ScorecardInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Scorecard"];
+                };
+            };
+        };
+    };
+    hr_interview_scorecards: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Scorecard"][];
+                };
+            };
+        };
+    };
     hr_jobs_list: {
         parameters: {
             query?: {
@@ -7952,6 +9232,54 @@ export interface operations {
             };
         };
     };
+    hr_job_closeout_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseoutPreview"];
+                };
+            };
+        };
+    };
+    hr_job_closeout_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloseoutConfirmRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CloseoutConfirmRequest"];
+                "multipart/form-data": components["schemas"]["CloseoutConfirmRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseoutResult"];
+                };
+            };
+        };
+    };
     hr_job_funnel: {
         parameters: {
             query?: never;
@@ -7969,6 +9297,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Funnel"];
+                };
+            };
+        };
+    };
+    hr_job_scorecard_templates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardTemplate"][];
+                };
+            };
+        };
+    };
+    hr_job_scorecard_template_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ScorecardTemplateCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ScorecardTemplateCreateRequest"];
+                "multipart/form-data": components["schemas"]["ScorecardTemplateCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScorecardTemplate"];
                 };
             };
         };
@@ -9004,6 +10380,246 @@ export interface operations {
             };
         };
     };
+    hr_offers: {
+        parameters: {
+            query?: {
+                job?: string;
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedOfferList"];
+                };
+            };
+        };
+    };
+    hr_offer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedOfferPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedOfferPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedOfferPatchRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OfferCommentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferCommentRequest"];
+                "multipart/form-data": components["schemas"]["OfferCommentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_hire: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OfferHireRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferHireRequest"];
+                "multipart/form-data": components["schemas"]["OfferHireRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireResult"];
+                };
+            };
+        };
+    };
+    hr_offer_issue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_letter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to a 60-second presigned URL */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hr_offer_return: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferRequiredCommentRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferRequiredCommentRequest"];
+                "multipart/form-data": components["schemas"]["OfferRequiredCommentRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
+    hr_offer_withdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferReasonRequest"];
+                "multipart/form-data": components["schemas"]["OfferReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Offer"];
+                };
+            };
+        };
+    };
     hr_privacy_requests: {
         parameters: {
             query?: never;
@@ -9376,6 +10992,53 @@ export interface operations {
             };
         };
     };
+    candidate_interview_book: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterviewBookRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["InterviewBookRequest"];
+                "multipart/form-data": components["schemas"]["InterviewBookRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateInterview"];
+                };
+            };
+        };
+    };
+    candidate_interview_calendar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                interview_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description iCalendar file */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     invitations_preview: {
         parameters: {
             query?: never;
@@ -9736,6 +11399,60 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UnreadCount"];
+                };
+            };
+        };
+    };
+    candidate_offer_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferAcceptRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferAcceptRequest"];
+                "multipart/form-data": components["schemas"]["OfferAcceptRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateOffer"];
+                };
+            };
+        };
+    };
+    candidate_offer_decline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OfferDeclineRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OfferDeclineRequest"];
+                "multipart/form-data": components["schemas"]["OfferDeclineRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateOffer"];
                 };
             };
         };

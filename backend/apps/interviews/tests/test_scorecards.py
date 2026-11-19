@@ -187,7 +187,7 @@ def test_panel_view_hides_ai_by_default(ctx: dict[str, Any]) -> None:
     ]
     OrganisationPolicy.objects.filter(organisation=team.org).update(hide_ai_from_panelists=False)
     view = panel_view(team.panelist, ctx["a"], iv.pk)
-    assert view["ai"] is not None and "requires human review" in view["ai"]["label"]
+    assert view["ai"] is not None and "requires human review" in view["ai"]["notice"]
 
 
 def test_panel_view_is_limited_to_own_interviews(ctx: dict[str, Any]) -> None:

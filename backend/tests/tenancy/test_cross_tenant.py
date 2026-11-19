@@ -20,7 +20,9 @@ def call(client: APIClient, ep: Endpoint, ctx: Any, header_ctx: Any = None) -> A
 
 
 @pytest.mark.parametrize("ep", REGISTRY, ids=str)
-def test_member_of_other_org_gets_404(ep: Endpoint) -> None:
+def test_member_of_other_org_gets_404(ep: Endpoint, request: pytest.FixtureRequest) -> None:
+    if ep.needs_s3:
+        request.getfixturevalue("s3")
     victim = build_ctx(ep)
     attacker = build_ctx(ep)
     client = APIClient()
@@ -31,7 +33,9 @@ def test_member_of_other_org_gets_404(ep: Endpoint) -> None:
 
 
 @pytest.mark.parametrize("ep", [e for e in REGISTRY if e.is_list], ids=str)
-def test_lists_never_include_other_org_rows(ep: Endpoint) -> None:
+def test_lists_never_include_other_org_rows(ep: Endpoint, request: pytest.FixtureRequest) -> None:
+    if ep.needs_s3:
+        request.getfixturevalue("s3")
     victim = build_ctx(ep)
     attacker = build_ctx(ep)
     client = APIClient()

@@ -13,7 +13,9 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(("ep", "role"), CASES, ids=lambda v: str(v))
-def test_role_endpoint_matrix(ep: Endpoint, role: str) -> None:
+def test_role_endpoint_matrix(ep: Endpoint, role: str, request: pytest.FixtureRequest) -> None:
+    if ep.needs_s3:
+        request.getfixturevalue("s3")
     ctx = build_ctx(ep)
     client = APIClient()
     client.force_login(ctx.team.user_for(role))
