@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from apps.core.exceptions import NotFoundError
 from apps.organisations.permissions import HasOrgAction
 
-from .. import selectors, services
+from .. import exports, selectors, services
 from . import serializers as s
 
 FILTERS = ("from", "to", "department", "job")
@@ -82,3 +82,59 @@ class RecruitmentReportRefreshView(APIView):
         org_id = request.membership.organisation_id  # type: ignore[attr-defined]
         data = services.refresh(org_id)
         return Response(s.RecruitmentReportSerializer({**data, "origin": "live"}).data)
+
+
+# --- exports (P13-T06) --------------------------------------------------------------------------
+class ExportListView(APIView):
+    permission_classes = [HasOrgAction("reports.export")]
+
+    @extend_schema(operation_id="hr_exports", responses=s.ExportJobSerializer(many=True))
+    def get(self, request: Request) -> Response:
+        rows = exports.visible(request.membership).order_by("-created_at")[:20]  # type: ignore[attr-defined]
+        return Response(s.ExportJobSerializer(rows, many=True).data)
+
+    @extend_schema(
+        operation_id="hr_exports_create",
+        request=s.ExportRequestSerializer,
+        responses={202: s.ExportJobSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        data = s.ExportRequestSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        v = data.validated_data
+        job = exports.request_export(
+            request.membership,  # type: ignore[attr-defined]
+            kind=v["kind"],
+            fmt=v["format"],
+            blind=v["blind"],
+            params={
+                "job": v["job"],
+                "department": v["department"],
+                "from": v["date_from"],
+                "to": v["date_to"],
+            },
+        )
+        return Response(s.ExportJobSerializer(job).data, status=202)
+
+
+class ExportDetailView(APIView):
+    permission_classes = [HasOrgAction("reports.export")]
+
+    @extend_schema(operation_id="hr_export", responses=s.ExportJobSerializer)
+    def get(self, request: Request, export_id: str) -> Response:
+        job = exports.visible(request.membership).filter(pk=export_id).first()  # type: ignore[attr-defined]
+        if job is None:
+            raise NotFoundError()
+        return Response(s.ExportJobSerializer(job).data)
+
+
+class ExportDownloadView(APIView):
+    permission_classes = [HasOrgAction("reports.export")]
+
+    @extend_schema(
+        operation_id="hr_export_download", request=None, responses=s.ExportDownloadSerializer
+    )
+    def post(self, request: Request, export_id: str) -> Response:
+        job, url = exports.download_url(request.membership, export_id)  # type: ignore[attr-defined]
+        body = {"url": url, "filename": job.filename, "expires_in": exports.LINK_TTL}
+        return Response(s.ExportDownloadSerializer(body).data)

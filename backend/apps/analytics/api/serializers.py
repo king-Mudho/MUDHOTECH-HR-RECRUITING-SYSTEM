@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from rest_framework import serializers
 
+from apps.core.serializers import StrictSerializer
+
 
 class DurationStatsSerializer(serializers.Serializer):
     count = serializers.IntegerField()
@@ -126,3 +128,33 @@ class RecruitmentReportSerializer(serializers.Serializer):
     processing = ProcessingStatsSerializer()
     ai_agreement = AIAgreementSerializer()
     clarifications = ClarificationStatsSerializer()
+
+
+class ExportRequestSerializer(StrictSerializer):
+    kind = serializers.ChoiceField(choices=["applicants", "report"])
+    format = serializers.ChoiceField(choices=["csv", "xlsx", "pdf"])
+    blind = serializers.BooleanField(required=False, default=False)
+    job = serializers.UUIDField(required=False, allow_null=True, default=None)
+    department = serializers.UUIDField(required=False, allow_null=True, default=None)
+    date_from = serializers.DateField(required=False, allow_null=True, default=None)
+    date_to = serializers.DateField(required=False, allow_null=True, default=None)
+
+
+class ExportJobSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    kind = serializers.CharField()
+    format = serializers.CharField()
+    blind = serializers.BooleanField()
+    params = serializers.DictField(child=serializers.CharField())
+    status = serializers.CharField()
+    row_count = serializers.IntegerField()
+    error = serializers.CharField(allow_blank=True)
+    created_at = serializers.DateTimeField()
+    finished_at = serializers.DateTimeField(allow_null=True)
+    expires_at = serializers.DateTimeField(allow_null=True)
+
+
+class ExportDownloadSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    filename = serializers.CharField()
+    expires_in = serializers.IntegerField()

@@ -15,6 +15,8 @@ import { useDepartments } from "@/features/organisations/hooks";
 import { api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
+import { ExportPanel } from "./exports";
+
 type Report = components["schemas"]["RecruitmentReport"];
 type Duration = components["schemas"]["DurationStats"];
 
@@ -102,6 +104,7 @@ export function ReportsRoute() {
         onSubmit={() => setFilters(draft)}
         onReset={() => apply(EMPTY_FILTERS)}
       />
+      <ExportPanel filters={filters} />
       {report.isPending ? (
         <PageSkeleton />
       ) : report.isError ? (

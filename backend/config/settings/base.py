@@ -317,6 +317,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=5),
         "options": {"expires": 240},
     },
+    "exports-expiry": {
+        "task": "apps.analytics.tasks.expire_exports",
+        "schedule": crontab(minute=40),
+        "options": {"expires": 3000},
+    },
     "analytics-nightly": {
         "task": "apps.analytics.tasks.refresh_analytics",
         "schedule": crontab(hour=2, minute=30),

@@ -2869,6 +2869,28 @@
       "counts": "{answered} answered · {expired} expired · {open} open",
       "time": "Time to answer (median)",
       "total": "Requests"
+    },
+    "export": {
+      "title": "Exports",
+      "intro": "Exports use the filters above. Files are prepared in the background, kept for 24 hours, and each download link works for 15 minutes. Every export and download is recorded.",
+      "what": "What to export",
+      "kinds": {
+        "report": "This report",
+        "applicants": "Applicants of the selected vacancy"
+      },
+      "format": "Format",
+      "blind": "Blind: leave out names and contact details",
+      "blindShort": "blind",
+      "request": "Prepare export",
+      "needsJob": "Choose a vacancy in the filters to export its applicants.",
+      "failed": "That didn't work. Please try again.",
+      "download": "Download ({rows} rows)",
+      "status": {
+        "queued": "Preparing…",
+        "ready": "Ready",
+        "failed": "Failed",
+        "expired": "Expired"
+      }
     }
   }
 }

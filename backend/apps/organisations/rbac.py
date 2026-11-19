@@ -65,6 +65,7 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     "talentpool.invite": RECRUITING,
     # advanced analytics and exports (P13-T03/T06)
     "reports.view": ADMIN_HR,
+    "reports.export": ADMIN_HR,
 }
 
 

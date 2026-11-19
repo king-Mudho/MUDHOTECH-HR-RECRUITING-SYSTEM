@@ -1154,6 +1154,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/exports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_exports"];
+        put?: never;
+        post: operations["hr_exports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/exports/{export_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/exports/{export_id}/download/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_export_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/interviews/": {
         parameters: {
             query?: never;
@@ -4434,6 +4482,51 @@ export interface components {
             description?: string;
             order?: number;
         };
+        ExportDownload: {
+            /** Format: uri */
+            url: string;
+            filename: string;
+            expires_in: number;
+        };
+        ExportJob: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            format: string;
+            blind: boolean;
+            params: {
+                [key: string]: string;
+            };
+            status: string;
+            row_count: number;
+            error: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            finished_at: string | null;
+            /** Format: date-time */
+            expires_at: string | null;
+        };
+        /**
+         * @description * `applicants` - applicants
+         *     * `report` - report
+         * @enum {string}
+         */
+        ExportRequestKindEnum: "applicants" | "report";
+        ExportRequestRequest: {
+            kind: components["schemas"]["ExportRequestKindEnum"];
+            format: components["schemas"]["FormatEnum"];
+            /** @default false */
+            blind: boolean;
+            /** Format: uuid */
+            job?: string | null;
+            /** Format: uuid */
+            department?: string | null;
+            /** Format: date */
+            date_from?: string | null;
+            /** Format: date */
+            date_to?: string | null;
+        };
         ExportUrl: {
             /** Format: uri */
             url: string;
@@ -4466,6 +4559,13 @@ export interface components {
             max: number | null;
             disagreement: boolean;
         };
+        /**
+         * @description * `csv` - csv
+         *     * `xlsx` - xlsx
+         *     * `pdf` - pdf
+         * @enum {string}
+         */
+        FormatEnum: "csv" | "xlsx" | "pdf";
         /**
          * @description * `ZW` - Zimbabwe
          *     * `INTL` - International
@@ -9282,6 +9382,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DecisionReason"][];
+                };
+            };
+        };
+    };
+    hr_exports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportJob"][];
+                };
+            };
+        };
+    };
+    hr_exports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExportRequestRequest"];
+                "multipart/form-data": components["schemas"]["ExportRequestRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportJob"];
+                };
+            };
+        };
+    };
+    hr_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportJob"];
+                };
+            };
+        };
+    };
+    hr_export_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportDownload"];
                 };
             };
         };

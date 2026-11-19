@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { formatHours, percent, ReportsRoute } from "@/features/reports/components";
+import { exportBody } from "@/features/reports/exports";
 import messages from "../messages/en.json";
 
 vi.mock("next/navigation", () => ({
@@ -193,5 +194,59 @@ describe("ReportsRoute", () => {
     expect(
       await screen.findByText("Reports are available to HR managers and organisation admins."),
     ).toBeInTheDocument();
+  });
+});
+
+describe("exports", () => {
+  it("sends the on-screen filters; blind only applies to applicant exports", () => {
+    const f = { from: "2026-11-01", to: "", department: "", job: "j1" };
+    expect(exportBody("applicants", "csv", true, f)).toEqual({
+      kind: "applicants",
+      format: "csv",
+      blind: true,
+      job: "j1",
+      department: null,
+      date_from: "2026-11-01",
+      date_to: null,
+    });
+    expect(exportBody("report", "pdf", true, f).blind).toBe(false);
+  });
+
+  it("prepares an export and offers the download when ready", async () => {
+    const posts: [string, unknown][] = [];
+    let ready = false;
+    const job = () => ({
+      id: "x1",
+      kind: "report",
+      format: "xlsx",
+      blind: false,
+      params: {},
+      status: ready ? "ready" : "queued",
+      row_count: 12,
+      error: "",
+      created_at: "2026-11-19T10:00:00Z",
+      finished_at: null,
+      expires_at: null,
+    });
+    routes(
+      (u) => (u === "/api/v1/me/" ? { body: me("hr_manager") } : undefined),
+      (u) =>
+        u.startsWith("/api/v1/hr/jobs/") || u.includes("/departments/")
+          ? { body: { count: 0, next: null, previous: null, results: [] } }
+          : undefined,
+      (u) => (u.startsWith("/api/v1/hr/reports/") ? { body: report } : undefined),
+      (u, init) => {
+        if (u === "/api/v1/hr/exports/" && init?.method === "POST") {
+          posts.push([u, JSON.parse(String(init.body))]);
+          ready = true;
+          return { status: 202, body: job() };
+        }
+        return u === "/api/v1/hr/exports/" ? { body: posts.length ? [job()] : [] } : undefined;
+      },
+    );
+    wrap(<ReportsRoute />);
+    await userEvent.click(await screen.findByRole("button", { name: "Prepare export" }));
+    expect(await screen.findByRole("button", { name: "Download (12 rows)" })).toBeInTheDocument();
+    expect(posts[0]![1]).toMatchObject({ kind: "report", format: "xlsx", blind: false });
   });
 });
