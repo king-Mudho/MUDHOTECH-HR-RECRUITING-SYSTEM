@@ -17,3 +17,5 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SESSION_COOKIE_AGE = 60 * 60 * 12
+# P15: real provider calls in production (sandbox only when explicitly asked for)
+INTEGRATIONS_SANDBOX = env.bool("INTEGRATIONS_SANDBOX", default=False)

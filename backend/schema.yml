@@ -544,6 +544,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/CorrectionView'
           description: ''
+  /api/v1/candidate/messaging-preferences/:
+    get:
+      operationId: candidate_messaging_preferences
+      tags:
+      - candidate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagingPreferences'
+          description: ''
+    put:
+      operationId: candidate_messaging_preferences_update
+      tags:
+      - candidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagingPreferencesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessagingPreferencesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MessagingPreferencesRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagingPreferences'
+          description: ''
   /api/v1/candidate/profile/:
     get:
       operationId: candidate_profile_retrieve
@@ -1592,6 +1631,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/Document'
           description: ''
+  /api/v1/feeds/{org_slug}/jobs.json:
+    get:
+      operationId: feeds_jobs_json
+      parameters:
+      - in: path
+        name: org_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - public-api
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicJob'
+          description: ''
+  /api/v1/feeds/{org_slug}/jobs.xml:
+    get:
+      operationId: feeds_jobs_xml
+      parameters:
+      - in: path
+        name: org_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - public-api
+      security:
+      - {}
+      responses:
+        '200':
+          description: Job feed (XML)
+  /api/v1/hr/api-keys/:
+    get:
+      operationId: hr_api_keys
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKey'
+          description: ''
+    post:
+      operationId: hr_api_keys_create
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ApiKeyInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApiKeyInRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyCreated'
+          description: ''
+  /api/v1/hr/api-keys/{key_id}/:
+    delete:
+      operationId: hr_api_key_revoke
+      parameters:
+      - in: path
+        name: key_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/hr/applications/{application_id}/:
     get:
       operationId: hr_applications_retrieve
@@ -2729,6 +2864,116 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExportDownload'
+          description: ''
+  /api/v1/hr/integrations/:
+    get:
+      operationId: hr_integrations
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationsOverview'
+          description: ''
+    post:
+      operationId: hr_integrations_connect
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConnectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConnectRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+          description: ''
+  /api/v1/hr/integrations/{connection_id}/:
+    delete:
+      operationId: hr_integration_disconnect
+      parameters:
+      - in: path
+        name: connection_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hr/integrations/{connection_id}/rotate/:
+    post:
+      operationId: hr_integration_rotate
+      parameters:
+      - in: path
+        name: connection_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RotateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RotateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RotateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+          description: ''
+  /api/v1/hr/integrations/{connection_id}/test/:
+    post:
+      operationId: hr_integration_test
+      parameters:
+      - in: path
+        name: connection_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
           description: ''
   /api/v1/hr/interviews/:
     get:
@@ -5505,6 +5750,178 @@ paths:
               schema:
                 $ref: '#/components/schemas/TalentInviteResult'
           description: ''
+  /api/v1/hr/webhooks/:
+    get:
+      operationId: hr_webhooks
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksOverview'
+          description: ''
+    post:
+      operationId: hr_webhooks_create
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEndpointInRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WebhookEndpointInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WebhookEndpointInRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpointCreated'
+          description: ''
+  /api/v1/hr/webhooks/{endpoint_id}/:
+    patch:
+      operationId: hr_webhook_update
+      parameters:
+      - in: path
+        name: endpoint_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWebhookEndpointPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWebhookEndpointPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWebhookEndpointPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+          description: ''
+    delete:
+      operationId: hr_webhook_delete
+      parameters:
+      - in: path
+        name: endpoint_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hr/webhooks/{endpoint_id}/rotate/:
+    post:
+      operationId: hr_webhook_rotate
+      parameters:
+      - in: path
+        name: endpoint_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpointCreated'
+          description: ''
+  /api/v1/hr/webhooks/deliveries/{delivery_id}/replay/:
+    post:
+      operationId: hr_webhook_delivery_replay
+      parameters:
+      - in: path
+        name: delivery_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDelivery'
+          description: ''
+  /api/v1/integrations/sms/inbound/:
+    post:
+      operationId: integrations_sms_inbound
+      tags:
+      - integrations
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/integrations/sms/receipt/:
+    post:
+      operationId: integrations_sms_receipt
+      tags:
+      - integrations
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/integrations/whatsapp/webhook/:
+    get:
+      operationId: integrations_whatsapp_verify
+      description: 'Meta webhook: GET verification handshake, POST signed with the
+        app secret.'
+      tags:
+      - integrations
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: integrations_whatsapp_event
+      description: 'Meta webhook: GET verification handshake, POST signed with the
+        app secret.'
+      tags:
+      - integrations
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/interviews/{interview_id}/book/:
     post:
       operationId: candidate_interview_book
@@ -8171,6 +8588,38 @@ paths:
                 items:
                   $ref: '#/components/schemas/RightsRequest'
           description: ''
+  /api/v1/public-api/applications/:
+    get:
+      operationId: public_api_applications
+      tags:
+      - public-api
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicApplication'
+          description: ''
+  /api/v1/public-api/jobs/:
+    get:
+      operationId: public_api_jobs
+      tags:
+      - public-api
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicJob'
+          description: ''
   /api/v1/sitemap.xml:
     get:
       operationId: jobs_sitemap
@@ -8406,6 +8855,93 @@ components:
             $ref: '#/components/schemas/AnswerItemRequest'
       required:
       - answers
+    ApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        prefix:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - id
+      - last_used_at
+      - name
+      - prefix
+      - revoked_at
+      - scopes
+    ApiKeyCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        prefix:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        key:
+          type: string
+          description: Shown once.
+      required:
+      - created_at
+      - id
+      - key
+      - last_used_at
+      - name
+      - prefix
+      - revoked_at
+      - scopes
+    ApiKeyInRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        scopes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          minItems: 1
+      required:
+      - name
+      - scopes
     ApiRoot:
       type: object
       properties:
@@ -9743,6 +10279,76 @@ components:
       required:
       - application_id
       - declared_at
+    ConnectRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+          minLength: 1
+          maxLength: 40
+        credentials:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 4000
+        config:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 200
+        sandbox:
+          type: boolean
+          default: false
+      required:
+      - credentials
+      - provider
+    Connection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        personal:
+          type: boolean
+        credentials_hint:
+          type: string
+        config:
+          type: object
+          additionalProperties: {}
+        status:
+          type: string
+        sandbox:
+          type: boolean
+        last_success_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_error_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_error:
+          type: string
+        credentials_rotated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - config
+      - credentials_hint
+      - credentials_rotated_at
+      - id
+      - last_error
+      - last_error_at
+      - last_success_at
+      - personal
+      - provider
+      - sandbox
+      - status
     Consent:
       type: object
       properties:
@@ -12203,6 +12809,23 @@ components:
       - organisation
       - read_at
       - text
+    IntegrationsOverview:
+      type: object
+      properties:
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Provider'
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connection'
+        sandbox_default:
+          type: boolean
+      required:
+      - connections
+      - providers
+      - sandbox_default
     Interview:
       type: object
       properties:
@@ -13328,6 +13951,26 @@ components:
           maxItems: 3
       required:
       - body
+    MessagingPreferences:
+      type: object
+      properties:
+        sms:
+          type: boolean
+        whatsapp:
+          type: boolean
+      required:
+      - sms
+      - whatsapp
+    MessagingPreferencesRequest:
+      type: object
+      properties:
+        sms:
+          type: boolean
+        whatsapp:
+          type: boolean
+      required:
+      - sms
+      - whatsapp
     MethodEnum:
       enum:
       - card
@@ -14311,6 +14954,7 @@ components:
         interview_id:
           type: string
           format: uuid
+          nullable: true
         starts_at:
           type: string
           format: date-time
@@ -14319,6 +14963,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        source:
+          type: string
+          default: mhrs
       required:
       - ends_at
       - interview_id
@@ -14810,6 +15457,9 @@ components:
           type: integer
           maximum: 5
           minimum: 1
+        sso_enabled:
+          type: boolean
+        sso_domains: {}
         rights_request_sla_days:
           type: integer
           maximum: 32767
@@ -14881,6 +15531,17 @@ components:
             type: string
             maxLength: 40
           maxItems: 10
+    PatchedWebhookEndpointPatchRequest:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+        active:
+          type: boolean
     PayRequestRequest:
       type: object
       properties:
@@ -15298,6 +15959,9 @@ components:
           type: integer
           maximum: 5
           minimum: 1
+        sso_enabled:
+          type: boolean
+        sso_domains: {}
         rights_request_sla_days:
           type: integer
           maximum: 32767
@@ -15433,6 +16097,63 @@ components:
           maxLength: 2000
       required:
       - reason
+    Provider:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+        per_user:
+          type: boolean
+        credential_fields:
+          type: array
+          items:
+            type: string
+        config_fields:
+          type: array
+          items:
+            type: string
+        docs:
+          type: string
+      required:
+      - config_fields
+      - credential_fields
+      - docs
+      - key
+      - kind
+      - name
+      - per_user
+    PublicApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - job_id
+      - reference
+      - status
+      - submitted_at
+      - updated_at
     PublicCompany:
       type: object
       properties:
@@ -15502,6 +16223,51 @@ components:
       - min_months
       - title
       - type
+    PublicJob:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        company:
+          type: string
+        url:
+          type: string
+          format: uri
+        apply_url:
+          type: string
+          format: uri
+        city:
+          type: string
+        country:
+          type: string
+        employment_type:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        closes_at:
+          type: string
+          format: date-time
+          nullable: true
+        summary:
+          type: string
+      required:
+      - apply_url
+      - city
+      - closes_at
+      - company
+      - country
+      - employment_type
+      - id
+      - published_at
+      - summary
+      - title
+      - url
     PublicJobDetail:
       type: object
       properties:
@@ -16598,6 +17364,17 @@ components:
         * `recruiter` - Recruiter
         * `hiring_manager` - Hiring manager
         * `approver` - Approver
+    RotateRequest:
+      type: object
+      properties:
+        credentials:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 4000
+      required:
+      - credentials
     RubricBand:
       type: object
       properties:
@@ -18411,6 +19188,147 @@ components:
       - number
       - status
       - submitted_at
+    WebhookDelivery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        endpoint_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+        status:
+          type: string
+        attempts:
+          type: integer
+        response_code:
+          type: integer
+          nullable: true
+        last_error:
+          type: string
+        next_attempt_at:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - attempts
+      - created_at
+      - delivered_at
+      - endpoint_id
+      - event_type
+      - id
+      - last_error
+      - next_attempt_at
+      - response_code
+      - status
+    WebhookEndpoint:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - active
+      - created_at
+      - description
+      - events
+      - id
+      - url
+    WebhookEndpointCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        secret:
+          type: string
+          description: Shown once; store it to verify signatures.
+      required:
+      - active
+      - created_at
+      - description
+      - events
+      - id
+      - secret
+      - url
+    WebhookEndpointInRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 500
+        events:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          minItems: 1
+        description:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - events
+      - url
+    WebhooksOverview:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEndpoint'
+        deliveries:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookDelivery'
+      required:
+      - deliveries
+      - endpoints
+      - events
     WithdrawRequest:
       type: object
       properties:
@@ -18428,6 +19346,10 @@ components:
         * `hybrid` - Hybrid
         * `remote` - Remote
   securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      description: 'Organisation API key: Authorization: Bearer mhrs_<prefix>_<secret>'
     cookieAuth:
       type: apiKey
       in: cookie

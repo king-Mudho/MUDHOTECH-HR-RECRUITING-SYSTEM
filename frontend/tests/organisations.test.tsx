@@ -208,6 +208,8 @@ describe("PolicySettings", () => {
     notification_delay_minutes: 15,
     hide_ai_from_panelists: true,
     offer_approvals_required: 1,
+    sso_enabled: false,
+    sso_domains: [],
     rights_request_sla_days: 30,
   };
 

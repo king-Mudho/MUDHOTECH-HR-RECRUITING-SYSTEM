@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { MessagingPreferences } from "@/features/integrations/components";
+
 import { PageSkeleton } from "@/components/states/page-skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,8 +43,8 @@ export function CandidateSettings() {
             <h2 className="text-lg font-semibold">{t("notifications")}</h2>
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-muted-foreground text-sm">
-          {t("notificationsSoon")}
+        <CardContent className="text-sm">
+          <MessagingPreferences />
         </CardContent>
       </Card>
       <Card>

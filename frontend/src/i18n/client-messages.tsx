@@ -2,6 +2,8 @@ import { NextIntlClientProvider, type AbstractIntlMessages } from "next-intl";
 import { getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
 
+import { LocaleBoundary } from "./locale-boundary";
+
 /**
  * Messages shipped to the browser. Public pages (job board, sign-in, invitations) only get the
  * namespaces their client components use, which keeps the HTML small on mobile data; the signed-in
@@ -23,6 +25,7 @@ export const PUBLIC_NAMESPACES = [
   "roles",
   "organisations",
   "publicJobs",
+  "language",
 ] as const;
 
 export function pickMessages(
@@ -36,5 +39,9 @@ export function pickMessages(
 
 export async function AreaMessages({ children }: { children: ReactNode }) {
   const messages = await getMessages();
-  return <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>;
+  return (
+    <NextIntlClientProvider messages={messages}>
+      <LocaleBoundary>{children}</LocaleBoundary>
+    </NextIntlClientProvider>
+  );
 }

@@ -300,6 +300,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/candidate/messaging-preferences/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["candidate_messaging_preferences"];
+        put: operations["candidate_messaging_preferences_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/candidate/profile/": {
         parameters: {
             query?: never;
@@ -726,6 +742,70 @@ export interface paths {
         put?: never;
         post: operations["documents_upload_session_complete"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feeds/{org_slug}/jobs.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["feeds_jobs_json"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feeds/{org_slug}/jobs.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["feeds_jobs_xml"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/api-keys/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_api_keys"];
+        put?: never;
+        post: operations["hr_api_keys_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/api-keys/{key_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["hr_api_key_revoke"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1312,6 +1392,70 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["hr_export_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/integrations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_integrations"];
+        put?: never;
+        post: operations["hr_integrations_connect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/integrations/{connection_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["hr_integration_disconnect"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/integrations/{connection_id}/rotate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_integration_rotate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/integrations/{connection_id}/test/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_integration_test"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2620,6 +2764,120 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/webhooks/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_webhooks"];
+        put?: never;
+        post: operations["hr_webhooks_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/webhooks/{endpoint_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["hr_webhook_delete"];
+        options?: never;
+        head?: never;
+        patch: operations["hr_webhook_update"];
+        trace?: never;
+    };
+    "/api/v1/hr/webhooks/{endpoint_id}/rotate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_webhook_rotate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hr/webhooks/deliveries/{delivery_id}/replay/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hr_webhook_delivery_replay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/sms/inbound/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["integrations_sms_inbound"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/sms/receipt/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["integrations_sms_receipt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/whatsapp/webhook/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Meta webhook: GET verification handshake, POST signed with the app secret. */
+        get: operations["integrations_whatsapp_verify"];
+        put?: never;
+        /** @description Meta webhook: GET verification handshake, POST signed with the app secret. */
+        post: operations["integrations_whatsapp_event"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/interviews/{interview_id}/book/": {
         parameters: {
             query?: never;
@@ -3873,6 +4131,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public-api/applications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["public_api_applications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-api/jobs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["public_api_jobs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/sitemap.xml": {
         parameters: {
             query?: never;
@@ -3996,6 +4286,38 @@ export interface components {
         };
         AnswersRequest: {
             answers: components["schemas"]["AnswerItemRequest"][];
+        };
+        ApiKey: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            prefix: string;
+            scopes: string[];
+            /** Format: date-time */
+            last_used_at: string | null;
+            /** Format: date-time */
+            revoked_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        ApiKeyCreated: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            prefix: string;
+            scopes: string[];
+            /** Format: date-time */
+            last_used_at: string | null;
+            /** Format: date-time */
+            revoked_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** @description Shown once. */
+            key: string;
+        };
+        ApiKeyInRequest: {
+            name: string;
+            scopes: string[];
         };
         ApiRoot: {
             name: string;
@@ -4536,6 +4858,36 @@ export interface components {
             application_id: string;
             /** Format: date-time */
             declared_at: string;
+        };
+        ConnectRequest: {
+            provider: string;
+            credentials: {
+                [key: string]: string;
+            };
+            config?: {
+                [key: string]: string;
+            };
+            /** @default false */
+            sandbox: boolean;
+        };
+        Connection: {
+            /** Format: uuid */
+            id: string;
+            provider: string;
+            personal: boolean;
+            credentials_hint: string;
+            config: {
+                [key: string]: unknown;
+            };
+            status: string;
+            sandbox: boolean;
+            /** Format: date-time */
+            last_success_at: string | null;
+            /** Format: date-time */
+            last_error_at: string | null;
+            last_error: string;
+            /** Format: date-time */
+            credentials_rotated_at: string | null;
         };
         Consent: {
             /** Format: uuid */
@@ -5444,6 +5796,11 @@ export interface components {
             /** Format: date-time */
             readonly read_at: string | null;
         };
+        IntegrationsOverview: {
+            providers: components["schemas"]["Provider"][];
+            connections: components["schemas"]["Connection"][];
+            sandbox_default: boolean;
+        };
         Interview: {
             /** Format: uuid */
             id: string;
@@ -5876,6 +6233,14 @@ export interface components {
         MessageCreateRequest: {
             body: string;
             attachment_ids?: string[];
+        };
+        MessagingPreferences: {
+            sms: boolean;
+            whatsapp: boolean;
+        };
+        MessagingPreferencesRequest: {
+            sms: boolean;
+            whatsapp: boolean;
         };
         /**
          * @description * `card` - card
@@ -6335,11 +6700,13 @@ export interface components {
             /** Format: uuid */
             membership_id: string;
             /** Format: uuid */
-            interview_id: string;
+            interview_id: string | null;
             /** Format: date-time */
             starts_at: string | null;
             /** Format: date-time */
             ends_at: string | null;
+            /** @default mhrs */
+            source: string;
         };
         PanelDocument: {
             /** Format: uuid */
@@ -6532,6 +6899,8 @@ export interface components {
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             offer_approvals_required?: number;
+            sso_enabled?: boolean;
+            sso_domains?: unknown;
             rights_request_sla_days?: number;
         };
         PatchedProfileRequest: {
@@ -6558,6 +6927,10 @@ export interface components {
         };
         PatchedTalentTagsRequest: {
             tags?: string[];
+        };
+        PatchedWebhookEndpointPatchRequest: {
+            events?: string[];
+            active?: boolean;
         };
         PayRequestRequest: {
             method: components["schemas"]["MethodEnum"];
@@ -6727,6 +7100,8 @@ export interface components {
             notification_delay_minutes?: number;
             hide_ai_from_panelists?: boolean;
             offer_approvals_required?: number;
+            sso_enabled?: boolean;
+            sso_domains?: unknown;
             rights_request_sla_days?: number;
         };
         PreviewRequest: {
@@ -6775,6 +7150,27 @@ export interface components {
         ProtectedExceptionRequest: {
             reason: string;
         };
+        Provider: {
+            key: string;
+            name: string;
+            kind: string;
+            per_user: boolean;
+            credential_fields: string[];
+            config_fields: string[];
+            docs: string;
+        };
+        PublicApplication: {
+            /** Format: uuid */
+            id: string;
+            reference: string | null;
+            /** Format: uuid */
+            job_id: string;
+            status: string;
+            /** Format: date-time */
+            submitted_at: string | null;
+            /** Format: date-time */
+            updated_at: string;
+        };
         PublicCompany: {
             slug: string;
             name: string;
@@ -6794,6 +7190,24 @@ export interface components {
             description: string;
             min_months: number | null;
             equivalents: string[];
+        };
+        PublicJob: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            company: string;
+            /** Format: uri */
+            url: string;
+            /** Format: uri */
+            apply_url: string;
+            city: string;
+            country: string;
+            employment_type: string | null;
+            /** Format: date-time */
+            published_at: string | null;
+            /** Format: date-time */
+            closes_at: string | null;
+            summary: string;
         };
         PublicJobDetail: {
             /** Format: uuid */
@@ -7210,6 +7624,11 @@ export interface components {
          * @enum {string}
          */
         RoleOnJobEnum: "recruiter" | "hiring_manager" | "approver";
+        RotateRequest: {
+            credentials: {
+                [key: string]: string;
+            };
+        };
         RubricBand: {
             score: number;
             descriptor: string;
@@ -7958,6 +8377,59 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
+        WebhookDelivery: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            endpoint_id: string;
+            event_type: string;
+            status: string;
+            attempts: number;
+            response_code: number | null;
+            last_error: string;
+            /** Format: date-time */
+            next_attempt_at: string | null;
+            /** Format: date-time */
+            delivered_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        WebhookEndpoint: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uri */
+            url: string;
+            events: string[];
+            description: string;
+            active: boolean;
+            /** Format: date-time */
+            created_at: string;
+        };
+        WebhookEndpointCreated: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uri */
+            url: string;
+            events: string[];
+            description: string;
+            active: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** @description Shown once; store it to verify signatures. */
+            secret: string;
+        };
+        WebhookEndpointInRequest: {
+            /** Format: uri */
+            url: string;
+            events: string[];
+            /** @default  */
+            description: string;
+        };
+        WebhooksOverview: {
+            events: string[];
+            endpoints: components["schemas"]["WebhookEndpoint"][];
+            deliveries: components["schemas"]["WebhookDelivery"][];
+        };
         WithdrawRequest: {
             reason?: string;
         };
@@ -8469,6 +8941,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CorrectionView"];
+                };
+            };
+        };
+    };
+    candidate_messaging_preferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessagingPreferences"];
+                };
+            };
+        };
+    };
+    candidate_messaging_preferences_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessagingPreferencesRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MessagingPreferencesRequest"];
+                "multipart/form-data": components["schemas"]["MessagingPreferencesRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessagingPreferences"];
                 };
             };
         };
@@ -9451,6 +9967,111 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Document"];
                 };
+            };
+        };
+    };
+    feeds_jobs_json: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicJob"][];
+                };
+            };
+        };
+    };
+    feeds_jobs_xml: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Job feed (XML) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hr_api_keys: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKey"][];
+                };
+            };
+        };
+    };
+    hr_api_keys_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApiKeyInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ApiKeyInRequest"];
+                "multipart/form-data": components["schemas"]["ApiKeyInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyCreated"];
+                };
+            };
+        };
+    };
+    hr_api_key_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -10437,6 +11058,118 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExportDownload"];
+                };
+            };
+        };
+    };
+    hr_integrations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrationsOverview"];
+                };
+            };
+        };
+    };
+    hr_integrations_connect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConnectRequest"];
+                "multipart/form-data": components["schemas"]["ConnectRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Connection"];
+                };
+            };
+        };
+    };
+    hr_integration_disconnect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                connection_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hr_integration_rotate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                connection_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RotateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RotateRequest"];
+                "multipart/form-data": components["schemas"]["RotateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Connection"];
+                };
+            };
+        };
+    };
+    hr_integration_test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                connection_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Connection"];
                 };
             };
         };
@@ -12735,6 +13468,211 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TalentInviteResult"];
                 };
+            };
+        };
+    };
+    hr_webhooks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhooksOverview"];
+                };
+            };
+        };
+    };
+    hr_webhooks_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEndpointInRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["WebhookEndpointInRequest"];
+                "multipart/form-data": components["schemas"]["WebhookEndpointInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpointCreated"];
+                };
+            };
+        };
+    };
+    hr_webhook_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hr_webhook_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWebhookEndpointPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedWebhookEndpointPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedWebhookEndpointPatchRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpoint"];
+                };
+            };
+        };
+    };
+    hr_webhook_rotate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpointCreated"];
+                };
+            };
+        };
+    };
+    hr_webhook_delivery_replay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                delivery_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookDelivery"];
+                };
+            };
+        };
+    };
+    integrations_sms_inbound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    integrations_sms_receipt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    integrations_whatsapp_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    integrations_whatsapp_event: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -15063,6 +16001,44 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RightsRequest"][];
+                };
+            };
+        };
+    };
+    public_api_applications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicApplication"][];
+                };
+            };
+        };
+    };
+    public_api_jobs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicJob"][];
                 };
             };
         };

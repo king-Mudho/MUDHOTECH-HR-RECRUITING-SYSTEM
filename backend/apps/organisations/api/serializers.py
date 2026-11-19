@@ -94,6 +94,20 @@ class PolicySerializer(StrictModelSerializer):
         fields = ["version", "lock_version", *POLICY_EDITABLE_FIELDS]
         read_only_fields = ["version"]
 
+    def validate_sso_domains(self, value: object) -> list[str]:
+        import re
+
+        if not isinstance(value, list) or len(value) > 10:
+            raise serializers.ValidationError("Give up to 10 email domains.")
+        out: list[str] = []
+        for item in value:
+            domain = str(item).strip().lower().lstrip("@")
+            if not re.fullmatch(r"(?:[a-z0-9-]+\.)+[a-z]{2,}", domain):
+                raise serializers.ValidationError(f"Not a domain: {item}")
+            if domain not in out:
+                out.append(domain)
+        return out
+
 
 class DepartmentSerializer(StrictModelSerializer):
     class Meta:

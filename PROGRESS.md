@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 15 — External Integrations & Localisation
-- **Current task:** P15-T01
+- **Current task:** P15-EXIT
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
 - **Last updated:** 2026-11-19
-- **Overall:** 175 / 193 tasks · 12 / 16 phases
+- **Overall:** 183 / 193 tasks · 12 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -271,14 +271,14 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P14-EXIT — All exit criteria verified with evidence
 
 ### Phase 15 — External Integrations & Localisation  (`phases/PHASE_15_INTEGRATIONS_LOCALISATION.md`)
-- [ ] P15-T01 — `apps.integrations` framework: provider registry, encrypted credentials per org, health status, credential rotation, …
-- [ ] P15-T02 — Calendar sync: Google Calendar & Microsoft 365 (OAuth per staff user) — create/update/cancel interview events, …
-- [ ] P15-T03 — Staff SSO: Google / Microsoft via allauth socialaccount, org domain restriction, MFA policy interplay
-- [ ] P15-T04 — SMS (local aggregator adapter, D-14) and WhatsApp Business Cloud API adapter: explicit opt-in consent (purpose …
-- [ ] P15-T05 — Outbound webhooks: org-configured endpoints, event subscription (application.submitted, status_changed, …
-- [ ] P15-T06 — Public API v1 (API keys, scoped: `jobs:read`, `applications:read`), rate limited, documented OpenAPI subset
-- [ ] P15-T07 — Localisation: externalise all strings (lint for hard-coded text), add `sn` (Shona) and `nd` (Ndebele) message …
-- [ ] P15-T08 — Tests: webhook signature verification sample code in docs
+- [x] P15-T01 — `apps.integrations` framework: provider registry, encrypted credentials per org, health status, credential rotation, …
+- [x] P15-T02 — Calendar sync: Google Calendar & Microsoft 365 (OAuth per staff user) — create/update/cancel interview events, …
+- [x] P15-T03 — Staff SSO: Google / Microsoft via allauth socialaccount, org domain restriction, MFA policy interplay
+- [x] P15-T04 — SMS (local aggregator adapter, D-14) and WhatsApp Business Cloud API adapter: explicit opt-in consent (purpose …
+- [x] P15-T05 — Outbound webhooks: org-configured endpoints, event subscription (application.submitted, status_changed, …
+- [x] P15-T06 — Public API v1 (API keys, scoped: `jobs:read`, `applications:read`), rate limited, documented OpenAPI subset
+- [x] P15-T07 — Localisation: externalise all strings (lint for hard-coded text), add `sn` (Shona) and `nd` (Ndebele) message …
+- [x] P15-T08 — Tests: webhook signature verification sample code in docs
 - [ ] P15-EXIT — All exit criteria verified with evidence
 
 ### Phase 16 — Final Hardening, Documentation & Release (Project complete)  (`phases/PHASE_16_FINAL_HARDENING_RELEASE.md`)
@@ -775,3 +775,11 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P14-T08 | /hr/settings/billing: plan + status card (trial end, renewal, grace, read-only), invoices (PDF download, Pay now: EcoCash/OneMoney with phone and live status polling, or card via Paynow redirect; return from Paynow shows the status), usage meters + history, change plan (USD/ZWG, invoice first and plan starts when paid, Enterprise = contact); backend POST /hr/billing/change-plan (voids an earlier unpaid choice) and platform plan management GET/POST /platform/billing/plans (prices, limits, public/active, subscriber counts, audited); /admin/plans page; tests (fixed a payment-status refetch loop found by the test) | Not browser-verified locally (host RAM) |
 | 2026-11-19 | Impl | P14-T09 | Paynow test double (signed replies, poll state): valid/invalid hash, duplicates, pending->paid by poll, failed, cancelled, spoofed/replayed callbacks, amount mismatch, backoff -> manual check, not configured, manual bank payments (test_payments.py); plus entitlements, metering, invoicing, lifecycle and plan tests; exit E2E tests/integration/test_phase14_billing.py: trial limits -> trial end -> grace -> read-only (candidates still apply) -> choose Growth -> EcoCash via Paynow + verified callback -> active, higher limit applies | none |
 | 2026-11-19 | Close | P14-EXIT | Phase 14 closed: trial -> paid via Paynow test double E2E, entitlements, candidate safety; full backend suite 2985 passed, 2 skipped on a fresh database; CI green (run 44598967647 on 4e5de83, after fixing an evening-only core-scenario test and a Bandit B310 finding) | Owner Paynow keys |
+| 2026-11-19 | Impl | P15-T01 | apps.integrations: provider registry (Google/Microsoft calendar per person, SMS, WhatsApp per org), IntegrationConnection (RLS, encrypted write-only credentials + masked hint, sandbox, health: last success/error, consecutive failures -> failing), connect/rotate/disconnect/test API (personal for all staff, org providers admin only), audited; services.call isolates provider failures; sandbox adapters (INTEGRATIONS_SANDBOX, off in prod) | none |
+| 2026-11-19 | Impl | P15-T02 | calendar sync: interview.changed outbox event on schedule/book/reschedule/cancel -> create/update/delete events in panelists' connected calendars (CalendarEventLink, no candidate contact data), free/busy added to panel conflict warnings (source google_calendar/microsoft_calendar); failing calendar never affects the interview | In-app OAuth consent needs owner OAuth apps |
+| 2026-11-19 | Impl | P15-T03 | staff SSO via allauth socialaccount (Google, Microsoft) configured only when client ids exist; SocialAdapter: no sign-up via SSO, provider-verified email, active member of an org whose policy enables SSO for that domain; policy sso_enabled + sso_domains (validated); MHRS MFA still applies; buttons on sign-in when NEXT_PUBLIC_SSO_ENABLED | Owner OAuth apps |
+| 2026-11-19 | Impl | P15-T04 | SMS (generic aggregator adapter, ADR-032/D-14) + WhatsApp Cloud API: explicit per-channel opt-in (consent sms/whatsapp, needs a mobile number) re-checked at send, fixed approved templates for action-needed candidate messages, STOP via SMS inbound (shared secret) and WhatsApp webhook (X-Hub-Signature-256), delivery receipts, usage counters sms_messages/whatsapp_messages, failures isolated; candidate settings toggles | Owner aggregator + Meta templates |
+| 2026-11-19 | Impl | P15-T05 | outbound webhooks: org endpoints (https, public hosts only - SSRF guard), events application.submitted/status_changed, shortlist.approved, offer.accepted (new outbox event), job.published; HMAC-SHA256 t=,v1= signature with whsec secret shown once/rotatable; ids+statuses only payloads; once per endpoint+event; retries 1m..12h then failed; delivery log + replay; settings UI | none |
+| 2026-11-19 | Impl | P15-T06 | public API v1: scoped API keys (mhrs_prefix_secret, SHA-256 hash only, shown once, revocable, jobs:read / applications:read), bearer auth + per-key throttle (API_KEY_RATE), OpenAPI security scheme; Indeed-style XML and JSON job feeds per organisation | none |
+| 2026-11-19 | Impl | P15-T07 | localisation: hard-coded text guard test, sn/nd machine-draft catalogues (marked, English fallback), language switcher (cookie + account locale), LocaleBoundary applies the language client-side so public pages stay prerendered, emails render in the account locale with English template fallback, html lang | Human translators; locale-aware routing for server-rendered text |
+| 2026-11-19 | Impl | P15-T08 | tests: webhook signature roundtrip/tolerance + sample verification code (docs/integrations/webhooks.md), consent enforcement and STOP for SMS/WA, integration failure isolation (calendar, SMS), SSO rules, API key scopes, feeds; docs/integrations/{README,calendar,sso,sms-whatsapp,webhooks,public-api,localisation}.md | none |

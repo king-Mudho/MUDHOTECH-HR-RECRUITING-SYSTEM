@@ -100,6 +100,9 @@ class OrganisationPolicy(BaseModel):
         default=1, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     rights_request_sla_days = models.PositiveSmallIntegerField(default=30)
+    # P15-T03 staff single sign-on (Google / Microsoft) for members whose email domain is listed
+    sso_enabled = models.BooleanField(default=False)
+    sso_domains = models.JSONField(default=list, blank=True)
     upload_limits_mb = models.JSONField(
         default=dict, blank=True, help_text='Per-purpose upload limit in MB, e.g. {"cv": 5}.'
     )

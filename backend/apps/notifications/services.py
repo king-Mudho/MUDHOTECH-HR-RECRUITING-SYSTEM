@@ -42,7 +42,15 @@ def platform_default(
 def effective_template(
     org: Any, key: str, channel: str = Channel.EMAIL, locale: str = "en"
 ) -> NotificationTemplate | None:
-    """The organisation's active override, else the active platform default."""
+    """The organisation's active override, else the active platform default; a locale without
+    its own template falls back to English (P15-T07)."""
+    found = _effective(org, key, channel, locale)
+    if found is None and locale != "en":
+        found = _effective(org, key, channel, "en")
+    return found
+
+
+def _effective(org: Any, key: str, channel: str, locale: str) -> NotificationTemplate | None:
     if org is not None:
         own = NotificationTemplate.objects.filter(
             organisation=_org_id(org), key=key, channel=channel, locale=locale, active=True

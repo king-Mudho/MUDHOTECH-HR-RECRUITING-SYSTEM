@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "status": "machine-draft",
+    "note": "Machine-drafted subset for review by a qualified human translator before production use (P15-T07). Keys missing here fall back to English."
+  },
+  "language": {
+    "label": "Mutauro",
+    "draft": "Shanduro iyi ishanduro yemuchina iri kumirira kuongororwa nemushanduri; mashoko asina kushandurwa anoratidzwa muChirungu."
+  },
+  "common": {
+    "skipToContent": "Svetukira kune zviri mukati",
+    "loading": "Kuri kuvhurwa…",
+    "retry": "Edzai zvakare",
+    "back": "Dzokera",
+    "goHome": "Dzokera kupeji rekutanga",
+    "requestId": "Nhamba yereferensi: {id}",
+    "aiLabel": "Zano rinobatsirwa neAI — rinoda kuongororwa nemunhu",
+    "required": "(zvinodiwa)",
+    "openMenu": "Vhura menyu",
+    "closeMenu": "Vhara menyu"
+  },
+  "nav": {
+    "jobs": "Mabasa",
+    "employers": "Kune vanopa basa",
+    "howWeUseAi": "Mashandisiro atinoita AI",
+    "login": "Pinda",
+    "register": "Gadzira akaundi",
+    "dashboard": "Dhashibhodhi",
+    "applications": "Zvikumbiro",
+    "profile": "Purofaira",
+    "documents": "Magwaro",
+    "settings": "Marongero",
+    "privacy": "Zvakavanzika",
+    "reports": "Mishumo"
+  },
+  "footer": {
+    "privacy": "Zvakavanzika",
+    "terms": "Mitemo",
+    "accessibility": "Kusvikika"
+  },
+  "states": {
+    "emptyTitle": "Hapana chiripo parizvino",
+    "errorTitle": "Pane chakakanganisika",
+    "errorBody": "Hatina kukwanisa kuvhura izvi. Edzai zvakare.",
+    "forbiddenTitle": "Hamuna mvumo yekuona izvi",
+    "notFoundTitle": "Peji harina kuwanikwa"
+  }
+}

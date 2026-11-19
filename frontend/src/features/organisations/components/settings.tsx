@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldError } from "react-hook-form";
 
 import { ConfirmDialog } from "@/components/forms/confirm-dialog";
 import { ErrorSummary, SelectField, TextField } from "@/components/forms/form-field";
@@ -684,6 +684,33 @@ export function PolicySettings() {
               {...form.register("privacy_notice")}
             />
           </div>
+        </Section>
+        <Section title={t("ssoTitle")} description={t("ssoHelp")}>
+          <div className="flex items-start gap-2">
+            <input
+              id="field-sso_enabled"
+              type="checkbox"
+              className="mt-1 size-4"
+              {...form.register("sso_enabled")}
+            />
+            <label htmlFor="field-sso_enabled" className="text-sm font-medium">
+              {t("sso_enabled")}
+            </label>
+          </div>
+          <TextField
+            label={t("sso_domains")}
+            description={t("sso_domains_help")}
+            error={e.sso_domains as FieldError | undefined}
+            {...form.register("sso_domains", {
+              setValueAs: (v: unknown) =>
+                typeof v === "string"
+                  ? v
+                      .split(",")
+                      .map((d) => d.trim())
+                      .filter(Boolean)
+                  : v,
+            })}
+          />
         </Section>
       </fieldset>
       {saved ? (

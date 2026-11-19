@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "status": "machine-draft",
+    "note": "Machine-drafted subset for review by a qualified human translator before production use (P15-T07). Keys missing here fall back to English."
+  },
+  "language": {
+    "label": "Ulimi",
+    "draft": "Lokhu kuyinguqulo yomshini elindele ukuhlolwa ngumhumushi; amazwi angakaguqulwa avela ngesiNgisi."
+  },
+  "common": {
+    "skipToContent": "Yeqela kokuqukethwe",
+    "loading": "Kuyalayisha…",
+    "retry": "Zama futhi",
+    "back": "Emuva",
+    "goHome": "Buyela ekhasini lokuqala",
+    "requestId": "Inombolo yereferensi: {id}",
+    "aiLabel": "Isiphakamiso esincediswa yi-AI — sidinga ukuhlolwa ngumuntu",
+    "required": "(kuyadingeka)",
+    "openMenu": "Vula imenyu",
+    "closeMenu": "Vala imenyu"
+  },
+  "nav": {
+    "jobs": "Imisebenzi",
+    "employers": "Kubaqashi",
+    "howWeUseAi": "Indlela esisebenzisa ngayo i-AI",
+    "login": "Ngena",
+    "register": "Dala i-akhawunti",
+    "dashboard": "Ideshibhodi",
+    "applications": "Izicelo",
+    "profile": "Iphrofayili",
+    "documents": "Amadokhumenti",
+    "settings": "Izilungiselelo",
+    "privacy": "Imfihlo",
+    "reports": "Imibiko"
+  },
+  "footer": {
+    "privacy": "Imfihlo",
+    "terms": "Imigomo",
+    "accessibility": "Ukufinyeleleka"
+  },
+  "states": {
+    "emptyTitle": "Akukho lutho okwamanje",
+    "errorTitle": "Kukhona okungahambanga kahle",
+    "errorBody": "Asikwazanga ukulayisha lokhu. Sicela uzame futhi.",
+    "forbiddenTitle": "Awulayo imvume yokubona lokhu",
+    "notFoundTitle": "Ikhasi alitholakalanga"
+  }
+}

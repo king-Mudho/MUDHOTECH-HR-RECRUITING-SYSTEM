@@ -25,6 +25,8 @@ class Metric(models.TextChoices):
     AI_EVALUATIONS_MONTH = "ai_evaluations_month", "AI evaluations per month"
     STORAGE_GB = "storage_gb", "Storage (GB)"
     APPLICATIONS_MONTH = "applications_month", "Applications per month"
+    SMS_MESSAGES = "sms_messages", "SMS messages sent"
+    WHATSAPP_MESSAGES = "whatsapp_messages", "WhatsApp messages sent"
 
 
 class Plan(BaseModel):

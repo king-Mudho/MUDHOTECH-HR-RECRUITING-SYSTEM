@@ -116,6 +116,13 @@ def usage(organisation_id: Any, metric: str) -> float:
         from apps.applications.models import Application
 
         return Application.objects.for_org(org_id).filter(submitted_at__gte=month_start()).count()
+    if metric in (Metric.SMS_MESSAGES, Metric.WHATSAPP_MESSAGES):
+        from apps.notifications.models import Notification
+
+        channel = "sms" if metric == Metric.SMS_MESSAGES else "whatsapp"
+        return Notification.objects.filter(
+            organisation_id=org_id, channel=channel, sent_at__gte=month_start()
+        ).count()
     if metric == Metric.STORAGE_GB:
         from apps.applications.models import ApplicationDocument
         from apps.documents.models import Document

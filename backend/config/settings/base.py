@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.mfa",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.microsoft",
     "allauth.usersessions",
     "allauth.headless",
     # local
@@ -64,6 +67,7 @@ INSTALLED_APPS = [
     "apps.talentpool",
     "apps.analytics",
     "apps.billing",
+    "apps.integrations",
     "apps.privacy",
     "apps.notifications",
     "apps.messaging",
@@ -215,6 +219,7 @@ REST_FRAMEWORK = {
         "auth": "10/min",
         "public_search": "60/min",
         "uploads": "30/hour",
+        "api_key": env("API_KEY_RATE", default="600/hour"),
     },
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
@@ -269,6 +274,7 @@ CELERY_TASK_ROUTES = {
     "apps.offers.*": {"queue": "default"},
     "apps.talentpool.*": {"queue": "default"},
     "apps.billing.*": {"queue": "default"},
+    "apps.integrations.*": {"queue": "notifications"},
     "apps.analytics.*": {"queue": "reports"},
     "apps.privacy.tasks.generate_export": {"queue": "reports"},
 }
@@ -334,6 +340,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.analytics.tasks.expire_exports",
         "schedule": crontab(minute=40),
         "options": {"expires": 3000},
+    },
+    "webhooks-retry": {
+        "task": "apps.integrations.tasks.retry_webhooks",
+        "schedule": timedelta(minutes=1),
+        "options": {"expires": 50},
     },
     "billing-payments-poll": {
         "task": "apps.billing.tasks.poll_payments",
@@ -480,6 +491,27 @@ PAYNOW_INTEGRATIONS = {
 }
 PAYNOW_RESULT_URL_BASE = env("PAYNOW_RESULT_URL_BASE", default=FRONTEND_URL)
 PAYNOW_TIMEOUT_SECONDS = env.int("PAYNOW_TIMEOUT_SECONDS", default=15)
+# P15 integrations: sandbox (no network, recorded fake replies) unless explicitly switched off
+INTEGRATIONS_SANDBOX = env.bool("INTEGRATIONS_SANDBOX", default=True)
+CALENDAR_OAUTH = {
+    "google_calendar": {
+        "client_id": env("GOOGLE_OAUTH_CLIENT_ID", default=""),
+        "client_secret": env("GOOGLE_OAUTH_CLIENT_SECRET", default=""),
+    },
+    "microsoft_calendar": {
+        "client_id": env("MICROSOFT_OAUTH_CLIENT_ID", default=""),
+        "client_secret": env("MICROSOFT_OAUTH_CLIENT_SECRET", default=""),
+    },
+}
+SMS_AGGREGATOR_BASE_URL = env("SMS_AGGREGATOR_BASE_URL", default="")
+# public base URL providers call back (delivery receipts, webhooks from providers)
+CALLBACK_BASE_URL = env("CALLBACK_BASE_URL", default=FRONTEND_URL)
+MESSAGING_NOTICE_VERSION = "2026-11-19"
+# P15-T07: English plus Shona and Ndebele (machine drafts pending human translation)
+SUPPORTED_LOCALES = ("en", "sn", "nd")
+SMS_WEBHOOK_SECRET = env("SMS_WEBHOOK_SECRET", default="")
+WHATSAPP_APP_SECRET = env("WHATSAPP_APP_SECRET", default="")
+WHATSAPP_VERIFY_TOKEN = env("WHATSAPP_VERIFY_TOKEN", default="")
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)
@@ -598,3 +630,31 @@ MFA_SUPPORTED_TYPES = ["totp", "recovery_codes"]
 MFA_TOTP_ISSUER = "MUDHOTECH HR RECRUITING SYSTEM"
 MFA_RECOVERY_CODE_COUNT = 10
 USERSESSIONS_TRACK_ACTIVITY = True
+
+
+# --- Staff single sign-on (P15-T03): providers appear only when the owner configures them -----
+SOCIALACCOUNT_ADAPTER = "apps.accounts.social.SocialAdapter"
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = False  # never log in by email match alone
+SOCIALACCOUNT_STORE_TOKENS = False
+SOCIALACCOUNT_ONLY = False
+SOCIALACCOUNT_PROVIDERS: dict[str, dict[str, object]] = {}
+if env("GOOGLE_OAUTH_CLIENT_ID", default=""):
+    SOCIALACCOUNT_PROVIDERS["google"] = {
+        "APPS": [
+            {
+                "client_id": env("GOOGLE_OAUTH_CLIENT_ID"),
+                "secret": env("GOOGLE_OAUTH_CLIENT_SECRET", default=""),
+            }
+        ],
+        "SCOPE": ["openid", "email", "profile"],
+    }
+if env("MICROSOFT_OAUTH_CLIENT_ID", default=""):
+    SOCIALACCOUNT_PROVIDERS["microsoft"] = {
+        "APPS": [
+            {
+                "client_id": env("MICROSOFT_OAUTH_CLIENT_ID"),
+                "secret": env("MICROSOFT_OAUTH_CLIENT_SECRET", default=""),
+                "settings": {"tenant": env("MICROSOFT_OAUTH_TENANT", default="organizations")},
+            }
+        ],
+    }

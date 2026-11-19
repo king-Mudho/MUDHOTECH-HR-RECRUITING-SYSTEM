@@ -38,6 +38,7 @@ api_v1_patterns = [
     path("", include("apps.talentpool.api.urls")),
     path("", include("apps.analytics.api.urls")),
     path("", include("apps.billing.api.urls")),
+    path("", include("apps.integrations.api.urls")),
 ]
 
 urlpatterns = [

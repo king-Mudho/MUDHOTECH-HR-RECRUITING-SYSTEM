@@ -62,6 +62,8 @@ POLICY_EDITABLE_FIELDS = (
     "notification_delay_minutes",
     "hide_ai_from_panelists",
     "offer_approvals_required",
+    "sso_enabled",
+    "sso_domains",
     "rights_request_sla_days",
 )
 

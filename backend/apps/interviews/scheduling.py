@@ -154,6 +154,29 @@ def panel_conflicts(
     return out
 
 
+def _emit_changed(iv: Interview) -> None:
+    """P15-T02: calendar sync and other integrations react after commit (never inside the
+    business transaction, and their failures never affect the interview)."""
+    from apps.core import outbox
+
+    outbox.emit(
+        "interview.changed",
+        iv,
+        {"interview_id": str(iv.pk), "status": iv.status, "sequence": iv.sequence},
+        dedupe_key=f"interview.changed:{iv.pk}:{iv.sequence}:{iv.status}:{iv.lock_version}",
+        organisation_id=iv.organisation_id,
+    )
+
+
+def calendar_conflicts(
+    memberships: Iterable[Membership], starts_at: datetime, ends_at: datetime
+) -> list[dict[str, Any]]:
+    """Busy times from panelists' connected calendars (P15-T02); warn, never block."""
+    from apps.integrations.calendar_sync import external_busy
+
+    return external_busy(list(memberships), starts_at, ends_at)
+
+
 # --- create ---------------------------------------------------------------------------------------
 def create_interview(
     application: Application,
@@ -278,9 +301,12 @@ def create_interview(
             dedupe_key=f"interview_invitation:{interview.pk}:{interview.sequence}",
             organisation=app.organisation,
         )
+        if interview.starts_at is not None:
+            _emit_changed(interview)
     conflicts: list[dict[str, Any]] = []
     for s, e in windows:
         conflicts += panel_conflicts(memberships, s, e, exclude=interview)
+        conflicts += calendar_conflicts(memberships, s, e)
     return Scheduled(interview, conflicts)
 
 
@@ -344,6 +370,7 @@ def book_slot(interview: Interview, slot_id: Any, *, candidate: Any) -> Intervie
                     organisation=app.organisation,
                     channels=("inapp",),
                 )
+        _emit_changed(iv)
     return iv
 
 
@@ -432,10 +459,12 @@ def reschedule(
             dedupe_key=f"interview_rescheduled:{iv.pk}:{iv.sequence}",
             organisation=app.organisation,
         )
+        _emit_changed(iv)
     memberships = [p.membership for p in iv.panelists.select_related("membership")]
     conflicts: list[dict[str, Any]] = []
     for s, e in windows:
         conflicts += panel_conflicts(memberships, s, e, exclude=iv)
+        conflicts += calendar_conflicts(memberships, s, e)
     return Scheduled(iv, conflicts)
 
 
@@ -471,6 +500,7 @@ def cancel(interview: Interview, *, actor: Any, reason: str) -> Interview:
             dedupe_key=f"interview_cancelled:{iv.pk}:{iv.sequence}",
             organisation=app.organisation,
         )
+        _emit_changed(iv)
     return iv
 
 

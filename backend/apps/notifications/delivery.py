@@ -104,6 +104,11 @@ def notify(
         created.append(n)
         if channel == Channel.EMAIL:
             emit(EVENT, n, {"notification_id": str(n.pk)}, dedupe_key=f"{EVENT}:{n.pk}")
+    if Channel.EMAIL in channels and kind.audience == "candidate" and not later:
+        # P15-T04: SMS/WhatsApp copies for candidates who opted in (sent after commit)
+        from apps.integrations.messaging import queue_mobile_copies
+
+        queue_mobile_copies(user, key, payload, org_id, dedupe_key)
     return created
 
 
@@ -202,7 +207,9 @@ def deliver(notification_id: Any) -> str:
 
     context = {**common_context(n.recipient_user), **n.payload}
     try:
-        rendered, template = services.render_for(n.organisation_id, n.key, context)
+        rendered, template = services.render_for(
+            n.organisation_id, n.key, context, locale=n.recipient_user.locale or "en"
+        )
     except Exception as exc:  # no template or a missing value: permanent failure
         logger.error("notification_render_failed", extra={"notification_id": str(n.pk)})
         return _finish(n, NotificationStatus.FAILED, last_error=f"render: {exc}"[:500])

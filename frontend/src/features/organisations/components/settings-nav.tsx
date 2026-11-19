@@ -14,6 +14,7 @@ const TABS = [
   "notifications",
   "privacy",
   "billing",
+  "integrations",
   "audit",
 ] as const;
 

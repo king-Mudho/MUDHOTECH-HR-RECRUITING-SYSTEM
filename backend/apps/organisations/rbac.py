@@ -69,6 +69,8 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     # subscription, usage, invoices and payments (P14): organisation admins
     "billing.view": ADMIN,
     "billing.manage": ADMIN,
+    # external integrations, webhooks and API keys (P15): organisation admins
+    "integrations.manage": ADMIN,
 }
 
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { LanguageSwitcher } from "./language-switcher";
+
 export function PublicFooter({ year }: { year: number }) {
   const t = useTranslations("footer");
   const ta = useTranslations("app");
@@ -34,6 +36,7 @@ export function PublicFooter({ year }: { year: number }) {
             </li>
           </ul>
         </nav>
+        <LanguageSwitcher />
       </div>
     </footer>
   );

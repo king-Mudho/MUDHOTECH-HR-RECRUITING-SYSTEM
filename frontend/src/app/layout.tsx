@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
+
+import { LocaleBoundary } from "@/i18n/locale-boundary";
 import { getMessages, getTranslations } from "next-intl/server";
 
 import { PUBLIC_NAMESPACES, pickMessages } from "@/i18n/client-messages";
@@ -43,7 +45,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {t("skipToContent")}
         </a>
         <NextIntlClientProvider messages={pickMessages(messages, PUBLIC_NAMESPACES)}>
-          <Providers>{children}</Providers>
+          <LocaleBoundary>
+            <Providers>{children}</Providers>
+          </LocaleBoundary>
         </NextIntlClientProvider>
       </body>
     </html>

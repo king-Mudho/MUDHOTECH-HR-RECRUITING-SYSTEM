@@ -113,9 +113,11 @@ class InterviewSerializer(serializers.Serializer):
 
 class PanelConflictSerializer(serializers.Serializer):
     membership_id = serializers.UUIDField()
-    interview_id = serializers.UUIDField()
+    # another MHRS interview, or null when the busy time comes from a connected calendar
+    interview_id = serializers.UUIDField(allow_null=True)
     starts_at = serializers.DateTimeField(allow_null=True)
     ends_at = serializers.DateTimeField(allow_null=True)
+    source = serializers.CharField(default="mhrs")  # type: ignore[assignment]
 
 
 class ScheduledSerializer(serializers.Serializer):

@@ -234,6 +234,11 @@
       "goHome": "Go to home page",
       "mfaBanner": "Your role requires two-factor authentication. Please <link>set it up</link> before {date}.",
       "emailProblem": "We couldn't deliver email to {email}, so you may miss updates. Please <link>update your email address</link>."
+    },
+    "sso": {
+      "or": "or",
+      "with": "Continue with {provider}",
+      "staffOnly": "Single sign-on is for staff of organisations that enabled it."
     }
   },
   "account": {
@@ -338,7 +343,8 @@
         "notifications": "Notifications",
         "audit": "Audit trail",
         "privacy": "Privacy requests",
-        "billing": "Plan & billing"
+        "billing": "Plan & billing",
+        "integrations": "Integrations"
       },
       "pendingVerification": "Your organisation is awaiting verification. You can prepare vacancies, but publishing is enabled after verification.",
       "suspended": "This organisation is suspended. Recruitment data is read-only.",
@@ -415,7 +421,12 @@
       "stale": "Someone else changed these policies. We've loaded the latest values - review and save again.",
       "readOnly": "Only company admins can change policies.",
       "forbidden": "Only company admins and HR managers can view policies.",
-      "offer_approvals_required": "Approvals needed before an offer is issued (1 to 5)"
+      "offer_approvals_required": "Approvals needed before an offer is issued (1 to 5)",
+      "ssoTitle": "Single sign-on",
+      "ssoHelp": "Let staff sign in with Google or Microsoft. Only existing members whose email is on one of these domains can use it; new staff still join by invitation.",
+      "sso_enabled": "Allow single sign-on",
+      "sso_domains": "Email domains",
+      "sso_domains_help": "Comma-separated, e.g. acme.co.zw"
     },
     "invitation": {
       "pageTitle": "Invitation",
@@ -3097,6 +3108,73 @@
         "ai_evaluations_month": "{value} AI evaluations a month",
         "storage_gb": "{value} GB storage"
       }
+    }
+  },
+  "language": {
+    "label": "Language",
+    "draft": "This translation is a machine draft awaiting review by a human translator; untranslated text appears in English."
+  },
+  "integrations": {
+    "title": "Integrations",
+    "sandboxNote": "Sandbox mode: integrations are simulated and nothing is sent to real providers until the platform is configured for production.",
+    "personal": "just for you",
+    "organisation": "whole organisation",
+    "connect": "Connect",
+    "failed": "That didn't work. Please try again.",
+    "sandbox": "sandbox",
+    "credentials": "Credentials {hint}",
+    "lastOk": "last worked {date}",
+    "test": "Test",
+    "disconnect": "Disconnect",
+    "status": {
+      "active": "Working",
+      "error": "Failing",
+      "disabled": "Disabled"
+    },
+    "fields": {
+      "refresh_token": "Refresh token",
+      "api_key": "API key",
+      "sender_id": "Sender ID",
+      "access_token": "Access token",
+      "phone_number_id": "Phone number ID"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "intro": "MHRS posts signed JSON (HMAC-SHA256, X-MHRS-Signature) with identifiers and statuses only. See docs/integrations/webhooks.md to verify signatures.",
+      "paused": "paused",
+      "url": "Endpoint URL (https)",
+      "events": "Events",
+      "add": "Add endpoint",
+      "failed": "That didn't work. Please try again.",
+      "secretOnce": "Signing secret (shown once; store it now):",
+      "log": "Recent deliveries",
+      "event": "Event",
+      "status": "Status",
+      "attempts": "Attempts",
+      "when": "When",
+      "actions": "Actions",
+      "replay": "Replay",
+      "statuses": {
+        "pending": "Retrying",
+        "succeeded": "Delivered",
+        "failed": "Failed"
+      }
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "intro": "For your own systems: read vacancies and application statuses through /api/v1/public-api/. Keys never expose candidate contact details or documents.",
+      "revoked": "revoked",
+      "revoke": "Revoke",
+      "name": "Name",
+      "create": "Create key",
+      "keyOnce": "API key (shown once; store it now):"
+    },
+    "messaging": {
+      "title": "SMS and WhatsApp updates",
+      "intro": "Get a short message when an employer invites you to an interview, asks you a question or sends an offer. Reply STOP at any time to opt out.",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "failed": "That didn't work. Please try again."
     }
   }
 }

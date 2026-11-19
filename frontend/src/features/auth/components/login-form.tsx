@@ -13,6 +13,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 import { AllauthError, authApi, isAuthenticated, pendingFlow } from "../allauth";
+import { SsoButtons } from "@/features/integrations/components";
+
 import { applyServerErrors } from "../form-errors";
 import { codeSchema, loginSchema, type CodeValues, type LoginValues } from "../schemas";
 import { homeFor, reloadMe, safeNext } from "../session";
@@ -165,6 +167,7 @@ export function LoginForm() {
           {credentials.formState.isSubmitting ? t("signingIn") : t("submit")}
         </Button>
       </form>
+      <SsoButtons />
     </AuthCard>
   );
 }

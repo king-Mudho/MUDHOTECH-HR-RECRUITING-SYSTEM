@@ -459,6 +459,15 @@ def accept(
             actor_type="human",
             after={"ip_prefix": o.acceptance_meta["ip_prefix"]},
         )
+        from apps.core import outbox
+
+        outbox.emit(  # P15-T05: webhooks / integrations
+            "offer.accepted",
+            o,
+            {"offer_id": str(o.pk), "application_id": str(app.pk), "job_id": str(app.job_id)},
+            dedupe_key=f"offer.accepted:{o.pk}",
+            organisation_id=o.organisation_id,
+        )
         counter = openings(app.job)
         note = (
             f"{counter['accepted']} accepted offer(s) for {counter['openings']} opening(s): "

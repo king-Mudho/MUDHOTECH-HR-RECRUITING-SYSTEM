@@ -112,7 +112,9 @@ class MeSerializer(StrictModelSerializer):
         return value
 
     def validate_locale(self, value: str) -> str:
-        if value not in ("en", "sn", "nd"):
+        from django.conf import settings
+
+        if value not in settings.SUPPORTED_LOCALES:
             raise serializers.ValidationError("Unsupported language.")
         return value
 
