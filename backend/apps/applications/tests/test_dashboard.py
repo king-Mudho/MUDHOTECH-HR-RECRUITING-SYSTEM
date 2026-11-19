@@ -128,3 +128,29 @@ def test_recruiter_sees_only_assigned_vacancies(world: Any) -> None:
     other = make_org_with_team()
     foreign = staff(other.hr_manager, other.org).get("/api/v1/hr/dashboard/summary/").json()
     assert foreign["cards"]["pending_reviews"] == 0
+
+
+def test_funnel_runs_through_interviews_offers_and_hires(world: Any) -> None:
+    """P12-T10: later stages count everyone who reached them, so the funnel never widens."""
+    team, dev, _, _ = world
+    shortlisted = Application.objects.for_org(team.org).get(job=dev, status="shortlisted")
+    hm = team.hr_manager
+    transition(shortlisted, Status.INTERVIEW, actor=hm, reason="Invite")
+    transition(shortlisted, Status.OFFER, actor=hm, reason="Offer")
+    transition(shortlisted, Status.HIRED, actor=hm, reason="Hired")
+    dropped = app(dev, Status.SHORTLISTED)
+    transition(dropped, Status.INTERVIEW, actor=hm, reason="Invite")
+    transition(dropped, Status.NOT_SELECTED, actor=hm, reason="Another candidate fitted better")
+    body = staff(hm, team.org).get(f"/api/v1/hr/jobs/{dev.pk}/funnel/").json()
+    stages = {s["stage"]: s["count"] for s in body["stages"]}
+    assert [s["stage"] for s in body["stages"]][-3:] == ["interviewed", "offered", "hired"]
+    assert stages["shortlisted"] == 2 and stages["interviewed"] == 2
+    assert stages["offered"] == 1 and stages["hired"] == 1
+    counts = [s["count"] for s in body["stages"][3:]]
+    assert counts == sorted(counts, reverse=True)
+    assert body["offers_declined"] == 0 and body["openings"]["openings"] == dev.openings
+    other = make_org_with_team()
+    assert (
+        staff(other.hr_manager, other.org).get(f"/api/v1/hr/jobs/{dev.pk}/funnel/").status_code
+        == 404
+    )

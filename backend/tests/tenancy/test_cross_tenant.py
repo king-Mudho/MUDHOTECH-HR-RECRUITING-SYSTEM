@@ -45,7 +45,7 @@ def test_lists_never_include_other_org_rows(ep: Endpoint, request: pytest.Fixtur
     assert not victim_ids & {str(r["id"]) for r in rows}
 
 
-def test_x_org_id_of_foreign_org_is_404_and_audited() -> None:
+def test_x_org_id_of_foreign_org_is_404_and_audited(s3: Any) -> None:  # offers store letters
     """EC-ORG-06 end to end through the API."""
     victim, attacker = build_ctx(), build_ctx()
     client = APIClient()
@@ -57,7 +57,7 @@ def test_x_org_id_of_foreign_org_is_404_and_audited() -> None:
     ).exists()
 
 
-def test_unauthenticated_requests_are_rejected() -> None:
+def test_unauthenticated_requests_are_rejected(s3: Any) -> None:  # s3: offer contexts store letters
     ctx = build_ctx()
     client = APIClient()
     for ep in REGISTRY:

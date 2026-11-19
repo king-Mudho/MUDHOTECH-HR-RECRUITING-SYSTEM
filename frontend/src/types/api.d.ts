@@ -4326,6 +4326,15 @@ export interface components {
             job_id: string;
             stages: components["schemas"]["FunnelStage"][];
             withdrawn: number;
+            offers_declined: number;
+            openings: components["schemas"]["FunnelOpenings"];
+        };
+        FunnelOpenings: {
+            openings: number;
+            accepted: number;
+            hired: number;
+            remaining: number;
+            over: boolean;
         };
         FunnelStage: {
             stage: string;

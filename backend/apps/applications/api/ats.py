@@ -435,10 +435,20 @@ class FunnelStageSerializer(serializers.Serializer):
     count = serializers.IntegerField()
 
 
+class FunnelOpeningsSerializer(serializers.Serializer):
+    openings = serializers.IntegerField()
+    accepted = serializers.IntegerField()
+    hired = serializers.IntegerField()
+    remaining = serializers.IntegerField()
+    over = serializers.BooleanField()
+
+
 class FunnelSerializer(serializers.Serializer):
     job_id = serializers.UUIDField()
     stages = FunnelStageSerializer(many=True)
     withdrawn = serializers.IntegerField()
+    offers_declined = serializers.IntegerField()
+    openings = FunnelOpeningsSerializer()
 
 
 class HRDashboardSummaryView(APIView):

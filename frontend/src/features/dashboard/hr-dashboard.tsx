@@ -88,7 +88,12 @@ function FunnelChart({ jobId }: { jobId: string }) {
         </tbody>
       </table>
       <p className="text-muted-foreground mt-1 text-xs">
-        {t("withdrawn", { count: data.data.withdrawn })}
+        {t("withdrawn", { count: data.data.withdrawn })} ·{" "}
+        {t("offersDeclined", { count: data.data.offers_declined })} ·{" "}
+        {t("openingsFilled", {
+          filled: data.data.openings.hired,
+          total: data.data.openings.openings,
+        })}
       </p>
     </section>
   );

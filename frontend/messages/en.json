@@ -2052,12 +2052,15 @@
     },
     "none": "Nothing here.",
     "funnel": "Vacancy funnel",
-    "funnelCaption": "Applications at each stage",
+    "funnelCaption": "Applications that reached each stage",
     "stages": {
       "submitted": "Submitted",
       "processed": "Processed",
       "reviewed": "Reviewed",
-      "shortlisted": "Shortlisted"
+      "shortlisted": "Shortlisted",
+      "interviewed": "Interviewed",
+      "offered": "Offered",
+      "hired": "Hired"
     },
     "withdrawn": "{count, plural, one {# withdrawn} other {# withdrawn}}",
     "queues": {
@@ -2066,7 +2069,9 @@
       "approvals": "Shortlists waiting for approval",
       "clarifications_due": "Clarifications due soonest"
     },
-    "due": "due {when}"
+    "due": "due {when}",
+    "offersDeclined": "{count, plural, one {# offer declined} other {# offers declined}}",
+    "openingsFilled": "{filled} of {total} openings filled"
   },
   "audit": {
     "title": "Audit trail",

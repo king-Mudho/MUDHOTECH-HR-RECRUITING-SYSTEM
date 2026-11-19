@@ -9745,10 +9745,35 @@ components:
             $ref: '#/components/schemas/FunnelStage'
         withdrawn:
           type: integer
+        offers_declined:
+          type: integer
+        openings:
+          $ref: '#/components/schemas/FunnelOpenings'
       required:
       - job_id
+      - offers_declined
+      - openings
       - stages
       - withdrawn
+    FunnelOpenings:
+      type: object
+      properties:
+        openings:
+          type: integer
+        accepted:
+          type: integer
+        hired:
+          type: integer
+        remaining:
+          type: integer
+        over:
+          type: boolean
+      required:
+      - accepted
+      - hired
+      - openings
+      - over
+      - remaining
     FunnelStage:
       type: object
       properties:

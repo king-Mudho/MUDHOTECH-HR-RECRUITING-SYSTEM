@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from django.db.models import Count, Q, QuerySet
+from django.db.models import Count, Exists, OuterRef, Q, QuerySet
 from django.utils.dateparse import parse_date
 
 from apps.core.exceptions import NotFoundError
@@ -42,6 +42,8 @@ SHORTLIST_ONWARD = (
     Status.HIRED,
     Status.OFFER_DECLINED,
 )
+INTERVIEW_ONWARD = (Status.INTERVIEW, Status.OFFER, Status.HIRED, Status.OFFER_DECLINED)
+OFFER_ONWARD = (Status.OFFER, Status.HIRED, Status.OFFER_DECLINED)
 
 
 def _range(params: dict[str, Any]) -> tuple[datetime | None, datetime | None]:
@@ -178,9 +180,26 @@ def summary(membership: Membership, params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _reached(statuses: tuple[str, ...]) -> Q:
+    """Is at one of ``statuses`` now, or passed through one earlier.
+
+    Counting the history keeps the funnel monotonic: a person who was interviewed and later not
+    selected still counts as interviewed.
+    """
+    history = ApplicationStatusEvent.objects.filter(
+        application_id=OuterRef("pk"), to_status__in=statuses
+    )
+    return Q(status__in=statuses) | Q(Exists(history))
+
+
 def funnel(membership: Membership, job_id: Any) -> dict[str, Any]:
-    """submitted -> processed -> reviewed -> shortlisted (FR-M15-02)."""
-    if not jobs_visible_to(membership).filter(pk=job_id).exists():
+    """submitted -> processed -> reviewed -> shortlisted -> interviewed -> offered -> hired
+    (FR-M15-02, P12-T10). Later stages count every application that reached them."""
+    from apps.offers.models import Offer, OfferStatus
+    from apps.offers.services import openings
+
+    job = jobs_visible_to(membership).filter(pk=job_id).first()
+    if job is None:
         raise NotFoundError()
     apps = applications_visible_to(membership).filter(job_id=job_id)
     counts = apps.aggregate(
@@ -191,14 +210,32 @@ def funnel(membership: Membership, job_id: Any) -> dict[str, Any]:
             | Q(status__in=[*IN_REVIEW, *FUNNEL_REVIEWED]),
         ),
         reviewed=Count("pk", filter=Q(status__in=FUNNEL_REVIEWED)),
-        shortlisted=Count("pk", filter=Q(status__in=SHORTLIST_ONWARD)),
+        shortlisted=Count("pk", filter=_reached(SHORTLIST_ONWARD)),
+        interviewed=Count("pk", filter=_reached(INTERVIEW_ONWARD)),
+        offered=Count("pk", filter=_reached(OFFER_ONWARD)),
+        hired=Count("pk", filter=Q(status=Status.HIRED)),
         withdrawn=Count("pk", filter=Q(status=Status.WITHDRAWN)),
+    )
+    declined = (
+        Offer.objects.for_org(membership.organisation_id)
+        .filter(application__in=apps.values("pk"), status=OfferStatus.DECLINED)
+        .count()
     )
     return {
         "job_id": job_id,
         "stages": [
             {"stage": k, "count": counts[k]}
-            for k in ("submitted", "processed", "reviewed", "shortlisted")
+            for k in (
+                "submitted",
+                "processed",
+                "reviewed",
+                "shortlisted",
+                "interviewed",
+                "offered",
+                "hired",
+            )
         ],
         "withdrawn": counts["withdrawn"],
+        "offers_declined": declined,
+        "openings": openings(job),
     }

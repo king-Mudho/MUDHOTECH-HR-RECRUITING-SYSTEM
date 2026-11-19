@@ -124,8 +124,13 @@ describe("HRDashboard", () => {
                   { stage: "processed", count: 2 },
                   { stage: "reviewed", count: 1 },
                   { stage: "shortlisted", count: 1 },
+                  { stage: "interviewed", count: 1 },
+                  { stage: "offered", count: 1 },
+                  { stage: "hired", count: 1 },
                 ],
                 withdrawn: 0,
+                offers_declined: 0,
+                openings: { openings: 2, accepted: 0, hired: 1, remaining: 1, over: false },
               },
             }
           : undefined,
@@ -144,6 +149,8 @@ describe("HRDashboard", () => {
     );
     await userEvent.selectOptions(await screen.findByLabelText("Vacancy"), "j1");
     expect(await screen.findByText("Vacancy funnel")).toBeInTheDocument();
+    expect(await screen.findByRole("rowheader", { name: "Hired" })).toBeInTheDocument();
+    expect(screen.getByText(/1 of 2 openings filled/)).toBeInTheDocument();
     await waitFor(() =>
       expect(fetchMock.mock.calls.some(([u]) => String(u).includes("summary/?job=j1"))).toBe(true),
     );
