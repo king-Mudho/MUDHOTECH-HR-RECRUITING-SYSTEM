@@ -1,11 +1,13 @@
 # Base images and CI actions are pinned to exact versions/SHAs; Dependabot proposes the bumps.
 # Major image upgrades (Python 3.13, Node 26, Redis 8, ...) are deliberate decisions with an ADR, so only
-# minor/patch updates are proposed for images. nginx: stable (even minor) line only, so patch updates.
+# minor/patch updates are proposed for images. A 7-day cooldown keeps freshly published (possibly
+# compromised or broken) releases out of proposals. nginx: stable (even minor) line only, so patch updates.
 version: 2
 updates:
   - package-ecosystem: docker
     directory: /backend
     schedule: { interval: monthly }
+    cooldown: { default-days: 7 } # let new releases settle before proposing them
     labels: [dependencies, docker]
     ignore:
       - dependency-name: "*"
@@ -13,6 +15,7 @@ updates:
   - package-ecosystem: docker
     directory: /frontend
     schedule: { interval: monthly }
+    cooldown: { default-days: 7 } # let new releases settle before proposing them
     labels: [dependencies, docker]
     ignore:
       - dependency-name: "*"
@@ -20,6 +23,7 @@ updates:
   - package-ecosystem: docker-compose
     directory: /
     schedule: { interval: monthly }
+    cooldown: { default-days: 7 } # let new releases settle before proposing them
     labels: [dependencies, docker]
     ignore:
       - dependency-name: "*"
@@ -29,6 +33,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: monthly }
+    cooldown: { default-days: 7 } # let new releases settle before proposing them
     labels: [dependencies, ci]
     groups:
       actions:
