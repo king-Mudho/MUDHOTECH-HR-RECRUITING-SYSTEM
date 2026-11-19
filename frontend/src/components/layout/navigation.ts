@@ -9,14 +9,14 @@ export const CANDIDATE_NAV: NavItem[] = [
   { href: "/candidate/settings", labelKey: "settings", icon: "settings" },
 ];
 
-// Reports (/hr/reports) is added with its page in Phase 13 (P13-T05). Nav items only link to
-// pages that exist (tests/navigation.test.ts).
+// Nav items only link to pages that exist (tests/navigation.test.ts).
 export const HR_NAV: NavItem[] = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: "dashboard" },
   { href: "/hr/jobs", labelKey: "jobs", icon: "jobs" },
   { href: "/hr/interviews", labelKey: "interviews", icon: "interviews" },
   { href: "/hr/offers", labelKey: "offers", icon: "offers" },
   { href: "/hr/talent-pool", labelKey: "talentPool", icon: "talentPool" },
+  { href: "/hr/reports", labelKey: "reports", icon: "reports" },
   { href: "/hr/settings", labelKey: "settings", icon: "settings" },
 ];
 

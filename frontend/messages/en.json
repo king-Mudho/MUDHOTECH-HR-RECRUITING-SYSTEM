@@ -2759,5 +2759,116 @@
     "invite": "Send invitation",
     "invited": "Invitation sent.",
     "skillsOf": "Skills of {name}"
+  },
+  "reports": {
+    "title": "Reports",
+    "intro": "Recruitment analytics for your organisation. Aggregates only - no candidate details.",
+    "forbidden": "Reports are available to HR managers and organisation admins.",
+    "refresh": "Refresh now",
+    "refreshing": "Refreshing…",
+    "scope": "{from} to {to} · {count, plural, one {# application} other {# applications}} · calculated {when}.",
+    "fromSnapshot": "(Saved overnight; refresh for the latest figures.)",
+    "noData": "No data in this period.",
+    "vacancy": "Vacancy",
+    "durationHint": "{count, plural, one {# application} other {# applications}} · 90% within {p90}",
+    "openApplicants": "Open this vacancy's applicants",
+    "filters": {
+      "label": "Report filters",
+      "from": "From",
+      "to": "To",
+      "department": "Department",
+      "allDepartments": "All departments",
+      "job": "Vacancy",
+      "allJobs": "All vacancies",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "timing": {
+      "title": "Time to decisions (median)",
+      "review": "Submission to first review",
+      "shortlist": "Submission to shortlist",
+      "hire": "Submission to hire"
+    },
+    "funnel": {
+      "title": "Funnel",
+      "caption": "Applications that reached each stage and conversion from the stage before",
+      "stage": "Stage",
+      "reached": "Reached",
+      "conversion": "From previous",
+      "withdrawn": "{count, plural, one {# withdrawn} other {# withdrawn}}",
+      "stages": {
+        "submitted": "Submitted",
+        "reviewed": "Reviewed",
+        "shortlisted": "Shortlisted",
+        "interviewed": "Interviewed",
+        "offered": "Offered",
+        "hired": "Hired"
+      }
+    },
+    "sources": {
+      "title": "Where applicants came from",
+      "caption": "Applications by source (from links with UTM tags) and how many were shortlisted",
+      "source": "Source",
+      "applications": "Applications",
+      "shortlisted": "Shortlisted",
+      "direct": "Direct / not tagged"
+    },
+    "questionnaire": {
+      "title": "Application completion",
+      "summary": "{started} started · {submitted} submitted · {unfinished} not finished",
+      "stepsCaption": "Unfinished applications by the last step reached",
+      "step": "Last step reached",
+      "unfinishedAt": "Unfinished",
+      "steps": {
+        "contact": "Contact details",
+        "profile": "Profile",
+        "documents": "Documents",
+        "questions": "Questions",
+        "review": "Review"
+      },
+      "questionsCaption": "How often each question was answered by people who started the questions",
+      "question": "Question",
+      "answered": "Answered",
+      "dropOff": "Not answered",
+      "noQuestions": "This vacancy has no questions, or no one has started them yet.",
+      "pickJob": "Choose a vacancy to see each question."
+    },
+    "ai": {
+      "title": "AI suggestions and human decisions",
+      "notice": "AI-assisted suggestion — requires human review. These figures compare people's decisions with the AI band; a high override rate suggests reviewing the rubric.",
+      "agreement": "Decisions in line with the AI band",
+      "override": "Decisions against the AI band",
+      "claimOverride": "Extracted claims corrected by people",
+      "decisions": "{count, plural, one {# decision} other {# decisions}}",
+      "byBandCaption": "Shortlist decisions by AI band",
+      "byJobCaption": "Override rate by vacancy",
+      "band": "AI band",
+      "decisionsCol": "Decisions",
+      "overrides": "Against the band",
+      "overrideRate": "Override rate",
+      "reviewRubric": "review the rubric",
+      "bands": {
+        "recommended_for_review": "Recommended for review",
+        "review_needed": "Review needed",
+        "lower_match": "Lower match",
+        "manual_review_requested": "Manual review requested",
+        "not_evaluated": "Not evaluated"
+      }
+    },
+    "processing": {
+      "title": "CV processing",
+      "failure": "Could not be read",
+      "ocr": "Needed text recognition (scans)",
+      "extraction": "Average reading time",
+      "toEvaluation": "Submission to AI suggestion (median)",
+      "runs": "{count, plural, one {# CV} other {# CVs}}"
+    },
+    "clarifications": {
+      "title": "Clarification requests",
+      "responseRate": "Answered before the due date",
+      "counts": "{answered} answered · {expired} expired · {open} open",
+      "time": "Time to answer (median)",
+      "total": "Requests"
+    }
   }
 }
