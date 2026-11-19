@@ -54,6 +54,11 @@ Loaded automatically when working under `frontend/`. Root `CLAUDE.md` rules stil
     AuthGate hung on full loads). Never render `<noscript>` inside these trees (React #418 hydration mismatch).
 15. Mutations that change an object's `lock_version` server-side (e.g. attaching documents/answers to a draft) must
     feed the returned object back into the cache before the next optimistic-locked PATCH.
+16. Languages (P15-T07): server rendering stays English (`src/i18n/request.ts`) so public pages remain
+    prerendered - reading cookies there breaks the Cache Components build. `LocaleBoundary` applies the
+    `NEXT_LOCALE` choice (sn/nd drafts merged over English) to client components after hydration. Add
+    new strings to `messages/en.json` only; `tests/i18n.test.tsx` fails on hard-coded JSX text.
+17. SSO buttons render only when built with `NEXT_PUBLIC_SSO_ENABLED=true` (owner OAuth apps exist).
 
 ## Commands
 

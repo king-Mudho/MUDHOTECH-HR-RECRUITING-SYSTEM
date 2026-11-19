@@ -58,3 +58,19 @@ devices, and turn on two-factor authentication.
 ## Need help?
 Contact the employer about a vacancy, or support (address in our emails) about the service. The
 **Accessibility** statement in the footer explains how to get help if something does not work for you.
+
+## 6. Interviews and offers (v1.1)
+
+- When an employer invites you to an interview, open the application: choose one of the offered times,
+  add it to your calendar with **Add to calendar**, and use Messages if you need a different time.
+- A job offer appears on the application with the terms and a PDF letter. To accept, type your full
+  name exactly as on your account and tick the statement; you can also decline (a reason is optional).
+- **Talent pools**: at the end of an application you can ask that employer to keep your details for
+  future vacancies (12 months). Manage, leave or delete this any time in **Privacy → Talent pools**.
+
+## 7. SMS, WhatsApp and language (v1.2)
+
+- In **Settings → SMS and WhatsApp updates** you can opt in to short messages about interviews,
+  questions from employers and offers (a mobile number is needed). Reply **STOP** to opt out.
+- Use the language selector at the bottom of the page for chiShona or isiNdebele (draft
+  translations; untranslated text stays in English).

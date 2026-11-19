@@ -54,6 +54,23 @@ Loaded automatically when working under `backend/`. Root `CLAUDE.md` rules still
   `app.current_org` for `/api/v1/hr/` requests; new tenant tables need the policy added in a migration);
   `apps/screening/killswitch.py` (`ai_allowed(org)` - check it before any new AI feature);
   `platform.services.close_organisation`.
+- Phase 12: `apps/interviews` (scheduling with self-booking, ICS, reminders, independent scorecards) and
+  `apps/offers` (approval chain, PDF letter, e-acceptance, expiry, `hiring.py` hire + confirmed close-out).
+- Phase 13: `apps/talentpool` (per-employer consent-backed pool, `search.py` FTS over consented members
+  only), `apps/analytics` (`selectors.py` report sections reconciled with raw data, snapshot table instead
+  of materialised views because those bypass RLS, `exports.py` CSV/XLSX/PDF via the outbox, 15-minute
+  links), `apps/screening/monitoring.py` (override alerts, drift indicators).
+- Phase 14: `apps/platform/console.py` + `apps/taxonomy/curation.py` (platform console, taxonomy publish);
+  `apps/billing` (`entitlements.check()` on staff actions only - candidates are never blocked;
+  `BILLING_ENFORCE` is off in `config.settings.test`, billing tests switch it on; `metering`, `invoicing`,
+  `paynow.py` (signed protocol, `set_transport()` for tests), `payments.py`, `lifecycle.py` dunning and
+  read-only via the org permission class (views that must work while read-only set `billing_exempt`)).
+- Phase 15: `apps/integrations` (`registry.py` providers, encrypted `IntegrationConnection`,
+  `services.call()` isolates provider failures, sandbox adapters when `INTEGRATIONS_SANDBOX`;
+  `calendar_sync.py` (`interview.changed` consumer), `messaging.py` (opt-in SMS/WhatsApp copies from
+  `notify`, STOP), `webhooks.py` (HMAC-signed, SSRF guard), `public_api.py` (API keys, feeds));
+  `apps/accounts/social.py` (staff SSO rules). Bandit needs `# nosec B310` next to ruff's `noqa: S310`.
+- `manage.py generate_erd` writes `docs/architecture/ERD.md` from the models - rerun after model changes.
 - `tests/core_testapp/` — test-only models (`Widget` tenant model, `SecretNote` encrypted field); installed
   only by `config.settings.test`.
 - `fixtures/` — taxonomy seeds, synthetic CVs (never real data). `schema.yml` — committed OpenAPI schema.

@@ -52,3 +52,15 @@ Use **j / k** to move to the next / previous applicant from the list you came fr
   rather than discounting them; a verified foreign qualification counts like a local one.
 - Declare a conflict of interest if you know an applicant (you will no longer see that application).
 - Never download CVs to personal devices; every view is logged.
+
+## 5. Interviews, offers and hiring (v1.1)
+
+- From a shortlisted application choose **Schedule interview**: a fixed time or up to 12 times for the
+  candidate to choose from, the panel (one lead) and a scorecard. Clashes with other interviews and
+  connected calendars are shown as warnings.
+- Panelists rate each criterion 1–5 with evidence; they only see others' scores after submitting
+  their own. The consolidated view helps the panel decide; people decide, never the scores.
+- Draft an offer (salary, start date, conditions, expiry), submit it for approval, and issue it once
+  approved. The candidate accepts electronically; HR records the hire.
+- **Talent pool** (Talent pool in the menu): search people who agreed to be considered for future
+  vacancies, tag them and invite them to apply for an open vacancy.

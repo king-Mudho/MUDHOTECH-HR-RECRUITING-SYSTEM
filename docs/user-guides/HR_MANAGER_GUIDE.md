@@ -37,3 +37,13 @@ Nothing is lost; switch it back on and start a screening run when you want AI he
 ## 5. Accountability
 Every consequential change needs a human and a reason. The **Audit** page (settings) lists events and
 exports them safely to CSV; **reconstruct** any decision as a PDF for a complaint or audit.
+
+## 6. Offers, hiring and close-out (v1.1)
+
+- Approve or return offers (Offers in the menu). Record the hire after acceptance; when all openings
+  are filled you are prompted to close the vacancy, and **Close-out** sends final outcome messages to
+  the remaining applicants only after you confirm the exact list.
+- **Reports**: time to review/shortlist/hire, funnel conversion, sources, completion, CV processing,
+  AI-human agreement and clarifications, with CSV/XLSX/PDF exports (blind option for applicants).
+- You receive a **rubric review suggestion** when more than 30 % of decisions for a vacancy go against
+  the AI band - a prompt to look at the criteria; nothing changes automatically.

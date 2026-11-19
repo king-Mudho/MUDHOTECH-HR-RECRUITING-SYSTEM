@@ -143,3 +143,38 @@ infrastructure/
 scripts/ dev-up.ps1 dev-up.sh seed.ps1 seed.sh
 .github/workflows/ ci.yml deploy-staging.yml deploy-prod.yml nightly.yml
 ```
+
+## 8. Diagrams and references (P16-T04)
+
+System context (production):
+
+```mermaid
+flowchart LR
+  cand[Candidates] -->|HTTPS| nginx
+  staff[HR staff / panelists] -->|HTTPS| nginx
+  padmin[Platform admins] -->|HTTPS, allow-list| nginx
+  nginx[Nginx TLS, rate limits] --> web[Next.js frontend]
+  nginx -->|/api| api[Django API]
+  web -->|/api rewrites| api
+  api --> pg[(PostgreSQL 16 + pgvector, RLS)]
+  api --> redis[(Redis)]
+  api --> s3[(S3 private buckets)]
+  api -->|outbox relay| q[[Celery queues: default, documents, ai, notifications, reports]]
+  q --> workers[Workers: extraction, screening, email, exports, integrations]
+  workers --> pg
+  workers --> s3
+  workers --> ses[AWS SES]
+  workers --> clam[ClamAV]
+  workers -. sandbox until configured .-> ext[Paynow, Google/Microsoft, SMS aggregator, WhatsApp, webhook receivers]
+  ext -->|signed callbacks| api
+```
+
+- **Data model**: [`docs/architecture/ERD.md`](architecture/ERD.md), generated with
+  `python manage.py generate_erd --out ../docs/architecture/ERD.md` (regenerate after model changes).
+- **API reference**: `backend/schema.yml` (OpenAPI 3, committed and checked in CI for drift); browsable
+  at `/api/docs/` on any running backend; public API subset tagged `public-api`
+  ([integrations/public-api.md](integrations/public-api.md)).
+- **AI engine**: [05_AI_ENGINE.md](05_AI_ENGINE.md), model card and AI policy in
+  [`ai-governance/`](ai-governance/).
+- **Integrations**: [`integrations/`](integrations/README.md). **Runbooks**: [`runbooks/`](runbooks/).
+- **New developers**: [DEVELOPER_ONBOARDING.md](DEVELOPER_ONBOARDING.md).

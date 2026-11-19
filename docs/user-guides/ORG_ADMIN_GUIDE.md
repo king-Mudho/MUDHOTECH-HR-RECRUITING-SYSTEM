@@ -51,3 +51,18 @@ revoke one at any time.
 ## 6. Leaving the platform
 Ask MudhoTech to close your organisation. Vacancies close, your staff become read-only, candidates
 with open applications are told, and data is anonymised when your retention period ends.
+
+## 7. Plan and billing (v1.1)
+
+**Settings → Plan & billing** shows your plan, trial end, usage against limits, invoices (PDF) and
+**Pay now** (EcoCash, OneMoney or card through Paynow; bank transfer also accepted). Choosing a plan
+creates an invoice and the plan starts when it is paid. If an invoice stays unpaid, there is a 7-day
+grace period, after which your team can view but not change data until payment; published vacancies
+stay open to candidates throughout.
+
+## 8. Integrations (v1.2)
+
+**Settings → Integrations**: staff connect their own Google or Microsoft calendar; you can connect
+SMS and WhatsApp for candidate updates, add signed **webhooks** for your own systems and create
+**API keys** (read-only scopes). **Settings → Policies → Single sign-on** lets members sign in with
+Google or Microsoft for the email domains you list. See `docs/integrations/` for details.
