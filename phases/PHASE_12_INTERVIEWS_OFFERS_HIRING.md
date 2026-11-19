@@ -15,6 +15,9 @@
 - [x] **P12-T09** — Notifications templates: interview_invitation, interview_reminder, interview_rescheduled, interview_cancelled, offer_issued, offer_expiring, offer_accepted (HR), offer_declined (HR), hired_welcome (optional).
 - [x] **P12-T10** — Funnel extended to interviews/offers/hires on dashboard.
 
+## Edge cases
+EC-INT-01..04, EC-OFF-01..04.
+
 ## Exit criteria
 - [ ] E2E: shortlisted → interview booked → scorecards → offer approved → issued → accepted → hired; vacancy closed.
 - [ ] EC-INT-01..04 and EC-OFF-01..04 tested.
