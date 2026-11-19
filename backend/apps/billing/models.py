@@ -24,6 +24,7 @@ class Metric(models.TextChoices):
     SEATS = "seats", "Staff seats"
     AI_EVALUATIONS_MONTH = "ai_evaluations_month", "AI evaluations per month"
     STORAGE_GB = "storage_gb", "Storage (GB)"
+    APPLICATIONS_MONTH = "applications_month", "Applications per month"
 
 
 class Plan(BaseModel):

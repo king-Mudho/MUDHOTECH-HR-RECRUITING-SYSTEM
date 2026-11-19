@@ -1090,6 +1090,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hr/billing/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hr_billing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hr/claims/{claim_id}/verify/": {
         parameters: {
             query?: never;
@@ -4042,6 +4058,27 @@ export interface components {
             /** Format: double */
             override_rate: number | null;
             band: string;
+        };
+        BillingOverview: {
+            plan: components["schemas"]["BillingPlan"];
+            subscription: components["schemas"]["SubscriptionInfo"];
+            usage: components["schemas"]["UsageMetric"][];
+            history: components["schemas"]["UsageMonth"][];
+            plans: components["schemas"]["BillingPlan"][];
+        };
+        BillingPlan: {
+            code: string;
+            name: string;
+            description: string;
+            limits: {
+                [key: string]: number | null;
+            };
+            /** Format: decimal */
+            price_usd: string | null;
+            /** Format: decimal */
+            price_zwg: string | null;
+            interval: string;
+            is_trial: boolean;
         };
         /** @enum {unknown} */
         BlankEnum: "";
@@ -7386,6 +7423,16 @@ export interface components {
             submitted_at: string;
             status: string;
         };
+        SubscriptionInfo: {
+            status: string;
+            currency: string;
+            /** Format: date-time */
+            trial_ends_at: string | null;
+            /** Format: date-time */
+            current_period_end: string | null;
+            /** Format: date-time */
+            grace_until: string | null;
+        };
         Suggestions: {
             engine: string;
             requires_acceptance: boolean;
@@ -7558,6 +7605,20 @@ export interface components {
             filename: string;
             mime: string;
             size: number;
+        };
+        UsageMetric: {
+            metric: string;
+            label: string;
+            /** Format: double */
+            used: number;
+            limit: number | null;
+        };
+        UsageMonth: {
+            /** Format: date */
+            period: string;
+            values: {
+                [key: string]: number;
+            };
         };
         UserSession: {
             readonly id: number;
@@ -9784,6 +9845,25 @@ export interface operations {
                 };
                 content: {
                     "text/csv": string;
+                };
+            };
+        };
+    };
+    hr_billing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingOverview"];
                 };
             };
         };

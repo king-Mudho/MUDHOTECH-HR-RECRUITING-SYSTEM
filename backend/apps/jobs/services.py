@@ -959,6 +959,14 @@ def _publish_now(job: Job, actor: Any, from_status: str, *, reason: str = "") ->
     )
 
 
+def _check_vacancy_allowance(job: Job) -> None:
+    """P14-T03 / EC-BIL-03: publishing needs room in the plan. Already-published vacancies (and
+    candidates applying to them) are never affected."""
+    from apps.billing import entitlements
+
+    entitlements.check(job.organisation_id, "active_vacancies")
+
+
 @transaction.atomic
 def publish(job: Job, *, actor: Any) -> Job:
     _require(actor, job.organisation, "jobs.publish")
@@ -966,6 +974,7 @@ def publish(job: Job, *, actor: Any) -> Job:
     if job.status not in {S.APPROVED, S.SCHEDULED}:
         raise InvalidTransitionError(message="Only an approved vacancy can be published.")
     assert_can_publish(job.organisation)
+    _check_vacancy_allowance(job)
     _assert_ready(job, "publish")
     _publish_now(job, actor, job.status)
     return job
@@ -990,6 +999,7 @@ def schedule(job: Job, *, actor: Any, publish_at: datetime) -> Job:
             details={"publish_at": ["Must be before the closing date."]},
         )
     assert_can_publish(job.organisation)
+    _check_vacancy_allowance(job)
     _assert_ready(job, "publish")
     previous = job.status
     job.status = S.SCHEDULED
@@ -1007,6 +1017,7 @@ def publish_scheduled(job: Job) -> bool:
             return False
         try:
             assert_can_publish(job.organisation)
+            _check_vacancy_allowance(job)
         except (OrgUnverifiedError, DomainError) as exc:
             previous = job.status
             job.status = S.APPROVED
@@ -1049,6 +1060,7 @@ def resume(job: Job, *, actor: Any) -> Job:
             status_code=422,
         )
     assert_can_publish(job.organisation)
+    _check_vacancy_allowance(job)
     previous = _transition(job, {S.PAUSED}, S.PUBLISHED, "resumed")
     _bump(job, "status")
     _event(job, "resumed", previous, actor)

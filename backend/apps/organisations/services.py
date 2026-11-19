@@ -154,6 +154,9 @@ def create_organisation(*, user: User, data: dict[str, Any], request: Any = None
         raise ConflictError(message="Could not allocate a unique organisation URL; try again.")
     OrganisationPolicy.objects.create(organisation=org)
     Membership.objects.create(organisation=org, user=user, role=Role.ORG_ADMIN)
+    from apps.billing.entitlements import subscription_for
+
+    subscription_for(org.pk)  # P14-T03: every new organisation starts a 30-day trial
     user.start_mfa_grace()
     audit.record(
         actor=user,
@@ -262,6 +265,19 @@ def invite_member(
         .exists()
     ):
         raise AlreadyMemberError()  # EC-ORG-03
+    from apps.billing import entitlements
+
+    replaced = (
+        Invitation.objects.for_org(org)
+        .filter(
+            email__iexact=email,
+            accepted_at__isnull=True,
+            revoked_at__isnull=True,
+            expires_at__gt=time.now(),
+        )
+        .count()
+    )
+    entitlements.check(org.pk, "seats", exclude=replaced)  # P14-T03
     # Replace any open invitation for the same address (single live token per email).
     Invitation.objects.for_org(org).filter(
         email__iexact=email, accepted_at__isnull=True, revoked_at__isnull=True

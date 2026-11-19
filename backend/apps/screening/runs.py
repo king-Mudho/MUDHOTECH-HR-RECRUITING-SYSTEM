@@ -108,6 +108,10 @@ def start_run(
             "validation_error", "Choose applications.", details={"application_ids": ["Required."]}
         )
     apps = select(membership, job, scope, application_ids)
+    if apps:
+        from apps.billing import entitlements
+
+        entitlements.check(job.organisation_id, "ai_evaluations_month", increment=len(apps))
     with transaction.atomic():
         run = ScreeningRun.objects.create(
             organisation_id=job.organisation_id,

@@ -340,6 +340,18 @@ class SeedResult:
     jobs: list[str] = field(default_factory=list)
 
 
+def _demo_subscription(org: Any) -> None:
+    """Demo/staging organisations run on the unlimited Enterprise plan so the seeded vacancies and
+    the 100-applicant core scenario are never stopped by trial limits (P14-T03)."""
+    from apps.billing.entitlements import subscription_for
+    from apps.billing.models import Plan, Subscription, SubscriptionStatus
+
+    sub = subscription_for(org.pk)
+    Subscription.objects.for_org(org.pk).filter(pk=sub.pk).update(
+        plan=Plan.objects.get(code="enterprise"), status=SubscriptionStatus.ACTIVE
+    )
+
+
 @transaction.atomic
 def seed(password: str) -> SeedResult:
     result = SeedResult()
@@ -382,6 +394,7 @@ def seed(password: str) -> SeedResult:
             verify_organisation(org, actor=admin, reason="Demo organisation")
             org.refresh_from_db()
         OrganisationPolicy.objects.filter(organisation=org).update(privacy_notice=PRIVACY_NOTICE)
+        _demo_subscription(org)
         for role, user in team.items():
             Membership.objects.unscoped().get_or_create(
                 organisation=org, user=user, defaults={"role": role}

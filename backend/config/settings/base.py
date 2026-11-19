@@ -335,6 +335,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=40),
         "options": {"expires": 3000},
     },
+    "billing-usage-rollup": {
+        "task": "apps.billing.tasks.usage_rollup",
+        "schedule": crontab(hour=1, minute=10),
+        "options": {"expires": 3600 * 6},
+    },
     "analytics-nightly": {
         "task": "apps.analytics.tasks.refresh_analytics",
         "schedule": crontab(hour=2, minute=30),
@@ -436,6 +441,8 @@ APPLICATION_DEADLINE_GRACE_SECONDS = env.int("APPLICATION_DEADLINE_GRACE_SECONDS
 # Version of the public "How we use AI" notice (frontend /how-we-use-ai); bump when it changes.
 AI_NOTICE_VERSION = "2026-11-10"
 TALENT_POOL_MONTHS = env.int("TALENT_POOL_MONTHS", default=12)
+# P14-T03: plan limits on staff actions (the general test settings switch it off; billing tests on)
+BILLING_ENFORCE = env.bool("BILLING_ENFORCE", default=True)
 
 # --- AI ---
 LLM_PROVIDER = env("LLM_PROVIDER", default="none")  # none | anthropic | openai (ADR-026)

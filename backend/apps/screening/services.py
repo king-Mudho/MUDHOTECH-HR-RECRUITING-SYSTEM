@@ -296,6 +296,14 @@ def evaluate_application(
     if not killswitch.ai_allowed(app.organisation):
         route_to_manual_review(app.pk)  # P09-T11: AI is switched off, a human reviews
         return None
+    if trigger == Trigger.AUTO:
+        from apps.billing.entitlements import ai_evaluations_available
+
+        if not ai_evaluations_available(app.organisation_id):
+            # P14-T03: the monthly allowance is used up - the application is accepted as usual
+            # and a person reviews it (candidates are never blocked by billing)
+            route_to_manual_review(app.pk)
+            return None
     version = None
     if job_version_id is not None:
         from apps.jobs.models import JobVersion

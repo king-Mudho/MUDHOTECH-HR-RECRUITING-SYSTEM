@@ -319,6 +319,10 @@ from tests.tenancy.analytics_endpoints import ANALYTICS_ENDPOINTS  # noqa: E402
 
 REGISTRY.extend(ANALYTICS_ENDPOINTS)
 
+from tests.tenancy.billing_endpoints import BILLING_ENDPOINTS  # noqa: E402
+
+REGISTRY.extend(BILLING_ENDPOINTS)
+
 
 def register(endpoint: Endpoint) -> Endpoint:
     REGISTRY.append(endpoint)

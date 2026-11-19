@@ -66,6 +66,9 @@ ORG_ACTIONS: dict[str, frozenset[str]] = {
     # advanced analytics and exports (P13-T03/T06)
     "reports.view": ADMIN_HR,
     "reports.export": ADMIN_HR,
+    # subscription, usage, invoices and payments (P14): organisation admins
+    "billing.view": ADMIN,
+    "billing.manage": ADMIN,
 }
 
 

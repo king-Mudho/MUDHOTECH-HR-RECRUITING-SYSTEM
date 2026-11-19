@@ -134,10 +134,25 @@ def _object_key(user: Any, purpose: str, filename: str) -> str:
 
 
 @transaction.atomic
+def _check_storage(organisation: Any, purpose: str, size: int) -> None:
+    """P14-T03: organisation-owned staff uploads count against the plan's storage. Candidate
+    documents (CVs, supporting documents, attachments - also assisted applications) never do."""
+    if organisation is None:
+        return
+    from apps.billing import entitlements
+
+    if purpose in entitlements.CANDIDATE_PURPOSES:
+        return
+    entitlements.check(
+        getattr(organisation, "pk", organisation), "storage_gb", increment=size / entitlements.GB
+    )
+
+
 def create_session(
     user: Any, *, purpose: str, filename: str, mime: str, size: int, organisation: Any = None
 ) -> tuple[UploadSession, dict[str, Any]]:
     clean = validate_declared(purpose, filename, mime, size, organisation)
+    _check_storage(organisation, purpose, size)
     session = UploadSession.objects.create(
         owner_user=user,
         organisation=organisation,
@@ -220,6 +235,7 @@ def direct_upload(user: Any, *, purpose: str, uploaded: Any, organisation: Any =
     """Multipart fallback for networks/browsers where presigned PUT fails (same validation)."""
     mime = getattr(uploaded, "content_type", "") or ""
     clean = validate_declared(purpose, uploaded.name, mime, uploaded.size, organisation)
+    _check_storage(organisation, purpose, uploaded.size)
     session = UploadSession.objects.create(
         owner_user=user,
         organisation=organisation,

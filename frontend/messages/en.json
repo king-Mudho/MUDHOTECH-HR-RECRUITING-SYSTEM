@@ -336,7 +336,8 @@
         "policies": "Policies",
         "notifications": "Notifications",
         "audit": "Audit trail",
-        "privacy": "Privacy requests"
+        "privacy": "Privacy requests",
+        "billing": "Plan & billing"
       },
       "pendingVerification": "Your organisation is awaiting verification. You can prepare vacancies, but publishing is enabled after verification.",
       "suspended": "This organisation is suspended. Recruitment data is read-only.",
@@ -2991,6 +2992,39 @@
         "failed": "Failed",
         "expired": "Expired"
       }
+    }
+  },
+  "billing": {
+    "title": "Plan & billing",
+    "forbidden": "Plan and billing are managed by organisation admins.",
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Payment overdue",
+      "read_only": "Read-only",
+      "cancelled": "Cancelled"
+    },
+    "plan": {
+      "title": "{name} plan",
+      "trialEnds": "Your free trial ends on {date}.",
+      "renews": "The current period ends on {date}.",
+      "grace": "Payment is overdue. Pay by {date} to avoid read-only mode.",
+      "readOnly": "Your organisation is read-only until the overdue invoice is paid. Published vacancies stay open to candidates until their closing date."
+    },
+    "usage": {
+      "title": "Usage this month",
+      "of": "{used} of {limit}",
+      "unlimited": "{used} (no limit)",
+      "full": "Limit reached. Upgrade the plan to do more.",
+      "history": "Previous months",
+      "month": "Month"
+    },
+    "metrics": {
+      "active_vacancies": "Published vacancies",
+      "seats": "Staff seats (members and open invitations)",
+      "ai_evaluations_month": "AI evaluations this month",
+      "storage_gb": "Storage",
+      "applications_month": "Applications this month"
     }
   }
 }

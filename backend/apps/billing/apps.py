@@ -17,3 +17,4 @@ class BillingConfig(AppConfig):
 
     def ready(self) -> None:
         post_migrate.connect(_seed_plans, sender=self, dispatch_uid="billing.seed_plans")
+        from . import tasks  # noqa: F401  registers the metering consumers

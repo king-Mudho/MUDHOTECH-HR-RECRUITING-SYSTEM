@@ -2395,6 +2395,20 @@ paths:
               schema:
                 type: string
           description: ''
+  /api/v1/hr/billing/:
+    get:
+      operationId: hr_billing
+      tags:
+      - hr
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingOverview'
+          description: ''
   /api/v1/hr/claims/{claim_id}/verify/:
     post:
       operationId: hr_claim_verify
@@ -8682,6 +8696,68 @@ components:
       - decisions
       - override_rate
       - overrides
+    BillingOverview:
+      type: object
+      properties:
+        plan:
+          $ref: '#/components/schemas/BillingPlan'
+        subscription:
+          $ref: '#/components/schemas/SubscriptionInfo'
+        usage:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageMetric'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageMonth'
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillingPlan'
+      required:
+      - history
+      - plan
+      - plans
+      - subscription
+      - usage
+    BillingPlan:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+            nullable: true
+        price_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        price_zwg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        interval:
+          type: string
+        is_trial:
+          type: boolean
+      required:
+      - code
+      - description
+      - interval
+      - is_trial
+      - limits
+      - name
+      - price_usd
+      - price_zwg
     BlankEnum:
       enum:
       - ''
@@ -17150,6 +17226,31 @@ components:
       - reference
       - status
       - submitted_at
+    SubscriptionInfo:
+      type: object
+      properties:
+        status:
+          type: string
+        currency:
+          type: string
+        trial_ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        current_period_end:
+          type: string
+          format: date-time
+          nullable: true
+        grace_until:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - currency
+      - current_period_end
+      - grace_until
+      - status
+      - trial_ends_at
     Suggestions:
       type: object
       properties:
@@ -17576,6 +17677,37 @@ components:
       - mime
       - purpose
       - size
+    UsageMetric:
+      type: object
+      properties:
+        metric:
+          type: string
+        label:
+          type: string
+        used:
+          type: number
+          format: double
+        limit:
+          type: integer
+          nullable: true
+      required:
+      - label
+      - limit
+      - metric
+      - used
+    UsageMonth:
+      type: object
+      properties:
+        period:
+          type: string
+          format: date
+        values:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - period
+      - values
     UserSession:
       type: object
       properties:
