@@ -86,20 +86,35 @@ def _public_host(url: str) -> None:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme != "https" or not parsed.hostname:
         raise DomainError("validation_error", "Use an https:// URL.", details={"url": ["https"]})
-    if settings.INTEGRATIONS_SANDBOX:
-        return  # nothing is called in sandbox mode
+    host = parsed.hostname.lower()
     try:
-        infos = socket.getaddrinfo(parsed.hostname, parsed.port or 443)
-    except OSError as exc:
-        raise DomainError("validation_error", "The host could not be resolved.") from exc
-    for info in infos:
-        ip = ipaddress.ip_address(info[4][0])
+        literal = [ipaddress.ip_address(host)]
+    except ValueError:
+        literal = []
+    # literal addresses and localhost are refused in every mode, so sandbox behaves like production
+    if host == "localhost" or host.endswith(".localhost"):
+        _refuse_private()
+    if literal:
+        addresses = literal
+    elif settings.INTEGRATIONS_SANDBOX:
+        return  # no DNS lookups in sandbox mode: nothing is called
+    else:
+        try:
+            infos = socket.getaddrinfo(host, parsed.port or 443)
+        except OSError as exc:
+            raise DomainError("validation_error", "The host could not be resolved.") from exc
+        addresses = [ipaddress.ip_address(info[4][0]) for info in infos]
+    for ip in addresses:
         if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
-            raise DomainError(
-                "validation_error",
-                "Webhook URLs must point to a public address.",
-                details={"url": ["Private or local addresses are not allowed."]},
-            )
+            _refuse_private()
+
+
+def _refuse_private() -> None:
+    raise DomainError(
+        "validation_error",
+        "Webhook URLs must point to a public address.",
+        details={"url": ["Private or local addresses are not allowed."]},
+    )
 
 
 def create_endpoint(

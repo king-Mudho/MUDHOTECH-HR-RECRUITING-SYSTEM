@@ -132,6 +132,26 @@ def test_ssrf_guard_blocks_private_addresses(settings: Any) -> None:
     assert "public address" in str(err.value)
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://127.0.0.1/hook",
+        "https://10.0.0.5/hook",
+        "https://169.254.169.254/latest/meta-data",
+        "https://[::1]/hook",
+        "https://localhost/hook",
+        "https://api.localhost/hook",
+    ],
+)
+def test_ssrf_guard_refuses_literal_private_hosts_in_sandbox_too(settings: Any, url: str) -> None:
+    """Sandbox skips DNS lookups but never accepts an obviously private target (E2E 2026-11-20)."""
+    settings.INTEGRATIONS_SANDBOX = True
+    with pytest.raises(Exception) as err:
+        webhooks._public_host(url)
+    assert "public address" in str(err.value)
+    webhooks._public_host("https://hooks.example.com/mhrs")  # names are not resolved in sandbox
+
+
 def test_public_api_scopes_and_feeds() -> None:
     team = make_org_with_team()
     job = published_job(organisation=team.org)
