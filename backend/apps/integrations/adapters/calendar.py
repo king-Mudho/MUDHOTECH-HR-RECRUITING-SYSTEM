@@ -18,7 +18,7 @@ from .base import BaseAdapter, IntegrationError
 
 
 class CalendarAdapter(BaseAdapter):
-    token_url = ""
+    token_url = ""  # nosec B105 - an endpoint URL, set by subclasses
     events_url = ""
 
     def access_token(self) -> str:
@@ -105,7 +105,7 @@ class CalendarAdapter(BaseAdapter):
 
 
 class GoogleCalendarAdapter(CalendarAdapter):
-    token_url = "https://oauth2.googleapis.com/token"  # noqa: S105 - an endpoint, not a secret
+    token_url = "https://oauth2.googleapis.com/token"  # noqa: S105  # nosec B105 - endpoint, not a secret
     events_url = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
 
     def event_body(self, event: dict[str, Any]) -> dict[str, Any]:
@@ -135,7 +135,7 @@ class GoogleCalendarAdapter(CalendarAdapter):
 
 
 class MicrosoftCalendarAdapter(CalendarAdapter):
-    token_url = "https://login.microsoftonline.com/common/oauth2/v2.0/token"  # noqa: S105
+    token_url = "https://login.microsoftonline.com/common/oauth2/v2.0/token"  # noqa: S105  # nosec B105
     events_url = "https://graph.microsoft.com/v1.0/me/events"
 
     def event_body(self, event: dict[str, Any]) -> dict[str, Any]:

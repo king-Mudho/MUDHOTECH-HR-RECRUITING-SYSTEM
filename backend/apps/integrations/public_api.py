@@ -14,7 +14,7 @@ import hashlib
 import hmac
 import secrets
 from typing import Any
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape  # nosec B406 - escapes text we write; no XML is parsed
 
 from django.conf import settings
 from django.db import transaction

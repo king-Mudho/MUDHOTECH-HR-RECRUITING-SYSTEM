@@ -64,17 +64,11 @@ test("an API key reads the public API and is refused once revoked", async ({ bro
   const jobs = await api.json();
   expect(JSON.stringify(jobs)).toContain("Software Developer");
 
-  await keys
-    .getByRole("listitem")
-    .filter({ hasText: name })
-    .getByRole("button", { name: "Revoke" })
-    .click();
-  const confirm = page.getByRole("dialog");
-  if (await confirm.isVisible().catch(() => false))
-    await confirm.getByRole("button", { name: /Revoke/ }).click();
-  await expect(keys.getByRole("listitem").filter({ hasText: name })).toContainText("revoked", {
-    timeout: 15_000,
-  });
+  // revoking is immediate (no confirmation step); bounded waits so a failure names the step
+  const row = keys.getByRole("listitem").filter({ hasText: name });
+  await expect(row, "the new key is listed").toBeVisible({ timeout: 15_000 });
+  await row.getByRole("button", { name: "Revoke" }).click({ timeout: 15_000 });
+  await expect(row, "the key shows as revoked").toContainText("revoked", { timeout: 15_000 });
   const refused = await page.request.get("/api/v1/public-api/jobs/", {
     headers: { Authorization: `Bearer ${key}` },
   });
