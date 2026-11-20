@@ -22,6 +22,10 @@ billing; v1.2 adds integrations and Shona/Ndebele scaffolding.
 | User guides | `docs/user-guides/` (candidate, recruiter, HR manager, org admin, platform admin, auditor, FAQ) |
 | Developers | `docs/DEVELOPER_ONBOARDING.md`, `CLAUDE.md`, `backend/CLAUDE.md`, `frontend/CLAUDE.md` |
 
+**Production (ADR-033):** https://hr.agribizframework.com on the shared agribizframework VPS
+(66.29.139.201, AlmaLinux 9), deployed with `infrastructure/vps/` (README there). Alerts email the
+address in `OPS_ALERT_EMAILS`; backups are in `/srv/mhrs/backups`. The AWS design stays the scale-out path.
+
 ## 2. Credentials and accounts (ownership only)
 
 | Credential / account | Owner | Stored in |

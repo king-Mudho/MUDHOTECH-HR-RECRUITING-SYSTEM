@@ -6,10 +6,10 @@
 
 ## Current pointer
 - **Current phase:** 16 — Final Hardening, Documentation & Release (Project complete)
-- **Current task:** P16-T01
+- **Current task:** P11-T12
 - **Open, revisit after Phase 16 (owner's instruction 2026-11-18):** P10-EXIT (needs a green nightly), P11-T09 / P11-T12 / P11-EXIT (owner: staging, go-live checklist, v1.0.0 tag)
-- **Last updated:** 2026-11-19
-- **Overall:** 189 / 193 tasks · 13 / 16 phases
+- **Last updated:** 2026-11-20
+- **Overall:** 190 / 193 tasks · 13 / 16 phases
 
 ## Phase status
 | # | Phase | Release | Tasks | Status | Closed on |
@@ -228,7 +228,7 @@ Status legend: ⬜ Not started · 🟦 In progress · ✅ Done · ⛔ Blocked
 - [x] P11-T06 — Backups: RDS automated + `backup.sh` logical dump to S3 weekly
 - [x] P11-T07 — Monitoring/alerting per `docs/10 §8`: Sentry release tracking, CloudWatch alarms, uptime checks, queue-depth …
 - [x] P11-T08 — Runbooks in `docs/runbooks/` (all listed in `docs/10 §6`)
-- [ ] P11-T09 — Staging environment live with synthetic seed
+- [x] P11-T09 — Staging environment live with synthetic seed
 - [x] P11-T10 — Production go-live checklist `docs/deployment/GO_LIVE_CHECKLIST.md` (gates from Phase 10, D-08 legal sign-off, DNS, …
 - [x] P11-T11 — HR onboarding/training material: short walkthrough doc + recorded-script outline
 - [ ] P11-T12 — Tag `v1.0.0`; CHANGELOG; release notes
@@ -804,3 +804,4 @@ _(Written by `/close-phase`: what was built, deviations from spec, known limitat
 | 2026-11-19 | Impl | P16-T08 | docs/BACKLOG.md with product ideas and technical follow-ups | - |
 | 2026-11-19 | Close | P15-EXIT | Phase 15 closed: integrations sandbox/mocked with docs, failures isolated; full backend suite 3058 passed, 2 skipped on a fresh database (24 min 43 s); CI run 44604411745 on 3f1058a green (backend, frontend, infrastructure, API contract, images) | Owner provider accounts; translators |
 | 2026-11-19 | Impl | P16-T01, P16-T02 | Final regression: backend 3058 passed on a fresh DB, frontend 196, AI benchmarks all targets met, fairness 1095/1095; FINAL_TEST_REPORT.md. Security re-review: ASVS v1.1/v1.2 addendum, pen-test readiness pack, Semgrep findings fixed (D-021). Both stay open | T01: next nightly must pass Semgrep/detect-secrets/Trivy, v1.1/v1.2 browser journeys on staging. T02: ZAP full scan on staging, secrets rotation, IAM review (owner) |
+| 2026-11-20 | Impl | P11-T09 | Replaced per ADR-033 (owner: the shared VPS is production, no staging host). Pre-release checks = nightly CI stack (Playwright + axe + ZAP baseline) + local fresh-DB E2E pass; production live at hr.agribizframework.com, restore drill OK (4 s), alert fire test emailed | Off-server backup copy; admin 2FA; go-live sign-off + v1.0.0 tag |

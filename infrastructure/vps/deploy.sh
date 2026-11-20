@@ -83,8 +83,8 @@ for unit in "$APP_DIR"/infrastructure/vps/systemd/*.service "$APP_DIR"/infrastru
     install -m 644 "$unit" /etc/systemd/system/
 done
 systemctl daemon-reload
-systemctl enable "${SERVICES[@]}" mhrs-backup.timer >/dev/null 2>&1
-systemctl start mhrs-backup.timer
+systemctl enable "${SERVICES[@]}" mhrs-backup.timer mhrs-monitor.timer >/dev/null 2>&1
+systemctl start mhrs-backup.timer mhrs-monitor.timer
 
 log "Starting private storage and the virus scanner"
 systemctl restart mhrs-s3

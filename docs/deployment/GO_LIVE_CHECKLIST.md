@@ -4,6 +4,33 @@ Production opens to the pilot organisations only when **every** item below is ti
 The owner signs at the end; the signed copy (date, commit, release tag) is recorded in `PROGRESS.md` (P11 exit).
 Items marked 👤 are the owner's; the rest are verified by engineering and initialled by the owner.
 
+## Production on the shared VPS (ADR-033, owner decision 2026-11-20)
+
+Production is **https://hr.agribizframework.com** on the shared agribizframework VPS (66.29.139.201),
+deployed with `infrastructure/vps/`. Items in sections C, E and F that name AWS services (RDS, S3, SES,
+CloudWatch, SSM, staging host) are replaced by the VPS equivalents below; sections A, B, D, G and H
+still apply.
+
+| Item | Status (2026-11-20) | Evidence |
+|---|---|---|
+| DNS `hr` -> 66.29.139.201 | ✅ | `check-production.sh` |
+| TLS certificate (Let's Encrypt, auto-renew), HTTP -> HTTPS, HSTS 1 year | ✅ | valid until 2027-02-18; `check-production.sh` |
+| Secrets generated on the server (Django, field encryption, database, S3); nothing default | ✅ | `setup-server.sh`; `.env` mode 600 |
+| Database role without superuser / BYPASSRLS (row-level security applies) | ✅ | `mhrs_app` |
+| Isolation from the four sibling sites (users, ports, databases, nginx blocks) | ✅ | all sibling sites 200 after deploy |
+| Platform admin account | ✅ | `create-admin.sh` (owner typed the password) |
+| Platform admin two-factor authentication 👤 | ☐ | mandatory after 7 days |
+| Outgoing email (Gmail SMTP, ~500/day) 👤 | ✅ | `configure-email.sh` test email delivered |
+| Nightly backups (database, file storage, keys) | ✅ | `mhrs-backup.timer` 01:45, 14 days |
+| Restore drill | ✅ | `restore-drill.sh`: 1.2 MB dump restored in 4 s, all key tables match |
+| Off-server copy of backups 👤 | ☐ | pending (needs a storage account) |
+| Monitoring and alert email | ✅ | `mhrs-monitor.timer` every 5 min; test alert + stop/start fire test emailed 2026-11-20 |
+| Integrations in sandbox, billing not enforced | ✅ (by design) | `INTEGRATIONS_SANDBOX=true`, `BILLING_ENFORCE=false` |
+| Semantic skill matching | ⚠️ off | CPU has no AVX2 (D-029); ask the host for CPU passthrough |
+| Pre-release verification without a staging host | ✅ | nightly CI stack (Playwright + axe + ZAP) and local fresh-database E2E pass |
+
+Live commit at sign-off: `67d8eb6`.
+
 Release: `v1.0.0` · Commit: `________` · Planned go-live: `____-__-__ __:__ UTC` (low-traffic window)
 
 ## A. Quality and security gates (Phase 10 exit criteria)

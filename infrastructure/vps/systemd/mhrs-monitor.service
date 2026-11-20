@@ -1,0 +1,9 @@
+[Unit]
+Description=MHRS - production checks with email alerts
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /srv/mhrs/infrastructure/vps/monitor.sh
+# exit 1 means "problems found and reported", not a broken unit
+SuccessExitStatus=1

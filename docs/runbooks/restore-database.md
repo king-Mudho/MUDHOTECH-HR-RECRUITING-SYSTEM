@@ -105,6 +105,18 @@ Findings from the 2026-11-18 rehearsal, fixed before this runbook was written:
 Expected timings at pilot scale (to be confirmed by the staging drill): logical dump of 1–5 GB ≈ 1–5 min,
 restore ≈ 2–4× the dump time; PITR ≈ 20–40 min (RDS-side).
 
+### Shared VPS production (ADR-033)
+
+`bash /srv/mhrs/infrastructure/vps/restore-drill.sh` takes a fresh backup, restores it into a scratch
+database, compares key tables with live and drops the copy. Real restores:
+`bash /srv/mhrs/infrastructure/vps/rollback.sh --restore-db /srv/mhrs/backups/mhrs-db-<stamp>.dump`
+(asks for the database name to confirm). Restoring needs the matching `mhrs-env-<stamp>` file: it holds
+the field-encryption keys.
+
+| Date | Dump | Restore time | Result |
+|---|---|---|---|
+| 2026-11-20 | 1.2 MB (empty production, taxonomy loaded) | 4 s | all key tables match live |
+
 ## Setup (once per environment)
 
 After the first deploy: `sudo /opt/mhrs/infrastructure/deployment/backup.sh --install-timer` (Sunday 01:30 UTC,
