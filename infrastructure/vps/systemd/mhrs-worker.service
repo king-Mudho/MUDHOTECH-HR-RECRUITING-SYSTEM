@@ -1,0 +1,39 @@
+# MHRS Celery worker: all queues (documents, ai, notifications, reports, default), two processes.
+# Tasks are idempotent with acks_late, so a restart never loses work (warm shutdown below).
+[Unit]
+Description=MHRS - Celery worker (all queues)
+After=network-online.target postgresql.service redis.service mhrs-s3.service mhrs-clamd.service
+Wants=network-online.target mhrs-s3.service mhrs-clamd.service
+Requires=redis.service
+
+[Service]
+Type=simple
+User=mhrs
+Group=mhrs
+WorkingDirectory=/srv/mhrs/backend
+EnvironmentFile=/srv/mhrs/backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+Environment=PYTHONUNBUFFERED=1
+# the embedding model is downloaded once by deploy.sh; never fetched at run time
+Environment=HF_HUB_OFFLINE=1
+Environment=TRANSFORMERS_OFFLINE=1
+Environment=OMP_NUM_THREADS=2
+ExecStart=/srv/mhrs/backend/.venv/bin/celery -A config worker \
+    -Q default,documents,ai,notifications,reports -c 2 -n mhrs@%%h \
+    --max-tasks-per-child 100 -l info
+KillSignal=SIGTERM
+TimeoutStopSec=120
+Restart=always
+RestartSec=5
+MemoryHigh=1600M
+MemoryMax=2200M
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+UMask=0077
+ReadWritePaths=/srv/mhrs/logs /srv/mhrs/hf-cache
+
+[Install]
+WantedBy=multi-user.target

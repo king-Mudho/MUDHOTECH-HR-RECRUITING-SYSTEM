@@ -1,0 +1,35 @@
+# MHRS Django API (gunicorn, threaded workers, ADR-029) on 127.0.0.1:8400.
+[Unit]
+Description=MHRS - Django API (gunicorn, 127.0.0.1:8400)
+After=network-online.target postgresql.service redis.service mhrs-s3.service
+Wants=network-online.target mhrs-s3.service
+Requires=postgresql.service
+
+[Service]
+Type=notify
+User=mhrs
+Group=mhrs
+WorkingDirectory=/srv/mhrs/backend
+EnvironmentFile=/srv/mhrs/backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/srv/mhrs/backend/.venv/bin/gunicorn config.wsgi:application \
+    --config /srv/mhrs/infrastructure/vps/gunicorn.conf.py
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=40
+Restart=always
+RestartSec=3
+MemoryHigh=700M
+MemoryMax=1G
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+UMask=0077
+ReadWritePaths=/srv/mhrs/backend/staticfiles /srv/mhrs/logs
+
+[Install]
+WantedBy=multi-user.target

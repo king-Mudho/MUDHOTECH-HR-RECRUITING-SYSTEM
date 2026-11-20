@@ -1,0 +1,7 @@
+[Unit]
+Description=MHRS - nightly database and file storage backup
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /srv/mhrs/infrastructure/vps/backup.sh

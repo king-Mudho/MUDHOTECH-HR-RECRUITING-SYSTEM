@@ -1,0 +1,131 @@
+# nginx site for MHRS (__SITE_DOMAIN__). TEMPLATE: deploy.sh fills in __SITE_DOMAIN__ and __APP_DIR__
+# and installs it as /etc/nginx/conf.d/hr.agribizframework.conf. It shares nginx with the other
+# sites on this server: its own server{} block, upstreams, rate-limit zones and certificate.
+#
+#   /api/ /readyz /healthz        -> Django / gunicorn   (127.0.0.1:8400)
+#   /static/                      -> Django static files (API docs assets), from disk
+#   /mhrs-<bucket>/...            -> private S3 (127.0.0.1:8533): only signed, expiring links work
+#   /                             -> Next.js             (127.0.0.1:3400)
+#
+# "Let Certbot own the HTTPS block" (same rule as the sibling apps): ONE :80 block here;
+# `certbot --nginx -d __SITE_DOMAIN__ --redirect` adds :443, the certificate and the redirect.
+# deploy.sh never reinstalls this template over a certbot-managed file.
+
+limit_req_zone $binary_remote_addr zone=mhrs_auth:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=mhrs_search:10m rate=60r/m;
+
+upstream mhrs_frontend { server 127.0.0.1:3400; keepalive 16; }
+upstream mhrs_backend  { server 127.0.0.1:8400; keepalive 16; }
+upstream mhrs_s3       { server 127.0.0.1:8533; keepalive 8; }
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __SITE_DOMAIN__;
+
+    access_log /var/log/nginx/mhrs-access.log;
+    error_log  /var/log/nginx/mhrs-error.log;
+
+    # CVs and documents up to 30 MB (the application enforces its own, lower limits per file type)
+    client_max_body_size 30m;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
+
+    location /.well-known/acme-challenge/ { root /var/www/certbot; }
+    location ~ /\. { deny all; }
+
+    # ------------------------------------------------------------------ backend
+    # X-Forwarded-For is overwritten with the real client address so it cannot be forged.
+    location /api/v1/auth/ {
+        limit_req zone=mhrs_auth burst=10 nodelay;
+        limit_req_status 429;
+        proxy_pass http://mhrs_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+    }
+
+    location /api/v1/jobs/ {
+        limit_req zone=mhrs_search burst=30 nodelay;
+        limit_req_status 429;
+        proxy_pass http://mhrs_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+    }
+
+    location /api/ {
+        proxy_pass http://mhrs_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+        proxy_read_timeout 120s;
+    }
+
+    location ~ ^/(readyz|healthz)$ {
+        proxy_pass http://mhrs_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+    }
+
+    location /static/ {
+        alias __APP_DIR__/backend/staticfiles/;
+        expires 30d;
+    }
+
+    location ^~ /media/ { return 404; }
+
+    # ------------------------------------------------------- private file storage
+    # Presigned (SigV4) links carry this host name, so it is passed through unchanged.
+    location ~ ^/mhrs-(uploads-quarantine|documents|exports|public)/ {
+        proxy_pass http://mhrs_s3;
+        proxy_http_version 1.1;
+        proxy_set_header Host       $host;
+        proxy_set_header Connection "";
+        proxy_request_buffering off;
+        proxy_buffering off;
+        proxy_read_timeout 300s;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Robots-Tag "noindex, nofollow" always;
+    }
+
+    # ---------------------------------------------------------------- frontend
+    location /_next/static/ {
+        proxy_pass http://mhrs_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Connection "";
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+
+    location / {
+        proxy_pass http://mhrs_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+        proxy_read_timeout 60s;
+    }
+}

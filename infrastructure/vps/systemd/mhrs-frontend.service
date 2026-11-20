@@ -1,0 +1,30 @@
+# MHRS Next.js standalone server on 127.0.0.1:3400 (private Node 24; the system Node serves the other apps).
+[Unit]
+Description=MHRS - Next.js frontend (127.0.0.1:3400)
+After=network-online.target mhrs-backend.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mhrs
+Group=mhrs
+WorkingDirectory=/srv/mhrs/frontend/current
+EnvironmentFile=/srv/mhrs/frontend/current/.env
+Environment=NODE_ENV=production
+Environment=PORT=3400
+Environment=HOSTNAME=127.0.0.1
+Environment=NODE_OPTIONS=--max-old-space-size=384
+ExecStart=/srv/mhrs/tools/node/bin/node /srv/mhrs/frontend/current/server.js
+KillMode=mixed
+TimeoutStopSec=15
+Restart=always
+RestartSec=3
+MemoryMax=600M
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

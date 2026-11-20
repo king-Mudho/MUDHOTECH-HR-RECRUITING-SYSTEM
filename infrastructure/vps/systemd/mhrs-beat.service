@@ -1,0 +1,29 @@
+# MHRS Celery Beat: relays the outbox every 2 s and starts the scheduled jobs (docs/10 section 7).
+[Unit]
+Description=MHRS - Celery beat (scheduler)
+After=network-online.target redis.service mhrs-worker.service
+Requires=redis.service
+
+[Service]
+Type=simple
+User=mhrs
+Group=mhrs
+WorkingDirectory=/srv/mhrs/backend
+EnvironmentFile=/srv/mhrs/backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/srv/mhrs/backend/.venv/bin/celery -A config beat -l info \
+    -s /srv/mhrs/run/celerybeat-schedule
+Restart=always
+RestartSec=5
+MemoryMax=400M
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+UMask=0077
+ReadWritePaths=/srv/mhrs/run /srv/mhrs/logs
+
+[Install]
+WantedBy=multi-user.target

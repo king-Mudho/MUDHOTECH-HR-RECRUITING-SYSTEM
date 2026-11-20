@@ -1,0 +1,23 @@
+# ClamAV daemon for MHRS uploads, TCP 127.0.0.1:3410. Uses the shared signature database that the
+# server's clamav-freshclam service keeps up to date.
+[Unit]
+Description=MHRS - ClamAV daemon (127.0.0.1:3410)
+After=network-online.target clamav-freshclam.service
+
+[Service]
+Type=simple
+User=mhrs
+Group=mhrs
+ExecStart=/usr/sbin/clamd --foreground=yes --config-file=/srv/mhrs/run/clamd.conf
+Restart=always
+RestartSec=10
+TimeoutStartSec=300
+MemoryMax=1600M
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
