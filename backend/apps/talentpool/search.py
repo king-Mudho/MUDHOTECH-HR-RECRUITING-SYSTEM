@@ -7,7 +7,8 @@ qualifications, latest title) and never documents: a CV is only reachable throug
 application to this employer.
 
 Full-text search is PostgreSQL FTS over the profile headline and summary, skill names, job titles
-and qualification names; skill and minimum-qualification filters narrow it.
+and qualification names; skill and minimum-qualification filters narrow it. The skill filter also
+matches skills read from the CVs a member sent to this same employer.
 """
 
 from __future__ import annotations
@@ -29,6 +30,8 @@ from apps.core.time import now
 from apps.jobs.assignments import jobs_visible_to
 from apps.jobs.models import JobStatus
 from apps.organisations.models import Membership
+from apps.resumes.models import ExtractedClaim
+from apps.taxonomy.models import Skill
 
 from .models import TalentPoolEntry, TalentPoolInvite
 from .services import searchable
@@ -43,6 +46,22 @@ def _agg(model: Any, field: str) -> Subquery:
         .values("profile")
         .annotate(text=StringAgg(field, " "))
         .values("text")[:1]
+    )
+
+
+def _skill_ids(name: str, organisation_id: Any) -> list[Any]:
+    """Taxonomy skills a typed name stands for: canonical name, a platform alias or one of this
+    organisation's own aliases (any taxonomy version)."""
+    if _is_uuid(name):
+        return [name]
+    alias = Q(aliases__alias__iexact=name) & (
+        Q(aliases__organisation__isnull=True) | Q(aliases__organisation_id=organisation_id)
+    )
+    return list(
+        Skill.objects.filter(Q(organisation__isnull=True) | Q(organisation_id=organisation_id))
+        .filter(Q(canonical_name__iexact=name) | alias)
+        .values_list("id", flat=True)
+        .distinct()
     )
 
 
@@ -64,6 +83,7 @@ def search(
             "invites",
         )
     )
+    org_id = membership.organisation_id
     for skill in skills or []:
         name = skill.strip()
         if not name:
@@ -71,13 +91,20 @@ def search(
         match = Q(raw_name__iexact=name) | Q(skill__canonical_name__iexact=name)
         if _is_uuid(name):
             match |= Q(skill_id=name)
-        qs = qs.filter(
-            Exists(
-                CandidateSkill.objects.filter(profile__user=OuterRef("candidate_user")).filter(
-                    match
-                )
+        on_profile = Exists(
+            CandidateSkill.objects.filter(profile__user=OuterRef("candidate_user")).filter(match)
+        )
+        # many members never fill in a profile: also match skills read from the CVs they sent
+        # to *this* employer (the details they agreed it may keep; never another employer's)
+        on_cv = Exists(
+            ExtractedClaim.objects.for_org(org_id).filter(
+                run__application__candidate_user=OuterRef("candidate_user"),
+                claim_type="skill",
+                excluded_reason="",
+                skill_id__in=[str(i) for i in _skill_ids(name, org_id)],
             )
         )
+        qs = qs.filter(on_profile | on_cv)
     if min_qualification_rank is not None:
         qs = qs.filter(
             Exists(
@@ -132,10 +159,10 @@ def search(
         qs = (
             qs.annotate(document=vector, rank=SearchRank(vector, query))
             .filter(document=query)
-            .order_by("-rank", "-joined_at")
+            .order_by("-rank", "-joined_at", "-pk")
         )
     else:
-        qs = qs.order_by("-joined_at")
+        qs = qs.order_by("-joined_at", "-pk")
     return qs
 
 

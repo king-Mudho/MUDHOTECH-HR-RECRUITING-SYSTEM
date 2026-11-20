@@ -151,3 +151,60 @@ def test_withdrawn_member_cannot_be_invited_or_viewed(world: dict[str, Any]) -> 
         f"/api/v1/hr/talent-pool/{entry.pk}/invite/", {"job_id": str(job.pk)}, format="json"
     )
     assert resp.status_code == 404
+
+
+def _cv_skill(user: Any, org: Any, skill: Any) -> None:
+    """A skill read from a CV this candidate sent to ``org`` (no profile entry)."""
+    import uuid
+
+    from apps.applications.models import Application
+    from apps.documents.models import Document, ScanStatus
+    from apps.resumes.models import ExtractedClaim, ExtractionRun
+
+    app = Application.objects.unscoped().get(candidate_user=user, organisation=org)
+    doc = Document.objects.create(
+        owner_user=user,
+        purpose="cv",
+        original_filename="cv.pdf",
+        size_bytes=10,
+        storage_key=f"cv/{uuid.uuid4().hex}.pdf",
+        scan_status=ScanStatus.CLEAN,
+    )
+    run = ExtractionRun.objects.create(
+        organisation_id=org.pk, application=app, document=doc, engine_version="t", status="done"
+    )
+    ExtractedClaim.objects.create(
+        organisation_id=org.pk,
+        run=run,
+        ordinal=1,
+        claim_type="skill",
+        method="taxonomy",
+        confidence=0.9,
+        skill_id=str(skill.pk),
+        payload="{}",
+    )
+
+
+def test_skill_filter_matches_skills_read_from_cvs_sent_to_this_employer(
+    world: dict[str, Any],
+) -> None:
+    """Members who never fill in a profile are still found by the skills on the CV they sent to
+    this employer - never by a CV sent to another employer (E2E 2026-11-20)."""
+    from apps.taxonomy.models import Skill, SkillAlias
+
+    kotlin = Skill.objects.create(canonical_name="Kotlin", slug="kotlin", category="software_it")
+    SkillAlias.objects.create(skill=kotlin, alias="Kotlin/JVM")
+    team, other = world["team"], world["other"]
+    hr = staff(team.hr_manager, team.org)
+    assert names(hr.get("/api/v1/hr/talent-pool/", {"skill": "kotlin"})) == []
+    # the developer's CV to the *other* employer mentions Kotlin: not visible here
+    _cv_skill(world["dev"], other.org, kotlin)
+    assert names(hr.get("/api/v1/hr/talent-pool/", {"skill": "kotlin"})) == []
+    other_hr = staff(other.hr_manager, other.org)
+    assert names(other_hr.get("/api/v1/hr/talent-pool/", {"skill": "kotlin"})) == [
+        "Tatenda Synthetic"
+    ]
+    # the analyst's CV to this employer mentions it: found by name and by alias
+    _cv_skill(world["analyst"], team.org, kotlin)
+    assert names(hr.get("/api/v1/hr/talent-pool/", {"skill": "Kotlin"})) == ["Nyasha Synthetic"]
+    assert names(hr.get("/api/v1/hr/talent-pool/", {"skill": "kotlin/jvm"})) == ["Nyasha Synthetic"]
