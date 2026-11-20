@@ -147,7 +147,7 @@ def _shortlist(s: Shortlist, *, entries: bool = False, user: Any = None) -> dict
         rows = list(
             services.entries_of(s)
             .select_related("application", "decided_by")
-            .order_by("-score_at_decision", "created_at")
+            .order_by("-score_at_decision", "created_at", "pk")  # pk: stable among ties
         )
         blind = BlindView(user, s.organisation_id, [e.application_id for e in rows])
         body["entries"] = [

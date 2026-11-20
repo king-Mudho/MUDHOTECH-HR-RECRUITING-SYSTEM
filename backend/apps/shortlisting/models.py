@@ -115,7 +115,7 @@ class ShortlistEntry(TenantModel):
     apply_note = models.CharField(max_length=40, blank=True, default="")
 
     class Meta:
-        ordering = ("shortlist", "-score_at_decision", "created_at")
+        ordering = ("shortlist", "-score_at_decision", "created_at", "id")
         constraints = [
             models.UniqueConstraint(
                 fields=["shortlist", "application"], name="uniq_shortlist_application"

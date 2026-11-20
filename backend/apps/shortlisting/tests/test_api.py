@@ -143,3 +143,34 @@ def test_self_approval_error_code(world: World) -> None:  # noqa: F811
     )
     assert returned.status_code == 200 and returned.json()["status"] == "draft"
     assert returned.json()["return_reason"] == "Add the holds"
+
+
+def test_entry_order_is_stable_when_scores_and_timestamps_tie(world: World) -> None:  # noqa: F811
+    """Entries are bulk-created with shared timestamps; tied scores must not reshuffle the cards
+    between requests, or a person's next click lands on a different applicant (E2E 2026-11-19)."""
+    from apps.applications.models import Application as App
+    from apps.shortlisting.models import ShortlistEntry
+
+    from .test_services import app_with
+
+    w = world
+    for _ in range(6):
+        app_with(w.job, "recommended_for_review", 81, 0.7)
+    rec = client(w, w.team.recruiter)
+    body = rec.post(f"/api/v1/hr/jobs/{w.job.pk}/shortlists/", {}, format="json").json()
+    sid = body["id"]
+    ShortlistEntry.objects.unscoped().filter(shortlist_id=sid).update(
+        created_at=App.objects.unscoped().first().created_at  # type: ignore[union-attr]
+    )
+    first = [
+        e["application_id"] for e in rec.get(f"/api/v1/hr/shortlists/{sid}/").json()["entries"]
+    ]
+    tied = [e for e in body["entries"] if e["score"] == 81.0]
+    res = rec.patch(
+        f"/api/v1/hr/shortlists/{sid}/entries/",
+        {"decisions": [{"application_id": tied[0]["application_id"], "decision": "shortlist"}]},
+        format="json",
+    )
+    assert res.status_code == 200, res.json()
+    after = [e["application_id"] for e in res.json()["entries"]]
+    assert after == first

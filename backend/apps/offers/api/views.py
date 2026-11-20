@@ -120,7 +120,7 @@ class OfferListView(APIView):
         if p.get("status"):
             qs = qs.filter(status__in=p["status"].split(","))
         pager = StandardPagination()
-        page = pager.paginate_queryset(qs.order_by("-created_at"), request, view=self)
+        page = pager.paginate_queryset(qs.order_by("-created_at", "-pk"), request, view=self)
         rows = [offer_body(o) for o in page or []]
         return pager.get_paginated_response(s.OfferSerializer(rows, many=True).data)
 

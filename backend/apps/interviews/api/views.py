@@ -193,7 +193,7 @@ class InterviewListView(APIView):
                 qs = qs.filter(**{lookup: when})
         pager = StandardPagination()
         page = pager.paginate_queryset(
-            qs.distinct().order_by("starts_at", "created_at"), request, view=self
+            qs.distinct().order_by("starts_at", "created_at", "pk"), request, view=self
         )
         rows = [interview_body(iv) for iv in page or []]
         return pager.get_paginated_response(s.InterviewSerializer(rows, many=True).data)
