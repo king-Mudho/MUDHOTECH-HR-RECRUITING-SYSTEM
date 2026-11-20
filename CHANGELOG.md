@@ -5,7 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
-## [1.2.0] - release candidate (dated when the tag is pushed after owner sign-off)
+## [1.2.0] - 2026-11-20
 
 ### Added
 - Phase 15 integrations: Google/Microsoft 365 calendar sync for interviews; staff single sign-on
@@ -15,6 +15,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 - Phase 16: generated ERD, updated architecture diagrams, developer onboarding, platform admin and
   auditor guides, FAQ, video outlines, handover and backlog; v1.1/v1.2 security re-review and
   penetration test readiness pack; indexes for reports, AI allowance and delivery receipts.
+- Production on the shared agribizframework VPS (ADR-033): native deployment kit
+  (`infrastructure/vps/`: setup, deploy, backups, restore drill, rollback, email alerts every 5 min),
+  release tags deploy through GitHub Actions after CI and owner approval, with a deploy key that can
+  only run the release command. Live at https://hr.agribizframework.com.
+
+### Fixed
+- Shortlist cards no longer reshuffle between decisions (D-022); talent pool skill search also finds
+  members by the skills on their CVs (D-024); wide tables are keyboard-scrollable (D-025); webhook
+  URLs to private addresses refused in every mode (D-023).
+- Production start-up: allauth's socialaccount extra is installed (D-027); the Next.js server's
+  loopback API calls are accepted (D-028); semantic skill matching is switched off on CPUs without
+  AVX2 (D-029).
+
+### Added (v1.1)
 - Phase 14 platform administration & billing: platform console (dashboard, organisations, users,
   feature flags, taxonomy curation and publishing, dead letters, system health, plans & pricing);
   subscriptions with a 30-day trial and plan limits that never block candidates; usage metering;
