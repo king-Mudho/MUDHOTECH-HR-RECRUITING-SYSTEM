@@ -129,6 +129,13 @@ fi
 
 # ----------------------------------------------------------------- secrets
 S3_CONF="$RUN_DIR/s3.json"
+# PyTorch (semantic skill matching) dies with "Illegal instruction" on CPUs without AVX2.
+if grep -qw avx2 /proc/cpuinfo; then
+    SEMANTIC=true
+else
+    SEMANTIC=false
+    warn "This CPU has no AVX2: semantic skill matching is switched off (taxonomy and rules only)."
+fi
 if [[ ! -f "$BACKEND/.env" ]]; then
     log "Writing $BACKEND/.env with generated secrets"
     SECRET_KEY="$(openssl rand -hex 40)"
@@ -141,6 +148,7 @@ if [[ ! -f "$BACKEND/.env" ]]; then
         -e "s|__REDIS_QUEUE_DB__|$REDIS_QUEUE_DB|g; s|__REDIS_CACHE_DB__|$REDIS_CACHE_DB|g" \
         -e "s|__S3_PORT__|$S3_PORT|; s|__S3_ACCESS_KEY__|$S3_ACCESS_KEY|; s|__S3_SECRET_KEY__|$S3_SECRET_KEY|" \
         -e "s|__CLAMD_PORT__|$CLAMD_PORT|; s|__EMBEDDING_MODEL__|$EMBEDDING_MODEL|; s|__HF_HOME__|$HF_HOME_DIR|" \
+        -e "s|__SEMANTIC__|$SEMANTIC|" \
         "$HERE/env-templates/backend.env.production" > "$BACKEND/.env"
     chown "$APP_USER:$APP_USER" "$BACKEND/.env" && chmod 600 "$BACKEND/.env"
     # SeaweedFS identity with the same generated key pair
@@ -153,6 +161,10 @@ PY
     chown "$APP_USER:$APP_USER" "$S3_CONF" && chmod 600 "$S3_CONF"
 else
     echo "    $BACKEND/.env already exists -- not overwriting."
+    if ! grep -q '^SEMANTIC_SKILL_MATCHING=' "$BACKEND/.env"; then
+        echo "SEMANTIC_SKILL_MATCHING=$SEMANTIC" >> "$BACKEND/.env"
+        echo "    added SEMANTIC_SKILL_MATCHING=$SEMANTIC"
+    fi
     [[ -f "$S3_CONF" ]] || die "$S3_CONF is missing while backend/.env exists; restore it from a backup."
 fi
 

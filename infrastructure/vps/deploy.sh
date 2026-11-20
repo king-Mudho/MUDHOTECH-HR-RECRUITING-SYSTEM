@@ -68,10 +68,15 @@ log "Installing locked Python dependencies (uv --frozen, with the local embeddin
     UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy UV_CACHE_DIR="$APP_HOME/.cache/uv" \
     "$TOOLS_DIR/uv/bin/uv" sync --frozen --no-dev --no-install-project --extra ml --quiet )
 
-log "Fetching the local embedding model ($EMBEDDING_MODEL) into $HF_HOME_DIR (once)"
-# run from a directory the app user can read: the library first looks for the model name as a path
-( cd "$BACKEND" && as_app env HF_HOME="$HF_HOME_DIR" "$BACKEND/.venv/bin/python" -c \
-    "from sentence_transformers import SentenceTransformer as S; S('$EMBEDDING_MODEL', device='cpu')" >/dev/null )
+SEMANTIC="$(grep -E '^SEMANTIC_SKILL_MATCHING=' "$BACKEND/.env" | cut -d= -f2 | tr '[:upper:]' '[:lower:]')"
+if [[ "$SEMANTIC" == "false" ]]; then
+    warn "Semantic skill matching is off (SEMANTIC_SKILL_MATCHING=false): no embedding model needed."
+else
+    log "Fetching the local embedding model ($EMBEDDING_MODEL) into $HF_HOME_DIR (once)"
+    # run from a directory the app user can read: the library first looks for the model name as a path
+    ( cd "$BACKEND" && as_app env HF_HOME="$HF_HOME_DIR" "$BACKEND/.venv/bin/python" -c \
+        "from sentence_transformers import SentenceTransformer as S; S('$EMBEDDING_MODEL', device='cpu')" >/dev/null )
+fi
 
 log "Installing systemd units"
 for unit in "$APP_DIR"/infrastructure/vps/systemd/*.service "$APP_DIR"/infrastructure/vps/systemd/*.timer; do
@@ -120,9 +125,11 @@ manage migrate --check
 
 log "Skills taxonomy, skill vectors and notification templates (repeat-safe)"
 manage load_taxonomy
-( cd "$BACKEND" && sudo -u "$APP_USER" env "HOME=$APP_HOME" DJANGO_SETTINGS_MODULE=config.settings.prod \
-    HF_HOME="$HF_HOME_DIR" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
-    bash -c 'set -a; source .env; set +a; exec .venv/bin/python manage.py embed_skills' )
+if [[ "$SEMANTIC" != "false" ]]; then
+    ( cd "$BACKEND" && sudo -u "$APP_USER" env "HOME=$APP_HOME" DJANGO_SETTINGS_MODULE=config.settings.prod \
+        HF_HOME="$HF_HOME_DIR" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+        bash -c 'set -a; source .env; set +a; exec .venv/bin/python manage.py embed_skills' )
+fi
 manage sync_notification_templates
 
 log "Collecting static files"
