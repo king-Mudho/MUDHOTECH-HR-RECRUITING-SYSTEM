@@ -77,6 +77,8 @@ One-time owner setup:
 
 Releasing: `git tag -a v1.2.0 -m "v1.2.0" && git push origin v1.2.0`, then approve the run in the
 Actions tab.
+If the approve button is missing, untick **Prevent self-review** on the environment: the tag is pushed
+from the same account that approves. First release through this pipeline: v1.2.0 on 2026-11-20.
 
 ## Rollback and restore
 
