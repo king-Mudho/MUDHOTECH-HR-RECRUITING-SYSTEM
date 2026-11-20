@@ -69,8 +69,9 @@ log "Installing locked Python dependencies (uv --frozen, with the local embeddin
     "$TOOLS_DIR/uv/bin/uv" sync --frozen --no-dev --no-install-project --extra ml --quiet )
 
 log "Fetching the local embedding model ($EMBEDDING_MODEL) into $HF_HOME_DIR (once)"
-as_app env HF_HOME="$HF_HOME_DIR" "$BACKEND/.venv/bin/python" -c \
-    "from sentence_transformers import SentenceTransformer as S; S('$EMBEDDING_MODEL', device='cpu')" >/dev/null
+# run from a directory the app user can read: the library first looks for the model name as a path
+( cd "$BACKEND" && as_app env HF_HOME="$HF_HOME_DIR" "$BACKEND/.venv/bin/python" -c \
+    "from sentence_transformers import SentenceTransformer as S; S('$EMBEDDING_MODEL', device='cpu')" >/dev/null )
 
 log "Installing systemd units"
 for unit in "$APP_DIR"/infrastructure/vps/systemd/*.service "$APP_DIR"/infrastructure/vps/systemd/*.timer; do
