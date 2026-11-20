@@ -28,7 +28,7 @@ live in `docs/deployment/GO_LIVE_CHECKLIST.md`.
 | Nonce/hash CSP once Next.js supports it with Cache Components | P09 |
 | Frontend Sentry SDK | P11 |
 | Platform console: assign an organisation's plan (today via Django admin → Subscriptions) | P14 |
-| Browser (Playwright) journeys for hiring, billing, reports and talent pool on staging | P12-P15 |
+| Browser journey for a Paynow payment (sandbox) on a trial organisation | P14 |
 | Re-evaluate Django 6.x LTS / Node 26 | P16 |
 | Worker image size (3.3 GB with CPU torch) | P06 |
 | Size production API hosts for submission bursts (seen on shared CI runners) | P10 |

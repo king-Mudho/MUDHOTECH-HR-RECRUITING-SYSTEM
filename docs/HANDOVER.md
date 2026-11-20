@@ -67,7 +67,8 @@ Rotate on staff change and after any incident: `docs/runbooks/rotate-keys.md`,
 - Shona/Ndebele catalogues are partial machine drafts applied client-side; server-rendered text stays
   English.
 - AI bands are calibrated on synthetic data; real-world calibration needs HR-labelled applications.
-- Some v1.1/v1.2 screens are verified by component tests only; browser journeys run on staging.
+- Browser journeys cover every module locally and in the nightly; a live Paynow payment is tested
+  through the API only until the owner's Paynow account exists.
 - See `docs/BACKLOG.md` for technical follow-ups.
 
 ## 6. Go-live (owner actions)

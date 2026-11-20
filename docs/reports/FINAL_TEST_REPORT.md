@@ -1,6 +1,6 @@
 # Final test report — v1.2.0 (P16-T01)
 
-Date: 2026-11-19. Code: `main` at `45081b3` (v1.2.0 release candidate). Synthetic data only.
+Date: 2026-11-19, updated 2026-11-20 after the full local end-to-end pass. Synthetic data only.
 
 ## 1. Summary
 
@@ -22,6 +22,32 @@ Date: 2026-11-19. Code: `main` at `45081b3` (v1.2.0 release candidate). Syntheti
 | Security scans | Bandit and pip-audit clean (nightly); npm audit clean (local). Semgrep reported four config findings, fixed in `c9b2100` (D-021); because the step failed, detect-secrets and Trivy were skipped in recent nightlies. **Pending:** the next nightly after `c9b2100` must pass Semgrep, detect-secrets and Trivy | nightly 44486502792; `docs/security/ASVS_CHECKLIST.md` |
 
 Open defects: **no open P0/P1** (`DEFECT_LOG.md`).
+
+## 1a. Full local end-to-end pass (2026-11-20)
+
+The whole stack ran locally like the nightly (production frontend build, Django, Celery worker +
+beat, PostgreSQL, Redis, SeaweedFS S3, Mailpit) on a freshly migrated database seeded with
+`seed_demo` and `seed_core_scenario --count 100`.
+
+| Run | Result |
+|---|---|
+| Playwright, desktop (all specs incl. the new v1.1/v1.2 journeys) | **36 passed, 1 skipped** |
+| Playwright, phone emulation | **all passed** (core scenario, hiring and invite steps skip once the desktop run has used the seed) |
+| Backend suite, fresh database | **3,067 passed, 2 skipped** |
+| Frontend unit tests with coverage | **196 passed**; lines 57.7 % |
+| ruff, mypy, Bandit, `makemigrations --check`, ESLint, `tsc`, Prettier, OpenAPI drift | clean |
+
+New browser journeys (they previously had API and component tests only):
+`e2e/hiring.spec.ts` (identity reveal, interview with time options, candidate booking, panelist
+view, offer draft -> approval -> issue, typed-name acceptance, hire),
+`e2e/integrations-talentpool.spec.ts` (webhook endpoint incl. private-address refusal, API key ->
+public API -> revoke, talent pool join, HR skill search and invitation) and
+`e2e/v11-v12-pages.spec.ts` (every interviews, offers, talent pool, reports, settings, billing,
+integrations and platform console page: no error state, no console errors, no serious axe
+violations; CSV export download; Shona language switch).
+
+Defects found and fixed in this pass: D-022 (P1, shortlist cards reshuffled between decisions),
+D-023 (P3), D-024 (P2), D-025 (P2, accessibility), D-026 (P3) - see `DEFECT_LOG.md`.
 
 ## 2. Scope of the regression
 
@@ -51,8 +77,8 @@ engine and thresholds have not changed since.
 
 ## 4. Not covered here (owner / staging)
 
-- Browser (Playwright) journeys for hiring, talent pool, reports, billing and integrations screens:
-  covered by API and component tests; to run on staging (`docs/BACKLOG.md`).
+- Live payment (Paynow) in the browser: demo organisations are on Enterprise; billing flows are
+  covered by API tests (`test_phase14_billing.py`) and the page renders in the E2E sweep.
 - Live providers (Paynow, Google/Microsoft OAuth, SMS aggregator, WhatsApp): sandbox only until the
   owner's accounts exist.
 - ZAP full scan, Playwright suite and load test against staging: need the staging environment
