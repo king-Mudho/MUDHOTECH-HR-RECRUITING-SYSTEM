@@ -359,7 +359,7 @@ function AssignmentsCard({ job }: { job: JobDetail }) {
           <p className="text-muted-foreground">…</p>
         ) : editing ? (
           <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t("title")}>
               <table className="w-full">
                 <caption className="sr-only">{t("title")}</caption>
                 <thead>

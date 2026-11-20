@@ -245,7 +245,7 @@ function BarTable({
 }) {
   const max = Math.max(1, ...rows.map((r) => r.value));
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={caption}>
       <table className="w-full text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead>

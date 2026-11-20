@@ -108,7 +108,12 @@ export function AuditLog() {
       ) : rows.length === 0 ? (
         <EmptyState title={t("emptyTitle")} description={t("empty")} />
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div
+          className="overflow-x-auto rounded-lg border"
+          tabIndex={0}
+          role="region"
+          aria-label={t("caption")}
+        >
           <table className="w-full text-sm">
             <caption className="sr-only">{t("caption")}</caption>
             <thead className="bg-muted/50 text-left">
