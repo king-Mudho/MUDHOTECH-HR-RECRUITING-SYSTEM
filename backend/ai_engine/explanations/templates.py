@@ -33,9 +33,6 @@ class Explanation(Contract):
     sentences: tuple[Sentence, ...]
     dropped: int = 0  # sentences removed by the grounding validator
 
-    def of_kind(self, kind: str) -> tuple[Sentence, ...]:
-        return tuple(s for s in self.sentences if s.kind == kind)
-
 
 def quote(ref: EvidenceRef) -> str:
     text = " ".join(ref.source.snippet.split())
