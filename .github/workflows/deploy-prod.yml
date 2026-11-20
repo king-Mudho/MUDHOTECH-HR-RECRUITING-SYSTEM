@@ -1,9 +1,17 @@
-# Production: a version tag (vX.Y.Z) promotes the images that were built and deployed to staging for that
-# commit (same bits, re-tagged), then deploys them after a manual approval (P11-T05, docs/10 §4).
+# Production (ADR-033): a version tag (vX.Y.Z) deploys that commit to the shared VPS
+# (https://hr.agribizframework.com) after CI passed for it and the owner approved.
 #
-# Owner setup (GitHub -> Settings -> Environments -> "production"): required reviewers (the owner),
-# deployment branch/tag rule `v*`, and secrets PROD_HOST, PROD_SSH_KEY, PROD_SSH_KNOWN_HOSTS.
-# Releasing:  git tag -a v1.0.0 -m "v1.0.0" && git push origin v1.0.0   (after staging is green)
+# The workflow builds a `git archive` of the tagged commit (committed files only: no .env or data),
+# waits for approval in the "production" environment, then streams the archive over SSH to the
+# server, where the deploy key is pinned to infrastructure/vps/ci-deploy.sh (no shell): it checks the
+# archive, unpacks it into /srv/mhrs and runs deploy.sh (backup, migrations, build, restart, checks).
+#
+# Owner setup (GitHub -> Settings -> Environments -> "production"): required reviewer (the owner),
+# deployment tag rule `v*`, variable PROD_URL=https://hr.agribizframework.com and secrets
+# PROD_HOST (66.29.139.201), PROD_SSH_KEY (private deploy key), PROD_SSH_KNOWN_HOSTS (ssh-keyscan
+# line). See infrastructure/vps/README.md "Releases from GitHub".
+# Releasing:  git tag -a v1.2.0 -m "v1.2.0" && git push origin v1.2.0
+# Rollback:   run this workflow manually with the previous tag (schema changes are expand-only).
 name: Deploy (production)
 
 on:
@@ -12,22 +20,22 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag to deploy (e.g. v1.0.0); rollback = deploy the previous tag"
+        description: "Release tag to deploy (e.g. v1.2.0); rollback = deploy the previous tag"
         required: true
 
 permissions:
   contents: read
-  packages: write
+  actions: read
 
 concurrency:
   group: deploy-production
   cancel-in-progress: false
 
 jobs:
-  promote:
-    name: Promote staging images to the release tag
+  release:
+    name: Check CI and build the release archive
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
       sha: ${{ steps.meta.outputs.sha }}
@@ -43,32 +51,28 @@ jobs:
           {
             echo "tag=$INPUT_TAG"
             echo "sha=$(git rev-parse HEAD)"
-            echo "prefix=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
           } >>"$GITHUB_OUTPUT"
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
-      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Re-tag sha-<commit> as the release (only images that went through staging)
+      - name: CI must have passed for this commit
         env:
-          PREFIX: ${{ steps.meta.outputs.prefix }}
-          TAG: ${{ steps.meta.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHA: ${{ steps.meta.outputs.sha }}
         run: |
-          for img in mhrs-backend mhrs-worker mhrs-frontend; do
-            src="$PREFIX/$img:sha-$SHA"
-            docker buildx imagetools inspect "$src" >/dev/null 2>&1 \
-              || { echo "::error::$src does not exist - deploy this commit to staging first (Deploy (staging) workflow)"; exit 1; }
-            docker buildx imagetools create --tag "$PREFIX/$img:$TAG" "$src"
-          done
+          ok=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SHA&status=success&per_page=1" --jq '.total_count')
+          [ "${ok:-0}" -gt 0 ] || { echo "::error title=CI not green::no successful CI run for $SHA - push to main and wait for CI first"; exit 1; }
+          echo "CI passed for $SHA"
+      - name: Build the release archive (committed files only)
+        run: git archive --format=tar.gz -o mhrs-release.tar.gz HEAD && ls -l mhrs-release.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mhrs-release-${{ steps.meta.outputs.tag }}
+          path: mhrs-release.tar.gz
+          retention-days: 30
 
   deploy:
-    name: Deploy to production
-    needs: promote
+    name: Deploy to hr.agribizframework.com
+    needs: release
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     environment:
       name: production
       url: ${{ vars.PROD_URL }}
@@ -76,19 +80,32 @@ jobs:
       HOST: ${{ secrets.PROD_HOST }}
       SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
       KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
-      TAG: ${{ needs.promote.outputs.tag }}
+      TAG: ${{ needs.release.outputs.tag }}
     steps:
-      - name: Deploy over SSH
+      - name: Production configured?
         run: |
           if [ -z "$HOST" ] || [ -z "$SSH_KEY" ] || [ -z "$KNOWN_HOSTS" ]; then
-            echo "::error title=Production not configured::PROD_HOST / PROD_SSH_KEY / PROD_SSH_KNOWN_HOSTS are missing (owner step)."
+            echo "::error title=Production not configured::PROD_HOST / PROD_SSH_KEY / PROD_SSH_KNOWN_HOSTS are missing (owner step, infrastructure/vps/README.md)."
             exit 1
           fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.release.outputs.sha }}
+      - name: Rebuild the same release archive (git archive is deterministic for a commit)
+        run: git archive --format=tar.gz -o mhrs-release.tar.gz HEAD
+      - name: Stream the release to the server and deploy
+        run: |
           install -d -m 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" >~/.ssh/deploy && chmod 600 ~/.ssh/deploy
           printf '%s\n' "$KNOWN_HOSTS" >~/.ssh/known_hosts
-          ssh -i ~/.ssh/deploy -o BatchMode=yes -o StrictHostKeyChecking=yes "mhrs@$HOST" \
-            "set -e; cd /opt/mhrs && git fetch --quiet --tags origin && git -c advice.detachedHead=false checkout --quiet --detach $TAG && infrastructure/deployment/deploy.sh $TAG"
+          ssh -i ~/.ssh/deploy -o BatchMode=yes -o StrictHostKeyChecking=yes -o ServerAliveInterval=30 \
+            "root@$HOST" "deploy $TAG" < mhrs-release.tar.gz
+      - name: Check the live site
+        run: |
+          for path in /readyz / /jobs /api/v1/jobs/; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "https://hr.agribizframework.com$path")
+            echo "$code $path"; [ "$code" = 200 ] || exit 1
+          done
       - name: Clean up key
         if: always()
         run: rm -f ~/.ssh/deploy

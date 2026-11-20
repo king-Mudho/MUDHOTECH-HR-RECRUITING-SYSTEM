@@ -55,6 +55,29 @@ ssh agribizframework "tar -xzf /tmp/mhrs-release.tar.gz -C /srv/mhrs && bash /sr
 locked dependencies, migrates (expand-only), rebuilds the frontend into a new release, restarts the
 services (the worker finishes running tasks first) and checks the site through nginx.
 
+## Releases from GitHub (tag -> production)
+
+`.github/workflows/deploy-prod.yml`: pushing a tag `vX.Y.Z` checks that CI passed for that commit,
+builds the release archive, waits for the owner's approval in the `production` environment, then
+streams the archive to the server. There the deploy key can only run `ci-deploy.sh` (checks the
+archive, unpacks it, runs `deploy.sh`). Rollback: run the workflow manually with the previous tag.
+
+One-time owner setup:
+
+1. Create the deploy key on your computer (no passphrase; it can only deploy):
+   `ssh-keygen -t ed25519 -N "" -C mhrs-github-deploy -f ~/.ssh/mhrs_github_deploy`
+2. Allow it on the server, restricted to `ci-deploy.sh`:
+   `ssh agribizframework "bash /srv/mhrs/infrastructure/vps/install-deploy-key.sh '$(cat ~/.ssh/mhrs_github_deploy.pub)'"`
+3. Check it can do nothing else (expect `refused`): `ssh -i ~/.ssh/mhrs_github_deploy root@66.29.139.201 hello`
+4. GitHub -> Settings -> Environments -> New environment `production`: add yourself as required
+   reviewer, a deployment tag rule `v*`, variable `PROD_URL` = `https://hr.agribizframework.com`, and
+   secrets `PROD_HOST` = `66.29.139.201`, `PROD_SSH_KEY` = the whole content of
+   `~/.ssh/mhrs_github_deploy` (the private key), `PROD_SSH_KNOWN_HOSTS` = the output of
+   `ssh-keyscan -t ed25519 66.29.139.201`.
+
+Releasing: `git tag -a v1.2.0 -m "v1.2.0" && git push origin v1.2.0`, then approve the run in the
+Actions tab.
+
 ## Rollback and restore
 
 ```bash
