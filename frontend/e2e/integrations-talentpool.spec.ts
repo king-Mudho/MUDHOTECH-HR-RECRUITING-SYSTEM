@@ -50,9 +50,16 @@ test("an API key reads the public API and is refused once revoked", async ({ bro
   const keys = page.getByRole("region", { name: "API keys" });
   await expect(keys).toBeVisible({ timeout: 20_000 });
   const name = `E2E ${Date.now()}`;
-  await keys.getByLabel("Name").fill(name);
-  await keys.getByRole("checkbox").first().check();
-  await keys.getByRole("button", { name: "Create key" }).click();
+  const create = keys.getByRole("button", { name: "Create key" });
+  // on slow runners the form can re-render as the page finishes loading and drop what was typed:
+  // fill again until the button is enabled (it needs a name and at least one scope)
+  await expect(async () => {
+    await keys.getByLabel("Name").fill(name);
+    const scope = keys.getByRole("checkbox").first();
+    if (!(await scope.isChecked())) await scope.check();
+    await expect(create).toBeEnabled({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+  await create.click({ timeout: 15_000 });
   // the new key is shown once in the status message (the list shows earlier keys as "mhrs_ab12…")
   const shown = keys.getByRole("status").locator("code");
   await expect(shown).toBeVisible({ timeout: 15_000 });

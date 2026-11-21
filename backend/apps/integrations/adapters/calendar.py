@@ -50,7 +50,7 @@ class CalendarAdapter(BaseAdapter):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - fixed https endpoints
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - fixed https endpoints  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
                 return dict(json.loads(resp.read().decode() or "{}"))
         except (urllib.error.URLError, ValueError) as exc:
             raise IntegrationError(f"{self.connection.provider}: token endpoint error") from exc

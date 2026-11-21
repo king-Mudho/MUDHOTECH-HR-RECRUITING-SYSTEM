@@ -80,7 +80,7 @@ def _http_post(url: str, data: dict[str, str]) -> str:
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=settings.PAYNOW_TIMEOUT_SECONDS) as resp:  # noqa: S310  # nosec B310 - https only
+    with urllib.request.urlopen(request, timeout=settings.PAYNOW_TIMEOUT_SECONDS) as resp:  # noqa: S310  # nosec B310 - https only  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
         return str(resp.read().decode("utf-8"))
 
 

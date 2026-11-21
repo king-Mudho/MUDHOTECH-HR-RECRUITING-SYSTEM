@@ -34,8 +34,8 @@ jobs:
       tag: ${{ steps.meta.outputs.tag }}
       sha: ${{ steps.meta.outputs.sha }}
     steps:
-      # nosemgrep: the triggering run is a push to main (never a pull request), so the checkout is trusted code
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # reviewed: the triggering run is a push to main (never a pull request), so the checkout is trusted code
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7  # nosemgrep: yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - id: meta

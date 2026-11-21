@@ -248,7 +248,7 @@ def _post(url: str, body: bytes, headers: dict[str, str]) -> int:
         url, data=body, headers={"Content-Type": "application/json", **headers}, method="POST"
     )
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:  # noqa: S310  # nosec B310 - https, public host
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:  # noqa: S310  # nosec B310 - https, public host  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
             return int(resp.status)
     except urllib.error.HTTPError as exc:
         return int(exc.code)

@@ -58,7 +58,7 @@ class BaseAdapter:
             headers={"Content-Type": "application/json", **(headers or {})},
         )
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - https only
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - https only  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
                 raw = resp.read().decode() or "{}"
         except urllib.error.HTTPError as exc:
             raise IntegrationError(f"{self.connection.provider}: HTTP {exc.code}") from exc

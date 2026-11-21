@@ -45,7 +45,7 @@ def site_problems(domain: str) -> list[str]:
     problems = []
     for path in ("/readyz", "/"):
         try:
-            with urllib.request.urlopen(f"https://{domain}{path}", timeout=20) as r:  # nosec B310
+            with urllib.request.urlopen(f"https://{domain}{path}", timeout=20) as r:  # nosec B310  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
                 if r.status != 200:
                     problems.append(f"https://{domain}{path} answered {r.status}")
         except Exception as exc:  # noqa: BLE001 - any failure is the signal
