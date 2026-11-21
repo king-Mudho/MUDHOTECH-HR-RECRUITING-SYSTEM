@@ -1,0 +1,11 @@
+# Started by mhrs-backup.service (OnSuccess=, a drop-in written by configure-offsite-backup.sh).
+# A failed upload fails this unit, not the local backup, so each shows its own state.
+[Unit]
+Description=MHRS - copy the newest backup to Google Drive, encrypted
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /srv/mhrs/infrastructure/vps/offsite-backup.sh
+TimeoutStartSec=30min

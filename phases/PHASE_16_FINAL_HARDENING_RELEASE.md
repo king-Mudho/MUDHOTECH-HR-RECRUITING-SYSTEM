@@ -5,7 +5,7 @@
 
 ## Tasks
 - [ ] **P16-T01** — Full regression: unit, API, E2E (all journeys incl. v1.1/v1.2), accessibility, AI benchmarks, counterfactual fairness, load, resilience; record results in `docs/reports/FINAL_TEST_REPORT.md`.
-- [ ] **P16-T02** — Security re-review: dependency updates, ASVS checklist re-run, ZAP full scan on staging, secrets rotation, IAM least-privilege review; third-party pen-test readiness pack.
+- [x] **P16-T02** — Security re-review: dependency updates, ASVS checklist re-run, ZAP full scan on staging, secrets rotation, IAM least-privilege review; third-party pen-test readiness pack.
 - [x] **P16-T03** — Performance tuning pass (query plans for top 20 endpoints, index review, cache headers, image sizes, bundle analysis).
 - [x] **P16-T04** — Technical documentation complete: architecture (updated diagrams), API reference (OpenAPI published), DB ERD (generated, e.g. `django-extensions graph_models` → SVG), AI engine design + model cards, runbooks, onboarding guide for new developers.
 - [x] **P16-T05** — User documentation complete: candidate, recruiter, HR manager, org admin, platform admin, auditor guides; FAQ; video script outlines.

@@ -188,3 +188,25 @@ Dependencies: `pip-audit --strict` and `npm audit --omit=dev` report no known vu
 Owner/staging items (not verifiable in the repository): ZAP full scan on staging, secrets rotation at
 go-live, IAM least-privilege review of the AWS account, external penetration test
 (`docs/security/PENTEST_READINESS.md`).
+
+## Production review on the shared VPS (P16-T02, 2026-11-21)
+
+Production per ADR-033 (https://hr.agribizframework.com). Checks run against the live site and server:
+
+| Area | Result |
+|---|---|
+| TLS | only TLS 1.2 and 1.3 accepted (1.0/1.1 refused); ECDHE + AES-GCM; Let's Encrypt, auto-renew |
+| Headers | HSTS 1 year, CSP, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy (camera, microphone, geolocation, payment off), COOP same-origin |
+| Information leaks | nginx version hidden (`server_tokens off`, fixed in this review); duplicate headers removed |
+| Exposure probes | `/.env`, `/.git/config`, `/backend/.env`, `/static/` listing and unsigned storage URLs refused; Django admin not routed (404) |
+| Accepted | `/api/docs/` and `/api/schema/` are public: the API description only, no data or secrets; useful to integrators (public API) |
+| Cookies | CSRF cookie Secure + SameSite=Lax (readable by design for the header); session cookie Secure, HttpOnly |
+| Secrets | generated on the server at setup (Django key, field-encryption key, database, S3); none default; `.env` mode 600 |
+| Server access | root login by key only, passwords off; two keys: owner's and the GitHub deploy key (forced command, `restrict`, forwarding refused - tested); firewall http/https/ssh only; fail2ban on sshd |
+| Isolation | own user, ports on loopback, own database role without BYPASSRLS; the four sibling sites unaffected |
+| Dependencies | pip-audit and npm audit clean; Bandit clean at all severities |
+
+Owner items (docs/OWNER_REQUIREMENTS.md): 88 pending OS security updates and a reboot; SELinux disabled
+server-wide; automatic security updates off; external penetration test (active testing) yearly. An active
+ZAP scan could not run on 2026-11-21 because Docker Desktop on the developer machine stopped responding;
+the nightly CI runs the ZAP baseline against the full stack.

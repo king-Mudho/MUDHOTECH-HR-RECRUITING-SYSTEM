@@ -84,6 +84,12 @@ def host_problems() -> list[str]:
         age_h = (time.time() - dumps[-1].stat().st_mtime) / 3600
         if age_h > LIMITS["backup_age_hours"]:
             problems.append(f"last database backup is {age_h:.0f} h old")
+    # off-server copies: checked once configure-offsite-backup.sh has run (it writes this stamp)
+    stamp = APP_DIR / "run" / "offsite-last-success"
+    if stamp.exists():
+        age_h = (time.time() - float(stamp.read_text().strip() or 0)) / 3600
+        if age_h > LIMITS["backup_age_hours"]:
+            problems.append(f"last off-server backup copy is {age_h:.0f} h old")
     return problems
 
 
