@@ -81,7 +81,26 @@ Recommended afterwards (decide for the whole server): turn on automatic security
 `ssh agribizframework "dnf install -y dnf-automatic && sed -i 's/^upgrade_type.*/upgrade_type = security/; s/^apply_updates.*/apply_updates = yes/' /etc/dnf/automatic.conf && systemctl enable --now dnf-automatic.timer"`.
 Kernel updates still need a planned restart.
 
-### 4. Sign off the go-live checklist (closes Phase 11)
+### 4. Free disk space on the shared server (77 % full)
+
+The server disk is **77 % full** (86 GB of 118 GB). MHRS uses 3.3 GB; **the Research Portal
+(`/srv/agribiz-drp`) uses 71 GB**, most likely its backups or uploaded files. MHRS's monitor emails
+you at 80 %. Check the DRP folder and its backup retention:
+
+```bash
+ssh agribizframework "du -sh /srv/agribiz-drp/* | sort -h | tail"
+```
+
+Delete or move only what that project no longer needs (old backups are the usual cause), or add
+disk space with the hosting provider.
+
+### 5. Restart Docker Desktop on your computer (developer machine)
+
+Docker Desktop on this computer stopped responding on 21 November (commands time out), which also
+affects your other local projects that use it. Restart it from its tray icon when convenient. The
+live server does not use Docker and is not affected.
+
+### 6. Sign off the go-live checklist (closes Phase 11)
 
 1. Read the section **"Production on the shared VPS"** at the top of
    `docs/deployment/GO_LIVE_CHECKLIST.md`. Items 1 and 2 above are its two open lines.
@@ -92,7 +111,7 @@ Kernel updates still need a planned restart.
 
 ## Priority 2 — before real candidates use the system
 
-### 5. Legal and data protection (decision D-08)
+### 7. Legal and data protection (decision D-08)
 
 Under the Cyber and Data Protection Act [Chapter 12:07] and SI 155 of 2024:
 
@@ -107,7 +126,7 @@ Under the Cyber and Data Protection Act [Chapter 12:07] and SI 155 of 2024:
 
 Tell me the outcome; I update decision D-08 and the documents.
 
-### 6. Set up the first real employer
+### 8. Set up the first real employer
 
 1. A real employer creates its organisation (*For employers → Create organisation*), or you create
    one for them.
@@ -119,7 +138,7 @@ Tell me the outcome; I update decision D-08 and the documents.
 5. Do one real test yourself: register as a candidate with a second email address, apply with a
    sample CV, and confirm the confirmation emails arrive and the application is screened.
 
-### 7. A business mailbox for system email (recommended)
+### 9. A business mailbox for system email (recommended)
 
 Today's sender is the Gmail account mudhotechsolutions@gmail.com, limited to about **500 emails a
 day** and more likely to land in spam at volume. Before many candidates apply:
@@ -145,7 +164,7 @@ ssh -t agribizframework "nano /srv/mhrs/backend/.env"
 then restart with `ssh agribizframework "systemctl restart mhrs-backend mhrs-worker mhrs-beat"`.
 When the provider accounts are in, tell me and I set `INTEGRATIONS_SANDBOX=false` and test each one.
 
-### 8. Payments and billing (Paynow)
+### 10. Payments and billing (Paynow)
 
 - **From Paynow:** a merchant account with an integration for **USD** and one for **ZWG**
   (integration ID and integration key for each).
@@ -159,7 +178,7 @@ When the provider accounts are in, tell me and I set `INTEGRATIONS_SANDBOX=false
   Billing is **not enforced** now (`BILLING_ENFORCE=false`); tell me the date and I switch it on.
   Existing pilot organisations need a plan assigned first, or their 30-day trial starts.
 
-### 9. Calendars and staff sign-in (Google and Microsoft)
+### 11. Calendars and staff sign-in (Google and Microsoft)
 
 - **Google:** in Google Cloud Console create an OAuth client (web application) with redirect URI
   `https://hr.agribizframework.com/api/v1/auth/browser/v1/auth/provider/callback/google` and the
@@ -171,7 +190,7 @@ When the provider accounts are in, tell me and I set `INTEGRATIONS_SANDBOX=false
 - Tell me when done: the sign-in buttons need a frontend rebuild with SSO switched on.
 - Details: `docs/integrations/calendar.md`, `docs/integrations/sso.md`.
 
-### 10. SMS and WhatsApp updates for candidates (decision D-14)
+### 12. SMS and WhatsApp updates for candidates (decision D-14)
 
 - **SMS:** choose a Zimbabwean SMS aggregator (decision D-14) that offers an HTTP API, delivery
   receipts and inbound STOP replies. Each employer then enters the API key and sender ID in
@@ -181,7 +200,7 @@ When the provider accounts are in, tell me and I set `INTEGRATIONS_SANDBOX=false
   access token and phone number ID in *Settings → Integrations*. Platform values:
   `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`.
 
-### 11. Faster server with full AI matching (hosting provider)
+### 13. Faster server with full AI matching (hosting provider)
 
 The server's virtual processor does not offer **AVX2** instructions, so meaning-based skill matching
 is switched off (matching uses the skills list and aliases; unmatched skills go to a person).
@@ -189,12 +208,12 @@ is switched off (matching uses the skills list and aliases; unmatched skills go 
 exposes AVX2). After that, tell me and I switch semantic matching back on and compute the skill
 vectors.
 
-### 12. Error tracking (optional)
+### 14. Error tracking (optional)
 
 Create a free **Sentry** project and put its DSN in `SENTRY_DSN` on the server. Errors then arrive
 with the release that caused them.
 
-### 13. Translations
+### 15. Translations
 
 Have a human translator review the chiShona and isiNdebele texts (`frontend/messages/sn.json`,
 `nd.json` and the email templates). Until then they are labelled as drafts.
@@ -233,7 +252,7 @@ Have a human translator review the chiShona and isiNdebele texts (`frontend/mess
 
 | When you have done | Tell me |
 |---|---|
-| Items 1 to 3 | "priority 1 done" (I verify the backups, updates and sites) |
+| Items 1 to 4 | "priority 1 done" (I verify the backups, updates, disk and sites) |
 | The go-live checklist | "go-live signed" plus any exceptions |
 | Legal review | the outcome for D-08 |
 | Provider accounts in place | which ones, so I switch them live and test them |
