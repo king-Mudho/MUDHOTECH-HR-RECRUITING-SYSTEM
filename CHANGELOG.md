@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follo
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-21
+
+### Fixed
+- Two-factor authentication setup did nothing on the live site (D-031): the setup secret that allauth
+  returns with a 404 is now accepted and the QR code appears; errors are shown next to the button.
+- CV uploads failed on the live site (D-030): production file storage had no writable volume; the
+  monitor now test-writes every storage bucket every 5 minutes.
+- Nightly checks: working Semgrep suppressions for reviewed findings; robust API-key journey on
+  slow runners; EC-OPS-05/08/10 covered by tests (safe-migration policy, 80 % disk alert, rate limits).
+
 ## [1.2.0] - 2026-11-20
 
 ### Added

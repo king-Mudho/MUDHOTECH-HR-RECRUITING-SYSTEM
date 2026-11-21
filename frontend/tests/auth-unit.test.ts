@@ -137,6 +137,31 @@ describe("allauth client", () => {
     expect(e2.message).toMatch(/Too many attempts/);
   });
 
+  it("returns the TOTP setup secret that allauth sends with a 404 (not set up yet)", async () => {
+    // production bug 2026-11-21: the 404 was thrown, so "Set up two-factor authentication" did nothing
+    const body = {
+      status: 404,
+      meta: {
+        secret: "JBSWY3DPEHPK3PXP",
+        totp_url: "otpauth://totp/MHRS:a%40b.test?secret=JBSWY3DPEHPK3PXP",
+      },
+    };
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify(body), { status: 404 }));
+    const resp = await allauth<Record<string, unknown>>("/account/authenticators/totp", {
+      fetchImpl,
+      acceptStatuses: [404],
+    });
+    expect(resp.status).toBe(404);
+    expect((resp.meta as { secret?: string }).secret).toBe("JBSWY3DPEHPK3PXP");
+    // without the opt-in a 404 is still an error
+    const err = (await allauth("/account/authenticators/totp", {
+      fetchImpl: vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status: 404 })),
+    }).catch((e: unknown) => e)) as AllauthError;
+    expect(err).toBeInstanceOf(AllauthError);
+  });
+
   it("network failure becomes status 0", async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new TypeError("offline"));
     const err = (await allauth("/auth/session", { fetchImpl }).catch(

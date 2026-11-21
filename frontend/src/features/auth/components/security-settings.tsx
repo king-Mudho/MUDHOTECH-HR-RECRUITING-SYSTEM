@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api-client";
 import type { components } from "@/types/api";
 
-import { authApi, pendingFlow } from "../allauth";
+import { AllauthError, authApi, pendingFlow } from "../allauth";
 import { applyServerErrors } from "../form-errors";
 import {
   PASSWORD_MIN,
@@ -213,11 +213,17 @@ export function MfaCard() {
 
   const startSetup = async (): Promise<void> => {
     setFormError(null);
-    const resp = await authApi.totpStatus();
-    if (pendingFlow(resp) === "reauthenticate") return requireReauth(() => void startSetup());
-    const meta = resp.meta as { secret?: string; totp_url?: string } | undefined;
-    if (meta?.secret && meta.totp_url) {
-      setSetup({ secret: meta.secret, qr: await QRCode.toDataURL(meta.totp_url, { margin: 1 }) });
+    try {
+      const resp = await authApi.totpStatus();
+      if (pendingFlow(resp) === "reauthenticate") return requireReauth(() => void startSetup());
+      const meta = resp.meta as { secret?: string; totp_url?: string } | undefined;
+      if (meta?.secret && meta.totp_url) {
+        setSetup({ secret: meta.secret, qr: await QRCode.toDataURL(meta.totp_url, { margin: 1 }) });
+      } else {
+        setFormError(t("setupFailed"));
+      }
+    } catch (err) {
+      setFormError(err instanceof AllauthError ? err.message : t("setupFailed"));
     }
   };
 
@@ -319,9 +325,16 @@ export function MfaCard() {
             </Button>
           </form>
         ) : (
-          <Button className="min-h-10 self-start" onClick={startSetup}>
-            {t("setUp")}
-          </Button>
+          <>
+            {formError ? (
+              <p role="alert" className="text-destructive text-sm">
+                {formError}
+              </p>
+            ) : null}
+            <Button className="min-h-10 self-start" onClick={startSetup}>
+              {t("setUp")}
+            </Button>
+          </>
         )}
 
         {codes ? (

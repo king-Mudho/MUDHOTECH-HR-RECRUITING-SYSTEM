@@ -277,7 +277,8 @@
       "activate": "Turn on",
       "showCodes": "Show recovery codes",
       "codesTitle": "Recovery codes",
-      "codesBody": "Store these somewhere safe. Each code works once if you lose your device."
+      "codesBody": "Store these somewhere safe. Each code works once if you lose your device.",
+      "setupFailed": "Two-factor setup could not start. Please reload the page and try again."
     },
     "sessions": {
       "title": "Signed-in devices",

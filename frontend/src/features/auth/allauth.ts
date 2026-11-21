@@ -85,6 +85,8 @@ export interface CallOptions {
   body?: unknown;
   headers?: Record<string, string>;
   fetchImpl?: typeof fetch;
+  /** Non-2xx statuses that are normal answers for this call (e.g. 404 = TOTP not set up yet). */
+  acceptStatuses?: number[];
 }
 
 /**
@@ -93,7 +95,7 @@ export interface CallOptions {
  */
 export async function allauth<T = Record<string, unknown>>(
   path: string,
-  { method = "GET", body, headers = {}, fetchImpl = fetch }: CallOptions = {},
+  { method = "GET", body, headers = {}, fetchImpl = fetch, acceptStatuses = [] }: CallOptions = {},
 ): Promise<AllauthResponse<T>> {
   if (method !== "GET") await ensureCsrf(fetchImpl);
   const h = new Headers({ Accept: "application/json", ...headers });
@@ -118,7 +120,8 @@ export async function allauth<T = Record<string, unknown>>(
   } catch {
     json = { status: res.status };
   }
-  if (res.ok || res.status === 401) return { ...json, status: res.status };
+  if (res.ok || res.status === 401 || acceptStatuses.includes(res.status))
+    return { ...json, status: res.status };
   // Django-level failures (CSRF, MFA enforcement) come back in the MHRS error envelope.
   const envelope = (json as { error?: { code?: string; message?: string } }).error;
   const fallback =
@@ -162,7 +165,8 @@ export const authApi = {
   reauthenticate: (password: string) =>
     allauth("/auth/reauthenticate", { method: "POST", body: { password } }),
   authenticators: () => allauth<AuthenticatorItem[]>("/account/authenticators"),
-  totpStatus: () => allauth<TotpData>("/account/authenticators/totp"),
+  // allauth answers 404 with meta.secret / meta.totp_url while TOTP is not set up yet
+  totpStatus: () => allauth<TotpData>("/account/authenticators/totp", { acceptStatuses: [404] }),
   activateTotp: (code: string) =>
     allauth("/account/authenticators/totp", { method: "POST", body: { code } }),
   deactivateTotp: () => allauth("/account/authenticators/totp", { method: "DELETE" }),
