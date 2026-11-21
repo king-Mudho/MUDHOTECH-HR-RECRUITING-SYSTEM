@@ -1,5 +1,8 @@
 # MHRS private S3 storage (SeaweedFS, ADR-021) on loopback only. Browsers reach signed links through
 # nginx on the site's own host name. Data lives in /srv/mhrs/s3-data (backed up by mhrs-backup).
+# Volumes are 1 GB, up to 100 (SeaweedFS makes 7 per bucket; empty ones use almost no disk).
+# With -volume.max=0 SeaweedFS sizes itself from free disk in
+# 30 GB volumes and, on this shared disk, ended up with no writable volume at all (uploads failed).
 [Unit]
 Description=MHRS - S3 storage (SeaweedFS, 127.0.0.1:8533)
 After=network-online.target
@@ -12,7 +15,8 @@ Group=mhrs
 WorkingDirectory=/srv/mhrs/s3-data
 ExecStart=/srv/mhrs/tools/weed server -dir=/srv/mhrs/s3-data \
     -ip=127.0.0.1 -ip.bind=127.0.0.1 \
-    -master.port=9533 -volume.port=8580 -filer.port=8588 -volume.max=0 \
+    -master.port=9533 -volume.port=8580 -filer.port=8588 \
+    -master.volumeSizeLimitMB=1024 -volume.max=100 \
     -s3 -s3.port=8533 -s3.config=/srv/mhrs/run/s3.json
 Restart=always
 RestartSec=5

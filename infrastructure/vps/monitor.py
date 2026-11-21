@@ -138,6 +138,27 @@ def app_problems() -> list[str]:
     for key, limit, label in checks:
         if key in values and values[key] > LIMITS[limit]:
             problems.append(f"{values[key]:.0f} {label} (limit {LIMITS[limit]})")
+    problems += storage_write_problems()
+    return problems
+
+
+def storage_write_problems() -> list[str]:
+    """Write, read back and delete a tiny file in every bucket. The readiness check only confirms the
+    buckets exist; on 2026-11-21 storage had no writable volume and CV uploads failed unnoticed."""
+    from apps.core import storage
+
+    problems = []
+    key = f"healthcheck/monitor-{int(time.time())}.txt"
+    for purpose in ("quarantine", "documents", "exports", "public"):
+        try:
+            storage.put_bytes(purpose, key, b"ok", "text/plain")
+            if storage.get_bytes(purpose, key) != b"ok":
+                problems.append(f"file storage ({purpose}) returned different content")
+            storage.delete_object(purpose, key)
+        except Exception as exc:  # noqa: BLE001 - any storage failure is the alert
+            problems.append(
+                f"file storage ({purpose}) cannot store files: {type(exc).__name__}"
+            )
     return problems
 
 
