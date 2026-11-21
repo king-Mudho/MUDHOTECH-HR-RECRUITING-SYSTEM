@@ -34,7 +34,7 @@ LIMITS = {
     "dead_letters": 10,
     "email_failure_percent": 5.0,
     "clamav_age_hours": 48,
-    "disk_percent": 85,
+    "disk_percent": 80,  # EC-OPS-08
     "memory_available_mb": 250,
     "backup_age_hours": 26,
     "cert_days": 14,

@@ -95,7 +95,7 @@ in `/srv/mhrs/backups`. Copy them off the server regularly.
 ## Monitoring and alerts
 
 `mhrs-monitor.timer` runs `monitor.sh` every 5 minutes: the site over HTTPS (`/readyz`, `/`), the six
-services, disk (> 85 %), memory (< 250 MB available), documents queue, processing backlog (> 15 min),
+services, disk (> 80 %), memory (< 250 MB available), documents queue, processing backlog (> 15 min),
 event relay lag, dead letters (> 10), email failures (> 5 %), virus signatures (> 48 h), backup age
 (> 26 h) and certificate expiry (< 14 days). It emails `OPS_ALERT_EMAILS` (backend `.env`) when a problem
 appears, every 6 hours while it lasts, and once on recovery.

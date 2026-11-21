@@ -1,4 +1,7 @@
-"""Public job board response cache (P10-T05): served from cache, invalidated by any change."""
+"""Public job board response cache (P10-T05, EC-OPS-10 traffic spikes).
+
+Served from cache, invalidated by any change.
+"""
 
 from __future__ import annotations
 
